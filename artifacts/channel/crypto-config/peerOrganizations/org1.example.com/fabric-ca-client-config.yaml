@@ -45,7 +45,7 @@ url: https://localhost:7054
 # Membership Service Provider (MSP) directory
 # This is useful when the client is used to enroll a peer or orderer, so
 # that the enrollment artifacts are stored in the format expected by MSP.
-mspdir: /errc2020-hyperledgerfabric/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/marco@org1.example.com/msp
+mspdir: msp
 
 #############################################################################
 #    TLS section for secure socket connection
@@ -104,7 +104,7 @@ tls:
 #
 #############################################################################
 csr:
-  cn: marco
+  cn: admin
   keyrequest:
     algo: ecdsa
     size: 256
