@@ -1,8 +1,15 @@
-# REFS:
+# CARBON21
 
-@MAM: Usei ref abaixo como base, acrescentando uma quarta organização.  
+## Como rodar
+```
+git clone https://github.com/marques-ma/4orgs-ERC1155.git
+cd 4orgs-ERC1155
+./init
+```
+Nota: o script init irá matar qualquer docker ativo.
 
-# FabricNetwork-2.x
+## FabricNetwork-2.x
+@MAM: Usei ref abaixo como base, acrescentando uma quarta organização. 
 
 Youtube Channel: https://www.youtube.com/watch?v=SJTdJt6N6Ow&list=PLSBNVhWU6KjW4qo1RlmR7cvvV8XIILub6
 
