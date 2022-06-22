@@ -5,71 +5,71 @@ networks:
 
 services:
 
-  ca_org1:
+  ca_carbon:
     image: hyperledger/fabric-ca
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca.org1.example.com
+      - FABRIC_CA_SERVER_CA_NAME=ca.carbon.example.com
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=7054
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric-ca/org1:/etc/hyperledger/fabric-ca-server
-    container_name: ca.org1.example.com
-    hostname: ca.org1.example.com
+      - ./fabric-ca/carbon:/etc/hyperledger/fabric-ca-server
+    container_name: ca.carbon.example.com
+    hostname: ca.carbon.example.com
     networks:
       - test
 
-  ca_org2:
+  ca_users:
     image: hyperledger/fabric-ca
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca.org2.example.com
+      - FABRIC_CA_SERVER_CA_NAME=ca.users.example.com
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=8054
     ports:
       - "8054:8054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric-ca/org2:/etc/hyperledger/fabric-ca-server
-    container_name: ca.org2.example.com
-    hostname: ca.org2.example.com
+      - ./fabric-ca/users:/etc/hyperledger/fabric-ca-server
+    container_name: ca.users.example.com
+    hostname: ca.users.example.com
     networks:
       - test
 
-  ca_org3:
+  ca_cetesb:
     image: hyperledger/fabric-ca
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca.org3.example.com
+      - FABRIC_CA_SERVER_CA_NAME=ca.cetesb.example.com
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=10054
     ports:
       - "10054:10054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric-ca/org3:/etc/hyperledger/fabric-ca-server
-    container_name: ca.org3.example.com
-    hostname: ca.org3.example.com
+      - ./fabric-ca/cetesb:/etc/hyperledger/fabric-ca-server
+    container_name: ca.cetesb.example.com
+    hostname: ca.cetesb.example.com
     networks:
       - test
 
-  ca_org4:
+  ca_ibama:
     image: hyperledger/fabric-ca
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca.org4.example.com
+      - FABRIC_CA_SERVER_CA_NAME=ca.ibama.example.com
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=11054
     ports:
       - "11054:11054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric-ca/org4:/etc/hyperledger/fabric-ca-server
-    container_name: ca.org4.example.com
-    hostname: ca.org4.example.com
+      - ./fabric-ca/ibama:/etc/hyperledger/fabric-ca-server
+    container_name: ca.ibama.example.com
+    hostname: ca.ibama.example.com
     networks:
       - test
 

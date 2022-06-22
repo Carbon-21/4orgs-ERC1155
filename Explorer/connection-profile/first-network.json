@@ -7,7 +7,7 @@
 		"adminUser": "admin",
 		"adminPassword": "adminpw",
 		"enableAuthentication": false,
-		"organization": "Org1MSP",
+		"organization": "CarbonMSP",
 		"connection": {
 			"timeout": {
 				"peer": {
@@ -20,7 +20,7 @@
 	"channels": {
 		"mychannel": {
 			"peers": {
-				"peer0.org1.example.com": {}
+				"peer0.carbon.example.com": {}
 			},
 			"connection": {
 				"timeout": {
@@ -34,25 +34,28 @@
 		}
 	},
 	"organizations": {
-		"Org1MSP": {
-			"mspid": "Org1MSP",
+		"CarbonMSP": {
+			"peers": [
+				"peer0.carbon.example.com"
+			],
+			"mspid": "CarbonMSP",
 			"adminPrivateKey": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"
+				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/priv_sk"
 			},
 			"signedCert": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
+				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/Admin@carbon.example.com-cert.pem"
 			}
 		}
 	},
 	"peers": {
-		"peer0.org1.example.com": {
+		"peer0.carbon.example.com": {
 			"tlsCACerts": {
-				"path": "/etc/data/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+				"path": "/etc/data/peerOrganizations/carbon.example.com/peers/peer0.carbon.example.com/tls/ca.crt"
 			},
-			"url": "grpcs://peer0.org1.example.com:7051",
-			"eventUrl": "grpcs://peer0.org1.example.com:7053",
+			"url": "grpcs://peer0.carbon.example.com:7051",
+			"eventUrl": "grpcs://peer0.carbon.example.com:7053",
 			"grpcOptions": {
-				"ssl-target-name-override": "peer0.org1.example.com"
+				"ssl-target-name-override": "peer0.carbon.example.com"
 			}
 		}
 	}

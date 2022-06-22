@@ -21,7 +21,7 @@ const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
-const minterMSPID = "Org1MSP"
+const minterMSPID = "CarbonMSP"
 
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
@@ -114,7 +114,7 @@ type ToID struct {
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id uint64, amount uint64) error {
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, a
 		return fmt.Errorf("ids and amounts must have the same length")
 	}
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -189,7 +189,7 @@ func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, accoun
 		return fmt.Errorf("burn to the zero address")
 	}
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to burn new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to burn new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -223,7 +223,7 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 		return fmt.Errorf("ids and amounts must have the same length")
 	}
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to burn new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to burn new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -543,7 +543,7 @@ func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterf
 // This function triggers URI event for each token id
 func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, uri string) error {
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -578,7 +578,7 @@ func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id uint
 
 func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionContextInterface, id uint64) error {
 
-	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
 		return err
@@ -597,7 +597,7 @@ func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionConte
 
 // Helper Functions
 
-// authorizationHelper checks minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
+// authorizationHelper checks minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 
 	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()

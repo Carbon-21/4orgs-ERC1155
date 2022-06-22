@@ -2,7 +2,7 @@ export FABRIC_CA_CLIENT_HOME=${PWD}/clients/admin
 
 EnrollAdmin() {
 
-    fabric-ca-client enroll -u https://admin:adminpw@localhost:7054 --caname ca.org1.example.com --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
+    fabric-ca-client enroll -u https://admin:adminpw@localhost:7054 --caname ca.carbon.example.com --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 
 }
 
@@ -10,15 +10,15 @@ EnrollAdmin() {
 
 RegisterNewAdmin() {
     # export FABRIC_CA_CLIENT_HOME=${PWD}/clients/admin2
-    # fabric-ca-client register --id.name admin2 --id.affiliation org1.department1 --id.attrs 'hf.Revoker=true,admin=true:ecert'
-    # fabric-ca-client register -d --id.name admin2 --id.affiliation org1.department1 --id.attrs '"hf.Registrar.Roles=peer,client"' --id.attrs hf.Revoker=true
+    # fabric-ca-client register --id.name admin2 --id.affiliation carbon.department1 --id.attrs 'hf.Revoker=true,admin=true:ecert'
+    # fabric-ca-client register -d --id.name admin2 --id.affiliation carbon.department1 --id.attrs '"hf.Registrar.Roles=peer,client"' --id.attrs hf.Revoker=true
     fabric-ca-client register \
-        --caname ca.org1.example.com \
+        --caname ca.carbon.example.com \
         --id.name admin3 \
         --id.secret admin3pw \
         --id.type admin \
         --id.attrs 'hf.Revoker=true,admin=true:ecert' \
-        --id.affiliation org1.department1 \
+        --id.affiliation carbon.department1 \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 }
 
@@ -26,20 +26,20 @@ RegisterNewAdmin() {
 
 RegisterPeer() {
     fabric-ca-client register \
-        --caname ca.org1.example.com \
+        --caname ca.carbon.example.com \
         --id.name peer4 \
         --id.secret peer4pw \
         --id.type peer \
-        --id.affiliation org1.department1 \
+        --id.affiliation carbon.department1 \
         --id.attrs '"hf.Registrar.Roles=peer,client"' \
         --id.attrs hf.Revoker=true \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 
     # fabric-ca-client register \
-    #     --caname ca.org1.example.com \
+    #     --caname ca.carbon.example.com \
     #     --id.name peer3 \
     #     --id.type peer \
-    #     --id.affiliation org1.department1 \
+    #     --id.affiliation carbon.department1 \
     #     --id.attrs '"hf.Registrar.Roles=peer,client"' \
     #     --id.attrs hf.Revoker=true \
     #     --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
@@ -52,9 +52,9 @@ EnrollPeer() {
 
     fabric-ca-client enroll \
         -u https://peer4:peer4pw@localhost:7054 \
-        --caname ca.org1.example.com \
+        --caname ca.carbon.example.com \
         -M ${PWD}/clients/peer1/msp \
-        --csr.hosts peer0.org1.example.com \
+        --csr.hosts peer0.carbon.example.com \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 }
 
@@ -66,7 +66,7 @@ ReenrollIdentity() {
     fabric-ca-client \
         reenroll \
         -u https://peer4:peer4pw@localhost:7054 \
-        --caname ca.org1.example.com \
+        --caname ca.carbon.example.com \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem
 }
 
@@ -104,7 +104,7 @@ AddNewIdentity() {
 
     fabric-ca-client identity add user1 \
         --tls.certfiles ${PWD}/fabric-ca/tls-cert.pem \
-        --json '{"secret": "user1pw", "type": "client", "affiliation": "org1", "max_enrollments": 1, "attrs": [{"name": "hf.Revoker", "value": "true"}]}'
+        --json '{"secret": "user1pw", "type": "client", "affiliation": "carbon", "max_enrollments": 1, "attrs": [{"name": "hf.Revoker", "value": "true"}]}'
 
     fabric-ca-client identity add user1 \
         --secret user1pw \
@@ -123,7 +123,7 @@ ModifyIdentity() {
 
     fabric-ca-client identity modify user1 --secret newsecret
 
-    fabric-ca-client identity modify user1 --affiliation org2
+    fabric-ca-client identity modify user1 --affiliation users
 
     fabric-ca-client identity modify user1 --type peer
 
@@ -148,19 +148,19 @@ RemoveIdentity() {
 
 AffiliationOperations() {
     # Add
-    fabric-ca-client affiliation add org1.dept1
+    fabric-ca-client affiliation add carbon.dept1
 
     # Modify
-    fabric-ca-client affiliation modify org2 --name org3
+    fabric-ca-client affiliation modify users --name cetesb
 
     # Remove
-    fabric-ca-client affiliation remove org2
+    fabric-ca-client affiliation remove users
 
     # Get All Affiliation
     fabric-ca-client affiliation list
 
     # Get All with specific affliliation
-    fabric-ca-client affiliation list --affiliation org2.dept1
+    fabric-ca-client affiliation list --affiliation users.dept1
 
 }
 

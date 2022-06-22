@@ -14,104 +14,104 @@ Organizations:
                 Type: Signature
                 Rule: "OR('OrdererMSP.admin')"
 
-    - &Org1
-        Name: Org1MSP
-        ID: Org1MSP
-        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
+    - &Carbon
+        Name: CarbonMSP
+        ID: CarbonMSP
+        MSPDir: crypto-config/peerOrganizations/carbon.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+                Rule: "OR('CarbonMSP.admin', 'CarbonMSP.peer', 'CarbonMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+                Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin')"
+                Rule: "OR('CarbonMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org1MSP.peer')"
+                Rule: "OR('CarbonMSP.peer')"
             # CustomPolicy:
             #     Type: Signature
-            #     Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+            #     Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
 
         AnchorPeers:
-            - Host: peer0.org1.example.com
+            - Host: peer0.carbon.example.com
               Port: 7051
 
-    - &Org2
-        Name: Org2MSP
-        ID: Org2MSP
-        MSPDir: crypto-config/peerOrganizations/org2.example.com/msp
+    - &Users
+        Name: UsersMSP
+        ID: UsersMSP
+        MSPDir: crypto-config/peerOrganizations/users.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+                Rule: "OR('UsersMSP.admin', 'UsersMSP.peer', 'UsersMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
+                Rule: "OR('UsersMSP.admin', 'UsersMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin')"
+                Rule: "OR('UsersMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org2MSP.peer')"
+                Rule: "OR('UsersMSP.peer')"
             # CustomPolicy:
             #     Type: Signature
-            #     Rule: "OR('Org1MSP.admin')"
+            #     Rule: "OR('CarbonMSP.admin')"
 
         AnchorPeers:
-            - Host: peer0.org2.example.com
+            - Host: peer0.users.example.com
               Port: 9051
     
-    - &Org3
-        Name: Org3MSP
-        ID: Org3MSP
-        MSPDir: crypto-config/peerOrganizations/org3.example.com/msp
+    - &Cetesb
+        Name: CetesbMSP
+        ID: CetesbMSP
+        MSPDir: crypto-config/peerOrganizations/cetesb.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+                Rule: "OR('CetesbMSP.admin', 'CetesbMSP.peer', 'CetesbMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
+                Rule: "OR('CetesbMSP.admin', 'CetesbMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin')"
+                Rule: "OR('CetesbMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org3MSP.peer')"
+                Rule: "OR('CetesbMSP.peer')"
             # CustomPolicy:
             #     Type: Signature
-            #     Rule: "OR('Org1MSP.admin')"
+            #     Rule: "OR('CarbonMSP.admin')"
 
         AnchorPeers:
-            - Host: peer0.org3.example.com
+            - Host: peer0.cetesb.example.com
               Port: 11051
 
-    - &Org4
-        Name: Org4MSP
-        ID: Org4MSP
-        MSPDir: crypto-config/peerOrganizations/org4.example.com/msp
+    - &Ibama
+        Name: IbamaMSP
+        ID: IbamaMSP
+        MSPDir: crypto-config/peerOrganizations/ibama.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org4MSP.admin', 'Org4MSP.peer', 'Org4MSP.client')"
+                Rule: "OR('IbamaMSP.admin', 'IbamaMSP.peer', 'IbamaMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org4MSP.admin', 'Org4MSP.client')"
+                Rule: "OR('IbamaMSP.admin', 'IbamaMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org4MSP.admin')"
+                Rule: "OR('IbamaMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org4MSP.peer')"
+                Rule: "OR('IbamaMSP.peer')"
             # CustomPolicy:
             #     Type: Signature
-            #     Rule: "OR('Org1MSP.admin')"
+            #     Rule: "OR('CarbonMSP.admin')"
 
         AnchorPeers:
-            - Host: peer0.org4.example.com
+            - Host: peer0.ibama.example.com
               Port: 13051
 
 Capabilities:
@@ -289,10 +289,10 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org1
-                - *Org2
-                - *Org3
-                - *Org4
+                - *Carbon
+                - *Users
+                - *Cetesb
+                - *Ibama
             Capabilities:
                 <<: *ApplicationCapabilities
     OrdererGenesis:
@@ -328,7 +328,7 @@ Profiles:
         Consortiums:
             SampleConsortium:
                 Organizations:
-                - *Org1
-                - *Org2
-                - *Org3
-                - *Org4
+                - *Carbon
+                - *Users
+                - *Cetesb
+                - *Ibama
