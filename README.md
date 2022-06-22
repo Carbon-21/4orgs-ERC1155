@@ -1,12 +1,28 @@
 # CARBON21
 
 ## Como rodar
+### Rede
 ```
 git clone https://github.com/marques-ma/4orgs-ERC1155.git
 cd 4orgs-ERC1155
 ./init
 ```
-Nota: o script init irá matar qualquer docker ativo.
+*Nota: o script init irá matar qualquer docker ativo.*
+<br><br>
+
+### API
+```
+cd api-2.0
+npm install
+sudo npm install -g nodemon
+nodemon app.js
+```
+*Nota: os passos 2 e 3 não são necessários se já foram feitos antes.*
+<br><br>
+
+## TODO
+- [ ] Remover vulnerabilidades da API
+<br><br>
 
 ## FabricNetwork-2.x
 @MAM: Usei ref abaixo como base, acrescentando uma quarta organização. 
