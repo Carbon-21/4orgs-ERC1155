@@ -1,5 +1,5 @@
 {
-    "name": "first-network-orgusers",
+    "name": "first-network-users",
     "version": "1.0.0",
     "client": {
         "organization": "users",

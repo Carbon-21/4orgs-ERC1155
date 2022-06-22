@@ -9,9 +9,10 @@ const util = require('util');
 
 const getCCP = async (org) => {
     let ccpPath = null;
-    org == 'Org1' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json') : null
-    org == 'Org2' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org2.json') : null
-    org == 'Org3' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org3.json') : null
+    org == 'Carbon' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-carbon.json') : null
+    org == 'Users' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-users.json') : null
+    org == 'Cetesb' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-cetesb.json') : null
+    org == 'Ibama' ? ccpPath = path.resolve(__dirname, '..', 'config', 'connection-ibama.json') : null
     const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
     const ccp = JSON.parse(ccpJSON);
     return ccp
@@ -19,26 +20,28 @@ const getCCP = async (org) => {
 
 const getCaUrl = async (org, ccp) => {
     let caURL = null
-    org == 'Org1' ? caURL = ccp.certificateAuthorities['ca.org1.example.com'].url : null
-    org == 'Org2' ? caURL = ccp.certificateAuthorities['ca.org2.example.com'].url : null
-    org == 'Org3' ? caURL = ccp.certificateAuthorities['ca.org3.example.com'].url : null
+    org == 'Carbon' ? caURL = ccp.certificateAuthorities['ca.carbon.example.com'].url : null
+    org == 'Users' ? caURL = ccp.certificateAuthorities['ca.users.example.com'].url : null
+    org == 'Cetesb' ? caURL = ccp.certificateAuthorities['ca.cetesb.example.com'].url : null
+    org == 'Ibama' ? caURL = ccp.certificateAuthorities['ca.ibama.example.com'].url : null
     return caURL
 
 }
 
 const getWalletPath = async (org) => {
     let walletPath = null
-    org == 'Org1' ? walletPath = path.join(process.cwd(), 'org1-wallet') : null
-    org == 'Org2' ? walletPath = path.join(process.cwd(), 'org2-wallet') : null
-    org == 'Org3' ? walletPath = path.join(process.cwd(), 'org3-wallet') : null
+    org == 'Carbon' ? walletPath = path.join(process.cwd(), 'carbon-wallet') : null
+    org == 'Users' ? walletPath = path.join(process.cwd(), 'users-wallet') : null
+    org == 'Cetesb' ? walletPath = path.join(process.cwd(), 'cetesb-wallet') : null
+    org == 'Ibama' ? walletPath = path.join(process.cwd(), 'ibama-wallet') : null
     return walletPath
 }
 
 
 const getAffiliation = async (org) => {
-    // Default in ca config file we have only two affiliations, if you want ti use org3 ca, you have to update config file with third affiliation
-    //  Here already two Affiliation are there, using i am using "org2.department1" even for org3
-    return org == "Org1" ? 'org1.department1' : 'org2.department1'
+    // Default in ca config file we have only two affiliations, if you want ti use cetesb ca, you have to update config file with third affiliation
+    //  Here already two Affiliation are there, using i am using "users.department1" even for cetesb
+    return org == "Carbon" ? 'carbon.department1' : 'users.department1'
 }
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -78,7 +81,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     try {
         // Register the user, enroll the user, and import the new identity into the wallet.
         secret = await ca.register({ affiliation: await getAffiliation(userOrg), enrollmentID: username, role: 'client' }, adminUser);
-        // const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
+        // const secret = await ca.register({ affiliation: 'carbon.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
 
     } catch (error) {
         return error.message
@@ -121,17 +124,19 @@ const isUserRegistered = async (username, userOrg) => {
 
 const getCaInfo = async (org, ccp) => {
     let caInfo = null
-    org == 'Org1' ? caInfo = ccp.certificateAuthorities['ca.org1.example.com'] : null
-    org == 'Org2' ? caInfo = ccp.certificateAuthorities['ca.org2.example.com'] : null
-    org == 'Org3' ? caInfo = ccp.certificateAuthorities['ca.org3.example.com'] : null
+    org == 'Carbon' ? caInfo = ccp.certificateAuthorities['ca.carbon.example.com'] : null
+    org == 'Users' ? caInfo = ccp.certificateAuthorities['ca.users.example.com'] : null
+    org == 'Cetesb' ? caInfo = ccp.certificateAuthorities['ca.cetesb.example.com'] : null
+    org == 'Ibama' ? caInfo = ccp.certificateAuthorities['ca.ibama.example.com'] : null
     return caInfo
 }
 
 const getOrgMSP = (org) => {
     let orgMSP = null
-    org == 'Org1' ? orgMSP = 'Org1MSP' : null
-    org == 'Org2' ? orgMSP = 'Org2MSP' : null
-    org == 'Org3' ? orgMSP = 'Org3MSP' : null
+    org == 'Carbon' ? orgMSP = 'CarbonMSP' : null
+    org == 'Users' ? orgMSP = 'UsersMSP' : null
+    org == 'Cetesb' ? orgMSP = 'CetesbMSP' : null
+    org == 'Ibama' ? orgMSP = 'IbamaMSP' : null
     return orgMSP
 
 }
@@ -139,7 +144,7 @@ const getOrgMSP = (org) => {
 const enrollAdmin = async (org, ccp) => {
     console.log('calling enroll Admin method')
     try {
-        const caInfo = await getCaInfo(org, ccp) //ccp.certificateAuthorities['ca.org1.example.com'];
+        const caInfo = await getCaInfo(org, ccp) //ccp.certificateAuthorities['ca.carbon.example.com'];
         const caTLSCACerts = caInfo.tlsCACerts.pem;
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
@@ -211,7 +216,7 @@ const registerAndGerSecret = async (username, userOrg) => {
     try {
         // Register the user, enroll the user, and import the new identity into the wallet.
         secret = await ca.register({ affiliation: await getAffiliation(userOrg), enrollmentID: username, role: 'client' }, adminUser);
-        // const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
+        // const secret = await ca.register({ affiliation: 'carbon.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
         const enrollment = await ca.enroll({
             enrollmentID: username,
             enrollmentSecret: secret
