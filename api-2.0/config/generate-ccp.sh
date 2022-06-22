@@ -15,27 +15,36 @@ function json_ccp {
         ./ccp-template.json
 }
 
-ORG=1
+ORG=carbon
 P0PORT=7051
 CAPORT=7054
-PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/tlscacerts/tls-localhost-7054-ca-org1-example-com.pem
-CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/org1.example.com/msp/tlscacerts/ca.crt
+PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/peers/peer0.carbon.example.com/tls/tlscacerts/tls-localhost-7054-ca-carbon-example-com.pem
+CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/msp/tlscacerts/ca.crt
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM )" > connection-org1.json
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM )" > connection-carbon.json
 
-ORG=2
+ORG=users
 P0PORT=9051
 CAPORT=8054
-PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/tlscacerts/tls-localhost-8054-ca-org2-example-com.pem
-CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/org2.example.com/msp/tlscacerts/ca.crt
+PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/peers/peer0.users.example.com/tls/tlscacerts/tls-localhost-8054-ca-users-example-com.pem
+CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/msp/tlscacerts/ca.crt
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-org2.json
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-users.json
 
-ORG=3
+ORG=cetesb
 P0PORT=11051
 CAPORT=10054
-PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/tlscacerts/tls-localhost-10054-ca-org3-example-com.pem
-CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/org3.example.com/msp/tlscacerts/ca.crt
+PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/cetesb.example.com/peers/peer0.cetesb.example.com/tls/tlscacerts/tls-localhost-10054-ca-cetesb-example-com.pem
+CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/cetesb.example.com/msp/tlscacerts/ca.crt
 
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-org3.json
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-cetesb.json
+
+ORG=ibama
+P0PORT=13051
+CAPORT=11054
+PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/ibama.example.com/peers/peer0.ibama.example.com/tls/tlscacerts/tls-localhost-11054-ca-ibama-example-com.pem
+CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/ibama.example.com/msp/tlscacerts/ca.crt
+
+
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-ibama.json

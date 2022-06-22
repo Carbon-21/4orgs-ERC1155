@@ -3,7 +3,7 @@
     "port": "4000",
     "jwt_expiretime": "36000",
     "channelName": "mychannel",
-    "CC_SRC_PATH": "../artifacts",
+    "CC_SRC_PATH": "../artifacts/src/github.com/erc1155",
     "eventWaitTime": "30000",
     "admins": [
         {
