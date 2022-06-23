@@ -7,7 +7,9 @@ git clone https://github.com/marques-ma/4orgs-ERC1155.git
 cd 4orgs-ERC1155
 ./init
 ```
+Digite y quando prontificado.<br>
 *Nota: o script init irá matar qualquer docker ativo.*
+
 <br><br>
 
 ### API
@@ -22,6 +24,7 @@ nodemon app.js
 
 ## TODO
 - [ ] Remover vulnerabilidades da API
+- [ ] Documentar instalação dos pré-requisitos
 <br><br>
 
 ## FabricNetwork-2.x
