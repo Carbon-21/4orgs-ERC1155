@@ -5,6 +5,7 @@
 ```
 git clone https://github.com/marques-ma/4orgs-ERC1155.git
 cd 4orgs-ERC1155
+chmod +x init
 ./init
 ```
 Digite y quando prontificado.<br>
