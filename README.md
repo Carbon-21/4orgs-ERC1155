@@ -8,7 +8,7 @@ cd 4orgs-ERC1155
 chmod +x init
 ./init
 ```
-Digite y quando prontificado.<br>
+Digite y quando prontificado!<br>
 *Nota: o script init irá matar qualquer docker ativo.*
 
 <br><br>
