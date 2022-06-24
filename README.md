@@ -9,7 +9,7 @@ chmod +x init
 ./init
 ```
 Digite y quando prontificado.<br>
-*Nota: o script init irá matar qualquer docker ativo.*
+*Nota: o script init irá matar qualquer docker ativo!*
 
 <br><br>
 
