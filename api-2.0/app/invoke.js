@@ -40,8 +40,8 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.
         // Instead create separate function and call it once server started, it will keep listening.
-        // await contract.addContractListener(contractListener);
-        // await network.addBlockListener(blockListener);
+        await contract.addContractListener(contractListener);
+        await network.addBlockListener(blockListener);
 
 
         // Multiple smartcontract in one chaincode
@@ -49,17 +49,13 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         let message;
 
         switch (fcn) {
-            case "CreateCar":
-                result = await contract.submitTransaction('SmartContract:'+fcn, args[0]);
+            case "Mint":
+                result = await contract.submitTransaction('SmartContract:'+fcn, args[0], args[1], args[2]);
+                console.log(result.toString())
                 result = {txid: result.toString()}
                 break;
-            case "UpdateCarOwner":
-                console.log("=============")
-                result = await contract.submitTransaction('SmartContract:'+fcn, args[0], args[1]);
-                result = {txid: result.toString()}
-                break;
-            case "CreateDocument":
-                result = await contract.submitTransaction('DocumentContract:'+fcn, args[0]);
+            case "TransferFrom":
+                result = await contract.submitTransaction('SmartContract:'+fcn, args[0], args[1], args[2], args[3]);
                 console.log(result.toString())
                 result = {txid: result.toString()}
                 break;

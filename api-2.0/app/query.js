@@ -30,6 +30,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
             console.log('Run the registerUser.js application before retrying');
             return;
         }
+        // console.log(identity)
 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
@@ -45,19 +46,18 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         let result;
 
         switch (fcn) {
-            case "GetDocumentUsingCarContract":
+            case "BalanceOf":
                 console.log("=============")
-                result = await contract.evaluateTransaction('SmartContract:'+fcn, args[0]);
+                result = await contract.evaluateTransaction('SmartContract:'+fcn, args[0], args[1]);
                 break;
-            case "GetHistoryForAsset":
-            case "GetCarById":
+            case "ClientAccountBalance":
                 console.log("=============")
                 result = await contract.evaluateTransaction('SmartContract:'+fcn, args[0]);
                 break;
             default:
                 break;
         }
-
+        
         console.log(result)
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
 
