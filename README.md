@@ -29,7 +29,7 @@ _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 
 ## TODO
 
-- [x] Remover vulnerabilidades da API
+- [ ] Remover vulnerabilidades da API
 - [ ] Documentar instalação dos pré-requisitos
       <br><br>
 
