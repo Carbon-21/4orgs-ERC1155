@@ -13,7 +13,7 @@ chmod +x init
 
 Nota: o script init irá matar qualquer docker ativo!
 
-<br><br>
+<br>
 
 ### API
 
