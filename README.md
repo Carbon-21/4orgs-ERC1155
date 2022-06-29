@@ -29,7 +29,7 @@ nodemon app.js
 
 ```
 git clone --single-branch -b <BranchName> <link do repositório>
-git push -u origin <BranchName>
+git push origin <BranchName>
 ```
 
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
