@@ -17,8 +17,8 @@ const { sign, verify, decode } = require("jsonwebtoken");
 // };
 
 //IMPORTANT: if you change the expiration date, change it on client side too (auth-hook.js)
-exports.createJWT = (username, orgName, expiration = "7d") => {
-  const token = sign({ username, orgName }, "supersecreeeet_dont_share", {
+exports.createJWT = (username, org, expiration = "7d") => {
+  const token = sign({ username, org }, "supersecreeeet_dont_share", {
     expiresIn: expiration,
   });
   return token;

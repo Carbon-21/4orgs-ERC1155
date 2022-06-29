@@ -117,7 +117,7 @@ csr:
       O: Hyperledger
       OU: Fabric
   hosts:
-    - yk-note2
+    - danshee
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server

@@ -23,11 +23,11 @@ npm install
 sudo npm install -g nodemon
 nodemon app.js
 ```
+
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 <br><br>
 
 ### Branch
-
 
 ```
 git clone --single-branch -b <BranchName> <link do repositório>
@@ -36,25 +36,23 @@ git push origin <BranchName>
 
 ## TODO
 
-- [ ] Remover vulnerabilidades da API
+- [x] Remover vulnerabilidades da API
 - [ ] Documentar instalação dos pré-requisitos
       <br><br>
 
 # NOTAS
 
 - Pacotes node modificados
-
   - npm: removido (vulnerável / inútil)
   - fabric-common: ^ adicionado (vulnerável)
   - fabric-client: removido (inútil / vulnerável)
   - save: removido (inútil)
   - js-yaml: removido (inútil)
   - axios: removido (inútil)
-
-  - http: a ser removido (inutilizado)
-  - express-bearer-token: a ser removido (inutilizado)
-  - cors: a ser removido (inutilizado)
-  - express-jwt: a ser removido (inutilizado / vulnerável)
+  - http: removido (inutilizado)
+  - express-bearer-token:removido (inutilizado)
+  - cors: removido (inutilizado)
+  - express-jwt:removido (inutilizado / vulnerável)
 
 ## FabricNetwork-2.x
 

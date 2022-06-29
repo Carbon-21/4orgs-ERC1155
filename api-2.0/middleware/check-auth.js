@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
     //pass user info to next middleware
     req.jwt = {
       username: decodedToken.username,
-      orgName: decodedToken.orgName,
+      org: decodedToken.org,
     };
 
     next();

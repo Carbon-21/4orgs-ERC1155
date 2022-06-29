@@ -1,66 +1,59 @@
-// const express = require("express");
-// const expressJWT = require("express-jwt");
-// const jwt = require("jsonwebtoken");
-// const bearerToken = require("express-bearer-token");
-// const cors = require("cors");
-
-// const constants = require("../config/constants.json");
-// const helper = require("../app/helper");
 const invoke = require("../app/invoke");
-// const qscc = require("../app/qscc");
 const query = require("../app/query");
 const logger = require("../util/logger");
-// const auth = require("../util/auth");
-// const HttpError = require("../util/http-error");
 
 // TODO mover
-function getErrorMessage(field) {
-  var response = {
-    success: false,
-    message: field + " field is missing or Invalid in the request",
-  };
-  return response;
-}
+// function getErrorMessage(field) {
+//   var response = {
+//     success: false,
+//     message: field + " field is missing or Invalid in the request",
+//   };
+//   return response;
+// }
 
 // Invoke transaction on chaincode on target peers
 exports.invoke = async (req, res, next) => {
   try {
     logger.debug("==================== INVOKE ON CHAINCODE ==================");
-    var peers = req.body.peers;
-    var chaincodeName = req.params.chaincodeName;
-    var channelName = req.params.channelName;
-    var fcn = req.body.fcn;
-    var args = req.body.args;
-    var transient = req.body.transient;
+
+    const chaincodeName = req.params.chaincodeName;
+    const channelName = req.params.channelName;
+    const fcn = req.body.fcn;
+    const args = req.body.args;
+    const peers = req.body.peers;
+    const transient = req.body.transient;
+    const username = req.jwt.username;
+    const org = req.jwt.org;
+
     console.log(`Transient data is ;${transient}`);
     logger.debug("channelName  : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn  : " + fcn);
     logger.debug("args  : " + args);
-    if (!chaincodeName) {
-      res.json(getErrorMessage("'chaincodeName'"));
-      return;
-    }
-    if (!channelName) {
-      res.json(getErrorMessage("'channelName'"));
-      return;
-    }
-    if (!fcn) {
-      res.json(getErrorMessage("'fcn'"));
-      return;
-    }
-    if (!args) {
-      res.json(getErrorMessage("'args'"));
-      return;
-    }
+    // if (!chaincodeName) {
+    //   res.json(getErrorMessage("'chaincodeName'"));
+    //   return;
+    // }
+    // if (!channelName) {
+    //   res.json(getErrorMessage("'channelName'"));
+    //   return;
+    // }
+    // if (!fcn) {
+    //   res.json(getErrorMessage("'fcn'"));
+    //   return;
+    // }
+    // if (!args) {
+    //   res.json(getErrorMessage("'args'"));
+    //   return;
+    // }
 
     let message = await invoke.invokeTransaction(
       channelName,
       chaincodeName,
       fcn,
       args,
-      req.username,
-      req.orgname,
+      username,
+      org,
       transient
     );
     console.log(`message result is : ${message}`);
@@ -84,51 +77,43 @@ exports.invoke = async (req, res, next) => {
 exports.query = async (req, res, next) => {
   try {
     logger.debug("==================== QUERY BY CHAINCODE ==================");
-    console.log("JWT:");
-    console.log(req.jwt.username, req.jwt.orgName);
-    console.log("Body:");
-    console.log(req.body);
-    var channelName = req.params.channelName;
-    var chaincodeName = req.params.chaincodeName;
-    console.log(`chaincode name is :${chaincodeName}`);
-    let args = req.query.args;
-    let fcn = req.query.fcn;
-    let peer = req.query.peer;
 
+    const channelName = req.params.channelName;
+    const chaincodeName = req.params.chaincodeName;
+    let args = req.query.args;
+    const fcn = req.query.fcn;
+    const peer = req.query.peer;
+    const username = req.jwt.username;
+    const org = req.jwt.org;
+
+    console.log(`chaincode name is :${chaincodeName}`);
     logger.debug("channelName : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn : " + fcn);
     logger.debug("args : " + args);
 
-    if (!chaincodeName) {
-      res.json(getErrorMessage("'chaincodeName'"));
-      return;
-    }
-    if (!channelName) {
-      res.json(getErrorMessage("'channelName'"));
-      return;
-    }
-    if (!fcn) {
-      res.json(getErrorMessage("'fcn'"));
-      return;
-    }
-    if (!args) {
-      res.json(getErrorMessage("'args'"));
-      return;
-    }
+    // if (!chaincodeName) {
+    //   res.json(getErrorMessage("'chaincodeName'"));
+    //   return;
+    // }
+    // if (!channelName) {
+    //   res.json(getErrorMessage("'channelName'"));
+    //   return;
+    // }
+    // if (!fcn) {
+    //   res.json(getErrorMessage("'fcn'"));
+    //   return;
+    // }
+    // if (!args) {
+    //   res.json(getErrorMessage("'args'"));
+    //   return;
+    // }
     console.log("args==========", args);
     args = args.replace(/'/g, '"');
     args = JSON.parse(args);
     logger.debug(args);
 
-    let message = await query.query(
-      channelName,
-      chaincodeName,
-      args,
-      fcn,
-      req.username,
-      req.orgname
-    );
+    let message = await query.query(channelName, chaincodeName, args, fcn, username, org);
 
     const response_payload = {
       result: message,
@@ -194,7 +179,7 @@ exports.query = async (req, res, next) => {
 //         args,
 //         fcn,
 //         req.username,
-//         req.orgname
+//         req.org
 //       );
 
 //       // const response_payload = {

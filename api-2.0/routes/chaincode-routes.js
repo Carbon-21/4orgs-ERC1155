@@ -1,10 +1,9 @@
 const { Router } = require("express");
-// const { body } = require("express-validator");
+const { body, query, param } = require("express-validator");
 
-// const { validateAll } = require("../util/validation");
+const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
 const chaincodeController = require("../controllers/chaincode-controller.js");
-// const fileUpload = require("../middleware/file-upload");
 
 const router = Router();
 
@@ -15,10 +14,25 @@ router.use(checkAuth);
 
 router.get(
   "/channels/:channelName/chaincodes/:chaincodeName",
+  [
+    param("channelName").not().isEmpty(),
+    param("chaincodeName").not().isEmpty(),
+    query("fcn").not().isEmpty(),
+    query("args").not().isEmpty(),
+    validateAll,
+  ],
   chaincodeController.query
 );
+
 router.post(
   "/channels/:channelName/chaincodes/:chaincodeName",
+  [
+    param("channelName").not().isEmpty(),
+    param("chaincodeName").not().isEmpty(),
+    body("fcn").not().isEmpty(),
+    body("args").not().isEmpty(),
+    validateAll,
+  ],
   chaincodeController.invoke
 );
 

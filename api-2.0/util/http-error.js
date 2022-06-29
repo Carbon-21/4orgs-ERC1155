@@ -1,6 +1,5 @@
 //Errors dictionary + interface to create errors (HttpError)
 
-//TODO add more languages
 class ErrorMessage {
   constructor(messagePT) {
     this.messagePT = messagePT;
@@ -10,18 +9,12 @@ class ErrorMessage {
 const notFound = new ErrorMessage(
   "Estamos com dificuldades em encontrar o que você procura. Talvez alguém do seu time tenha feito modificações por aqui... Por favor, recarregue a página."
 );
-const serverError = new ErrorMessage(
-  "Ocorreu um erro. Por favor, tente novamente."
-);
-const unauthorized = new ErrorMessage(
-  "Autenticação incorreta. Por favor, tente novamente."
-);
+const serverError = new ErrorMessage("Ocorreu um erro. Por favor, tente novamente.");
+const unauthorized = new ErrorMessage("Autenticação incorreta. Por favor, tente novamente.");
 const forbidden = new ErrorMessage(
   "Acesso não permitido. O líder do seu time e a equipe do FluxoTest serão notificados."
 );
-const validationError = new ErrorMessage(
-  "Dados inválidos, por favor verifique-os."
-);
+const validationError = new ErrorMessage("Dados inválidos, por favor verifique-os.");
 const conflict = new ErrorMessage(
   'Usuário já cadastrado. Por favor, realize o login ou clique em "esqueci minha senha".'
 );
