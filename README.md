@@ -44,9 +44,9 @@ _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
   - js-yaml: removido (inútil)
   - axios: removido (inútil)
 
-  - cors: analisar se tem necessidade
-  - express-bearer-token: analisar se tem necessidade
   - http: a ser removido (inutilizado)
+  - express-bearer-token: a ser removido (inutilizado)
+  - cors: a ser removido (inutilizado)
   - express-jwt: a ser removido (inutilizado / vulnerável)
 
 ## FabricNetwork-2.x

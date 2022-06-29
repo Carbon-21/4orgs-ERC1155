@@ -1,44 +1,45 @@
 "use strict";
 
-/* REQUIRES */
+/////REQUIRES/////
 //npm packages
 const express = require("express");
-const cors = require("cors");
+// const cors = require("cors");
 
 //native packages
 const bodyParser = require("body-parser");
-const http = require("http");
+// const http = require("http");
 
 //local packages
 const constants = require("./config/constants.json");
 const logger = require("./util/logger");
+const cors = require("./middleware/cors");
 
 //routes
 const authRoutes = require("./routes/auth-routes");
 const chaincodeRoutes = require("./routes/chaincode-routes");
 
-/* CONFIGS */
-//network
-const host = process.env.HOST || constants.host;
-const port = process.env.PORT || constants.port;
-
+/////CONFIGS/////
 //express
 const app = express();
 
 //cors
-app.options("*", cors()); //TODO precisa??
-app.use(cors());
+app.use(cors);
+// app.options("*", cors());
+// app.use(cors());
 
 //bodyParser
 app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    //TODO precisa?
-    extended: false,
-  })
-);
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: false,
+//   })
+// );
 
-/* JWT */
+//network
+const host = process.env.HOST || constants.host;
+const port = process.env.PORT || constants.port;
+
+/////JWT/////
 // app.set("secret", "thisismysecret");
 // app.use(
 //   expressJWT({
@@ -85,25 +86,18 @@ app.use(
 //   });
 // });
 
-/* SERVER INIT */
-//TODO semantica ultrapassada, da pra remover esse pacote http (só é usado aqui)
-var server = http.createServer(app).listen(port, function () {
+/////SERVER INIT/////
+app.listen(port, function () {
   console.log(`Server started on ${port}`);
 });
+// var server = http.createServer(app).listen(port, function () {
+//   console.log(`Server started on ${port}`);
+// });
+// server.timeout = 240000;
 logger.info("****************** SERVER STARTED ************************");
 logger.info("***************  http://%s:%s  ******************", host, port);
-server.timeout = 240000;
 
-//TODO tirar
-function getErrorMessage(field) {
-  var response = {
-    success: false,
-    message: field + " field is missing or Invalid in the request",
-  };
-  return response;
-}
-
-/* ROUTES */
+/////ROUTES/////
 app.use("/auth", authRoutes);
 app.use("/chaincode", chaincodeRoutes);
 

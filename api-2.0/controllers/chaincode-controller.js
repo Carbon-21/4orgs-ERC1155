@@ -84,7 +84,10 @@ exports.invoke = async (req, res, next) => {
 exports.query = async (req, res, next) => {
   try {
     logger.debug("==================== QUERY BY CHAINCODE ==================");
-
+    console.log("JWT:");
+    console.log(req.jwt.username, req.jwt.orgName);
+    console.log("Body:");
+    console.log(req.body);
     var channelName = req.params.channelName;
     var chaincodeName = req.params.chaincodeName;
     console.log(`chaincode name is :${chaincodeName}`);

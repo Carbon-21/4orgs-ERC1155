@@ -13,7 +13,13 @@ const router = Router();
 /////AUTHENTICATED ROUTES/////
 router.use(checkAuth);
 
-router.post("/invoke", chaincodeController.invoke);
-router.post("/query", chaincodeController.query);
+router.get(
+  "/channels/:channelName/chaincodes/:chaincodeName",
+  chaincodeController.query
+);
+router.post(
+  "/channels/:channelName/chaincodes/:chaincodeName",
+  chaincodeController.invoke
+);
 
 module.exports = router;

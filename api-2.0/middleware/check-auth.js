@@ -21,7 +21,7 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, "supersecreeeet_dont_share");
 
     //pass user info to next middleware
-    req.userData = {
+    req.jwt = {
       username: decodedToken.username,
       orgName: decodedToken.orgName,
     };
