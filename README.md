@@ -23,17 +23,15 @@ npm install
 sudo npm install -g nodemon
 nodemon app.js
 ```
+_Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
+<br><br>
 
 ### Branch
-
 
 ```
 git clone --single-branch -b <BranchName> <link do repositório>
 git push origin <BranchName>
 ```
-
-_Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
-<br><br>
 
 ## TODO
 
