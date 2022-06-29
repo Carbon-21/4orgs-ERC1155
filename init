@@ -1,17 +1,19 @@
 #!/bin/bash
 
+###### KILL ######
 kill-hlf () {
 	docker-compose down 
 	containers=$(docker ps -q) && docker kill $containers
-	docker network prune && docker volume prune
+	docker network prune -f && docker volume prune -f
 }
 
-#kill other dockers 
+# #kill other dockers 
 cd artifacts
 kill-hlf
 cd channel/create-certificate-with-ca
 kill-hlf
 
+###### RUN ######
 #run one docker for each CA (each org has 1, incluind the orderer)
 docker-compose up -d
 sleep 15
@@ -27,7 +29,6 @@ chmod +x create-artifacts.sh
 ./create-artifacts.sh
 # exit
 
-
 #run chouchdb, orgs peers and orderers dockers
 cd ..
 docker-compose up -d
@@ -38,4 +39,4 @@ cd ..
 chmod +x createChannel.sh
 ./createChannel.sh
 chmod +x deployChaincode.sh
-./deployChaincode.sh #faiou
+./deployChaincode.sh
