@@ -11,7 +11,7 @@ chmod +x init
 ./init
 ```
 
-Nota: o script init irá matar qualquer docker ativo!
+Nota: o script init irá matar qualquer docker ativo.
 
 <br>
 
