@@ -1,5 +1,5 @@
 #!/bin/bash
-#push to current branch
+#push changes to current branch
 
 #get commit message stop execution if it was not provided
 msg=$1
