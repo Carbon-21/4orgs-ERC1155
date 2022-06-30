@@ -1,0 +1,18 @@
+#!/bin/bash
+#push changes to current branch
+
+#get commit message stop execution if it was not provided
+msg=$1
+if [ $# -eq 0 ]; then
+    echo "Please provide a commit message, as in:"
+    echo "./git-push 'inclusão do campo X na chamada Y'"
+    exit 1
+fi
+
+#prepare to push
+git add -A
+git commit -m "$msg"
+
+#get current branch and push to it
+branch=$(git rev-parse --abbrev-ref HEAD)
+git push origin $branch

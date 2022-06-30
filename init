@@ -1,5 +1,10 @@
 #!/bin/bash
 
+###### +X ######
+chmod +x kill;
+chmod +x git-branch;
+chmod +x git-push;
+
 ###### KILL ######
 kill-hlf () {
 	docker-compose down 
