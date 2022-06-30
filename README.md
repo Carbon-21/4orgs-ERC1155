@@ -46,13 +46,13 @@ Para dar push direto para o branch em que se encontra:
 ```
 _Nota: caso não tenha rodado o script ``` init ``` ainda, será preciso conceder permissão de execução aos scripts._
 <br><br>
-## TODO
+## Todo
 
 - [x] Remover vulnerabilidades da API
 - [ ] Documentar instalação dos pré-requisitos
 <br><br>
 
-## NOTAS
+## Notas
 
 - Pacotes node modificados
   - npm: removido (vulnerável / inútil)
