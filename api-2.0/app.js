@@ -1,6 +1,6 @@
 "use strict";
 
-/////REQUIRES/////
+///// REQUIRES /////
 //npm packages
 const express = require("express");
 
@@ -11,12 +11,13 @@ const bodyParser = require("body-parser");
 const constants = require("./config/constants.json");
 const logger = require("./util/logger");
 const cors = require("./middleware/cors");
+const error = require("./middleware/error");
 
 //routes
 const authRoutes = require("./routes/auth-routes");
 const chaincodeRoutes = require("./routes/chaincode-routes");
 
-/////CONFIGS/////
+///// CONFIGS /////
 //express
 const app = express();
 
@@ -30,17 +31,31 @@ app.use(bodyParser.json());
 const host = process.env.HOST || constants.host;
 const port = process.env.PORT || constants.port;
 
-/////SERVER INIT/////
-app.listen(port, function () {
-  console.log(`Server started on ${port}`);
-});
+///// ROUTES /////
+app.use("/auth", authRoutes);
+app.use("/chaincode", chaincodeRoutes);
 
+///// SERVER INIT /////
+app.listen(port);
 logger.info("****************** SERVER STARTED ************************");
 logger.info("***************  http://%s:%s  ******************", host, port);
 
-/////ROUTES/////
-app.use("/auth", authRoutes);
-app.use("/chaincode", chaincodeRoutes);
+///// ERROR MIDDLEWARE /////
+//executed if any other middleware yields an error
+app.use(error);
+
+// app.use((error, req, res, next) => {
+//   //if an response was already sent, forward it
+//   if (res.headerSent) {
+//     return next(error);
+//   }
+
+//   //get error info set on previous middleware, if any
+//   res.status(error.code || 500);
+//   res.json({
+//     message: error.message || "Ocorreu um erro. Por favor, tente novamente.",
+//   });
+// });
 
 // Login and get jwt
 // TODO acertar esse middleware e o de signup pra fazerem sentido de fato kkk

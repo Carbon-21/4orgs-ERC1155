@@ -7,15 +7,16 @@ const authController = require("../controllers/auth-crontroller.js");
 
 const router = Router();
 
-////UNAUTHENTICATED ROUTES////
+//// UNAUTHENTICATED ROUTES ////
 router.post(
   "/signup",
   [body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
   authController.signup
 );
+
 //TODO login middleware
 
-/////AUTHENTICATED ROUTES/////
+///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
 
 module.exports = router;
