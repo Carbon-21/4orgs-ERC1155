@@ -2,16 +2,6 @@ const invoke = require("../app/invoke");
 const query = require("../app/query");
 const logger = require("../util/logger");
 
-// TODO mover
-// function getErrorMessage(field) {
-//   var response = {
-//     success: false,
-//     message: field + " field is missing or Invalid in the request",
-//   };
-//   return response;
-// }
-
-// Invoke transaction on chaincode on target peers
 exports.invoke = async (req, res, next) => {
   try {
     logger.debug("==================== INVOKE ON CHAINCODE ==================");
@@ -30,22 +20,6 @@ exports.invoke = async (req, res, next) => {
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn  : " + fcn);
     logger.debug("args  : " + args);
-    // if (!chaincodeName) {
-    //   res.json(getErrorMessage("'chaincodeName'"));
-    //   return;
-    // }
-    // if (!channelName) {
-    //   res.json(getErrorMessage("'channelName'"));
-    //   return;
-    // }
-    // if (!fcn) {
-    //   res.json(getErrorMessage("'fcn'"));
-    //   return;
-    // }
-    // if (!args) {
-    //   res.json(getErrorMessage("'args'"));
-    //   return;
-    // }
 
     let message = await invoke.invokeTransaction(
       channelName,
@@ -92,22 +66,6 @@ exports.query = async (req, res, next) => {
     logger.debug("fcn : " + fcn);
     logger.debug("args : " + args);
 
-    // if (!chaincodeName) {
-    //   res.json(getErrorMessage("'chaincodeName'"));
-    //   return;
-    // }
-    // if (!channelName) {
-    //   res.json(getErrorMessage("'channelName'"));
-    //   return;
-    // }
-    // if (!fcn) {
-    //   res.json(getErrorMessage("'fcn'"));
-    //   return;
-    // }
-    // if (!args) {
-    //   res.json(getErrorMessage("'args'"));
-    //   return;
-    // }
     console.log("args==========", args);
     args = args.replace(/'/g, '"');
     args = JSON.parse(args);
