@@ -2,15 +2,6 @@ const helper = require("../app/helper");
 const logger = require("../util/logger");
 const auth = require("../util/auth");
 
-// TODO mover
-// function getErrorMessage(field) {
-//   var response = {
-//     success: false,
-//     message: field + " field is missing or Invalid in the request",
-//   };
-//   return response;
-// }
-
 exports.signup = async (req, res, next) => {
   var username = req.body.username;
   var org = req.body.org;
@@ -18,15 +9,6 @@ exports.signup = async (req, res, next) => {
   logger.debug("End point : /users");
   logger.debug("User name : " + username);
   logger.debug("Org name  : " + org);
-
-  // if (!username) {
-  //   res.json(getErrorMessage("'username'"));
-  //   return;
-  // }
-  // if (!org) {
-  //   res.json(getErrorMessage("'org'"));
-  //   return;
-  // }
 
   //create jwt
   let token;
