@@ -8,11 +8,6 @@ const validateAll = (req, res, next) => {
 
   //if there are errors
   if (!errors.isEmpty()) {
-    //remove avatar, if any
-    if (req.file) {
-      fs.unlink(req.file.path, () => {});
-    }
-
     throw new HttpError(422);
   }
 

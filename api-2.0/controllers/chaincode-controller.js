@@ -15,11 +15,12 @@ exports.invoke = async (req, res, next) => {
     const username = req.jwt.username;
     const org = req.jwt.org;
 
-    console.log(`Transient data is ;${transient}`);
+    logger.debug(`transient data ;${transient}`);
     logger.debug("channelName  : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn  : " + fcn);
     logger.debug("args  : " + args);
+    logger.debug("peers  : " + peers);
 
     let message = await invoke.invokeTransaction(
       channelName,
@@ -30,7 +31,7 @@ exports.invoke = async (req, res, next) => {
       org,
       transient
     );
-    console.log(`message result is : ${message}`);
+    logger.info(`Message result is : ${JSON.stringify(message)}`);
 
     const response_payload = {
       result: message,
@@ -60,16 +61,13 @@ exports.query = async (req, res, next) => {
     const username = req.jwt.username;
     const org = req.jwt.org;
 
-    console.log(`chaincode name is :${chaincodeName}`);
     logger.debug("channelName : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn : " + fcn);
     logger.debug("args : " + args);
 
-    console.log("args==========", args);
     args = args.replace(/'/g, '"');
     args = JSON.parse(args);
-    logger.debug(args);
 
     let message = await query.query(channelName, chaincodeName, args, fcn, username, org);
 

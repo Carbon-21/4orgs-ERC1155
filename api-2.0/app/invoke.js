@@ -1,18 +1,6 @@
-const {
-  Gateway,
-  Wallets,
-  TxEventHandler,
-  GatewayOptions,
-  DefaultEventHandlerStrategies,
-  TxEventHandlerFactory,
-} = require("fabric-network");
-const fs = require("fs");
-const EventStrategies = require("fabric-network/lib/impl/event/defaulteventhandlerstrategies");
-const path = require("path");
-const log4js = require("log4js");
-const logger = log4js.getLogger("BasicNetwork");
-const util = require("util");
+const { Gateway, Wallets } = require("fabric-network");
 
+const logger = require("../util/logger");
 const helper = require("./helper");
 const { blockListener, contractListener } = require("./Listeners");
 
@@ -30,18 +18,19 @@ const invokeTransaction = async (
 
     const walletPath = await helper.getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
-    console.log(`Wallet path: ${walletPath}`);
+    logger.debug(`Wallet path: ${walletPath}`);
 
-    let identity = await wallet.get(username);
-    if (!identity) {
-      console.log(
-        `An identity for the user ${username} does not exist in the wallet, so registering user`
-      );
-      await helper.getRegisteredUser(username, org_name, true);
-      identity = await wallet.get(username);
-      console.log("Run the registerUser.js application before retrying");
-      return;
-    }
+    //pbc comentei pois achei estranho
+    // let identity = await wallet.get(username);
+    // if (!identity) {
+    //   console.log(
+    //     `An identity for the user ${username} does not exist in the wallet, so registering user`
+    //   );
+    //   await helper.getRegisteredUser(username, org_name, true);
+    //   identity = await wallet.get(username);
+    //   console.log("Run the registerUser.js application before retrying");
+    //   return;
+    // }
 
     const connectOptions = {
       wallet,
@@ -73,8 +62,8 @@ const invokeTransaction = async (
           args[0],
           args[1]
         );
-        console.log(result.toString());
-        result = { txid: result.toString() };
+        logger.info("Mint succesful");
+        result = "success";
         break;
       case "TransferFrom":
         result = await contract.submitTransaction(
@@ -84,7 +73,7 @@ const invokeTransaction = async (
           args[1],
           args[2]
         );
-        console.log(result.toString());
+        logger.info("Transfer succesful");
         result = { txid: result.toString() };
         break;
       default:
@@ -102,7 +91,7 @@ const invokeTransaction = async (
 
     return response;
   } catch (error) {
-    console.log(`Getting error: ${error}`);
+    logger.error(`Getting error: ${error}`);
     return error.message;
   }
 };

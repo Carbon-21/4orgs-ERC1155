@@ -1,4 +1,5 @@
 //Errors dictionary + interface to create errors (HttpError)
+const logger = require("./logger");
 
 class ErrorMessage {
   constructor(messagePT) {
@@ -37,7 +38,7 @@ class HttpError extends Error {
     //add code property
     this.code = code;
 
-    console.log(message);
+    logger.error(code, codes[code].messagePT);
   }
 }
 

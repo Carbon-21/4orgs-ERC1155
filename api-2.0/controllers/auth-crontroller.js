@@ -7,22 +7,24 @@ exports.signup = async (req, res, next) => {
   var org = req.body.org;
 
   logger.debug("End point : /users");
-  logger.debug("User name : " + username);
-  logger.debug("Org name  : " + org);
+  logger.debug("Username: " + username);
+  logger.debug("Org: " + org);
 
   //create jwt
   let token;
   token = auth.createJWT(username, org);
 
+  //attemp to register user
   let response = await helper.registerAndGerSecret(username, org);
 
+  //response
   logger.debug("-- returned from registering the username %s for organization %s", username, org);
   if (response && typeof response !== "string") {
-    logger.debug("Successfully registered the username %s for organization %s", username, org);
+    logger.info("Successfully registered the username %s for organization %s", username, org);
     response.token = token;
     res.json(response);
   } else {
-    logger.debug(
+    logger.error(
       "Failed to register the username %s for organization %s with::%s",
       username,
       org,

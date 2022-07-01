@@ -7,9 +7,9 @@ const chaincodeController = require("../controllers/chaincode-controller.js");
 
 const router = Router();
 
-////UNAUTHENTICATED ROUTES////
+//// UNAUTHENTICATED ROUTES ////
 
-/////AUTHENTICATED ROUTES/////
+///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
 
 router.get(

@@ -3,14 +3,17 @@
 ## Como rodar
 
 ### Rede
+
 Para subir a rede:
+
 ```
 git clone --single-branch -b develop https://github.com/marques-ma/4orgs-ERC1155.git
 cd 4orgs-ERC1155
 chmod +x init
 ./init
 ```
-_Nota: o script init irá matar qualquer docker previamente ativo._
+
+_Nota: o script init irá matar qualquer docker previamente ativo!_
 
 <br>
 Para matar a rede, sem subir uma nova:
@@ -22,18 +25,23 @@ Para matar a rede, sem subir uma nova:
 <br>
 
 ### API
+
 Para subir a api:
+
 ```
 cd api-2.0
 npm install
 sudo npm install -g nodemon
-nodemon app.js
+nodemon
 ```
+
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 <br><br>
 
 ### Git
+
 Para atualizar os arquivos locais (pull) e criar um novo branch para trabalhar:
+
 ```
 ./git-branch <nome_do_branch>
 ```
@@ -41,16 +49,19 @@ Para atualizar os arquivos locais (pull) e criar um novo branch para trabalhar:
 <br>
 
 Para dar push direto para o branch em que se encontra:
+
 ```
 ./git-push <mensagem_de_commit>
 ```
-_Nota: caso não tenha rodado o script ``` init ``` ainda, será preciso conceder permissão de execução aos scripts._
+
+_Nota: caso não tenha rodado o script `init` ainda, será preciso conceder permissão de execução aos scripts._
 <br><br>
+
 ## Todo
 
 - [x] Remover vulnerabilidades da API
 - [ ] Documentar instalação dos pré-requisitos
-<br><br>
+      <br><br>
 
 ## Notas
 
@@ -65,7 +76,8 @@ _Nota: caso não tenha rodado o script ``` init ``` ainda, será preciso concede
   - express-bearer-token:removido (inutilizado)
   - cors: removido (inutilizado)
   - express-jwt:removido (inutilizado / vulnerável)
-<br><br>
+    <br><br>
+
 ## FabricNetwork-2.x
 
 @MAM: Usei ref abaixo como base, acrescentando uma quarta organização.
