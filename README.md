@@ -13,7 +13,7 @@ chmod +x init
 ./init
 ```
 
-_Nota: o script init irá matar qualquer docker previamente ativo._
+_Nota: o script init irá matar qualquer docker previamente ativo!_
 
 <br>
 Para matar a rede, sem subir uma nova:
