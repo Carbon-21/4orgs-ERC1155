@@ -7,7 +7,7 @@
 Para subir a rede:
 
 ```
-git clone --single-branch -b develop https://github.com/marques-ma/4orgs-ERC1155.git
+git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
 chmod +x init
 ./init
