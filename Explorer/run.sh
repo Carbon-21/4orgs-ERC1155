@@ -1,4 +1,25 @@
-{
+#!/bin/bash
+
+cDir=${PWD}/../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore
+# Main extraction:
+allFile=`ls $cDir`
+echo;
+
+# Checking if the last value of the path is '/' or not:
+if [[ ${cDir: -1} != '/' ]]; then
+	cDir+='/'
+fi
+
+# Iterating over everything in the folder
+for item in $allFile; do
+	# Appending path to each file:
+	item="$cDir$item"
+	# Checking if current item is a file:
+	if [[ -f $item ]]; then
+		filename=`ls $item | rev | cut -d '/' -f 1 | rev`
+	fi
+done
+echo '{
 	"name": "first network (ignored)",
 	"version": "1.0.0",
 	"license": "Apache-2.0",
@@ -34,7 +55,7 @@
 		"CarbonMSP": {
 			"mspid": "CarbonMSP",
 			"adminPrivateKey": {
-				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/a617bd72f31dc0c691d714f94da22ce48098aabf353ca34e0efa0b462af7e2fe_sk"
+				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/'$filename'"
 			},
 			"peers": [
 				"peer0.carbon.example.com"
@@ -56,4 +77,6 @@
 			}
 		}
 	}
-}
+}' >${PWD}/connection-profile/first-network_2.2.json
+
+docker-compose up -d
