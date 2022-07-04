@@ -68,7 +68,7 @@ cd Explorer
 ./run.sh
 ```
 
-_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
+_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com exploreradmin/exploreradminpw_
 
 <br><br>
 ## Identificação do Operador
