@@ -21,6 +21,7 @@ exports.invoke = async (req, res, next) => {
     logger.debug("fcn  : " + fcn);
     logger.debug("args  : " + args);
     logger.debug("peers  : " + peers);
+    logger.debug("username  : " + username);
 
     let message = await invoke.invokeTransaction(
       channelName,

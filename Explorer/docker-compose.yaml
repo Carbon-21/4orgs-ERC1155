@@ -4,9 +4,6 @@ volumes:
   data:
   walletstore:
 
-networks:
-  test:
-
 services:
   explorerdb.mynetwork.com:
     image: hyperledger/explorer-db:latest
@@ -24,10 +21,10 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
     networks:
-      - test
+      - artifacts_test
 
   explorer.mynetwork.com:
-    image: hyperledger/explorer:1.1.0
+    image: hyperledger/explorer:1.1.1
     container_name: explorer.mynetwork.com
     hostname: explorer.mynetwork.com
     environment:
@@ -53,4 +50,8 @@ services:
       explorerdb.mynetwork.com:
         condition: service_healthy
     networks:
-      - test
+      - artifacts_test
+      
+networks:
+  artifacts_test:
+    external: true

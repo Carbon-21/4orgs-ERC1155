@@ -8,7 +8,9 @@ kill-hlf () {
 }
 
 # #kill other dockers 
-cd artifacts
+cd Explorer
+kill-hlf
+cd ../artifacts
 kill-hlf
 cd channel/create-certificate-with-ca
 kill-hlf
