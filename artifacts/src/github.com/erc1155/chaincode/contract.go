@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"encoding/base64"
+	"regexp"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -120,20 +122,31 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 		return err
 	}
 
+	
 	// Get ID of submitting client identity
+	// Retrieve cert details in base64 
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return fmt.Errorf("failed to get client id: %v", err)
 	}
 
+	// Decode received data
+	decodedx509, err := base64.StdEncoding.DecodeString(operator)
+	if err != nil {
+		fmt.Errorf("error:", err)
+	}
+	// Extract Common Name from data
+	re := regexp.MustCompile("CN=([^,]+)")
+    commonname := re.FindStringSubmatch(string(decodedx509))
+
 	// Mint tokens
-	err = mintHelper(ctx, operator, account, id, amount)
+	err = mintHelper(ctx, commonname[1], account, id, amount)
 	if err != nil {
 		return err
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
+	transferSingleEvent := TransferSingle{commonname[1], "0x0", account, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
@@ -253,14 +266,24 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Get ID of submitting client identity
+	// Retrieve cert details in base64 
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return fmt.Errorf("failed to get client id: %v", err)
 	}
 
+	// Decode received data
+	decodedx509, err := base64.StdEncoding.DecodeString(operator)
+	if err != nil {
+		fmt.Errorf("error:", err)
+	}
+	// Extract Common Name from data
+	re := regexp.MustCompile("CN=([^,]+)")
+    commonname := re.FindStringSubmatch(string(decodedx509))
+
 	// Check whether operator is owner or approved
-	if operator != sender {
-		approved, err := _isApprovedForAll(ctx, sender, operator)
+	if commonname[1] != sender {
+		approved, err := _isApprovedForAll(ctx, sender, commonname[1])
 		if err != nil {
 			return err
 		}
@@ -270,7 +293,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Withdraw the funds from the sender address
-	err = removeBalance(ctx, sender, []uint64{id}, []uint64{amount})
+	err = removeBalance(ctx, commonname[1], []uint64{id}, []uint64{amount})
 	if err != nil {
 		return err
 	}
@@ -280,13 +303,13 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Deposit the fund to the recipient address
-	err = addBalance(ctx, sender, recipient, id, amount)
+	err = addBalance(ctx, commonname[1], recipient, id, amount)
 	if err != nil {
 		return err
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, sender, recipient, id, amount}
+	transferSingleEvent := TransferSingle{operator, commonname[1], recipient, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
