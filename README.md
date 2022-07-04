@@ -1,5 +1,8 @@
 # CARBON21
 
+## OBS IMPORTANTE:
+Necessário corrigir a identificação dos atores: o uso temporário do Common Name é só um remendo para executar com sucesso as funções de transferência. Contudo a falta de mais detalhes sobre o ID resulta em bugs (e.g. se tem dois users em orgs diferentes com o mesmo CN, ambos recebem a transferência). Solução adequada aqui é não utilizarmos o username na API, e sim o ClientID (ver mais em https://github.com/hyperledger/fabric-samples/tree/main/token-erc-1155). 
+
 ## Como rodar
 
 ### Rede
