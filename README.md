@@ -57,6 +57,21 @@ Para dar push direto para o branch em que se encontra:
 _Nota: caso não tenha rodado o script `init` ainda, será preciso conceder permissão de execução aos scripts._
 <br><br>
 
+<br>
+
+### Blockchain explorer
+
+Para executar o blockchain explorer:
+
+```
+cd Explorer
+./run.sh
+```
+
+_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
+
+<br><br>
+
 ## Todo
 
 - [x] Remover vulnerabilidades da API
