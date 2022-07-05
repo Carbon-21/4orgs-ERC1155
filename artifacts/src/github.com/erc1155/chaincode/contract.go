@@ -12,8 +12,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"encoding/base64"
-	"regexp"
+	// "encoding/base64"
+	// "regexp"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -44,7 +44,7 @@ type TransferSingle struct {
 	Operator string `json:"operator"`
 	From     string `json:"from"`
 	To       string `json:"to"`
-	ID       uint64 `json:"id"`
+	ID       string `json:"id"`
 	Value    uint64 `json:"value"`
 }
 
@@ -63,7 +63,7 @@ type TransferBatch struct {
 	Operator string   `json:"operator"`
 	From     string   `json:"from"`
 	To       string   `json:"to"`
-	IDs      []uint64 `json:"ids"`
+	IDs      []string `json:"ids"`
 	Values   []uint64 `json:"values"`
 }
 
@@ -82,7 +82,7 @@ type TransferBatchMultiRecipient struct {
 	Operator string   `json:"operator"`
 	From     string   `json:"from"`
 	To       []string `json:"to"`
-	IDs      []uint64 `json:"ids"`
+	IDs      []string `json:"ids"`
 	Values   []uint64 `json:"values"`
 }
 
@@ -102,19 +102,19 @@ type ApprovalForAll struct {
 // e.g.: http://token/{id}.json
 type URI struct {
 	Value string `json:"value"`
-	ID    uint64 `json:"id"`
+	ID    string `json:"id"`
 }
 
 // To represents recipient address
 // ID represents token ID
 type ToID struct {
 	To string
-	ID uint64
+	ID string
 }
 
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id uint64, amount uint64) error {
+func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
 
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
@@ -124,35 +124,25 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 
 	
 	// Get ID of submitting client identity
-	// Retrieve cert details in base64 
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return fmt.Errorf("failed to get client id: %v", err)
 	}
 
-	// Decode received data
-	decodedx509, err := base64.StdEncoding.DecodeString(operator)
-	if err != nil {
-		fmt.Errorf("error:", err)
-	}
-	// Extract Common Name from data
-	re := regexp.MustCompile("CN=([^,]+)")
-    commonname := re.FindStringSubmatch(string(decodedx509))
-
 	// Mint tokens
-	err = mintHelper(ctx, commonname[1], account, id, amount)
+	err = mintHelper(ctx, operator, account, id, amount)
 	if err != nil {
 		return err
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{commonname[1], "0x0", account, id, amount}
+	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
 // This function emits a TransferBatch event.
-func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, account string, ids []uint64, amounts []uint64) error {
+func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, account string, ids []string, amounts []uint64) error {
 
 	if len(ids) != len(amounts) {
 		return fmt.Errorf("ids and amounts must have the same length")
@@ -171,7 +161,7 @@ func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, a
 	}
 
 	// Group amount by token id because we can only send token to a recipient only one time in a block. This prevents key conflicts
-	amountToSend := make(map[uint64]uint64) // token id => amount
+	amountToSend := make(map[string]uint64) // token id => amount
 
 	for i := 0; i < len(amounts); i++ {
 		amountToSend[ids[i]] += amounts[i]
@@ -196,7 +186,7 @@ func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, a
 
 // Burn destroys amount tokens of token type id from account.
 // This function triggers a TransferSingle event.
-func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, account string, id uint64, amount uint64) error {
+func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
 
 	if account == "0x0" {
 		return fmt.Errorf("burn to the zero address")
@@ -215,7 +205,7 @@ func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, accoun
 	}
 
 	// Burn tokens
-	err = removeBalance(ctx, account, []uint64{id}, []uint64{amount})
+	err = removeBalance(ctx, account, []string{id}, []uint64{amount})
 	if err != nil {
 		return err
 	}
@@ -226,7 +216,7 @@ func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, accoun
 
 // BurnBatch destroys amount tokens of for each token type id from account.
 // This function emits a TransferBatch event.
-func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, account string, ids []uint64, amounts []uint64) error {
+func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, account string, ids []string, amounts []uint64) error {
 
 	if account == "0x0" {
 		return fmt.Errorf("burn to the zero address")
@@ -260,30 +250,20 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 // TransferFrom transfers tokens from sender account to recipient account
 // recipient account must be a valid clientID as returned by the ClientID() function
 // This function triggers a TransferSingle event
-func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id uint64, amount uint64) error {
+func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id string, amount uint64) error {
 	if sender == recipient {
 		return fmt.Errorf("transfer to self")
 	}
 
 	// Get ID of submitting client identity
-	// Retrieve cert details in base64 
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return fmt.Errorf("failed to get client id: %v", err)
 	}
 
-	// Decode received data
-	decodedx509, err := base64.StdEncoding.DecodeString(operator)
-	if err != nil {
-		fmt.Errorf("error:", err)
-	}
-	// Extract Common Name from data
-	re := regexp.MustCompile("CN=([^,]+)")
-    commonname := re.FindStringSubmatch(string(decodedx509))
-
 	// Check whether operator is owner or approved
-	if commonname[1] != sender {
-		approved, err := _isApprovedForAll(ctx, sender, commonname[1])
+	if operator != sender {
+		approved, err := _isApprovedForAll(ctx, sender, operator)
 		if err != nil {
 			return err
 		}
@@ -293,7 +273,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Withdraw the funds from the sender address
-	err = removeBalance(ctx, commonname[1], []uint64{id}, []uint64{amount})
+	err = removeBalance(ctx, operator, []string{id}, []uint64{amount})
 	if err != nil {
 		return err
 	}
@@ -303,20 +283,20 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Deposit the fund to the recipient address
-	err = addBalance(ctx, commonname[1], recipient, id, amount)
+	err = addBalance(ctx, operator, recipient, id, amount)
 	if err != nil {
 		return err
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, commonname[1], recipient, id, amount}
+	transferSingleEvent := TransferSingle{operator, operator, recipient, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
 // BatchTransferFrom transfers multiple tokens from sender account to recipient account
 // recipient account must be a valid clientID as returned by the ClientID() function
 // This function triggers a TransferBatch event
-func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, ids []uint64, amounts []uint64) error {
+func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, ids []string, amounts []uint64) error {
 	if sender == recipient {
 		return fmt.Errorf("transfer to self")
 	}
@@ -353,7 +333,7 @@ func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInte
 	}
 
 	// Group amount by token id because we can only send token to a recipient only one time in a block. This prevents key conflicts
-	amountToSend := make(map[uint64]uint64) // token id => amount
+	amountToSend := make(map[string]uint64) // token id => amount
 
 	for i := 0; i < len(amounts); i++ {
 		amountToSend[ids[i]] += amounts[i]
@@ -378,7 +358,7 @@ func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInte
 // BatchTransferFromMultiRecipient transfers multiple tokens from sender account to multiple recipient accounts
 // recipient account must be a valid clientID as returned by the ClientID() function
 // This function triggers a TransferBatchMultiRecipient event
-func (s *SmartContract) BatchTransferFromMultiRecipient(ctx contractapi.TransactionContextInterface, sender string, recipients []string, ids []uint64, amounts []uint64) error {
+func (s *SmartContract) BatchTransferFromMultiRecipient(ctx contractapi.TransactionContextInterface, sender string, recipients []string, ids []string, amounts []uint64) error {
 
 	if len(recipients) != len(ids) || len(ids) != len(amounts) {
 		return fmt.Errorf("recipients, ids, and amounts must have the same length")
@@ -513,12 +493,12 @@ func (s *SmartContract) SetApprovalForAll(ctx contractapi.TransactionContextInte
 }
 
 // BalanceOf returns the balance of the given account
-func (s *SmartContract) BalanceOf(ctx contractapi.TransactionContextInterface, account string, id uint64) (uint64, error) {
+func (s *SmartContract) BalanceOf(ctx contractapi.TransactionContextInterface, account string, id string) (uint64, error) {
 	return balanceOfHelper(ctx, account, id)
 }
 
 // BalanceOfBatch returns the balance of multiple account/token pairs
-func (s *SmartContract) BalanceOfBatch(ctx contractapi.TransactionContextInterface, accounts []string, ids []uint64) ([]uint64, error) {
+func (s *SmartContract) BalanceOfBatch(ctx contractapi.TransactionContextInterface, accounts []string, ids []string) ([]uint64, error) {
 	if len(accounts) != len(ids) {
 		return nil, fmt.Errorf("accounts and ids must have the same length")
 	}
@@ -537,7 +517,7 @@ func (s *SmartContract) BalanceOfBatch(ctx contractapi.TransactionContextInterfa
 }
 
 // ClientAccountBalance returns the balance of the requesting client's account
-func (s *SmartContract) ClientAccountBalance(ctx contractapi.TransactionContextInterface, id uint64) (uint64, error) {
+func (s *SmartContract) ClientAccountBalance(ctx contractapi.TransactionContextInterface, id string) (uint64, error) {
 
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
@@ -558,7 +538,7 @@ func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterf
 	if err != nil {
 		return "", fmt.Errorf("failed to get client id: %v", err)
 	}
-
+	
 	return clientAccountID, nil
 }
 
@@ -585,7 +565,7 @@ func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, uri 
 }
 
 // URI returns the URI
-func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id uint64) (string, error) {
+func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id string) (string, error) {
 
 	uriBytes, err := ctx.GetStub().GetState(uriKey)
 	if err != nil {
@@ -599,7 +579,7 @@ func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id uint
 	return string(uriBytes), nil
 }
 
-func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionContextInterface, id uint64) error {
+func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionContextInterface, id string) error {
 
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
@@ -634,7 +614,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 	return nil
 }
 
-func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id uint64, amount uint64) error {
+func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id string, amount uint64) error {
 	if account == "0x0" {
 		return fmt.Errorf("mint to the zero address")
 	}
@@ -651,9 +631,9 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 	return nil
 }
 
-func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, id uint64, amount uint64) error {
+func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
 	// Convert id to string
-	idString := strconv.FormatUint(uint64(id), 10)
+	// idString := strconv.FormatUint(uint64(id), 10)
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -680,9 +660,9 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 	return nil
 }
 
-func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, id uint64, amount uint64) error {
+func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
 	// Convert id to string
-	idString := strconv.FormatUint(uint64(id), 10)
+	// idString := strconv.FormatUint(uint64(id), 10)
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -697,9 +677,9 @@ func setBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 	return nil
 }
 
-func removeBalance(ctx contractapi.TransactionContextInterface, sender string, ids []uint64, amounts []uint64) error {
+func removeBalance(ctx contractapi.TransactionContextInterface, sender string, ids []string, amounts []uint64) error {
 	// Calculate the total amount of each token to withdraw
-	necessaryFunds := make(map[uint64]uint64) // token id -> necessary amount
+	necessaryFunds := make(map[string]uint64) // token id -> necessary amount
 
 	for i := 0; i < len(amounts); i++ {
 		necessaryFunds[ids[i]] += amounts[i]
@@ -710,14 +690,14 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 
 	// Check whether the sender has the necessary funds and withdraw them from the account
 	for _, tokenId := range necessaryFundsKeys {
-		neededAmount := necessaryFunds[tokenId]
-		idString := strconv.FormatUint(uint64(tokenId), 10)
+		neededAmount, _ := necessaryFunds[tokenId]
+		// idString := strconv.FormatUint(uint64(tokenId), 10)
 
 		var partialBalance uint64
 		var selfRecipientKeyNeedsToBeRemoved bool
 		var selfRecipientKey string
 
-		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{sender, idString})
+		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{sender, tokenId})
 		if err != nil {
 			return fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 		}
@@ -821,14 +801,14 @@ func emitTransferBatchMultiRecipient(ctx contractapi.TransactionContextInterface
 }
 
 // balanceOfHelper returns the balance of the given account
-func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string, id uint64) (uint64, error) {
+func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string, idString string) (uint64, error) {
 
 	if account == "0x0" {
 		return 0, fmt.Errorf("balance query for the zero address")
 	}
 
 	// Convert id to string
-	idString := strconv.FormatUint(uint64(id), 10)
+	// idString := strconv.FormatUint(uint64(id), 10)
 
 	var balance uint64
 
@@ -851,10 +831,10 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	return balance, nil
 }
 
-// Returns the sorted slice ([]uint64) copied from the keys of map[uint64]uint64
-func sortedKeys(m map[uint64]uint64) []uint64 {
+// Returns the sorted slice ([]string) copied from the keys of map[string]uint64
+func sortedKeys(m map[string]uint64) []string {
 	// Copy map keys to slice
-	keys := make([]uint64, len(m))
+	keys := make([]string, len(m))
 	i := 0
 	for k := range m {
 		keys[i] = k

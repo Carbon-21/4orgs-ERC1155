@@ -18,7 +18,8 @@ router.get(
     param("channelName").not().isEmpty(),
     param("chaincodeName").not().isEmpty(),
     query("fcn").not().isEmpty(),
-    query("args").not().isEmpty(),
+    // mam: Algumas funções não requerem parâmetros (e.g. ClientAccountID)
+    // query("args").not().isEmpty(),
     validateAll,
   ],
   chaincodeController.query
@@ -30,7 +31,7 @@ router.post(
     param("channelName").not().isEmpty(),
     param("chaincodeName").not().isEmpty(),
     body("fcn").not().isEmpty(),
-    body("args").not().isEmpty(),
+    // body("args").not().isEmpty(),
     validateAll,
   ],
   chaincodeController.invoke

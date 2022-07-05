@@ -21,20 +21,20 @@ const invokeTransaction = async (
     logger.debug(`Wallet path: ${walletPath}`);
 
     //pbc comentei pois achei estranho
-    // let identity = await wallet.get(username);
-    // if (!identity) {
-    //   console.log(
-    //     `An identity for the user ${username} does not exist in the wallet, so registering user`
-    //   );
-    //   await helper.getRegisteredUser(username, org_name, true);
-    //   identity = await wallet.get(username);
-    //   console.log("Run the registerUser.js application before retrying");
-    //   return;
-    // }
+    let identity = await wallet.get(username);
+    if (!identity) {
+      console.log(
+        `An identity for the user ${username} does not exist in the wallet, so registering user`
+      );
+      await helper.getRegisteredUser(username, org_name, true);
+      identity = await wallet.get(username);
+      console.log("Run the registerUser.js application before retrying");
+      return;
+    }
 
     const connectOptions = {
       wallet,
-      identity: username,
+      identity: identity,
       discovery: { enabled: true, asLocalhost: true },
       // eventHandlerOptions: EventStrategies.NONE
     };
@@ -55,26 +55,44 @@ const invokeTransaction = async (
     let message;
 
     switch (fcn) {
+      // mam: removi o username dos argumentos passados para as transações, pois o correto é utilizar o ClientID, que pode ser obtido por meio da função ClientAccountID
+      // assim, agora esse argumento deve ser passado junto aos argumentos da chamada.
       case "Mint":
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          username,
           args[0],
-          args[1]
+          args[1],
+          args[2]
         );
-        logger.info("Mint succesful");
+        logger.info("Mint successful");
         result = "success";
         break;
       case "TransferFrom":
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          username,
           args[0],
           args[1],
-          args[2]
+          args[2],
+          args[3]
         );
-        logger.info("Transfer succesful");
+        logger.info("Transfer successful");
         result = { txid: result.toString() };
+        break;
+        case "ClientAccountID":
+          result = await contract.submitTransaction(
+            "SmartContract:" + fcn
+          );
+        logger.info("ClientID retrieved.");
+        result = { ClientID: result.toString() };
+        break;
+        case "ClientAccountBalance":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn, 
+          args[0]
+        );
+        logger.info("Client balance retrieved.");
+        result = { ClientBalance: result.toString() };
+        break;
         break;
       default:
         break;
