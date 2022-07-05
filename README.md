@@ -71,10 +71,12 @@ cd Explorer
 _Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com exploreradmin/exploreradminpw_
 
 <br><br>
+
 ## Identificação do Operador
+
 - Os dados do certificado do operador são passados pela API para o chaincode quando uma chamada é feita.
-- O chaincode faz o decode e extrai o "CN" (Common Name) do certificado e o utiliza como "operator" na transação "TransferFrom". Assim, "operator" ==  "owner", permitindo a movimentação dos tokens.
-<br><br>
+- O chaincode faz o decode e extrai o "CN" (Common Name) do certificado e o utiliza como "operator" na transação "TransferFrom". Assim, "operator" == "owner", permitindo a movimentação dos tokens.
+  <br><br>
 
 ## Todo
 

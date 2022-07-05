@@ -20,17 +20,18 @@ const invokeTransaction = async (
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     logger.debug(`Wallet path: ${walletPath}`);
 
-    //pbc comentei pois achei estranho
-    // let identity = await wallet.get(username);
-    // if (!identity) {
-    //   console.log(
-    //     `An identity for the user ${username} does not exist in the wallet, so registering user`
-    //   );
-    //   await helper.getRegisteredUser(username, org_name, true);
-    //   identity = await wallet.get(username);
-    //   console.log("Run the registerUser.js application before retrying");
-    //   return;
-    // }
+    //descomentei, mas após entender melhor a questã ode wallets e armazenamento de usuários, temos que ver se isso é necesśario
+    // Check to see if we've already enrolled the user.
+    let identity = await wallet.get(username);
+    if (!identity) {
+      console.log(
+        `An identity for the user ${username} does not exist in the wallet, so registering user`
+      );
+      await helper.getRegisteredUser(username, org_name, true);
+      identity = await wallet.get(username);
+      console.log("Run the registerUser.js application before retrying");
+      return;
+    }
 
     const connectOptions = {
       wallet,

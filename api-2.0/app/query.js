@@ -15,19 +15,19 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     logger.debug(`Wallet path: ${walletPath}`);
 
-    //pbc comentei pois achei estranho
+    //descomentei, mas após entender melhor a questã ode wallets e armazenamento de usuários, temos que ver se isso é necesśario
     // Check to see if we've already enrolled the user.
-    // let identity = await wallet.get(username);
-    // if (!identity) {
-    //   logger.log(
-    //     `An identity for the user ${username} does not exist in the wallet, so registering user`
-    //   );
-    //   await helper.getRegisteredUser(username, org_name, true);
-    //   identity = await wallet.get(username);
-    //   console.log("Run the registerUser.js application before retrying");
-    //   return;
-    // }
-    // console.log(identity)
+    let identity = await wallet.get(username);
+    if (!identity) {
+      logger.log(
+        `An identity for the user ${username} does not exist in the wallet, so registering user`
+      );
+      await helper.getRegisteredUser(username, org_name, true);
+      identity = await wallet.get(username);
+      console.log("Run the registerUser.js application before retrying");
+      return;
+    }
+    console.log(identity);
 
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();
