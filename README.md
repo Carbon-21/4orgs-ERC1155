@@ -1,14 +1,41 @@
 # CARBON21
 
 ## Como rodar
-
-### Rede
-
-Para subir a rede:
-
+### Clonando repositorio
 ```
 git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
+```
+
+### Pré-requisitos
+
+Para instalar os pré-requisitos:
+```
+chmod +x ./installPreReq.sh
+./installPreReq.sh
+```
+_Nota: Ao final da execução, a versão de todos os programas instalados será exibida_
+
+Obtenção do Fabric Samples e colocação no path
+```
+chmod +x ./obtainSamples.sh
+. ./obtainSamples.sh 
+```
+_Notas desse script:_
+<ul>
+      <li><i>É possivel obter os samples, aplicar o path ou ambos</i></li>
+      <li><i>É possivel definir o path temporariamente (vinculado ao terminal) ou permanentemente (Em desenvolvimento)</i></li>
+      <li><i>Para atribuir o path corretamente:</i></li>
+      <ul>
+            <li><i>O script deve estar no mesmo nivel do diretorio dos samples, e não dentro dele</i></li>
+            <li><i>Executar com o . inicial</i></li>
+      </ul>
+</ul>
+ 
+### Rede
+
+Para subir a rede:
+```
 chmod +x init
 ./init
 ```
