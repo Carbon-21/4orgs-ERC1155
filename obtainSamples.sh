@@ -31,7 +31,7 @@ adicionaPathTemp(){
 }
 
 adicionaPathPerm(){
-	echo "Algum dia ... essa funcao estará disponivel ;D(em breve..)"
+	echo "Funcionalidade ainda em desenvolvimento ..."
 }
 
 clear
