@@ -34,7 +34,7 @@ const invokeTransaction = async (
 
     const connectOptions = {
       wallet,
-      identity: identity,
+      identity: username,
       discovery: { enabled: true, asLocalhost: true },
       // eventHandlerOptions: EventStrategies.NONE
     };
@@ -78,21 +78,20 @@ const invokeTransaction = async (
         logger.info("Transfer successful");
         result = { txid: result.toString() };
         break;
-        case "ClientAccountID":
+      case "ClientAccountID":
           result = await contract.submitTransaction(
             "SmartContract:" + fcn
           );
         logger.info("ClientID retrieved.");
         result = { ClientID: result.toString() };
         break;
-        case "ClientAccountBalance":
+      case "ClientAccountBalance":
         result = await contract.submitTransaction(
           "SmartContract:" + fcn, 
           args[0]
         );
         logger.info("Client balance retrieved.");
         result = { ClientBalance: result.toString() };
-        break;
         break;
       default:
         break;

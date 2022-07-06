@@ -33,7 +33,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     const gateway = new Gateway();
     await gateway.connect(ccp, {
       wallet,
-      identity: identity,
+      identity: username,
       discovery: { enabled: true, asLocalhost: true },
     });
 

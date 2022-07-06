@@ -12,8 +12,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	// "encoding/base64"
-	// "regexp"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -121,7 +119,6 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	if err != nil {
 		return err
 	}
-
 	
 	// Get ID of submitting client identity
 	operator, err := ctx.GetClientIdentity().GetID()
