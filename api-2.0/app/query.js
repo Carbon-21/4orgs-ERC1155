@@ -17,17 +17,17 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 
     //pbc comentei pois achei estranho
     // Check to see if we've already enrolled the user.
-    // let identity = await wallet.get(username);
-    // if (!identity) {
-    //   logger.log(
-    //     `An identity for the user ${username} does not exist in the wallet, so registering user`
-    //   );
-    //   await helper.getRegisteredUser(username, org_name, true);
-    //   identity = await wallet.get(username);
-    //   console.log("Run the registerUser.js application before retrying");
-    //   return;
-    // }
-    // console.log(identity)
+    let identity = await wallet.get(username);
+    if (!identity) {
+      logger.log(
+        `An identity for the user ${username} does not exist in the wallet, so registering user`
+      );
+      await helper.getRegisteredUser(username, org_name, true);
+      identity = await wallet.get(username);
+      console.log("Run the registerUser.js application before retrying");
+      return;
+    }
+    console.log(identity)
 
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();
@@ -43,17 +43,16 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     // Get the contract from the network.
     const contract = network.getContract(chaincodeName);
     let result;
-
     switch (fcn) {
       case "BalanceOf":
-        result = await contract.evaluateTransaction("SmartContract:" + fcn, username, args[0]);
-
-        break;
-      case "ClientAccountBalance":
-        result = await contract.evaluateTransaction("SmartContract:" + fcn, username);
+        result = await contract.evaluateTransaction(
+          "SmartContract:" + fcn, 
+          args[0],
+          args[1]
+        );
         break;
       default:
-        break;
+      break;
     }
 
     logger.info(`Transaction has been evaluated, result is: ${result.toString()}`);
