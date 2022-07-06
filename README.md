@@ -1,7 +1,21 @@
 # CARBON21
 
-## OBS IMPORTANTE:
-Necessário corrigir a identificação dos atores: o uso temporário do Common Name é só um remendo para executar com sucesso as funções de transferência. Contudo a falta de mais detalhes sobre o ID resulta em bugs (e.g. se tem dois users em orgs diferentes com o mesmo CN, ambos recebem a transferência). Solução adequada aqui é não utilizarmos o username na API, e sim o ClientID (ver mais em https://github.com/hyperledger/fabric-samples/tree/main/token-erc-1155). 
+## Notas
+A identificação do cliente agora é feita com o ClientID, que pode ser obtido por meio da função ClientAccountID do chaincode. Este clientID é o endereço para o qual os tokens devem ser enviados, emitidos etc.
+
+### Funções atualmente suportadas:
+- Invoke  
+      - Mint  
+      - TransferFrom  
+      - ClientAccountBalance  
+      - ClientAccountID  
+- Query  
+      - BalanceOf  
+
+### Outras alterações  
+O ID do token foi modificado, deixando de ser um int64 para ser string. Assim fica mais amigável a operação (agora dá pra mintar $ylvas ao invés de "1"). Nos testes realizados até agora não identifiquei nenhum problema com isso, mas é importante uma verificação e testes mais detalhados.  
+      
+---
 
 ## Como rodar
 
@@ -71,7 +85,7 @@ cd Explorer
 ./run.sh
 ```
 
-_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
+_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com exploreradmin/exploreradminpw_
 
 <br><br>
 ## Identificação do Operador
