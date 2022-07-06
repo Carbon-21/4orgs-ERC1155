@@ -1,2 +1,2 @@
 Installed chaincodes on peer:
-Package ID: erc1155_1:b39698db3d2e04e5ea4962f64882aa23924b7532bc227fad5356110493ff238e, Label: erc1155_1
+Package ID: erc1155_1:d0588dd12b0061bf779af53ccd5b5492dde86990f1762e4dee7fb9ae4f3bcb7c, Label: erc1155_1
