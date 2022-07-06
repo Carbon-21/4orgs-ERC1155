@@ -46,6 +46,7 @@ const invokeTransaction = async (
     const network = await gateway.getNetwork(channelName);
     const contract = network.getContract(chaincodeName);
 
+    //TODO o cara meteu um TODO fantasma aqui hahah
     // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.
     // Instead create separate function and call it once server started, it will keep listening.
     await contract.addContractListener(contractListener);
