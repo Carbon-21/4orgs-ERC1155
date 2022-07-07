@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
-const authController = require("../controllers/auth-crontroller.js");
+const authController = require("../controllers/auth-controller.js");
 
 const router = Router();
 

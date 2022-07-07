@@ -7,7 +7,7 @@ chmod +x git-push;
 
 ###### KILL ######
 kill-hlf () {
-	docker-compose down 
+	docker compose down 
 	containers=$(docker ps -q) && docker kill $containers
 	docker network prune -f && docker volume prune -f
 }
@@ -22,7 +22,7 @@ kill-hlf
 
 ###### RUN ######
 #run one docker for each CA (each org has 1, incluind the orderer)
-docker-compose up -d
+docker compose up -d
 sleep 15
 
 #creates CAs and orgs certificates
@@ -38,7 +38,7 @@ chmod +x create-artifacts.sh
 
 #run chouchdb, orgs peers and orderers dockers
 cd ..
-docker-compose up -d
+docker compose up -d
 sleep 15
 
 #create channel and deploy cahincode on each org

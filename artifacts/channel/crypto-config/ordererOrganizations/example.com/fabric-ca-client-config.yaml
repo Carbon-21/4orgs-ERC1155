@@ -117,7 +117,7 @@ csr:
       O: Hyperledger
       OU: Fabric
   hosts:
-    - minicurso-HLF
+    - matheus-Aspire-VX5-591G
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server
