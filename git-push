@@ -10,6 +10,7 @@ if [ $# -eq 0 ]; then
 fi
 
 #prepare to push
+echo "Comitting..."
 git add -A
 git commit -m "$msg"
 

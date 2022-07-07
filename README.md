@@ -54,9 +54,16 @@ Para dar push direto para o branch em que se encontra:
 ./git-push <mensagem_de_commit>
 ```
 
-_Nota: caso não tenha rodado o script `init` ainda, será preciso conceder permissão de execução aos scripts._
-<br><br>
+<br>
 
+Para pegar as modificações (pull) existentes no branch `develop` e então retornar para o branch em que se encontrava anteriormente, apenas comitando suas modificações (necessário), mas sem dar push:
+
+```
+./git-pull <mensagem_de_commit>
+```
+
+_Nota: caso não tenha rodado o script `init` ainda, será preciso conceder permissão de execução aos scripts._
+<br>
 <br>
 
 ### Blockchain explorer
@@ -70,7 +77,7 @@ cd Explorer
 
 _Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com exploreradmin/exploreradminpw_
 
-<br><br>
+<br>
 
 ## Identificação do Operador
 

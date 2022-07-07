@@ -21,6 +21,6 @@ echo "Checkouting to develop and pulling changes..."
 git checkout develop
 git pull
 
-echo "Returning to original branch"
+echo "Returning to original branch..."
 git checkout $branch
 git branch
