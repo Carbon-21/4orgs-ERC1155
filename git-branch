@@ -9,7 +9,10 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+echo "Pulling from branch develop:"
 git checkout develop
 git pull
+
+echo "Creating branch..."
 git checkout -b $1 
 git branch

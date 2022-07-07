@@ -1,0 +1,5 @@
+#!/bin/bash
+#build cc wihtout having to travel through the Fabric of the cosmos
+
+cd ./artifacts/src/github.com/erc1155/chaincode
+go build contract.go
