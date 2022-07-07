@@ -9,11 +9,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-#might avoid merge conflicts on PRs
-#if conflicts already exist, carry on with the push and good luck to the reviewer ;)
-echo "Pulling..."
-git pull
-
 #prepare to push
 git add -A
 git commit -m "$msg"
