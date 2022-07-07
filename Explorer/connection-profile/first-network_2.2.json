@@ -34,7 +34,7 @@
 		"CarbonMSP": {
 			"mspid": "CarbonMSP",
 			"adminPrivateKey": {
-				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/278413e2fe21f984b132236a31b7ed7f9f22433883f8de06cc850001b842717d_sk"
+				"path": "/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/bb15df2df183409b728cc62af2bde01c7d60d32d6676d8633b82a085049a483e_sk"
 			},
 			"peers": [
 				"peer0.carbon.example.com"
