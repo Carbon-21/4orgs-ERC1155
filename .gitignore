@@ -7,3 +7,4 @@ artifacts/channel/crypto-config/**
 *.tar.gz
 **/*.pem
 **/*.crt
+log.txt
