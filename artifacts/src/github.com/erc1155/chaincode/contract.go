@@ -7,8 +7,10 @@
 package chaincode
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -17,7 +19,6 @@ import (
 )
 
 const uriKey = "uri"
-
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
@@ -110,6 +111,24 @@ type ToID struct {
 	ID string
 }
 
+// Get role (OU) from clientAccountID
+func GetRole(clientAccountID string) string {
+	//decode from b64
+	clientAccountIDPlain, err := base64.StdEncoding.DecodeString(clientAccountID)
+	if err != nil {
+		panic(err)
+	}
+	// fmt.Printf("Decoded text: \n%s\n\n", clientAccountIDPlain)
+
+	//get OU from clientAccountID
+	re := regexp.MustCompile("^x509::CN=.*?,OU=(admin|client|admin|peer).*$")
+	match := re.FindStringSubmatch(string(clientAccountIDPlain))
+
+	// fmt.Println(match[1])
+
+	return match[1]
+}
+
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
@@ -119,7 +138,7 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	if err != nil {
 		return err
 	}
-	
+
 	// Get ID of submitting client identity
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
@@ -529,15 +548,12 @@ func (s *SmartContract) ClientAccountBalance(ctx contractapi.TransactionContextI
 // In this implementation, the client account ID is the clientId itself
 // Users can use this function to get their own account id, which they can then give to others as the payment address
 func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterface) (string, error) {
-
-	// fmt.Print(contractapi.TransactionContextInterface)
-
 	// Get ID of submitting client identity
 	clientAccountID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return "", fmt.Errorf("failed to get client id: %v", err)
 	}
-	
+
 	return clientAccountID, nil
 }
 

@@ -1,9 +1,11 @@
 #!/bin/bash
 
 ###### +X ######
-chmod +x kill;
-chmod +x git-branch;
-chmod +x git-push;
+chmod +x kill
+chmod +x git-branch
+chmod +x git-push
+chmod +x cc-debug
+chmod +x cc-build
 
 ###### KILL ######
 kill-hlf () {
