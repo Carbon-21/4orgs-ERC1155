@@ -34,6 +34,29 @@ exports.signup = async (req, res, next) => {
   }
 };
 
+exports.login = async (req, res) => {
+  var username = req.body.username;
+  var org = req.body.org;
+
+  logger.debug("Username: " + username);
+  logger.debug("Org: " + org);
+
+  let isRegistered = await helper.isUserRegistered(username, org);
+
+  if (isRegistered) {
+    let token;
+    token = auth.createJWT(username, org);
+    res.json({ success: true, message: "The user was logged in successfully", token: token})
+
+    logger.info("User %s was logged in successfully",username);
+
+  } else {
+    res.json({ success: false, message: `Username ${username} is not registered`})
+
+    logger.error(`Username ${username} is not registered`);
+  }
+};
+
 // app.post("/users", async function (req, res) {
 //   var username = req.body.username;
 //   var org = req.body.org;

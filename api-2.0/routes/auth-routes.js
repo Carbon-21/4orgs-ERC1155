@@ -14,9 +14,14 @@ router.post(
   authController.signup
 );
 
-//TODO login middleware
+router.post(
+  "/login",
+  [body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
+  authController.login
+);
 
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
+
 
 module.exports = router;
