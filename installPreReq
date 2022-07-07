@@ -78,3 +78,5 @@ python3 -V
 echo ----------
 echo versao do node
 node -v
+
+echo "OBS: Se possivel reinicie a maquina !"

@@ -43,17 +43,11 @@ else
 fi
 
 clear
-if [[ -d "fabricSamples" ]]; then
-	echo "Deseja atribuir os binarios do Sample do Hyperledger Fabric no path ?( s / n )"
-	read tempperm
-	if [ "$tempperm" == s ]; then
-		adicionaPath
-	fi
-	echo "Saindo ..."
-else
-	clear
-	echo "Samples do Hyperledger Fabric não encontrados!"
-	echo ""
-	echo "Para incluir seus binarios no path, por gentileza colocar esse script no mesmo nivel do diretorio dos samples"
-	echo ""
+
+echo "Deseja atribuir os binarios do Sample do Hyperledger Fabric no path ?( s / n )"
+read tempperm
+if [ "$tempperm" == s ]; then
+	adicionaPath
 fi
+
+echo "Saindo ..."
