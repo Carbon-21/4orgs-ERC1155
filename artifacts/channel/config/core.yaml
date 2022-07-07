@@ -592,7 +592,7 @@ ledger:
     totalQueryLimit: 100000
     couchDBConfig:
        # It is recommended to run CouchDB on the same server as the peer, and
-       # not map the CouchDB container port to a server port in docker compose.
+       # not map the CouchDB container port to a server port in docker-compose.
        # Otherwise proper security must be provided on the connection between
        # CouchDB client (on the peer) and server.
        couchDBAddress: 127.0.0.1:5984

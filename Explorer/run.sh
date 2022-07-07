@@ -79,4 +79,4 @@ echo '{
 	}
 }' >${PWD}/connection-profile/first-network_2.2.json
 
-docker compose up -d
+docker-compose up -d

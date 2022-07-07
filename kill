@@ -2,7 +2,7 @@
 
 ###### KILL ######
 kill-hlf () {
-	docker compose down 
+	docker-compose down 
 	containers=$(docker ps -q) && docker kill $containers
 	docker network prune -f && docker volume prune -f
 }
