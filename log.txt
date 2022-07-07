@@ -1,2 +1,1 @@
-Installed chaincodes on peer:
-Package ID: erc1155_1:83ca4be59def61df1d34877a573686f90db7f7a8682d6969ee398b56dcdbab6e, Label: erc1155_1
+./deployChaincode.sh: linha 104: peer: comando não encontrado

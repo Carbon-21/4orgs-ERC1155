@@ -23,14 +23,12 @@ obtemFabricSamples(){
         curl -sSL https://bit.ly/2ysbOFE | bash -s
 }
 
-adicionaPathTemp(){
-	BINFABRICPATH=$(pwd)/fabricSamples/fabric-samples/bin
-	PATH="${PATH:+${PATH}:${BINFABRICPATH}}"	
-	echo "Adicionado ao path"
-}
-
-adicionaPathPerm(){
-	echo "Função ainda em desenvolvimento ..."
+adicionaPath(){
+	# BINFABRICPATH=$(pwd)/fabricSamples/fabric-samples/bin
+	# PATH="${PATH:+${PATH}:${BINFABRICPATH}}"	
+	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~/.bashrc
+	echo "Adicionado ao path, abra um novo terminal para as mudanças fazer efeito"
+	#source ~/.bashrc
 }
 
 clear
@@ -46,17 +44,12 @@ fi
 
 clear
 if [[ -d "fabricSamples" ]]; then
-	echo "Deseja atribuir os binarios do Sample do Hyperledger Fabric no path temporariamente(t), permeanentemente(p) ou sair(s) ?( t / p / s)"
+	echo "Deseja atribuir os binarios do Sample do Hyperledger Fabric no path ?( s / n )"
 	read tempperm
-	if [ "$tempperm" == t ]; then
-		adicionaPathTemp
-	fi
-	if [ "$tempperm" == p ]; then
-		adicionaPathPerm
-	fi
 	if [ "$tempperm" == s ]; then
-		echo "Saindo ..."
+		adicionaPath
 	fi
+	echo "Saindo ..."
 else
 	clear
 	echo "Samples do Hyperledger Fabric não encontrados!"

@@ -37,8 +37,9 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Obtendo Docker-compose
-echo Obtendo Docker Compose
-sudo apt-get install docker-compose-plugin
+echo "Obtendo Docker Compose"
+#sudo apt-get install docker-compose-plugin
+sudo apt-get install docker-compose
 
 # Obtendo Node
 echo Obtendo Node...
@@ -67,7 +68,7 @@ echo versao do docker
 docker version
 echo ---------------
 echo versao docker-compose
-docker-compose version
+docker compose version
 echo -----------------
 echo versao do go
 go version
