@@ -27,6 +27,7 @@ adicionaPath(){
 	# BINFABRICPATH=$(pwd)/fabricSamples/fabric-samples/bin
 	# PATH="${PATH:+${PATH}:${BINFABRICPATH}}"	
 	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~/.bashrc
+	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~root/.bashrc
 	echo "Adicionado ao path, abra um novo terminal para as mudanças fazer efeito"
 	#source ~/.bashrc
 }
