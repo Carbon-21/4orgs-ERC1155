@@ -1,7 +1,7 @@
 # CARBON21
 
 ## Notas Atualização 08-07-22
-Adicionado suporte à geração de certificados via CSR. Agora, acho chamar o /signup deve ser informado no corpo da chamada a chave booleana csr, que indicará se o mecanismo de geração local da chave privada deve ou não ser utilizado.  
+Adicionado suporte à geração de certificados via CSR. Agora, ao chamar o /signup deve ser informado no corpo da chamada a chave booleana csr, que indicará se o mecanismo de geração local da chave privada deve ou não ser utilizado.  
 Caso o csr seja _true_, a API irá gerar uma chave privada ECDSA 256 bits e, a partir dela, irá gerar também um _Certificate Sign Request_. Esse csr é então passado como parâmetro à chamada enroll. A CA, por sua vez, assina o csr e retorna o certificado, sem ter conhecimento da chave do usuário.  
 Caso o csr seja _false_, o procedimento padrão é adotado, no qual a geração da chave privada é feita pela CA durante o enroll e retornada à API.
 
