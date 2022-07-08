@@ -20,7 +20,7 @@ const invokeTransaction = async (
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     logger.debug(`Wallet path: ${walletPath}`);
 
-    //pbc comentei pois achei estranho
+    //TODO após estudar wallets, temos que olhar se isso aqui será mantido
     let identity = await wallet.get(username);
     if (!identity) {
       console.log(
@@ -45,6 +45,7 @@ const invokeTransaction = async (
     const network = await gateway.getNetwork(channelName);
     const contract = network.getContract(chaincodeName);
 
+    //TODO o pavan deixou um TODO escondido aqui kkk
     // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.
     // Instead create separate function and call it once server started, it will keep listening.
     await contract.addContractListener(contractListener);
@@ -79,17 +80,12 @@ const invokeTransaction = async (
         result = { txid: result.toString() };
         break;
       case "ClientAccountID":
-          result = await contract.submitTransaction(
-            "SmartContract:" + fcn
-          );
+        result = await contract.submitTransaction("SmartContract:" + fcn);
         logger.info("ClientID retrieved.");
         result = { ClientID: result.toString() };
         break;
       case "ClientAccountBalance":
-        result = await contract.submitTransaction(
-          "SmartContract:" + fcn, 
-          args[0]
-        );
+        result = await contract.submitTransaction("SmartContract:" + fcn, args[0]);
         logger.info("Client balance retrieved.");
         result = { ClientBalance: result.toString() };
         break;

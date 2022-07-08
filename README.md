@@ -54,10 +54,7 @@ Para dar push direto para o branch em que se encontra:
 ./git-push <mensagem_de_commit>
 ```
 
-_Nota: caso não tenha rodado o script `init` ainda, será preciso conceder permissão de execução aos scripts._
 <br><br>
-
-<br>
 
 ### Blockchain explorer
 
@@ -71,10 +68,28 @@ cd Explorer
 _Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
 
 <br><br>
+
+### Chaincode Debugging
+
+Para compilar o CC e ver se ele não tem nenhum bug antes de dar deploy:
+
+```
+./cc-build
+```
+
+Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados no CC:
+
+```
+./cc-debug
+```
+
+<br>
+
 ## Identificação do Operador
+
 - Os dados do certificado do operador são passados pela API para o chaincode quando uma chamada é feita.
-- O chaincode faz o decode e extrai o "CN" (Common Name) do certificado e o utiliza como "operator" na transação "TransferFrom". Assim, "operator" ==  "owner", permitindo a movimentação dos tokens.
-<br><br>
+- O chaincode faz o decode e extrai o "CN" (Common Name) do certificado e o utiliza como "operator" na transação "TransferFrom". Assim, "operator" == "owner", permitindo a movimentação dos tokens.
+  <br><br>
 
 ## Todo
 
