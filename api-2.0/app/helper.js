@@ -7,6 +7,11 @@ const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
 const fs = require("fs");
 
+// Added to allow waiting generateCSR script execution
+const { exec } = require("child_process");
+const util  = require("util");
+const execPromise = util.promisify(exec);
+
 const getCCP = async (org) => {
   let ccpPath = null;
   org == "Carbon"
@@ -95,7 +100,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     return error.message;
   }
 
-  const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret });
+  const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret});
   // const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret, attr_reqs: [{ name: 'role', optional: false }] });
 
   let x509Identity = {
@@ -192,7 +197,7 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGerSecret = async (username, userOrg) => {
+const registerAndGerSecret = async (username, userOrg, useCSR) => {
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
@@ -231,16 +236,46 @@ const registerAndGerSecret = async (username, userOrg) => {
       { affiliation: await getAffiliation(userOrg), enrollmentID: username, role: "client" },
       adminUser
     );
-    // const secret = await ca.register({ affiliation: 'carbon.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
-    const enrollment = await ca.enroll({
-      enrollmentID: username,
-      enrollmentSecret: secret,
-    });
+
+    if (useCSR == true) {
+      logger.debug(`Using CSR mode`);
+
+      // Gera chave privada localmente. Aqui ainda salva dentro da API. Ideal é que ao gerar o usuário decida onde salvar a chave.
+      // TODO: substituir o script por uma rotina em js
+
+      //  Gera o CSR a partir do username e Org
+      //  Precisa ter openssl instalado
+      //  Script gera uma chave privada (salva em ./api-2.0/pkey.pem) e a partir dela um CSR (./api-2.0/certreq.csr)
+      //  Common Name (CN) = username
+      //  Org. Unit (OU) = client.userOrg.department1
+      var command = "./generateCSR.sh " + username + " " + userOrg
+      await execWrapper(command);
+      
+      // // Le o csr gerado e adiciona no enroll 
+      const csr = fs.readFileSync('./certreq.csr', 'utf8');
+      // Le a pkey para add na wallet
+      var pkey = fs.readFileSync('./pkey.pem', 'utf8');
+      logger.debug(`certreq:  ${csr}`);
+      var enrollment = await ca.enroll({
+        enrollmentID: username,
+        enrollmentSecret: secret,
+        csr: csr,
+        
+      });
+    } else {
+      logger.debug(`NOT using CSR mode`);
+      var enrollment = await ca.enroll({
+        enrollmentID: username,
+        enrollmentSecret: secret,
+      });
+      pkey = enrollment.key.toBytes();
+    }
+    
     let orgMSPId = getOrgMSP(userOrg);
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: enrollment.key.toBytes(),
+        privateKey: pkey,
       },
       mspId: orgMSPId,
       type: "X.509",
@@ -254,6 +289,7 @@ const registerAndGerSecret = async (username, userOrg) => {
     success: true,
     message: username + " enrolled Successfully",
     secret: secret,
+    certificate: enrollment.certificate,
   };
   return response;
 };
@@ -267,3 +303,13 @@ module.exports = {
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
 };
+
+async function execWrapper(cmd) {
+  const { stdout, stderr } = await execPromise(cmd);
+  if (stdout) {
+    console.log(`stderr: ${stdout}`);
+  }
+  if (stderr) {
+    console.log(`stderr: ${stderr}`);
+  }
+}

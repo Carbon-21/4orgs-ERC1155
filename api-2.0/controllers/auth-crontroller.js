@@ -5,6 +5,7 @@ const auth = require("../util/auth");
 exports.signup = async (req, res, next) => {
   var username = req.body.username;
   var org = req.body.org;
+  var useCSR = req.body.csr;
 
   logger.debug("End point : /users");
   logger.debug("Username: " + username);
@@ -15,23 +16,23 @@ exports.signup = async (req, res, next) => {
   token = auth.createJWT(username, org);
 
   //attemp to register user
-  let response = await helper.registerAndGerSecret(username, org);
+    let response = await helper.registerAndGerSecret(username, org, useCSR);
 
-  //response
-  logger.debug("-- returned from registering the username %s for organization %s", username, org);
-  if (response && typeof response !== "string") {
-    logger.info("Successfully registered the username %s for organization %s", username, org);
-    response.token = token;
-    res.json(response);
-  } else {
-    logger.error(
-      "Failed to register the username %s for organization %s with::%s",
-      username,
-      org,
-      response
-    );
-    res.json({ success: false, message: response });
-  }
+    //response
+    logger.debug("-- returned from registering the username %s for organization %s", username, org);
+    if (response && typeof response !== "string") {
+      logger.info("Successfully registered the username %s for organization %s", username, org);
+      response.token = token;
+      res.json(response);
+    } else {
+      logger.error(
+        "Failed to register the username %s for organization %s with::%s",
+        username,
+        org,
+        response
+      );
+      res.json({ success: false, message: response });
+    }
 };
 
 // app.post("/users", async function (req, res) {

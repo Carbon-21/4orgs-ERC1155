@@ -10,7 +10,7 @@ const router = Router();
 //// UNAUTHENTICATED ROUTES ////
 router.post(
   "/signup",
-  [body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
+  [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
   authController.signup
 );
 
