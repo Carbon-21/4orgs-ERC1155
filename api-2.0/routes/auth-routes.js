@@ -13,7 +13,7 @@ const router = Router();
 
 router.post(
   "/signup",
-  [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
+  // [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
   authController.signup
 );
 
@@ -22,6 +22,6 @@ router.post(
 //// Login ////
 
 ///// AUTHENTICATED ROUTES /////
-// router.use(checkAuth);
+router.use(checkAuth);
 
 module.exports = router;
