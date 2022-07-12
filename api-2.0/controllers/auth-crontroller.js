@@ -4,8 +4,10 @@ const auth = require("../util/auth");
 
 exports.signup = async (req, res, next) => {
   var username = req.body.username;
-  var org = req.body.org;
-  var useCSR = req.body.csr;
+  // var org = req.body.org;
+  var org = "Carbon";
+  // var useCSR = req.body.csr;
+  var useCSR = false;
 
   logger.debug("End point : /users");
   logger.debug("Username: " + username);

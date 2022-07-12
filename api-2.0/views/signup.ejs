@@ -1,0 +1,131 @@
+<!-- Register Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <%- include("partials/head") %>
+
+  <body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <img class="carbon21-logo" src="./images/carbon21-logo.png" alt="Carbon21 Logo">
+          Carbon21
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Minha Conta
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="/balance">Carteira</a></li>
+                <li><a class="dropdown-item" href="#">Coleção</a></li>
+                <li><a class="dropdown-item" href="/config">Configurações</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Carbon
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="/mint">Mint</a></li>
+                <li><a class="dropdown-item" href="/transfer">Transfer</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/login"><button type="button" class="btn btn-outline-success btn-sm">Sign In</button></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register"><button type="button" class="btn btn-outline-success btn-sm">Sign Up</button></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Register Section -->
+
+    <section id="register">
+
+      <div class="container-fluid">
+        <div class="register-form card shadow">
+
+          <form action="auth/signup" method="POST">
+
+            <div class="row">
+
+              <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                <h1 class="sign-up-header">Sign up</h1>
+
+                  <div class="register-data">
+                    <i class="fas fa-user fa-lg"></i>
+                    <div class="flex-fill">
+                      <input type="text" name="username" id="username" class="form-control" required/>
+                      <label class="form-label" for="username">Your Name</label>
+                    </div>
+                  </div>
+
+                  <div class="register-data">
+                    <i class="fas fa-envelope fa-lg"></i>
+                    <div class="flex-fill">
+                      <input type="email" name="email" id="email" class="form-control" required />
+                      <label class="form-label" for="email">Your Email</label>
+                    </div>
+                  </div>
+
+                  <div class="register-data">
+                    <i class="fa-solid fa-id-card"></i>
+                    <div class="flex-fill">
+                      <input type="text" name="cpf" id="cpf" class="form-control" required/>
+                      <label class="form-label" for="cpf">Your CPF</label>
+                    </div>
+                  </div>
+
+                  <div class="register-data">
+                    <i class="fas fa-lock fa-lg"></i>
+                    <div class="flex-fill">
+                      <input type="password" name="password" id="password" class="form-control" required/>
+                      <label class="form-label" for="password">Password</label>
+                    </div>
+                  </div>
+
+                  <div class="register-data">
+                    <i class="fas fa-key fa-lg"></i>
+                    <div class="flex-fill">
+                      <input type="password" name="password-repeat" id="password-repeat" class="form-control" required/>
+                      <label class="form-label" for="password-repeat">Repeat your password</label>
+                    </div>
+                  </div>
+
+                  <div class="form-check">
+                    <input type="checkbox" name="tos" value="" id="tos" class="form-check-input" required/>
+                    <label class="form-check-label">I agree all statements in <a href="#!">Terms of service</a></label>
+                  </div>
+
+                  <div class="register-button">
+                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                  </div>
+
+              </div>
+
+              <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo">
+                <img src="./images/carbon21-logo.png"class="img-fluid" alt="Carbon21 logo">
+              </div>
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </body>
