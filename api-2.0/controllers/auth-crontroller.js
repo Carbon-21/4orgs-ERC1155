@@ -3,35 +3,34 @@ const logger = require("../util/logger");
 const auth = require("../util/auth");
 
 exports.signup = async (req, res, next) => {
-  var username = req.body.username;
-  // var org = req.body.org;
-  var org = "Carbon";
+  let user = req.body
+  user.org = "Carbon" // hardcoded
   // var useCSR = req.body.csr;
   var useCSR = false;
 
   logger.debug("End point : /users");
-  logger.debug("Username: " + username);
-  logger.debug("Org: " + org);
+  logger.debug("Username: " + user.username);
+  logger.debug("Org: " + user.org);
 
   //create jwt
   let token;
-  token = auth.createJWT(username, org);
+  token = auth.createJWT(user.username, user.org);
 
   //attemp to register user
-    let response = await helper.registerAndGerSecret(username, org, useCSR);
+    let response = await helper.registerAndGerSecret(user, useCSR);
 
     //response
-    logger.debug("-- returned from registering the username %s for organization %s", username, org);
+    logger.debug("-- returned from registering the username %s for organization %s", user.username, user.org);
     if (response && typeof response !== "string") {
-      logger.info("Successfully registered the username %s for organization %s", username, org);
+      logger.info("Successfully registered the username %s for organization %s", user.username, user.org);
       response.token = token;
       res.json(response);
     } else {
       logger.error(
         "Failed to register the username %s for organization %s with::%s",
-        username,
-        org,
-        response
+        user.username,
+        user.org,
+        user.response
       );
       res.json({ success: false, message: response });
     }
