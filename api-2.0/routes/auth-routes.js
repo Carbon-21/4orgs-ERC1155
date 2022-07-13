@@ -11,6 +11,10 @@ const router = Router();
 
 //// Signup ////
 
+router.get('/signup', (req, res)=>{
+  res.render('signup',{title: "Signup", cssPath: "../css/signup.css"});
+});
+
 router.post(
   "/signup",
   // [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
@@ -19,9 +23,14 @@ router.post(
 
 //TODO login middleware
 
+///// AUTHENTICATED ROUTES /////
+
 //// Login ////
 
-///// AUTHENTICATED ROUTES /////
+router.get('/login', (req, res)=>{
+  res.render('login', {title: "Login", cssPath: "../css/login.css"});
+});
+
 router.use(checkAuth);
 
 module.exports = router;
