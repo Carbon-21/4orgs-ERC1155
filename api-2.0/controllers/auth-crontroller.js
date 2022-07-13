@@ -4,7 +4,7 @@ const auth = require("../util/auth");
 
 exports.signup = async (req, res, next) => {
   let user = req.body
-  user.org = "Carbon" // hardcoded
+  user.org = req.body.org
   // var useCSR = req.body.csr;
   var useCSR = false;
 
