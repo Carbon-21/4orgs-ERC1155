@@ -1,0 +1,200 @@
+<!-- Home Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <%- include("partials/head") %>
+
+  <body id ="top">
+
+    <!-- Intro Section -->
+
+    <section id="intro">
+
+      <!-- Navbar -->
+
+      <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">
+            <img class="carbon21-logo" src="./images/carbon21-logo.png" alt="Carbon21 Logo">
+            Carbon21
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#top">Início</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#features">Funcionalidades</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#reforestation">Reflorestamento</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Minha Conta
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <li><a class="dropdown-item" href="/balance">Carteira</a></li>
+                  <li><a class="dropdown-item" href="#">Coleção</a></li>
+                  <li><a class="dropdown-item" href="/config">Configurações</a></li>
+                </ul>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Carbon
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <li><a class="dropdown-item" href="/mint">Mint</a></li>
+                  <li><a class="dropdown-item" href="/transfer">Transfer</a></li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="auth/login"><button type="button" class="btn btn-outline-success btn-sm">Sign In</button></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="auth/signup"><button type="button" class="btn btn-outline-success btn-sm">Sign Up</button></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div id="hero" class="hero">
+        <div class="hero-text">
+          <h1 class="hero-title">Carbon21</h1>
+          <h3 class="hero-description" >Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <a class="documentation" href="#"><button type="button" class="btn btn-outline-light btn-md doc-btn">Docs</button></a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Features section -->
+
+    <section id="features">
+
+      <div class="container-fluid">
+
+        <h1 class="features-header">Funcionalidades</h1>
+
+        <div class="row feature">
+          <div class="col-md-6 feature-img-container">
+            <img class="feature-image" src="./images/ft-feature.png" alt="" />
+          </div>
+          <div class="col-md-6 feature-text-container">
+            <h2 class="feature-title">Fungible Tokens</h2>
+            <p class="feature-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+          </div>
+        </div>
+
+        <div class="row feature">
+          <div class="col-md-6 order-2 order-md-1 feature-text-container">
+            <h2 class=" feature-title">Compensação</h2>
+            <p class="feature-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+          </div>
+          <div class="col-md-6 order-1 order-md-2 feature-img-container">
+            <img class="feature-image" src="./images/compensation.png" alt="" />
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Reforestation section -->
+
+    <section id="reforestation">
+
+      <div class="container-fluid">
+
+        <h1 class="reforestation-header">Benefícios do Reflorestamento</h1>
+
+        <div class="row">
+          <div class="col-md-4 benefit">
+            <i class="benefit-icon fa-solid fa-droplet fa-4x"></i>
+            <p class="benefit-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </div>
+          <div class="col-md-4 benefit">
+            <i class="benefit-icon fa-solid fa-temperature-half fa-4x"></i>
+            <p class="benefit-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </div>
+          <div class="col-md-4 benefit">
+            <i class="benefit-icon fa-solid fa-crow fa-4x"></i>
+            <p class="benefit-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 benefit">
+            <i class="benefit-icon fa-solid fa-heart-pulse fa-4x"></i>
+            <p class="benefit-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </div>
+          <div class="col-md-6 benefit">
+            <i class="benefit-description fa-solid fa-handshake fa-4x"></i>
+            <p class="benefit-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+    <!-- Promote Section -->
+
+    <section class="" id="promoters">
+
+      <h1 class="promoters-header">Promoters</h1>
+
+      <div id="promoters-carousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active container-fluid">
+            <img class="promoter-image" src="images/usp.jpg" alt="dog-profile">
+          </div>
+          <div class="carousel-item container-fluid">
+            <img class="promoter-image" src="images/udesc.jpg" alt="lady-profile">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#promoters-carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#promoters-carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+</section>
+
+    <!-- Footer section -->
+
+    <section id="footer">
+      <footer id="footer">
+        <div class="container-fluid">
+          <a href="#"><i class="social-icon fa-brands fa-twitter"></i></a>
+          <a href="#"><i class="social-icon fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="social-icon fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="social-icon fa-solid fa-envelope"></i></a>
+          <p>© Copyright Carbon21</p>
+        </div>
+      </footer>
+    </section>
+
+  </body>
+</html>

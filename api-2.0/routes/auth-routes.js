@@ -8,15 +8,29 @@ const authController = require("../controllers/auth-crontroller.js");
 const router = Router();
 
 //// UNAUTHENTICATED ROUTES ////
+
+//// Signup ////
+
+router.get('/signup', (req, res)=>{
+  res.render('signup',{title: "Signup", cssPath: "../css/signup.css"});
+});
+
 router.post(
   "/signup",
-  [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
+  // [body("username").not().isEmpty(), body("org").not().isEmpty(), body("csr").not().isEmpty(), validateAll],
   authController.signup
 );
 
 //TODO login middleware
 
 ///// AUTHENTICATED ROUTES /////
+
+//// Login ////
+
+router.get('/login', (req, res)=>{
+  res.render('login', {title: "Login", cssPath: "../css/login.css"});
+});
+
 router.use(checkAuth);
 
 module.exports = router;

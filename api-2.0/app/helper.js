@@ -197,7 +197,13 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGerSecret = async (username, userOrg, useCSR) => {
+const registerAndGerSecret = async (user, useCSR) => {
+  let username = user.username
+  let userOrg = user.org
+  let email = user.email
+  let password = user.password
+  let cpf = user.cpf
+
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
@@ -233,8 +239,10 @@ const registerAndGerSecret = async (username, userOrg, useCSR) => {
   try {
     // Register the user, enroll the user, and import the new identity into the wallet.
     secret = await ca.register(
-      { affiliation: await getAffiliation(userOrg), enrollmentID: username, role: "client" },
-      adminUser
+      { affiliation: await getAffiliation(userOrg), enrollmentID: user.username, role: "client",
+      attrs: [{name:"cpf", value: cpf},{name:"email", value: email},{name:"password", value: password}]
+      },
+      adminUser,
     );
 
     if (useCSR == true) {
