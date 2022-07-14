@@ -56,12 +56,16 @@ const invokeTransaction = async (
     let message;
 
     switch (fcn) {
-      // mam: removi o username dos argumentos passados para as transações, pois o correto é utilizar o ClientID, que pode ser obtido por meio da função ClientAccountID
-      // assim, agora esse argumento deve ser passado junto aos argumentos da chamada.
       case "Mint":
+        const destinyClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0],
+          destinyClientAccountId,
           args[1],
           args[2]
         );
@@ -69,21 +73,33 @@ const invokeTransaction = async (
         result = "success";
         break;
       case "TransferFrom":
+        const sourceClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
+        const destClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[1],
+          org_name
+        );
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0],
-          args[1],
+          sourceClientAccountId,
+          destClientAccountId,
           args[2],
           args[3]
         );
         logger.info("Transfer successful");
         result = { txid: result.toString() };
         break;
-      case "ClientAccountID":
-        result = await contract.submitTransaction("SmartContract:" + fcn);
-        logger.info("ClientID retrieved.");
-        result = { ClientID: result.toString() };
-        break;
+      // case "ClientAccountID":
+      //   result = await contract.submitTransaction("SmartContract:" + fcn);
+      //   logger.info("ClientID retrieved.");
+      //   result = { ClientID: result.toString() };
+      //   break;
       case "ClientAccountBalance":
         result = await contract.submitTransaction("SmartContract:" + fcn, args[0]);
         logger.info("Client balance retrieved.");
@@ -94,8 +110,6 @@ const invokeTransaction = async (
     }
 
     await gateway.disconnect();
-
-    // result = JSON.parse(result.toString());
 
     let response = {
       message: message,

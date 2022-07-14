@@ -1,6 +1,6 @@
 "use strict";
 
-var { Wallets } = require("fabric-network");
+var { Gateway, Wallets } = require("fabric-network");
 
 const logger = require("../util/logger");
 const path = require("path");
@@ -9,8 +9,55 @@ const fs = require("fs");
 
 // Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
-const util  = require("util");
+const util = require("util");
 const execPromise = util.promisify(exec);
+
+const getAccountId = async (channelName, chaincodeName, username, org_name) => {
+  try {
+    const ccp = await getCCP(org_name);
+
+    const walletPath = await getWalletPath(org_name);
+    const wallet = await Wallets.newFileSystemWallet(walletPath);
+    logger.debug(`Wallet path: ${walletPath}`);
+
+    //TODO após estudar wallets, temos que olhar se isso aqui será mantido
+    let identity = await wallet.get(username);
+    if (!identity) {
+      console.log(
+        `An identity for the user ${username} does not exist in the wallet, so registering user`
+      );
+      await getRegisteredUser(username, org_name, true);
+      identity = await wallet.get(username);
+      console.log("Run the registerUser.js application before retrying");
+      return;
+    }
+
+    const connectOptions = {
+      wallet,
+      identity: username,
+      discovery: { enabled: true, asLocalhost: true },
+      // eventHandlerOptions: EventStrategies.NONE
+    };
+
+    const gateway = new Gateway();
+    await gateway.connect(ccp, connectOptions);
+
+    const network = await gateway.getNetwork(channelName);
+    const contract = network.getContract(chaincodeName);
+
+    let result = await contract.submitTransaction("SmartContract:ClientAccountID");
+    result = result.toString();
+
+    logger.debug("Destiny ClientAccountID retrieved: " + result);
+
+    await gateway.disconnect();
+
+    return result;
+  } catch (error) {
+    logger.error(`Getting error: ${error}`);
+    return error.message;
+  }
+};
 
 const getCCP = async (org) => {
   let ccpPath = null;
@@ -100,7 +147,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     return error.message;
   }
 
-  const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret});
+  const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret });
   // const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret, attr_reqs: [{ name: 'role', optional: false }] });
 
   let x509Identity = {
@@ -198,11 +245,11 @@ const enrollAdmin = async (org, ccp) => {
 };
 
 const registerAndGerSecret = async (user, useCSR) => {
-  let username = user.username
-  let userOrg = user.org
-  let email = user.email
-  let password = user.password
-  let cpf = user.cpf
+  let username = user.username;
+  let userOrg = user.org;
+  let email = user.email;
+  let password = user.password;
+  let cpf = user.cpf;
 
   let ccp = await getCCP(userOrg);
 
@@ -239,10 +286,17 @@ const registerAndGerSecret = async (user, useCSR) => {
   try {
     // Register the user, enroll the user, and import the new identity into the wallet.
     secret = await ca.register(
-      { affiliation: await getAffiliation(userOrg), enrollmentID: user.username, role: "client",
-      attrs: [{name:"cpf", value: cpf},{name:"email", value: email},{name:"password", value: password}]
+      {
+        affiliation: await getAffiliation(userOrg),
+        enrollmentID: user.username,
+        role: "client",
+        attrs: [
+          { name: "cpf", value: cpf },
+          { name: "email", value: email },
+          { name: "password", value: password },
+        ],
       },
-      adminUser,
+      adminUser
     );
 
     if (useCSR == true) {
@@ -256,19 +310,18 @@ const registerAndGerSecret = async (user, useCSR) => {
       //  Script gera uma chave privada (salva em ./api-2.0/pkey.pem) e a partir dela um CSR (./api-2.0/certreq.csr)
       //  Common Name (CN) = username
       //  Org. Unit (OU) = client.userOrg.department1
-      var command = "./generateCSR.sh " + username + " " + userOrg
+      var command = "./generateCSR.sh " + username + " " + userOrg;
       await execWrapper(command);
-      
-      // // Le o csr gerado e adiciona no enroll 
-      const csr = fs.readFileSync('./certreq.csr', 'utf8');
+
+      // // Le o csr gerado e adiciona no enroll
+      const csr = fs.readFileSync("./certreq.csr", "utf8");
       // Le a pkey para add na wallet
-      var pkey = fs.readFileSync('./pkey.pem', 'utf8');
+      var pkey = fs.readFileSync("./pkey.pem", "utf8");
       logger.debug(`certreq:  ${csr}`);
       var enrollment = await ca.enroll({
         enrollmentID: username,
         enrollmentSecret: secret,
         csr: csr,
-        
       });
     } else {
       logger.debug(`NOT using CSR mode`);
@@ -278,7 +331,7 @@ const registerAndGerSecret = async (user, useCSR) => {
       });
       pkey = enrollment.key.toBytes();
     }
-    
+
     let orgMSPId = getOrgMSP(userOrg);
     const x509Identity = {
       credentials: {
@@ -310,6 +363,7 @@ module.exports = {
   getRegisteredUser: getRegisteredUser,
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
+  getAccountId: getAccountId,
 };
 
 async function execWrapper(cmd) {
