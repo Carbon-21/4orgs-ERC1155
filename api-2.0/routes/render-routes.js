@@ -15,7 +15,7 @@ router.get('/config', function(req, res) {
 });
 
 router.get('/transfer', function(req, res) {
-  res.render('mint',{title: "Transferências", cssPath: "" });
+  res.render('mint',{title: "Transfer", cssPath: "" });
 });
 
 module.exports = router;
