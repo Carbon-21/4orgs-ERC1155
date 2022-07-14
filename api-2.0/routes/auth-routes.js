@@ -11,8 +11,8 @@ const router = Router();
 
 //// Signup ////
 
-router.get('/signup', (req, res)=>{
-  res.render('signup',{title: "Signup", cssPath: "../css/signup.css"});
+router.get("/signup", (req, res) => {
+  res.render("signup", { title: "Signup", cssPath: "../css/signup.css" });
 });
 
 router.post(
@@ -27,8 +27,8 @@ router.post(
 
 //// Login ////
 
-router.get('/login', (req, res)=>{
-  res.render('login', {title: "Login", cssPath: "../css/login.css"});
+router.get("/login", (req, res) => {
+  res.render("login", { title: "Login", cssPath: "../css/login.css" });
 });
 
 router.use(checkAuth);
