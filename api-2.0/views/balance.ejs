@@ -5,32 +5,33 @@
 
   <body id ="balance">
 
-      <!-- Navbar -->
+    <!-- Navbar -->
 
-      <%- include("partials/navbar") %>
+    <%- include("partials/navbar") %>
 
     <div class="container-fluid">
       <div class="balance-card card shadow">
+
         <div class="header-container">
           <h1 class="balance-header">Balance</h1>
         </div>
+
         <hr>
+
         <form action="/balance" method="post">
+
           <div class="mb-3">
             <label for="token" class="form-label">Insira seu Token</label>
             <input type="text" class="form-control" id="token" name="token">
           </div>
+
           <div class="balance-button-container">
             <button type="submit" class="btn btn-primary">Consultar</button>
           </div>
 
         </form>
 
-
       </div>
-
-
-
     </div>
 
   </body>

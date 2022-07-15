@@ -61,7 +61,7 @@ nav .navbar-nav li a:hover{
   font-weight: 700;
   font-size: 3.5rem;
   margin-top: 60px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .hero-description{
@@ -70,7 +70,7 @@ nav .navbar-nav li a:hover{
 }
 
 .doc-btn{
-  margin: 20px 0;
+  margin: 30px 0 20px 0;
 }
 
 /* Feature Section */
@@ -85,6 +85,10 @@ nav .navbar-nav li a:hover{
   font-weight: 600;
   font-size: 2.5rem;
   margin-bottom: 80px;
+}
+
+.feature-title{
+  margin-bottom: 20px;
 }
 
 .feature-img-container{

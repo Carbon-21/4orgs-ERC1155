@@ -89,10 +89,14 @@ nav .navbar-nav li a:hover{
   margin-top: 40px;
 }
 
-.carbon-logo{
+.carbon-logo-container{
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 5%;
   width: 50%;
+}
+
+.carbon-logo{
+  border-radius:30px;
 }

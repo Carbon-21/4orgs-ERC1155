@@ -41,7 +41,7 @@ nav .navbar-nav li a:hover{
 
 #register{
   background-color: #ADCF9F;
-  padding: 120px 80px 80px 80px;
+  padding: 120px 150px 80px 150px;
   min-height: 100vh;
 }
 
@@ -82,10 +82,16 @@ nav .navbar-nav li a:hover{
   margin-top: 40px;
 }
 
-.carbon-logo{
+.carbon-logo-container{
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.carbon-logo{
+  border-radius:30px;
+  width: 60%;
+  height: auto;
 }
 
 .msg-container{
