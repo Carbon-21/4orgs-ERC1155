@@ -14,6 +14,11 @@ kill-hlf () {
 	docker network prune -f && docker volume prune -f
 }
 
+# Build mock File Server docker img
+cd metasrv
+docker build . -t mockmeta
+cd ..
+
 # #kill other dockers 
 cd Explorer
 kill-hlf

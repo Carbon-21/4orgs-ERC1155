@@ -348,3 +348,17 @@ services:
       # - /var/pavan/peer0-ibama:/var/hyperledger/production
     networks:
       - test
+
+  mockmeta:
+    container_name: mockmeta
+    image: mockmeta
+    ports:
+      - 8888:8888
+    networks:
+      - test
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s

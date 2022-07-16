@@ -89,6 +89,17 @@ const invokeTransaction = async (
         logger.info("Client balance retrieved.");
         result = { ClientBalance: result.toString() };
         break;
+      case "MintNFT":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[0],
+          args[1],
+          args[2],
+          args[3]
+        );
+        logger.info("Mint meta successful");
+        result = "success";
+        break;        
       default:
         break;
     }

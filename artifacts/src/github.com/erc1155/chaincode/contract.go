@@ -14,8 +14,16 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"net/http"
+	"bytes"
+	"io/ioutil"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+
+	// files "github.com/ipfs/go-ipfs-files"
+	
+
+
 )
 
 const uriKey = "uri"
@@ -23,6 +31,15 @@ const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
 const minterMSPID = "CarbonMSP"
+
+//  CARBON FEATURE
+type metadata struct {
+	TokenId			string	`json:"tokenid"`
+	Bioma			string	`json:"bioma"`
+	Area			string	`json:"area"`
+	Localizacao		string	`json:"localizacao"`
+	Status			string	`json:"status"`
+}
 
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
@@ -877,4 +894,69 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 		return keys[i].ID < keys[j].ID
 	})
 	return keys
+}
+
+// NEW Carbon21
+
+// Mint with meta creates amount tokens of token type id and assigns them to account, and save the metadata string (that should be a JSON) in a local ipfs node.
+// This function emits a TransferSingle event.
+func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, meta string) error {
+
+	fmt.Println("Received Metadatavalue: ",  meta)
+
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Get ID of submitting client identity
+	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("failed to get client id: %v", err)
+	}
+
+	// Mint tokens
+	err = mintHelper(ctx, operator, account, id, amount)
+	if err != nil {
+		return err
+	} else {
+		// In case of success, save metadata in file server
+		savemeta, err := addmeta(meta)
+		if err != nil {
+			fmt.Errorf("error: %s", err)
+			return err
+		}
+		fmt.Println("Metadata's successfully stored: ", savemeta)
+	}
+
+	// Emit TransferSingle event
+	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
+	return emitTransferSingle(ctx, transferSingleEvent)
+}
+
+func addmeta(meta string) (string, error) {
+
+    url := "http://192.168.0.32:8888/addnft"
+    fmt.Println("URL:>", url)
+
+    var jsonStr = []byte(meta)
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+    req.Header.Set("X-Custom-Header", "nftmetadata")
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Errorf("error: %s", err)
+        return "", err
+    }
+    defer resp.Body.Close()
+
+    fmt.Println("response Status:", resp.Status)
+    fmt.Println("response Headers:", resp.Header)
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("response Body:", string(body))
+
+	return string(body), nil
 }
