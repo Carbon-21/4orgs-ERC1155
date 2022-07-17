@@ -41,6 +41,9 @@ type metadata struct {
 	Status			string	`json:"status"`
 }
 
+var filesrv string
+var filesrvport string
+
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
 	contractapi.Contract
@@ -937,7 +940,7 @@ func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, acc
 
 func addmeta(meta string) (string, error) {
 
-    url := "http://192.168.0.32:8888/addnft"
+    url := "http://"+filesrv+":"+filesrvport+"/addnft"
     fmt.Println("URL:>", url)
 
     var jsonStr = []byte(meta)
@@ -959,4 +962,16 @@ func addmeta(meta string) (string, error) {
     fmt.Println("response Body:", string(body))
 
 	return string(body), nil
+}
+
+
+func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterface, address string, port string) error {
+	fmt.Println("Setting file server address: ", address)
+	filesrv = address
+	fmt.Println("Setting file server port: ", port)
+	filesrvport = port
+
+	fmt.Println("New file server address: ", filesrv)
+	fmt.Println("New file server port: ", filesrvport)
+	return nil
 }

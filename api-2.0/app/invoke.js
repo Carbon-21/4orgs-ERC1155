@@ -99,7 +99,16 @@ const invokeTransaction = async (
         );
         logger.info("Mint meta successful");
         result = "success";
-        break;        
+        break;       
+      case "SetFileSrvCFG":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[0],
+          args[1]
+        );
+        logger.info("SetFileSrvCFG successful");
+        result = "success";
+        break;   
       default:
         break;
     }
