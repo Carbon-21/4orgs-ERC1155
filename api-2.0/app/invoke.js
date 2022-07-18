@@ -56,8 +56,6 @@ const invokeTransaction = async (
     let message;
 
     switch (fcn) {
-      // mam: removi o username dos argumentos passados para as transações, pois o correto é utilizar o ClientID, que pode ser obtido por meio da função ClientAccountID
-      // assim, agora esse argumento deve ser passado junto aos argumentos da chamada.
       case "Mint":
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,

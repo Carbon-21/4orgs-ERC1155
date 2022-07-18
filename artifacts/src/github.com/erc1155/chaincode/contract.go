@@ -966,8 +966,16 @@ func addmeta(meta string) (string, error) {
 
 
 func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterface, address string, port string) error {
+
+	// Check minter authorization - this sample assumes Carbon is the org allowed to change configs
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Setting file server address: ", address)
 	filesrv = address
+
 	fmt.Println("Setting file server port: ", port)
 	filesrvport = port
 
