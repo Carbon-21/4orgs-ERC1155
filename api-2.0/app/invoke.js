@@ -96,7 +96,7 @@ const invokeTransaction = async (
           args[3]
         );
         logger.info("Mint meta successful");
-        result = "success";
+        result = { MintNFT: result.toString() };
         break;       
       case "SetFileSrvCFG":
         result = await contract.submitTransaction(
@@ -105,7 +105,14 @@ const invokeTransaction = async (
           args[1]
         );
         logger.info("SetFileSrvCFG successful");
-        result = "success";
+        result = { SetFileSrvCFG: result.toString() };
+        break;   
+      case "TotalSupply":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn
+        );
+        logger.info("TotalSupply successful");
+        result = { TotalSupply: result.toString() };
         break;   
       default:
         break;

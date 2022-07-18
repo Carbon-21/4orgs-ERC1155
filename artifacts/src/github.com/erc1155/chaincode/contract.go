@@ -33,14 +33,6 @@ const approvalPrefix = "account~operator"
 const minterMSPID = "CarbonMSP"
 
 //  CARBON FEATURE
-type metadata struct {
-	TokenId			string	`json:"tokenid"`
-	Bioma			string	`json:"bioma"`
-	Area			string	`json:"area"`
-	Localizacao		string	`json:"localizacao"`
-	Status			string	`json:"status"`
-}
-
 var filesrv string
 var filesrvport string
 
@@ -902,6 +894,8 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 // NEW Carbon21
 
 // Mint with meta creates amount tokens of token type id and assigns them to account, and save the metadata string (that should be a JSON) in a local ipfs node.
+// TODO: implementing IPFS will no more need metadata string. This metadata will be saved directly in IPFS, and here we will need only the link
+
 // This function emits a TransferSingle event.
 func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, meta string) error {
 
@@ -938,6 +932,13 @@ func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, acc
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
+// CARBON21:
+// Auxiliar function to add metadata in mockmeta server
+// Function to support development. Will be removed when IPFS implemented
+// 
+// Usage: mockmeta is configured to be running in http://address:port/addnft
+// When starting contract its necessary to perform a "SetFileSrvCFG" transaction, defining the filesrv and filesrvport values.
+// 
 func addmeta(meta string) (string, error) {
 
     url := "http://"+filesrv+":"+filesrvport+"/addnft"
@@ -964,7 +965,8 @@ func addmeta(meta string) (string, error) {
 	return string(body), nil
 }
 
-
+// During development phase, its necessary to define a specific file server address, to offer token JSON metadata 
+// In production environment we'll use IPFS, and this configuration wont be necessary anymore
 func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterface, address string, port string) error {
 
 	// Check minter authorization - this sample assumes Carbon is the org allowed to change configs
@@ -973,13 +975,47 @@ func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
+	// Set file server address
 	fmt.Println("Setting file server address: ", address)
 	filesrv = address
 
+	// Set file server port
 	fmt.Println("Setting file server port: ", port)
 	filesrvport = port
 
 	fmt.Println("New file server address: ", filesrv)
 	fmt.Println("New file server port: ", filesrvport)
 	return nil
+}
+
+
+func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface) (uint64, error) {
+
+	// if account == "0x0" {
+	// 	return 0, fmt.Errorf("balance query for the zero address")
+	// }
+
+	// Convert id to string
+	// idString := strconv.FormatUint(uint64(id), 10)
+
+	var balance uint64
+
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return 0, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		balAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
+		balance += balAmount
+	}
+
+	return balance, nil
+
 }
