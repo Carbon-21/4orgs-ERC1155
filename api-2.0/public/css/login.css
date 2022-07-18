@@ -40,7 +40,10 @@ nav .navbar-nav li a:hover{
 /* Login Section */
 
 #login{
-  background-color: #ADCF9F;
+  /* background-color: #ADCF9F; */
+  background-image: url("../images/leaves-background.jpg");
+  background-repeat: no-repeat;
+  background-size:cover;
   padding: 10% 20% 5% 20%;
   min-height: 100vh;
 }

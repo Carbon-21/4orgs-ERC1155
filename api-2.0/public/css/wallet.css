@@ -1,0 +1,68 @@
+body{
+  font-family: 'Poppins', sans-serif;
+  background-image: url("../images/wallet-bg.jpg");
+  background-repeat: no-repeat;
+  background-size:cover;
+}
+
+/* Navbar */
+
+.navbar{
+    padding: 5px 20px ;
+    background-color: #fff;
+  }
+  
+  nav .navbar-nav li a:hover{
+    color: #00C897;
+  }
+  
+  .navbar-brand{
+  
+    font-weight: 500;
+    font-size: 2rem;
+  }
+  
+  .navbar-brand .carbon21-logo{
+    height: 70px;
+    border-radius: 30%;
+    margin: 0 30px 0 20px;
+  }
+  
+  .nav-item{
+    font-weight: 300;
+    margin: 0 4px;
+  }
+
+  /* Token */
+
+  .key-icon{
+    margin: 0 30px 0 20px;
+    color: #7F8487;
+  }
+
+  .token-card{
+    margin-bottom: 40px;
+  }
+
+  /* Wallet section */
+
+  .wallet-container{
+    padding: 0 100px ;
+  }
+
+  .wallet-header{
+    margin-top: 150px;
+    margin-bottom: 80px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .card{
+    border-radius: 20px;
+    background-color: #ADCF9F;
+  }
+
+  .coin-icon{
+    margin: 0 30px 0 20px;
+    color: #FEB139;
+  }

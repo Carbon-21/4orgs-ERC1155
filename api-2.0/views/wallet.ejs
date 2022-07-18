@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <%- include("partials/head") %>
+
+<body>
+
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <section id="wallet" >
+
+        <div class="container-fuid wallet-container">
+  
+          <h1 class="wallet-header">Minha Carteira</h1>
+
+          <div class="card shadow-lg token-card">
+            <div class="card-body">
+              <form action="" method="POST">
+                <div class="d-flex justify-content-between p-md-1">
+                  <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                      <i class="fa-solid fa-key fa-4x key-icon"></i>
+                    </div>
+                    <div>
+                      <input type="text" name="token" id="token" class="form-control" required/>
+                      <label class="form-label" for="token">Insira seu token</label>
+                    </div>
+                  </div>
+                  <div class="align-self-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Consult</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-lg">
+            <div class="card-body">
+              <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                  <div class="align-self-center">
+                    <i class="fa-solid fa-coins fa-4x coin-icon"></i>
+                  </div>
+                  <div>
+                    <h4>Sylvas</h4>
+                    <p class="mb-0">Seu saldo total de Sylvacoins</p>
+                  </div>
+                </div>
+                <div class="align-self-center">
+                  <h2 class="h1 mb-0">$ 18,000</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+    </section>
+
+</body>
+</html>
