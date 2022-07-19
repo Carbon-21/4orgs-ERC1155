@@ -1,0 +1,74 @@
+<!-- Mint NFT Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <%- include("partials/head") %>
+
+  <body>
+
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <!-- Mint Section -->
+
+    <section id="mintNFT">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <div class="col-4 image-container"></div>
+    
+                <div class="col-8 form-container">
+
+                    <h1 class="mint-header">Mint FT</h1>
+                    
+                    <form action="" method="POST">
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-user fa-lg"></i>
+                                <input type="text" name="clientId" id="clientId" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="clientId">Insira o Client Id de destino</label>
+                        </div>
+
+                        <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-coins fa-lg"></i>
+                                <input type="text" name="qty" id="qty" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="qty">Insira a quantidade de Sylvas</label>
+                        </div>
+
+                        <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-key fa-lg"></i>
+                                <input type="text" name="token" id="token" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="token">Insira seu token</label>
+                        </div>
+
+                        <div class="mint-button">
+                            <button type="submit" class="btn btn-primary btn-md">Emitir</button>
+                        </div>
+
+                    </form>
+
+                </div>
+    
+            </div>
+
+        </div>
+
+    </section>
+
+  </body>
+
+</html>

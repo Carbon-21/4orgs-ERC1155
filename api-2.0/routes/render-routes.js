@@ -6,8 +6,8 @@ router.get('/wallet', (req, res)=>{
   res.render('wallet',{title: "My Wallet", cssPath: "css/wallet.css" });
 });
 
-router.get('/mint', function(req, res) {
-  res.render('mint', {title: "Mint", cssPath: "css/mint.css"});
+router.get('/mintFT', function(req, res) {
+  res.render('mintFT', {title: "Mint FT", cssPath: "css/mintFT.css"});
 });
 
 router.get('/collection', function(req, res) {
@@ -19,7 +19,11 @@ router.get('/config', function(req, res) {
 });
 
 router.get('/transfer', function(req, res) {
-  res.render('mint',{title: "Transfer", cssPath: "" });
+  res.render('transfer',{title: "Transfer", cssPath: "" });
+});
+
+router.get('/mintNFT', function(req, res) {
+  res.render('mintNFT', {title: "Mint NFT", cssPath: "css/mintNFT.css"});
 });
 
 module.exports = router;
