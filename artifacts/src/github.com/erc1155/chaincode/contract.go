@@ -1014,7 +1014,7 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 		}
 
 		// Split Key to search for specific tokenid
-		objectType, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
         if err != nil {
             return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
         }

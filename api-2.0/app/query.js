@@ -68,6 +68,10 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
         result = `{"ClientAccountBalance":"${result.toString()}"}`;
         break;
+      case "URI":
+        result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
+        result = `{"URI":"${result.toString()}"}`;
+        break;
       default:
         break;
     }
