@@ -10,6 +10,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+
+// Desnecessário atualmente definir uma estrutura rígida de metadados, já que é possível armazenar uma estrutura genérica mais flexível (implementação atual)
+// Exemplo de struct metadata
 // type metadata struct {
 // 	TokenId			string	`json:"tokenid"`
 // 	Bioma			string	`json:"bioma"`
@@ -25,7 +28,7 @@ type allMetadatas struct {
 var metadatas []allMetadatas
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "MockMeta file!")
+	fmt.Fprintf(w, "Running!")
 }
 
 func createMetadata(w http.ResponseWriter, r *http.Request) {

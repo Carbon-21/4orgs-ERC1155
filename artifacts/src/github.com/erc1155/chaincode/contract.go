@@ -935,14 +935,17 @@ func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, acc
 // CARBON21:
 // Auxiliar function to add metadata in mockmeta server
 // Function to support development. Will be removed when IPFS implemented
-// 
-// Usage: mockmeta is configured to be running in http://address:port/addnft
 // When starting contract its necessary to perform a "SetFileSrvCFG" transaction, defining the filesrv and filesrvport values.
+// 
+// Usage: mockmeta is configured to be running in http://address:port/
+// invoke SetFileSrvCFG(address, port) (2x :D) 
+// POST http://address:port/addnft sending an JSON in body, to add it
+// GET  http://address:port/{tokenid}.json to retrieve tokenid metadata in JSON format 
 // 
 func addmeta(meta string) (string, error) {
 
     url := "http://"+filesrv+":"+filesrvport+"/addnft"
-    fmt.Println("URL:>", url)
+    fmt.Println("Fileserver URL:>", url)
 
     var jsonStr = []byte(meta)
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -988,17 +991,15 @@ func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterfac
 	return nil
 }
 
-
-func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface) (uint64, error) {
-
-	// if account == "0x0" {
-	// 	return 0, fmt.Errorf("balance query for the zero address")
-	// }
-
-	// Convert id to string
-	// idString := strconv.FormatUint(uint64(id), 10)
+// Return Total Supply of a specific tokenid
+// 
+func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface, tokenid string) (uint64, error) {
 
 	var balance uint64
+
+	if tokenid == "" {
+		return 0, fmt.Errorf("Please inform tokenid!")
+	}
 
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
@@ -1012,8 +1013,19 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface)
 			return 0, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
 
-		balAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
-		balance += balAmount
+		// Split Key to search for specific tokenid
+		objectType, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+        if err != nil {
+            return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+        }
+
+		// Add all balances of informed tokenid
+		returnedTokenID := compositeKeyParts[1]
+		if returnedTokenID == tokenid {
+			balAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
+			balance += balAmount
+		}
+
 	}
 
 	return balance, nil
