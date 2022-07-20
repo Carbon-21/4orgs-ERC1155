@@ -96,9 +96,15 @@ const invokeTransaction = async (
         result = { txid: result.toString() };
         break;
       case "MintNFT":
+        const destNFTClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0],
+          destNFTClientAccountId,
           args[1],
           args[2],
           args[3]
@@ -114,7 +120,15 @@ const invokeTransaction = async (
         );
         logger.info("SetFileSrvCFG successful");
         result = { SetFileSrvCFG: result.toString() };
-        break;   
+        break;
+      case "SetURI":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[0]
+        );
+        logger.info("SetURI successful");
+        result = { SetURI: result.toString() };
+        break;  
       default:
         break;
     }
