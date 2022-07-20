@@ -3,6 +3,7 @@ const { Gateway, Wallets } = require("fabric-network");
 const logger = require("../util/logger");
 
 const helper = require("./helper");
+
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
   try {
     // load the network configuration
@@ -43,7 +44,18 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     let result;
     switch (fcn) {
       case "BalanceOf":
-        result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0], args[1]);
+        const clientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
+
+        result = await contract.evaluateTransaction(
+          "SmartContract:" + fcn,
+          clientAccountId,
+          args[1]
+        );
         break;
       case "TotalSupply":
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);

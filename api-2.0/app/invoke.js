@@ -57,9 +57,15 @@ const invokeTransaction = async (
 
     switch (fcn) {
       case "Mint":
+        const destinyClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0],
+          destinyClientAccountId,
           args[1],
           args[2]
         );
@@ -67,10 +73,22 @@ const invokeTransaction = async (
         result = "success";
         break;
       case "TransferFrom":
+        const sourceClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
+        const destClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[1],
+          org_name
+        );
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0],
-          args[1],
+          sourceClientAccountId,
+          destClientAccountId,
           args[2],
           args[3]
         );
@@ -102,8 +120,6 @@ const invokeTransaction = async (
     }
 
     await gateway.disconnect();
-
-    // result = JSON.parse(result.toString());
 
     let response = {
       message: message,
