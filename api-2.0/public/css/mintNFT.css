@@ -33,7 +33,7 @@ body{
   /* Mint Section */
 
   .image-container{
-    background-image: url("../images/mintNFT-bg.jpeg");
+    background-image: url("../images/mintNFT-bg.webp");
     background-repeat: no-repeat;
     background-size:cover;
     opacity: 0.94;

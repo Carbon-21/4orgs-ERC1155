@@ -38,7 +38,7 @@ nav .navbar-nav li a:hover{
 /* Hero */
 
 .hero{
-  background-image: url("../images/hero-image.jpg");
+  background-image: url("../images/hero-image.webp");
   background-repeat: no-repeat;
   background-position: top;
   display: flex;
