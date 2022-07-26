@@ -1,6 +1,6 @@
 body{
     font-family: 'Poppins', sans-serif;
-    background-image: url("/images/wallet-bg.webp");
+    background-image: url("/images/transfer-bg.webp");
     background-repeat: no-repeat;
     background-size:cover;
   }
@@ -36,7 +36,7 @@ color: #00C897;
 
 .transfer-header{
     margin-top: 120px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     text-align: center;
     font-weight: 600;
 }
@@ -47,7 +47,7 @@ color: #00C897;
 }
 
 .card{
-    width: 50%;
+    width: 40%;
     border-radius: 20px;
     background-color: #ADCF9F;
 }
