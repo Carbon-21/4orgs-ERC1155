@@ -8,3 +8,4 @@ artifacts/channel/crypto-config/**
 **/*.pem
 **/*.crt
 log.txt
+api-2.0/config/*.json

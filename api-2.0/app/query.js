@@ -7,12 +7,10 @@ const helper = require("./helper");
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
   try {
     // load the network configuration
-    // const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json');
-    // const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
-    const ccp = await helper.getCCP(org_name); //JSON.parse(ccpJSON);
+    const ccp = await helper.getCCP(org_name);
 
     // Create a new file system based wallet for managing identities.
-    const walletPath = await helper.getWalletPath(org_name); //.join(process.cwd(), 'wallet');
+    const walletPath = await helper.getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     logger.debug(`Wallet path: ${walletPath}`);
 
@@ -58,6 +56,21 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
           clientAccountId,
           args[1]
         );
+        break;
+      case "TotalSupply":
+        result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
+        break;
+      case "ClientAccountID":
+        result = await contract.evaluateTransaction("SmartContract:" + fcn);
+        result = `{"ClientID":"${result.toString()}"}`;
+        break;
+      case "ClientAccountBalance":
+        result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
+        result = `{"ClientAccountBalance":"${result.toString()}"}`;
+        break;
+      case "URI":
+        result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
+        result = `{"URI":"${result.toString()}"}`;
         break;
       default:
         break;

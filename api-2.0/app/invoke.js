@@ -95,16 +95,40 @@ const invokeTransaction = async (
         logger.info("Transfer successful");
         result = { txid: result.toString() };
         break;
-      case "ClientAccountID":
-        result = await contract.submitTransaction("SmartContract:" + fcn);
-        logger.info("ClientID retrieved.");
-        result = { ClientID: result.toString() };
+      case "MintNFT":
+        const destNFTClientAccountId = await helper.getAccountId(
+          channelName,
+          chaincodeName,
+          args[0],
+          org_name
+        );
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          destNFTClientAccountId,
+          args[1],
+          args[2],
+          args[3]
+        );
+        logger.info("Mint meta successful");
+        result = { MintNFT: result.toString() };
+        break;       
+      case "SetFileSrvCFG":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[0],
+          args[1]
+        );
+        logger.info("SetFileSrvCFG successful");
+        result = { SetFileSrvCFG: result.toString() };
         break;
-      case "ClientAccountBalance":
-        result = await contract.submitTransaction("SmartContract:" + fcn, args[0]);
-        logger.info("Client balance retrieved.");
-        result = { ClientBalance: result.toString() };
-        break;
+      case "SetURI":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[0]
+        );
+        logger.info("SetURI successful");
+        result = { SetURI: result.toString() };
+        break;  
       default:
         break;
     }
