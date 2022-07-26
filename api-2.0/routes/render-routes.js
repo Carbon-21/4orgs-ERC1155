@@ -19,7 +19,7 @@ router.get('/config', function(req, res) {
 });
 
 router.get('/transfer', function(req, res) {
-  res.render('transfer',{title: "Transfer", cssPath: "" });
+  res.render('transfer',{title: "Transfer", cssPath: "css/transfer.css" });
 });
 
 router.get('/mintNFT', function(req, res) {
