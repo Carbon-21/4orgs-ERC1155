@@ -11,26 +11,23 @@ cd 4orgs-ERC1155
 
 Para instalar os pré-requisitos:
 ```
-chmod +x ./installPreReq.sh
-./installPreReq.sh
+chmod +x ./installPreReq
+./installPreReq
 ```
 _Nota: Ao final da execução, a versão de todos os programas instalados será exibida_
 
-Obtenção do Fabric Samples e colocação no path
+Obtenção dos Samples do Hyperledger Fabric
 ```
-chmod +x ./obtainSamples.sh
-. ./obtainSamples.sh 
+chmod +x ./obtainSamples
+./obtainSamples
 ```
-_Notas desse script:_
-<ul>
-      <li><i>É possivel obter os samples, aplicar o path ou ambos</i></li>
-      <li><i>É possivel definir o path temporariamente (vinculado ao terminal) ou permanentemente (Em desenvolvimento)</i></li>
-      <li><i>Para atribuir o path corretamente:</i></li>
-      <ul>
-            <li><i>O script deve estar no mesmo nivel do diretorio dos samples, e não dentro dele</i></li>
-            <li><i>Executar com o . inicial</i></li>
-      </ul>
-</ul>
+
+Atribuição ao path
+```
+chmod +x ./atribuiPath
+./atribuiPath
+```
+_Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
  
 ### Rede
 

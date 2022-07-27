@@ -23,15 +23,6 @@ obtemFabricSamples(){
         curl -sSL https://bit.ly/2ysbOFE | bash -s
 }
 
-adicionaPath(){
-	# BINFABRICPATH=$(pwd)/fabricSamples/fabric-samples/bin
-	# PATH="${PATH:+${PATH}:${BINFABRICPATH}}"	
-	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~/.bashrc
-	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~root/.bashrc
-	echo "Adicionado ao path, abra um novo terminal para as mudanças fazer efeito"
-	#source ~/.bashrc
-}
-
 clear
 if [[ -d "fabricSamples" ]]; then
 	echo "Samples do Hyperladger Fabric encontrados, continuando..."
@@ -43,12 +34,5 @@ else
 	fi
 fi
 
-clear
-
-echo "Deseja atribuir os binarios do Sample do Hyperledger Fabric no path ?( s / n )"
-read tempperm
-if [ "$tempperm" == s ]; then
-	adicionaPath
-fi
 
 echo "Saindo ..."

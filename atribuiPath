@@ -1,0 +1,26 @@
+#!/bin/bash
+
+adicionaPath(){
+	# BINFABRICPATH=$(pwd)/fabricSamples/fabric-samples/bin
+	# PATH="${PATH:+${PATH}:${BINFABRICPATH}}"	
+	echo "export PATH=$(pwd)/fabricSamples/fabric-samples/bin:$PATH" >> ~/.bashrc
+	echo "Adicionado ao path, abra um novo terminal para as mudanças fazer efeito"
+	#source ~/.bashrc
+}
+
+
+clear
+if [[ -d "fabricSamples" ]]; then
+	echo "Samples do Hyperladger Fabric encontrados, continuando..."
+	echo "Obs executar esse script como root e usuario normal, para vincular ao path de ambos"
+	echo "Deseja atribuir ao path ?"
+
+		read simounao
+	if [ "$simounao" == s ]; then
+		adicionaPath
+	fi
+else
+	echo  "Diretorio dos samples do hyperledger Fabric nao encontrados, favor executar obtainSamples" 
+
+fi
+
