@@ -21,19 +21,19 @@ router.post(
   authController.signup
 );
 
+router.get("/login", (req, res) => {
+  res.render("login", { title: "Login", cssPath: "../css/login.css" });
+});
+
 router.post(
   "/login",
-  [body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
+  //[body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
   authController.login
 );
 
 ///// AUTHENTICATED ROUTES /////
 
 //// Login ////
-
-router.get("/login", (req, res) => {
-  res.render("login", { title: "Login", cssPath: "../css/login.css" });
-});
 
 router.use(checkAuth);
 

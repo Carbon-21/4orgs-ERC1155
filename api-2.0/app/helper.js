@@ -7,9 +7,13 @@ const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
 const fs = require("fs");
 
+const IdentityService = require("fabric-ca-client");
+
 // Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
 const util = require("util");
+//const { IdentityService }= require("fabric-ca-client");
+const { User } = require("fabric-common");
 const execPromise = util.promisify(exec);
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
@@ -100,6 +104,45 @@ const getAffiliation = async (org) => {
   // Default in ca config file we have only two affiliations, if you want ti use cetesb ca, you have to update config file with third affiliation
   //  Here already two Affiliation are there, using i am using "users.department1" even for cetesb
   return org == "Carbon" ? "carbon.department1" : "users.department1";
+};
+
+
+const getRegisteredUser2 = async (username, org) => {
+  //username = user.username;
+  //org = user.org;
+
+  let ccp = await getCCP(org);
+
+  const caURL = await getCaUrl(org, ccp);
+  const ca = new FabricCAServices(caURL,undefined,"ca.carbon.example.com");
+  console.log("ca name "+ca.getCaName())
+  const identityService = await ca.newIdentityService();
+
+  const walletPath = await getWalletPath(org);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+  // Check to see if we've already enrolled the admin user.
+  let adminIdentity = await wallet.get("admin");
+  if (!adminIdentity) {
+    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    await enrollAdmin(org, ccp);
+    adminIdentity = await wallet.get("admin");
+    console.log("Admin Enrolled Successfully");
+  }
+
+  // build a user object for authenticating with the CA
+  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+  const adminUser = await provider.getUserContext(adminIdentity, "admin");
+
+  try {
+    const query = await identityService.getOne(username, adminUser);
+    //console.log(query['result'])
+    return query['result'];
+  } catch (error) {
+    logger.error(`Getting error: ${error}`)
+    return error.message;
+  }
+  
 };
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -255,6 +298,7 @@ const registerAndGerSecret = async (user, useCSR) => {
 
   const caURL = await getCaUrl(userOrg, ccp);
   const ca = new FabricCAServices(caURL);
+  console.log("ca name "+ca.getCaName())
 
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -361,6 +405,7 @@ module.exports = {
   getCCP: getCCP,
   getWalletPath: getWalletPath,
   getRegisteredUser: getRegisteredUser,
+  getRegisteredUser2:getRegisteredUser2,
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
   getAccountId: getAccountId,

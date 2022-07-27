@@ -1,6 +1,7 @@
 const helper = require("../app/helper");
 const logger = require("../util/logger");
 const auth = require("../util/auth");
+const { IdentityService } = require("fabric-ca-client");
 
 exports.signup = async (req, res, next) => {
   let user = req.body;
@@ -11,10 +12,6 @@ exports.signup = async (req, res, next) => {
   logger.debug("End point : /users");
   logger.debug("Username: " + user.username);
   logger.debug("Org: " + user.org);
-
-  //create jwt
-  let token;
-  token = auth.createJWT(user.username, user.org);
 
   //attemp to register user
   let response = await helper.registerAndGerSecret(user, useCSR);
@@ -31,7 +28,6 @@ exports.signup = async (req, res, next) => {
       user.username,
       user.org
     );
-    response.token = token;
     res.json(response);
   } else {
     logger.error(
@@ -45,25 +41,37 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.login = async (req, res) => {
-  var username = req.body.username;
-  var org = req.body.org;
+  let username = req.body.username;
+  //var org = req.body.org;
+  let org = "Carbon" // hardcoded
+  let password = req.body.password;
 
   logger.debug("Username: " + username);
   logger.debug("Org: " + org);
 
-  let isRegistered = await helper.isUserRegistered(username, org);
+  //New
 
-  if (isRegistered) {
-    let token;
-    token = auth.createJWT(username, org);
-    res.json({ success: true, message: "The user was logged in successfully", token: token})
+  let registeredUser = await helper.getRegisteredUser2(username, org);
 
-    logger.info("User %s was logged in successfully",username);
 
+  if (typeof registeredUser !== "string") {
+    let registeredPassword = "";
+    for (let i = 0; i < registeredUser['attrs'].length && registeredPassword == ""; i++) {
+      if (registeredUser['attrs'][i]['name'] == "password")
+        registeredPassword = registeredUser['attrs'][i]['value'];
+    }
+
+    if (registeredPassword == password) {
+      let token;
+      token = auth.createJWT(username, org);
+      res.json({ success: true, message: "The user was logged in successfully", token: token})
+      logger.info("User %s was logged in successfully",username);
+    } else {
+      res.json({ success: false, message: "Username and/or password wrong"})
+    }
   } else {
     res.json({ success: false, message: `Username ${username} is not registered`})
-
-    logger.error(`Username ${username} is not registered`);
+    logger.error(`Username ${username} is not registered`)
   }
 };
 
