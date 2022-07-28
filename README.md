@@ -14,7 +14,7 @@ Para instalar os pré-requisitos:
 chmod +x ./installPreReq
 ./installPreReq
 ```
-_Nota: Ao final da execução, a versão de todos os programas instalados será exibida_
+_Nota: Aconselhavel reiniciar a maquina ao fim das instalações_
 
 Obtenção dos Samples do Hyperledger Fabric
 ```
