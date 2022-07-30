@@ -1,7 +1,7 @@
 channel-artifacts/*.tx
 artifacts/channel/*.tx
 artifacts/channel/*.block
-artifacts/channel/create-certificate-with-ca/fabric-ca/*/fabric-ca-server.db
+
 channel-artifacts/*.block
 artifacts/channel/crypto-config/**
 *.tar.gz
@@ -9,3 +9,5 @@ artifacts/channel/crypto-config/**
 **/*.crt
 log.txt
 api-2.0/config/*.json
+artifacts/channel/create-certificate-with-ca/fabric-ca/**/**
+!artifacts/channel/create-certificate-with-ca/fabric-ca/**/*.yaml
