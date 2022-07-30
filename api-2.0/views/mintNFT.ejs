@@ -4,6 +4,30 @@
 <html lang="en" dir="ltr">
 
   <%- include("partials/head") %>
+  
+  <!--<script type="text/javascript" src="../scripts/test.js"></script>-->
+
+  <!--<script type="text/javascript">
+    function teste() {
+        //Wait for page to finish loading
+        window.addEventListener("load",function(){
+            //Run function when you submit form
+            document.getElementById("form").addEventListener("submit",function(e){
+                //Stop the form from submitting:
+                e.preventDefault();
+
+                //Get your input value
+                var username = document.getElementById("username").value;
+
+                //Log it to your console
+                console.log(username)
+                alert("username")
+            });
+        });
+    }
+
+
+  </script>-->
 
   <body>
 
@@ -25,7 +49,7 @@
 
                     <h1 class="mint-header">Mint NFT</h1>
                     
-                    <form action="" method="POST">
+                    <form id="form" action="" method="GET" onsubmit="sendRequest('MintNFT')">
 
                         <div class="flex-fill">
                             <div class="mint-data">
