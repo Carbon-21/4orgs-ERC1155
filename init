@@ -56,7 +56,7 @@ chmod +x deployChaincode.sh
 ./deployChaincode.sh
 
 #create connection profiles if they don't exist already
-cd api-2.0/
+cd api-2.0/config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
 
 cd ..
