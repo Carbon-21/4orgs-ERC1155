@@ -54,7 +54,7 @@ async function sendRequest(requestType){
     event.preventDefault()
     let url
     let token 
-    console.log(requestType)
+    console.log('request type:',requestType)
     switch (requestType) {
         case "MintNFT":
             url = "chaincode/channels/mychannel/chaincodes/erc1155"
@@ -63,6 +63,8 @@ async function sendRequest(requestType){
             let nftId = document.getElementById("nftId").value
             let phyto = document.getElementById("phyto").value
             let location = document.getElementById("location").value
+            let amount = document.getElementById("amount").value
+            console.log("typeof amount",typeof amount)
             token = document.getElementById("token").value
 
             meta = {
@@ -77,7 +79,7 @@ async function sendRequest(requestType){
                 //"nftId": nftId,
                 //"phyto": phyto,
                 //"location": location,
-                "args": ["","NFT", 19, JSON.stringify(meta)] //TODO: add value to be minted on the webpage 
+                "args": ["",nftId, amount, JSON.stringify(meta)] //TODO: add value to be minted on the webpage 
             }
             console.log("stringify=\n",JSON.stringify(body))
             sendPost(url, body, token)
