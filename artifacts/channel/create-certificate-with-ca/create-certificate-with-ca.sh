@@ -593,3 +593,5 @@ createCertificatesForIbama
 
 createCretificatesForOrderer
 
+# Remove root privileges in fabric-ca
+sudo chown -R $USER: ./fabric-ca/
