@@ -40,7 +40,11 @@ exports.signup = async (req, res, next) => {
   }
 };
 
+/*acrescentada a rota de login, com um processo básico de verificação de senha (sem PHS implementado ainda). Além disso, na rota do signup, 
+a parte de retornar o token JWT foi deslocada para para a parte de login.
+*/
 exports.login = async (req, res) => {
+  logger.info("Entered login route")
   let username = req.body.username;
   //var org = req.body.org;
   let org = "Carbon" // hardcoded

@@ -107,6 +107,14 @@ const getAffiliation = async (org) => {
 };
 
 
+/**verifica se existe um usuário cadastrado na CA da carbon de forma independente do objeto wallet, sem chamá-lo. Ele verifica essa existência 
+ * diretamente no db criado pela CA. O getRegisteredUser original faz essa verificação por meio da pasta wallet criada na api. 
+ * Eu não removi a getRegisteredUser original pois ela é usada em alguns métodos da api e eu não quis removê-la sem um consenso do pessoal, 
+ * e criei uma função paralela (getRegisteredUser2) para o processo de login. Além disso, eu identifiquei um pequeno problema com a getRegisteredUser 
+ * original, pois se ela não identifica um usuário cadastrado na pasta wallet da api, ele faz um enroll desse usuário, de forma que ocorre cadastros 
+ * involuntários. Por exemplo, se você fizer um invoke ou uma query passando um username não cadastrado, ocorre um enroll e esse username passa a 
+ * ficar cadastrado, criando registros fantasmas.
+*/
 const getRegisteredUser2 = async (username, org) => {
   //username = user.username;
   //org = user.org;

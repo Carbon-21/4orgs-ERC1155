@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
 
-  <body id="config">
+  <body id="config" onload="document.getElementById('token').value = localStorage.getItem('token')">
     <%- include("partials/navbar") %>
 
     <div class="container-fluid">

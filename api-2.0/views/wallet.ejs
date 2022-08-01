@@ -3,7 +3,7 @@
 
   <%- include("partials/head") %>
 
-<body>
+  <body onload="document.getElementById('token').value = localStorage.getItem('token')">
 
     <!-- Navbar -->
 
@@ -18,7 +18,16 @@
           <div class="card shadow-lg token-card">
             <div class="card-body">
               <form action="" method="GET" onsubmit="sendRequest('ClientAccountBalance')">
-                <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-column justify-content-between p-md-1">
+                  <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                      <i class="fa-solid fa-fingerprint fa-4x key-icon"></i>
+                    </div>
+                    <div>
+                      <input type="text" name="nftId" id="nftId" class="form-control" required/>
+                      <label class="form-label" for="nftId">Insira o id do seu NFT</label>
+                    </div>
+                  </div>
                   <div class="d-flex flex-row">
                     <div class="align-self-center">
                       <i class="fa-solid fa-key fa-4x key-icon"></i>

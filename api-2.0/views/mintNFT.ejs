@@ -29,7 +29,8 @@
 
   </script>-->
 
-  <body>
+  <body onload="document.getElementById('token').value = localStorage.getItem('token');
+                document.getElementById('username').value = localStorage.getItem('username')">
 
     <!-- Navbar -->
 
@@ -103,7 +104,7 @@
                         <div class="flex-fill">
                             <div class="mint-data">
                                 <i class="fas fa-key fa-lg"></i>
-                                <input type="text" name="token" id="token" class="form-control" required/>
+                                <input type="text" name="token" id="token" class="form-control" required />
                             </div>
                             <label class="form-label" for="token">Insira seu token</label>
                         </div>
