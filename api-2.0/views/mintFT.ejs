@@ -5,8 +5,6 @@
 
   <%- include("partials/head") %>
 
-  <body onload="document.getElementById('token').value = localStorage.getItem('token')">
-
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -25,7 +23,7 @@
 
                     <h1 class="mint-header">Mint FT</h1>
                     
-                    <form action="" method="POST">
+                    <form action="" method="POST" onsubmit="sendRequest('MintFT')">
 
                         <div class="flex-fill">
                             <div class="mint-data">
@@ -46,14 +44,6 @@
                         </div>
 
                         <hr>
-
-                        <div class="flex-fill">
-                            <div class="mint-data">
-                                <i class="fas fa-key fa-lg"></i>
-                                <input type="text" name="token" id="token" class="form-control" required/>
-                            </div>
-                            <label class="form-label" for="token">Insira seu token</label>
-                        </div>
 
                         <div class="mint-button">
                             <button type="submit" class="btn btn-primary btn-md">Emitir</button>

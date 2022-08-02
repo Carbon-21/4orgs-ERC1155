@@ -1,4 +1,4 @@
-var postMethods = ["Login", "Signup", "MintNFT"];
+var postMethods = ["Login", "Signup", "MintFT", "MintNFT"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
 
 async function sendToServer(method, url, body, token) {
@@ -44,6 +44,18 @@ function wrapRequest(requestType) {
         password: password,
       };
       return [url, body, null];
+
+    case "MintFT":
+      url = "chaincode/channels/mychannel/chaincodes/erc1155";
+      username = document.getElementById("username").value;
+      qty = document.getElementById("qty").value;
+      token = localStorage.getItem("token");
+
+      body = {
+        fcn: "Mint",
+        args: [username, "$ylvas", qty],
+      };
+      return [url, body, token];
 
     case "MintNFT":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
