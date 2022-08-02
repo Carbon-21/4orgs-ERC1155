@@ -1,4 +1,4 @@
-var postMethods = ["Login", "Signup", "MintFT", "MintNFT"];
+var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
 
 async function sendToServer(method, url, body, token) {
@@ -89,6 +89,20 @@ function wrapRequest(requestType) {
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=BalanceOf&args=[\"${username}\",\"$ylvas\"]`;
       token = localStorage.getItem("token");
       return [url, null, token];
+
+    case "TransferFrom":
+      url = "chaincode/channels/mychannel/chaincodes/erc1155";
+      usernameSource = document.getElementById("usernameSource").value;
+      usernameDest = document.getElementById("usernameDest").value;
+      tokenId = document.getElementById("tokenId").value;
+      qty = document.getElementById("qty").value;
+      token = localStorage.getItem("token");
+
+      body = {
+        fcn: "TransferFrom",
+        args: [usernameSource, usernameDest, tokenId, qty],
+      };
+      return [url, body, token];
 
     default:
       console.log("None");

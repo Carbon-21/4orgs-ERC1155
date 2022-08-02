@@ -1,13 +1,83 @@
-<!-- Login Page -->
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
   <%- include("partials/head") %>
 
-<!-- Register Section -->
   <body>
-    <h1>Transfer</h1>
-  </body>
+    <!-- Navbar -->
 
+    <!-- include("partials/navbar") %>  // BUGADASSA--> 
+
+    <section id="transfer">
+      <div class="container-fuid transfer-container">
+        <h1 class="transfer-header">Transferência</h1>
+        
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <div class="justify-content-between p-md-1">
+              <form action="" onsubmit="sendRequest('TransferFrom')">
+                <div class="flex-fill">
+                  <div class="transfer-data">
+                    <i class="fas fa-user fa-lg"></i>
+                    <input
+                      type="text"
+                      name="usernameSource"
+                      id="usernameSource"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <label class="form-label" for="usernameSource">Insira o username de origem</label>
+                </div>
+
+                <hr />
+
+                <div class="flex-fill">
+                  <div class="transfer-data">
+                    <i class="fas fa-user fa-lg"></i>
+                    <input
+                      type="text"
+                      name="usernameDest"
+                      id="usernameDest"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <label class="form-label" for="usernameDest">Insira o username de destino</label>
+                </div>
+
+                <hr />
+
+                <div class="flex-fill">
+                  <div class="transfer-data">
+                    <i class="fas fa-coins fa-lg"></i>
+                    <input type="text" name="tokenId" id="tokenId" value="$ylvas" class="form-control" required />
+                  </div>
+                  <!-- NOTE: TokenId é para tranferir nfts? E para fts é fixo em "$ylvas"? -->
+                  <label class="form-label" for="tokenId">Insira o token Id (*altere caso NFT)</label>
+                </div>
+
+                <hr />
+
+                <div class="flex-fill">
+                  <div class="transfer-data">
+                    <i class="fas fa-coins fa-lg"></i>
+                    <input type="text" name="qty" id="qty" class="form-control" required />
+                  </div>
+                  <label class="form-label" for="qty">Insira a quantidade a ser transferida</label>
+                </div>
+
+                <hr />
+
+               
+
+                <div class="transfer-button">
+                  <button type="submit" class="btn btn-primary btn-md">Transferir</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>
