@@ -17,7 +17,7 @@
 
           <div class="card shadow-lg token-card">
             <div class="card-body">
-              <form action="" method="POST">
+              <form action="" method="POST" onsubmit="sendRequest('ClientAccountBalance2')">
                 <div class="d-flex justify-content-between p-md-1">
                   <div class="d-flex flex-row">
                     <div class="align-self-center">
@@ -35,23 +35,8 @@
               </form>
             </div>
           </div>
-
-          <div class="card shadow-lg">
-            <div class="card-body">
-              <div class="d-flex justify-content-between p-md-1">
-                <div class="d-flex flex-row">
-                  <div class="align-self-center">
-                    <i class="fa-solid fa-tree fa-4x tree-icon"></i>
-                  </div>
-                  <div>
-                    <h4>NFT</h4>
-                    <p class="mb-0">id: xxxxxxxxx</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div id="nft-showroom">
           </div>
-
         </div>
 
     </section>

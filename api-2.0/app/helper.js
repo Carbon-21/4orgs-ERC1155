@@ -107,7 +107,7 @@ const getAffiliation = async (org) => {
 };
 
 
-/**verifica se existe um usuário cadastrado na CA da carbon de forma independente do objeto wallet, sem chamá-lo. Ele verifica essa existência 
+/**Verifica se existe um usuário cadastrado na CA da carbon de forma independente do objeto wallet, sem chamá-lo. Ele verifica essa existência 
  * diretamente no db criado pela CA. O getRegisteredUser original faz essa verificação por meio da pasta wallet criada na api. 
  * Eu não removi a getRegisteredUser original pois ela é usada em alguns métodos da api e eu não quis removê-la sem um consenso do pessoal, 
  * e criei uma função paralela (getRegisteredUser2) para o processo de login. Além disso, eu identifiquei um pequeno problema com a getRegisteredUser 
@@ -407,6 +407,55 @@ const registerAndGerSecret = async (user, useCSR) => {
   return response;
 };
 
+/**
+ * Atualiza o atributo de um usuário no banco de dados de sua CA. Se o atributo (key) não existe,
+ * ele é criado na CA. Se já existe, o valor é atualizado pelo novo valor passado como argumento na função.
+ */
+const updateAttribute = async (username, org, key, value) => {
+  logger.info("entered updateAttribute")
+  let ccp = await getCCP(org);
+  const caURL = await getCaUrl(org, ccp);
+  const ca = new FabricCAServices(caURL);
+  console.log("ca name "+ca.getCaName())
+  const identityService = await ca.newIdentityService();
+  const walletPath = await getWalletPath(org);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+  // Check to see if we've already enrolled the admin user.
+  let adminIdentity = await wallet.get("admin");
+  if (!adminIdentity) {
+    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    await enrollAdmin(org, ccp);
+    adminIdentity = await wallet.get("admin");
+    console.log("Admin Enrolled Successfully");
+  }
+
+  // build a user object for authenticating with the CA
+  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+  const adminUser = await provider.getUserContext(adminIdentity, "admin");
+  
+  identityService.update(username, {attrs: [{name: key, value: value}]}, adminUser)
+}
+/**
+ * Faz o query de um atributo desejado de um usuário cadastrado.
+ */
+const queryAttribute = async (username, org, key) => {
+  
+  let registeredUser = await getRegisteredUser2(username, org)
+  if (typeof registeredUser === "string") throw new Error(`Username ${username} is not registered`)
+
+  let attribute = null
+  if (typeof registeredUser !== "string") {
+    // Fetches the user's registered password
+    for (let i = 0; i < registeredUser['attrs'].length && attribute == null; i++) {
+      if (registeredUser['attrs'][i]['name'] == key)
+        attribute = registeredUser['attrs'][i]['value'];
+    }
+  }
+  return attribute;
+
+}
+
 exports.getRegisteredUser = getRegisteredUser;
 
 module.exports = {
@@ -417,6 +466,8 @@ module.exports = {
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
   getAccountId: getAccountId,
+  updateAttribute:updateAttribute,
+  queryAttribute:queryAttribute
 };
 
 async function execWrapper(cmd) {

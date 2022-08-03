@@ -5,60 +5,62 @@
 
   <%- include("partials/head") %>
 
-    <!-- Navbar -->
+    <body onload="document.getElementById('username').value = localStorage.getItem('username')">
 
-    <%- include("partials/navbar") %>
+        <!-- Navbar -->
 
-    <!-- Mint Section -->
+        <%- include("partials/navbar") %>
 
-    <section id="mintFT">
+        <!-- Mint Section -->
 
-        <div class="container-fluid">
+        <section id="mintFT">
 
-            <div class="row">
+            <div class="container-fluid">
 
-                <div class="col-4 image-container"></div>
-    
-                <div class="col-8 form-container">
+                <div class="row">
 
-                    <h1 class="mint-header">Mint FT</h1>
-                    
-                    <form action="" method="POST" onsubmit="sendRequest('MintFT')">
+                    <div class="col-4 image-container"></div>
+        
+                    <div class="col-8 form-container">
 
-                        <div class="flex-fill">
-                            <div class="mint-data">
-                                <i class="fas fa-user fa-lg"></i>
-                                <input type="text" name="username" id="username" class="form-control" required/>
+                        <h1 class="mint-header">Mint FT</h1>
+                        
+                        <form action="" method="POST" onsubmit="sendRequest('MintFT')">
+
+                            <div class="flex-fill">
+                                <div class="mint-data">
+                                    <i class="fas fa-user fa-lg"></i>
+                                    <input type="text" name="username" id="username" class="form-control" required/>
+                                </div>
+                                <label class="form-label" for="username">Insira o username de destino</label>
                             </div>
-                            <label class="form-label" for="username">Insira o username de destino</label>
-                        </div>
 
-                        <hr>
+                            <hr>
 
-                        <div class="flex-fill">
-                            <div class="mint-data">
-                                <i class="fas fa-coins fa-lg"></i>
-                                <input type="text" name="qty" id="qty" class="form-control" required/>
+                            <div class="flex-fill">
+                                <div class="mint-data">
+                                    <i class="fas fa-coins fa-lg"></i>
+                                    <input type="text" name="qty" id="qty" class="form-control" required/>
+                                </div>
+                                <label class="form-label" for="qty">Insira a quantidade de Sylvas</label>
                             </div>
-                            <label class="form-label" for="qty">Insira a quantidade de Sylvas</label>
-                        </div>
 
-                        <hr>
+                            <hr>
 
-                        <div class="mint-button">
-                            <button type="submit" class="btn btn-primary btn-md">Emitir</button>
-                        </div>
+                            <div class="mint-button">
+                                <button type="submit" class="btn btn-primary btn-md">Emitir</button>
+                            </div>
 
-                    </form>
+                        </form>
 
+                    </div>
+        
                 </div>
-    
+
             </div>
 
-        </div>
+        </section>
 
-    </section>
-
-  </body>
+    </body>
 
 </html>

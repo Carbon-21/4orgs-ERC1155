@@ -84,6 +84,12 @@ function wrapRequest(requestType) {
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance&args=[\"${nftId}\"]`;
       token = document.getElementById("token").value;
       return [url, null, token];
+
+      case "ClientAccountBalance2":
+        url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance2&args=[""]`;
+        token = document.getElementById("token").value;
+        return [url, null, token];
+
     case "BalanceOf":
       username = localStorage.getItem("username");
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=BalanceOf&args=[\"${username}\",\"$ylvas\"]`;
@@ -113,11 +119,14 @@ async function sendRequest(requestType) {
   event.preventDefault();
   let [url, body, token] = wrapRequest(requestType);
   let response;
+  
+  // Request sending
   if (postMethods.includes(requestType)) response = await sendToServer("POST", url, body, token);
   else response = await sendToServer("GET", url, body, token);
 
   console.log("response = ", response);
 
+  // Response handling
   switch (requestType) {
     case "Login":
       localStorage.setItem("token", response.token); // store token in local storage
@@ -133,6 +142,40 @@ async function sendRequest(requestType) {
       if (response.result.ClientAccountBalance == null) alert("Id não encontrado");
       else balanceHeader.innerText = response.result.ClientAccountBalance + " Sylvas";
       break;
+
+    case "ClientAccountBalance2":
+      if (response.result.message == "NO_TOKENS")
+        alert("Erro: Não foram identificados NFTs")
+      else if (response.result.message == "success") {
+        let balances = response.result.balances
+        let element
+        //element = '<div class="d-flex flex-column justify-content-between p-md-1">'
+        //for (var i = 0; i < Object.keys(response.result.balances).length; i++) {
+        for (var key in balances) {
+          element += 
+          '<div class="card shadow-lg">' +
+            '<div class="card-body flex-column">' +
+              '<div class="d-flex justify-content-between p-md-1">' +
+                  '<div class="d-flex flex-row">' +
+                    '<div class="align-self-center">' +
+                      '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+                    '</div>' +
+                    '<div>' +
+                      '<h4>NFT</h4>' +
+                      `<p class="mb-0">id: ${key}</p>` +
+                      `<p class="mb-0">valor: ${balances[key]}</p>` +
+                    '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+              
+        }
+        document.getElementById('nft-showroom').innerHTML = element
+      }
+        
+      break
 
     case "BalanceOf":
       if (response.result == null) alert("Falha de sincronização");

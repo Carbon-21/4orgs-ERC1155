@@ -41,7 +41,7 @@ exports.signup = async (req, res, next) => {
 };
 
 /*acrescentada a rota de login, com um processo básico de verificação de senha (sem PHS implementado ainda). Além disso, na rota do signup, 
-a parte de retornar o token JWT foi deslocada para para a parte de login.
+*a parte de retornar o token JWT foi deslocada para para a parte de login.
 */
 exports.login = async (req, res) => {
   logger.info("Entered login route")
@@ -53,18 +53,12 @@ exports.login = async (req, res) => {
   logger.debug("Username: " + username);
   logger.debug("Org: " + org);
 
-  //New
+  // Login
+try {
+  let registeredPassword = await helper.queryAttribute(username, org, 'password');
 
-  let registeredUser = await helper.getRegisteredUser2(username, org);
-
-
-  if (typeof registeredUser !== "string") {
-    let registeredPassword = "";
-    for (let i = 0; i < registeredUser['attrs'].length && registeredPassword == ""; i++) {
-      if (registeredUser['attrs'][i]['name'] == "password")
-        registeredPassword = registeredUser['attrs'][i]['value'];
-    }
-
+  if (registeredPassword != null)  
+    // Password verification
     if (registeredPassword == password) {
       let token;
       token = auth.createJWT(username, org);
@@ -73,9 +67,9 @@ exports.login = async (req, res) => {
     } else {
       res.json({ success: false, message: "Username and/or password wrong"})
     }
-  } else {
-    res.json({ success: false, message: `Username ${username} is not registered`})
-    logger.error(`Username ${username} is not registered`)
+  } catch (e) {
+    res.json({ success: false, message: e.message})
+    logger.error(e.message)
   }
 };
 
