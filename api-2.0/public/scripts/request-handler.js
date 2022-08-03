@@ -85,10 +85,10 @@ function wrapRequest(requestType) {
       token = document.getElementById("token").value;
       return [url, null, token];
 
-      case "ClientAccountBalance2":
-        url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance2&args=[""]`;
-        token = document.getElementById("token").value;
-        return [url, null, token];
+    case "ClientAccountBalance2":
+      url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance2&args=[""]`;
+      token = document.getElementById("token").value;
+      return [url, null, token];
 
     case "BalanceOf":
       username = localStorage.getItem("username");
@@ -115,11 +115,12 @@ function wrapRequest(requestType) {
   }
 }
 
+
 async function sendRequest(requestType) {
   event.preventDefault();
   let [url, body, token] = wrapRequest(requestType);
   let response;
-  
+
   // Request sending
   if (postMethods.includes(requestType)) response = await sendToServer("POST", url, body, token);
   else response = await sendToServer("GET", url, body, token);
@@ -133,22 +134,40 @@ async function sendRequest(requestType) {
       localStorage.setItem("username", document.getElementById("username").value);
       if (response.success) {
         alert("Logado com Sucesso!");
+        window.location.href = '/wallet';
       } else {
         alert("Falha no login.");
       }
       break;
 
+    case "MintFT":
+      if (response.result == null) alert("Mint Falhou");
+      else {
+        document.getElementById("submitButton").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
+        alert("Mint de FTs realizado com sucesso");
+      }
+      break;
+
+    case "MintNFT":
+      if (response.result == null) alert("Mint Falhou");
+      else {
+        document.getElementById("submitButton").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
+        alert("Mint de NFTs realizado com sucesso");
+      }
+      break;
+      
     case "ClientAccountBalance":
       if (response.result.ClientAccountBalance == null) alert("Id não encontrado");
       else balanceHeader.innerText = response.result.ClientAccountBalance + " Sylvas";
       break;
 
     case "ClientAccountBalance2":
-      if (response.result.message == "NO_TOKENS")
-        alert("Erro: Não foram identificados NFTs")
+      if (response.result.message == "NO_TOKENS") alert("Erro: Não foram identificados NFTs");
       else if (response.result.message == "success") {
-        let balances = response.result.balances
-        let element
+        let balances = response.result.balances;
+        let element;
         //element = '<div class="d-flex flex-column justify-content-between p-md-1">'
         //for (var i = 0; i < Object.keys(response.result.balances).length; i++) {
         for (var key in balances) {
@@ -172,14 +191,25 @@ async function sendRequest(requestType) {
           '</div>'
               
         }
-        document.getElementById('nft-showroom').innerHTML = element
+        document.getElementById("nft-showroom").innerHTML = element;
       }
-        
-      break
+
+      break;
 
     case "BalanceOf":
       if (response.result == null) alert("Falha de sincronização");
-      else balanceHeader.innerText = response.result + " Sylvas";
+      else {
+        document.getElementById("submitButton").style.display = "block";
+        document.getElementById("loader").style.display = "none";
+        balanceHeader.innerText = response.result + " Sylvas";
+      }
       break;
+    case "TransferFrom":
+      if (response.result == null) alert("Transferência Falhou");
+      else {
+        document.getElementById("submitButton").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
+        alert("Transferência realizada com sucesso");
+      }
   }
 }

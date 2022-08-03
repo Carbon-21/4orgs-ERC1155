@@ -83,3 +83,8 @@ input{
     display: flex;
     justify-content: center;
 }
+
+.loading-icon{
+    width: 20%;
+    display: none;
+  }

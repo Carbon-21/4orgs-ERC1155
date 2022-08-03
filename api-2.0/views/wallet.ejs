@@ -31,7 +31,23 @@
         </div>
 
         <div class="align-self-center d-flex justify-content-center">
-          <button type="submit" class="btn btn-primary btn-lg mt-5" onclick="sendRequest('BalanceOf')">
+          <img id="loader" class="loading-icon" src="./images/loader.gif" />
+          <script type="text/javascript">
+            function buttonPressed() {
+              // Request
+              sendRequest("BalanceOf");
+              // Alterna visibilidade de botao e gif de carregamento
+              document.getElementById("loader").style.display = "block";
+              document.getElementById("submitButton").style.display = "none";
+            }
+          </script>
+          <button
+            id="submitButton"
+            style="display: block"
+            type="submit"
+            class="btn btn-primary btn-lg mt-5"
+            onclick="buttonPressed()"
+          >
             Consultar
           </button>
         </div>

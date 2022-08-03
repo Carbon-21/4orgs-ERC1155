@@ -17,7 +17,7 @@
           <div class="card-body">
             <div class="justify-content-between p-md-1">
               
-              <form action="" onsubmit="sendRequest('TransferFrom')">
+              <form action="" onsubmit="buttonPressed()">
                 <div class="flex-fill">
                   <div class="transfer-data">
                     <i class="fas fa-user fa-lg"></i>
@@ -69,8 +69,18 @@
                   <label class="form-label" for="qty">Insira a quantidade a ser transferida</label>
                 </div>
 
+                <script type="text/javascript">
+                  function buttonPressed() {
+                  // Request
+                  sendRequest("TransferFrom");
+                  // Alterna visibilidade de botao e gif de carregamento
+                  document.getElementById("loader").style.display = "flex";
+                  document.getElementById("submitButton").style.display = "none";
+                  }
+                </script>
                 <div class="transfer-button">
-                  <button type="submit" class="btn btn-primary btn-md">Transferir</button>
+                    <img id="loader" class="loading-icon" src="./images/loader.gif" />
+                    <button id="submitButton" type="submit" class="btn btn-primary btn-md">Transferir</button>
                 </div>
               </form>
             </div>

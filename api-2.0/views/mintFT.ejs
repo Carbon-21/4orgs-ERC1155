@@ -25,7 +25,7 @@
 
                         <h1 class="mint-header">Mint FT</h1>
                         
-                        <form action="" method="POST" onsubmit="sendRequest('MintFT')">
+                        <form action="" onsubmit="buttonPressed()">
 
                             <div class="flex-fill">
                                 <div class="mint-data">
@@ -46,9 +46,19 @@
                             </div>
 
                             <hr>
-
+                            
+                            <script type="text/javascript">
+                                function buttonPressed() {
+                                // Request
+                                sendRequest("MintFT");
+                                // Alterna visibilidade de botao e gif de carregamento
+                                document.getElementById("loader").style.display = "flex";
+                                document.getElementById("submitButton").style.display = "none";
+                                }
+                            </script>
                             <div class="mint-button">
-                                <button type="submit" class="btn btn-primary btn-md">Emitir</button>
+                                <img id="loader" class="loading-icon" src="./images/loader.gif" />
+                                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Emitir</button>
                             </div>
 
                         </form>

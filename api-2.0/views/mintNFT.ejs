@@ -50,7 +50,7 @@
 
                     <h1 class="mint-header">Mint NFT</h1>
                     
-                    <form id="form" action="" method="GET" onsubmit="sendRequest('MintNFT')">
+                    <form id="form" action="" method="GET" onsubmit="buttonPressed('MintNFT')">
 
                         <div class="flex-fill">
                             <div class="mint-data">
@@ -109,8 +109,18 @@
                             <label class="form-label" for="token">Insira seu token</label>
                         </div>
                         
+                        <script type="text/javascript">
+                            function buttonPressed() {
+                            // Request
+                            sendRequest("MintNFT");
+                            // Alterna visibilidade de botao e gif de carregamento
+                            document.getElementById("loader").style.display = "flex";
+                            document.getElementById("submitButton").style.display = "none";
+                            }
+                        </script>
                         <div class="mint-button">
-                            <button type="submit" class="btn btn-primary btn-md">Emitir</button>
+                            <img id="loader" class="loading-icon" src="./images/loader.gif" />
+                            <button id="submitButton" type="submit" class="btn btn-primary btn-md">Emitir</button>
                         </div>
 
                     </form>
