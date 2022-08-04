@@ -25,7 +25,7 @@
 
                         <h1 class="mint-header">Mint FT</h1>
                         
-                        <form action="" onsubmit="buttonPressed()" class="validated-form" novalidate>
+                        <form action="" onsubmit="buttonPressed()">
 
                             <div class="flex-fill">
                                 <div class="mint-data">
@@ -70,29 +70,6 @@
             </div>
 
         </section>
-
-        <script>
-            // Example starter JavaScript for disabling form submissions if there are invalid fields
-            (function () {
-                'use strict'
-        
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                const forms = document.querySelectorAll('.validated-form')
-        
-                // Loop over them and prevent submission
-                Array.from(forms)
-                    .forEach(function (form) {
-                        form.addEventListener('submit', function (event) {
-                            if (!form.checkValidity()) {
-                                event.preventDefault()
-                                event.stopPropagation()
-                            }
-        
-                            form.classList.add('was-validated')
-                        }, false)
-                    })
-            })()
-        </script>
 
     </body>
 
