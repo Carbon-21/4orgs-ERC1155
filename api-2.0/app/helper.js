@@ -107,15 +107,10 @@ const getAffiliation = async (org) => {
 };
 
 
-/**Verifica se existe um usuário cadastrado na CA da carbon de forma independente do objeto wallet, sem chamá-lo. Ele verifica essa existência 
- * diretamente no db criado pela CA. O getRegisteredUser original faz essa verificação por meio da pasta wallet criada na api. 
- * Eu não removi a getRegisteredUser original pois ela é usada em alguns métodos da api e eu não quis removê-la sem um consenso do pessoal, 
- * e criei uma função paralela (getRegisteredUser2) para o processo de login. Além disso, eu identifiquei um pequeno problema com a getRegisteredUser 
- * original, pois se ela não identifica um usuário cadastrado na pasta wallet da api, ele faz um enroll desse usuário, de forma que ocorre cadastros 
- * involuntários. Por exemplo, se você fizer um invoke ou uma query passando um username não cadastrado, ocorre um enroll e esse username passa a 
- * ficar cadastrado, criando registros fantasmas.
+/**
+ * Checks whether a username is registered in an Organization's CA directly, not seeing the wallet level.
 */
-const getRegisteredUser2 = async (username, org) => {
+const getRegisteredUserFromCA = async (username, org) => {
   //username = user.username;
   //org = user.org;
 
@@ -408,8 +403,8 @@ const registerAndGerSecret = async (user, useCSR) => {
 };
 
 /**
- * Atualiza o atributo de um usuário no banco de dados de sua CA. Se o atributo (key) não existe,
- * ele é criado na CA. Se já existe, o valor é atualizado pelo novo valor passado como argumento na função.
+ * Updates a user's attribute within its CA's database. The attribute is identified by its key. If the provided key doesn't exist in the database,
+ * it is created and receives the value provided. If it already exists, the value in the database is overwritten by the value provided as argument.
  */
 const updateAttribute = async (username, org, key, value) => {
   logger.info("entered updateAttribute")
@@ -437,11 +432,11 @@ const updateAttribute = async (username, org, key, value) => {
   identityService.update(username, {attrs: [{name: key, value: value}]}, adminUser)
 }
 /**
- * Faz o query de um atributo desejado de um usuário cadastrado.
+ * * Queries a desired attribute by its key from a registered user. The attribute is stored together with the user's information in the CA's database.
  */
 const queryAttribute = async (username, org, key) => {
   
-  let registeredUser = await getRegisteredUser2(username, org)
+  let registeredUser = await getRegisteredUserFromCA(username, org)
   if (typeof registeredUser === "string") throw new Error(`Username ${username} is not registered`)
 
   let attribute = null
@@ -462,7 +457,7 @@ module.exports = {
   getCCP: getCCP,
   getWalletPath: getWalletPath,
   getRegisteredUser: getRegisteredUser,
-  getRegisteredUser2:getRegisteredUser2,
+  getRegisteredUserFromCA:getRegisteredUserFromCA,
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
   getAccountId: getAccountId,

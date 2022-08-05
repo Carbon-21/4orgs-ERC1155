@@ -71,11 +71,11 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         break;
 
       /*
-      ClientAccountBalance2: retorna os saldos de todos os NFTs do cliente, sem precisar fornecer os ids dos tokens.
-      A ClientAccountBalance original fornece retorna apenas um balance por id fornecido. Essa nova função chama a
-      ClientAccountBalance original para todos os ids de NFT por um laço.
+      ClientAccountTotalBalance: Gets the total balance of all the client's NFTs, without the need to provide its ids 
+      (the original CLientAccountBalance gets only one balance per id). This new case route calls ClientAccountBalance 
+      iteratively for every id of the user's NFTs.
       */
-      case "ClientAccountBalance2":
+      case "ClientAccountTotalBalance":
         let clientNfts = await helper.queryAttribute(username, org_name, 'nfts');
         if (clientNfts == null) {
           result = JSON.stringify({message: "NO_TOKENS"});

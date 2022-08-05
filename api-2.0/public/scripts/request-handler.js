@@ -1,6 +1,14 @@
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
 
+/**
+ * Sends Request to the server. Returns the server's response
+ * @param {*} method POST or GET
+ * @param {*} url URL of the server
+ * @param {*} body Body to be sent to the server in case of POST
+ * @param {*} token Bearer token for authorization
+ * @returns Response of the server
+ */
 async function sendToServer(method, url, body, token) {
   event.preventDefault();
   var headers = new Headers();
@@ -25,6 +33,11 @@ async function sendToServer(method, url, body, token) {
   }
 }
 
+/**
+ * Wraps data received on the web page and returns url, request body and authorization token
+ * @param {*} requestType Type of service requested to the server
+ * @returns [URL, Request Body, Token]
+ */
 function wrapRequest(requestType) {
   event.preventDefault();
   let url;
@@ -85,8 +98,8 @@ function wrapRequest(requestType) {
       token = document.getElementById("token").value;
       return [url, null, token];
 
-    case "ClientAccountBalance2":
-      url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance2&args=[""]`;
+    case "ClientAccountTotalBalance":
+      url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
       token = document.getElementById("token").value;
       return [url, null, token];
 
@@ -115,7 +128,11 @@ function wrapRequest(requestType) {
   }
 }
 
-
+/**
+ * Main function, which receives input from the web page, wraps it into HTTP request components 
+ * (calling wrapRequest()) and sends it to the server (calling sendToServer())
+ * @param {*} requestType Server requested to the server
+ */
 async function sendRequest(requestType) {
   event.preventDefault();
   let [url, body, token] = wrapRequest(requestType);
@@ -163,7 +180,7 @@ async function sendRequest(requestType) {
       else balanceHeader.innerText = response.result.ClientAccountBalance + " Sylvas";
       break;
 
-    case "ClientAccountBalance2":
+    case "ClientAccountTotalBalance":
       if (response.result.message == "NO_TOKENS") alert("Erro: Não foram identificados NFTs");
       else if (response.result.message == "success") {
         let balances = response.result.balances;
