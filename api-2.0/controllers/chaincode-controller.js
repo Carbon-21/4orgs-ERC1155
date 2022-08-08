@@ -13,6 +13,7 @@ exports.invoke = async (req, res, next) => {
     const peers = req.body.peers;
     const transient = req.body.transient;
     const username = req.jwt.username;
+    args[0] = username
     const org = req.jwt.org;
 
     logger.debug(`transient data ;${transient}`);

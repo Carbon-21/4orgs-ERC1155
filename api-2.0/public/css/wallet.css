@@ -66,3 +66,9 @@ body{
     margin: 0 30px 0 20px;
     color: #FEB139;
   }
+
+  .loading-icon{
+    margin-top: 5px;
+    width: 20%;
+    display: none;
+  }

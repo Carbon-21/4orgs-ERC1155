@@ -7,9 +7,13 @@ const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
 const fs = require("fs");
 
+const IdentityService = require("fabric-ca-client");
+
 // Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
 const util = require("util");
+//const { IdentityService }= require("fabric-ca-client");
+const { User } = require("fabric-common");
 const execPromise = util.promisify(exec);
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
@@ -100,6 +104,48 @@ const getAffiliation = async (org) => {
   // Default in ca config file we have only two affiliations, if you want ti use cetesb ca, you have to update config file with third affiliation
   //  Here already two Affiliation are there, using i am using "users.department1" even for cetesb
   return org == "Carbon" ? "carbon.department1" : "users.department1";
+};
+
+
+/**
+ * Checks whether a username is registered in an Organization's CA directly, not seeing the wallet level.
+*/
+const getRegisteredUserFromCA = async (username, org) => {
+  //username = user.username;
+  //org = user.org;
+
+  let ccp = await getCCP(org);
+
+  const caURL = await getCaUrl(org, ccp);
+  const ca = new FabricCAServices(caURL,undefined,"ca.carbon.example.com");
+  console.log("ca name "+ca.getCaName())
+  const identityService = await ca.newIdentityService();
+
+  const walletPath = await getWalletPath(org);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+  // Check to see if we've already enrolled the admin user.
+  let adminIdentity = await wallet.get("admin");
+  if (!adminIdentity) {
+    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    await enrollAdmin(org, ccp);
+    adminIdentity = await wallet.get("admin");
+    console.log("Admin Enrolled Successfully");
+  }
+
+  // build a user object for authenticating with the CA
+  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+  const adminUser = await provider.getUserContext(adminIdentity, "admin");
+
+  try {
+    const query = await identityService.getOne(username, adminUser);
+    //console.log(query['result'])
+    return query['result'];
+  } catch (error) {
+    logger.error(`Getting error: ${error}`)
+    return error.message;
+  }
+  
 };
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -255,6 +301,7 @@ const registerAndGerSecret = async (user, useCSR) => {
 
   const caURL = await getCaUrl(userOrg, ccp);
   const ca = new FabricCAServices(caURL);
+  console.log("ca name "+ca.getCaName())
 
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -355,15 +402,67 @@ const registerAndGerSecret = async (user, useCSR) => {
   return response;
 };
 
+/**
+ * Updates a user's attribute within its CA's database. The attribute is identified by its key. If the provided key doesn't exist in the database,
+ * it is created and receives the value provided. If it already exists, the value in the database is overwritten by the value provided as argument.
+ */
+const updateAttribute = async (username, org, key, value) => {
+  logger.info("entered updateAttribute")
+  let ccp = await getCCP(org);
+  const caURL = await getCaUrl(org, ccp);
+  const ca = new FabricCAServices(caURL);
+  console.log("ca name "+ca.getCaName())
+  const identityService = await ca.newIdentityService();
+  const walletPath = await getWalletPath(org);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+  // Check to see if we've already enrolled the admin user.
+  let adminIdentity = await wallet.get("admin");
+  if (!adminIdentity) {
+    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    await enrollAdmin(org, ccp);
+    adminIdentity = await wallet.get("admin");
+    console.log("Admin Enrolled Successfully");
+  }
+
+  // build a user object for authenticating with the CA
+  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+  const adminUser = await provider.getUserContext(adminIdentity, "admin");
+  
+  identityService.update(username, {attrs: [{name: key, value: value}]}, adminUser)
+}
+/**
+ * * Queries a desired attribute by its key from a registered user. The attribute is stored together with the user's information in the CA's database.
+ */
+const queryAttribute = async (username, org, key) => {
+  
+  let registeredUser = await getRegisteredUserFromCA(username, org)
+  if (typeof registeredUser === "string") throw new Error(`Username ${username} is not registered`)
+
+  let attribute = null
+  if (typeof registeredUser !== "string") {
+    // Fetches the user's registered password
+    for (let i = 0; i < registeredUser['attrs'].length && attribute == null; i++) {
+      if (registeredUser['attrs'][i]['name'] == key)
+        attribute = registeredUser['attrs'][i]['value'];
+    }
+  }
+  return attribute;
+
+}
+
 exports.getRegisteredUser = getRegisteredUser;
 
 module.exports = {
   getCCP: getCCP,
   getWalletPath: getWalletPath,
   getRegisteredUser: getRegisteredUser,
+  getRegisteredUserFromCA:getRegisteredUserFromCA,
   isUserRegistered: isUserRegistered,
   registerAndGerSecret: registerAndGerSecret,
   getAccountId: getAccountId,
+  updateAttribute:updateAttribute,
+  queryAttribute:queryAttribute
 };
 
 async function execWrapper(cmd) {

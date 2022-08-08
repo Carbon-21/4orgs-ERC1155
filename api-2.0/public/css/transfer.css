@@ -1,91 +1,90 @@
 body{
     font-family: 'Poppins', sans-serif;
+    background-image: url("/images/transfer-bg.webp");
+    background-repeat: no-repeat;
+    background-size:cover;
+    min-height: 100vh;
   }
-
+  
 /* Navbar */
 
 .navbar{
     padding: 5px 20px ;
     background-color: #fff;
-  }
-  
-  nav .navbar-nav li a:hover{
-    color: #00C897;
-  }
-  
-  .navbar-brand{
-  
+}
+
+nav .navbar-nav li a:hover{
+color: #00C897;
+}
+
+.navbar-brand{
     font-weight: 500;
     font-size: 2rem;
-  }
-  
-  .navbar-brand .carbon21-logo{
+}
+
+.navbar-brand .carbon21-logo{
     height: 70px;
     border-radius: 30%;
     margin: 0 30px 0 20px;
-  }
-  
-  .nav-item{
+}
+
+.nav-item{
     font-weight: 300;
     margin: 0 4px;
-  }
+}
 
-  /* Mint Section */
+/* Transfer section */
 
-  .image-container{
-    background-image: url("../images/mintNFT-bg.webp");
-    background-repeat: no-repeat;
-    background-size:cover;
-    opacity: 0.94;
-    min-height: 100vh;
-  }
+.transfer-header{
+    margin-top: 120px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+}
 
-  .form-container{
-    background-color: #ADCF9F;
-    padding-top: 100px;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-
-  .mint-header{
-    margin: 30px auto 60px auto;
-    font-weight: 700;
+.transfer-container{
     display: flex;
     justify-content: center;
-  }
+}
 
-  hr{    
+.card{
+    width: 40%;
+    border-radius: 20px;
+    background-color: #ADCF9F;
+}
+
+hr{    
     border: 0;
     height: 3px;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 255));
-  }
+}
 
-  .mint-data{
+.transfer-data{
     display: flex;
     margin-top: 30px;
-  }
+}
 
-  i{
+i{
     margin: auto 20px auto 0;
-  }
+}
 
-  label{
+label{
     margin-left: 40px;
     font-weight: 500;
-  }
+}
 
-  input{
+input{
     margin:auto;
     opacity: 0.5;
-  }
+}
 
-  .mint-button{
+.transfer-button{
     margin-top: 40px;
     display: flex;
     justify-content: center;
-  }
+}
 
-  .loading-icon{
+.loading-icon{
     width: 20%;
     display: none;
   }

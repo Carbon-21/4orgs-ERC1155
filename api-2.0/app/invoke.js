@@ -71,6 +71,19 @@ const invokeTransaction = async (
         );
         logger.info("Mint successful");
         result = "success";
+        
+        if (args[1] != '$ylvas') {
+          let nfts = await helper.queryAttribute(username, org_name, 'nfts')
+
+          if (nfts == null) nfts = []
+          else nfts = JSON.parse(nfts)
+
+          // Add nft id to the user's nft list in the CA's database if it's not already included
+          if (!nfts.includes(args[1])) {
+            nfts.push(args[1])
+            helper.updateAttribute(username, org_name, 'nfts', JSON.stringify(nfts))
+          }
+        }
         break;
       case "TransferFrom":
         const sourceClientAccountId = await helper.getAccountId(

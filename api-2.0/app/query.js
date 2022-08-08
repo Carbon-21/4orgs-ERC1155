@@ -67,7 +67,32 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
       case "ClientAccountBalance":
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
         result = `{"ClientAccountBalance":"${result.toString()}"}`;
+        console.log('resulttt',result)
         break;
+
+      /*
+      ClientAccountTotalBalance: Gets the total balance of all the client's NFTs, without the need to provide its ids 
+      (the original CLientAccountBalance gets only one balance per id). This new case route calls ClientAccountBalance 
+      iteratively for every id of the user's NFTs.
+      */
+      case "ClientAccountTotalBalance":
+        let clientNfts = await helper.queryAttribute(username, org_name, 'nfts');
+        if (clientNfts == null) {
+          result = JSON.stringify({message: "NO_TOKENS"});
+        } else {
+          clientNfts = await JSON.parse(clientNfts)
+          let balances = {};
+          let nftValue
+          for (var i = 0; i < clientNfts.length; i++) {
+            console.log(clientNfts[i])
+            nftValue = await contract.evaluateTransaction("SmartContract:ClientAccountBalance", clientNfts[i]);
+            nftValue = nftValue.toString()
+            balances[clientNfts[i]] = nftValue;
+          }
+          result = JSON.stringify({message: "success", balances: balances})
+        }
+        break;
+
       case "URI":
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
         result = `{"URI":"${result.toString()}"}`;

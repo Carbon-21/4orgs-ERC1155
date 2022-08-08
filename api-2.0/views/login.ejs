@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
-  <%- include("partials/head") %>
+<%- include("partials/head") %>
 
   <body>
 
@@ -11,25 +11,25 @@
 
     <%- include("partials/navbar") %>
 
-    <!-- Login Section -->
+      <!-- Login Section -->
 
-    <section id="login">
+      <section id="login">
 
-      <div class="container-fluid">
-        <div class="register-form card shadow">
+        <div class="container-fluid">
+          <div class="register-form card shadow">
 
-          <form action="auth/login" method="post">
-            <div class="row">
+            <form action="" method="GET" onsubmit="sendRequest('Login')">
+              <div class="row">
 
-              <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
 
-                <h1 class="login-header">Sign In</h1>
+                  <h1 class="login-header">Sign In</h1>
 
                   <div class="login-data">
                     <i class="fas fa-user fa-lg"></i>
                     <div class="form-group">
-                      <input type="text" name="id" id="id" class="form-control" required />
-                      <label class="form-label" for="id">User ID</label>
+                      <input type="text" name="username" id="username" class="form-control" required />
+                      <label class="form-label" for="username">User ID</label>
                     </div>
                   </div>
 
@@ -45,7 +45,8 @@
 
                     <div class="col">
                       <div class="form-check">
-                        <input class="form-check-input" name="remember" type="checkbox" value="" id="remember" checked />
+                        <input class="form-check-input" name="remember" type="checkbox" value="" id="remember"
+                          unchecked />
                         <label class="form-check-label" for="remember"> Remember me </label>
                       </div>
                     </div>
@@ -61,17 +62,19 @@
 
                   <p class="mb-5 pb-lg-2">Don't have an account? <a href="/auth/signup">Register here</a></p>
 
+                </div>
+
+                <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo-container">
+                  <img src="../images/carbon21-logo.webp" class="img-fluid carbon-logo" alt="Carbon21 logo">
+                </div>
+
+
               </div>
+            </form>
 
-              <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo-container">
-                <img src="../images/carbon21-logo.webp"class="img-fluid carbon-logo" alt="Carbon21 logo">
-              </div>
-
-
-            </div>
-          </form>
-
+          </div>
         </div>
-      </div>
 
-    </body>
+  </body>
+
+</html>

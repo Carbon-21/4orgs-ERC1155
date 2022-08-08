@@ -1,6 +1,7 @@
 const helper = require("../app/helper");
 const logger = require("../util/logger");
 const auth = require("../util/auth");
+const { IdentityService } = require("fabric-ca-client");
 
 exports.signup = async (req, res, next) => {
   let user = req.body;
@@ -11,10 +12,6 @@ exports.signup = async (req, res, next) => {
   logger.debug("End point : /users");
   logger.debug("Username: " + user.username);
   logger.debug("Org: " + user.org);
-
-  //create jwt
-  let token;
-  token = auth.createJWT(user.username, user.org);
 
   //attemp to register user
   let response = await helper.registerAndGerSecret(user, useCSR);
@@ -31,7 +28,6 @@ exports.signup = async (req, res, next) => {
       user.username,
       user.org
     );
-    response.token = token;
     res.json(response);
   } else {
     logger.error(
@@ -44,9 +40,40 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-// Login and get jwt
-// TODO acertar esse middleware e o de signup pra fazerem sentido de fato kkk
-// app.post("/users/login", async function (req, res) {
+/*acrescentada a rota de login, com um processo básico de verificação de senha (sem PHS implementado ainda). Além disso, na rota do signup, 
+*a parte de retornar o token JWT foi deslocada para para a parte de login.
+*/
+exports.login = async (req, res) => {
+  logger.info("Entered login route")
+  let username = req.body.username;
+  //var org = req.body.org;
+  let org = "Carbon" // hardcoded
+  let password = req.body.password;
+
+  logger.debug("Username: " + username);
+  logger.debug("Org: " + org);
+
+  // Login
+try {
+  let registeredPassword = await helper.queryAttribute(username, org, 'password');
+
+  if (registeredPassword != null)  
+    // Password verification
+    if (registeredPassword == password) {
+      let token;
+      token = auth.createJWT(username, org);
+      res.json({ success: true, message: "The user was logged in successfully", token: token})
+      logger.info("User %s was logged in successfully",username);
+    } else {
+      res.json({ success: false, message: "Username and/or password wrong"})
+    }
+  } catch (e) {
+    res.json({ success: false, message: e.message})
+    logger.error(e.message)
+  }
+};
+
+// app.post("/users", async function (req, res) {
 //   var username = req.body.username;
 //   var org = req.body.org;
 //   logger.debug("End point : /users");
