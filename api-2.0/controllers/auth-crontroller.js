@@ -40,36 +40,36 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-/*acrescentada a rota de login, com um processo básico de verificação de senha (sem PHS implementado ainda). Além disso, na rota do signup, 
-*a parte de retornar o token JWT foi deslocada para para a parte de login.
-*/
+/*acrescentada a rota de login, com um processo básico de verificação de senha (sem PHS implementado ainda). Além disso, na rota do signup,
+ *a parte de retornar o token JWT foi deslocada para para a parte de login.
+ */
 exports.login = async (req, res) => {
-  logger.info("Entered login route")
+  logger.info("Entered login route");
   let username = req.body.username;
   //var org = req.body.org;
-  let org = "Carbon" // hardcoded
+  let org = "Carbon"; // hardcoded
   let password = req.body.password;
 
   logger.debug("Username: " + username);
   logger.debug("Org: " + org);
 
   // Login
-try {
-  let registeredPassword = await helper.queryAttribute(username, org, 'password');
+  try {
+    let registeredPassword = await helper.queryAttribute(username, org, "password");
 
-  if (registeredPassword != null)  
-    // Password verification
-    if (registeredPassword == password) {
-      let token;
-      token = auth.createJWT(username, org);
-      res.json({ success: true, message: "The user was logged in successfully", token: token})
-      logger.info("User %s was logged in successfully",username);
-    } else {
-      res.json({ success: false, message: "Username and/or password wrong"})
-    }
+    if (registeredPassword != null)
+      if (registeredPassword == password) {
+        // Password verification
+        let token;
+        token = auth.createJWT(username, org);
+        res.json({ success: true, message: "The user was logged in successfully", token: token });
+        logger.info("User %s was logged in successfully", username);
+      } else {
+        res.json({ success: false, message: "Username and/or password wrong" });
+      }
   } catch (e) {
-    res.json({ success: false, message: e.message})
-    logger.error(e.message)
+    res.json({ success: false, message: e.message });
+    logger.error(e.message);
   }
 };
 
