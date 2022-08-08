@@ -1,4 +1,7 @@
-      <!-- Navbar -->
+      <!-- Navbar --> 
+
+      <%- include("../partials/flash") %>
+      <%- include("../partials/flash") %>
 
       <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -40,18 +43,30 @@
                   Carbon
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <li><a class="dropdown-item" href="/mintFT">Emissão de FT</a></li>
-                  <li><a class="dropdown-item" href="/mintNFT">Emissão de NFT</a></li>
+                  <li><a class="dropdown-item" href="/ft/mint">Emissão de FT</a></li>
+                  <li><a class="dropdown-item" href="/nft/mint">Emissão de NFT</a></li>
                   <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
                 </ul>
               </li>
+              <% if (!currentUser) { %>
+                <li class="nav-item">
+                  <a class="nav-link" href="/login"><button type="button" class="btn btn-outline-success btn-sm">Sign In</button></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/signup"><button type="button" class="btn btn-outline-success btn-sm">Sign Up</button></a>
+                </li>
+              <% } %>
 
-              <li class="nav-item">
-                <a class="nav-link" href="/auth/login"><button type="button" class="btn btn-outline-success btn-sm">Sign In</button></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/auth/signup"><button type="button" class="btn btn-outline-success btn-sm">Sign Up</button></a>
-              </li>
+              <% if (currentUser) { %>
+                <li class="nav-item">
+                  <!-- <form action="/logout" method="POST">
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2">Logout</button>
+                  </form> -->
+                  <!-- <a class="nav-link" href="/logout">Logout</a> -->
+                  <a class="nav-link" href="/logout"><button class="btn btn-outline-success btn-sm">Logout</button></a>
+                </li>
+              <% } %>
+
             </ul>
           </div>
         </div>

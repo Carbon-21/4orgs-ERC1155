@@ -21,9 +21,9 @@ router.post(
   authController.signup
 );
 
-router.get("/login", (req, res) => {
-  res.render("login", { title: "Login", cssPath: "../css/login.css" });
-});
+// router.get("/login", (req, res) => {
+//   res.render("login", { title: "Login", cssPath: "../css/login.css" });
+// });
 
 router.post(
   "/login",

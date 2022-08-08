@@ -18,7 +18,7 @@
         <div class="container-fluid">
           <div class="register-form card shadow">
 
-            <form action="" method="GET" onsubmit="sendRequest('Login')">
+            <form action="/login" method="POST" class="validated-form" novalidate>
               <div class="row">
 
                 <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
@@ -60,7 +60,7 @@
                     <button type="submit" class="btn btn-primary btn-lg">Login</button>
                   </div>
 
-                  <p class="mb-5 pb-lg-2">Don't have an account? <a href="/auth/signup">Register here</a></p>
+                  <p class="mb-5 pb-lg-2">Don't have an account? <a href="/signup">Register here</a></p>
 
                 </div>
 
@@ -74,6 +74,8 @@
 
           </div>
         </div>
+
+        <script src="/scripts/validateForms.js"></script>
 
   </body>
 
