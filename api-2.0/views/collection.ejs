@@ -15,28 +15,27 @@
   
           <h1 class="collection-header">Minha Coleção</h1>
 
-          <div class="card shadow-lg token-card">
-            <div class="card-body">
-              <form action="" method="POST" onsubmit="sendRequest('ClientAccountTotalBalance')">
+          <% for( let key in balances) { %>
+
+            <div class="card shadow-lg mt-3">
+              <div class="card-body flex-column">
                 <div class="d-flex justify-content-between p-md-1">
-                  <div class="d-flex flex-row">
-                    <div class="align-self-center">
-                      <i class="fa-solid fa-key fa-4x key-icon"></i>
-                    </div>
-                    <div>
-                      <input type="text" name="token" id="token" class="form-control" required/>
-                      <label class="form-label" for="token">Insira seu token</label>
+                    <div class="d-flex flex-row">
+                      <div class="align-self-center">
+                        <i class="fa-solid fa-tree fa-4x tree-icon"></i>
+                      </div>
+                      <div>
+                        <h4>NFT</h4>
+                        <p class="mb-0">id: <%= key %></p>
+                        <p class="mb-0">valor: <%= balances[key] %> </p>
+                      </div>
                     </div>
                   </div>
-                  <div class="align-self-center">
-                    <button type="submit" class="btn btn-primary btn-lg">Consult</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-          <div id="nft-showroom">
-          </div>
+                </div> 
+              </div>
+
+          <% } %>
+
         </div>
 
     </section>
