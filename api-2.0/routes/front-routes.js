@@ -1,16 +1,15 @@
 const { Router } = require("express");
 const axios = require('axios').default;
 
-// const authController = require("../controllers/auth-crontroller.js");
-
 const router = Router();
+
+// Middleware: used to protect some pages checking if the user is logged in. If not, redirects to login page.
 
 const isLoggedIn = async (req,res,next)=>{
   if(!req.session.token){
       req.flash("error", "Necessario login");
       res.redirect("/login");
-  }
-  next();
+  }else next();
 }
 
 // Signup Routes
@@ -21,11 +20,15 @@ router.get("/signup", (req, res) => {
 
 router.post("/signup", async(req,res)=>{
 
+  // Collects data from html signup form
+
   let username = req.body.username;
   let org = req.body.org;
   let email = req.body.email;
   let password = req.body.password;
   let cpf = req.body.cpf;
+
+  // Groups the data
 
   let data ={
     username: username,
@@ -35,7 +38,11 @@ router.post("/signup", async(req,res)=>{
     cpf: cpf
   };
 
+  // Data to JSON
+
   const jsonData = JSON.stringify(data);
+
+  // Initilize request url and headers
 
   const url = "http://localhost:4000/auth/signup";
   const options = {
@@ -44,10 +51,11 @@ router.post("/signup", async(req,res)=>{
    }
   };
 
+  // HTTP post request
+
   axios.post(url,jsonData,options)
 
   .then(function (response) {
-    console.log(response.data);
     if (response.data.success==true){
       req.flash("success", "Registrado com sucesso");
       res.redirect("/");
@@ -73,15 +81,23 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async(req,res)=>{
 
+  // Collects data from html login form
+
   let username = req.body.username;
   let password = req.body.password;
+
+  // Groups the data
 
   let data ={
     username:username,
     password: password
   };
 
+  // Data to JSON
+
   const jsonData = JSON.stringify(data);
+
+  // Initilize request url and headers
 
   const url = "http://localhost:4000/auth/login";
   const options = {
@@ -90,14 +106,20 @@ router.post("/login", async(req,res)=>{
    }
   };
 
+  // HTTP post request
+
   axios.post(url,jsonData,options)
 
   .then(function (response) {
-    console.log(response.data);
+
+    // if the user has successfully logged in, stores user jwt and username info in session
+
     if (response.data.success==true){
       req.flash("success", "Logado com sucesso");
       req.session.token = response.data.token;
+      req.session.username = username;
       res.redirect("/");
+
     }else{
       req.flash("error", "Username ou senha incorreta")
       res.redirect("/login");
@@ -111,6 +133,8 @@ router.post("/login", async(req,res)=>{
 
 });
 
+// Logout route: jwt and username info stored in session to null
+
 router.get('/logout', (req, res, next) => {
   req.session.token = null;
   req.session.username = null;
@@ -122,7 +146,6 @@ router.get('/logout', (req, res, next) => {
 
 router.get('/wallet',isLoggedIn, async(req, res)=>{
 
-  if (req.session.token) {
     let token = req.session.token;
 
     const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance&args=[\"$ylvas\"]`;
@@ -146,8 +169,6 @@ router.get('/wallet',isLoggedIn, async(req, res)=>{
       req.flash("error", "Ocorreu um erro")
       res.redirect("/");
     });
-
-  }
 
 });
 
@@ -289,7 +310,7 @@ router.get('/transfer', isLoggedIn, function(req, res) {
 
 router.post('/transfer', isLoggedIn, function(req, res) {
   
-  let usernameSource = req.body.usernameSource;
+  let usernameSource = req.session.username;
   let usernameDest = req.body.usernameDest;
   let tokenId = req.body.tokenId;
   let qty = req.body.qty;
