@@ -17,6 +17,8 @@
 
           <% for( let key in balances) { %>
 
+            <% if (balances[key]!= 0) { %>
+
             <div class="card shadow-lg mt-3">
               <div class="card-body flex-column">
                 <div class="d-flex justify-content-between p-md-1">
@@ -33,6 +35,8 @@
                   </div>
                 </div> 
               </div>
+
+            <% } %>
 
           <% } %>
 
