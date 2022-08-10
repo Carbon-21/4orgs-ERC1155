@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const axios = require('axios').default;
+const jwt = require("jsonwebtoken");
 
 const router = Router();
 
@@ -57,6 +58,8 @@ router.post("/signup", async(req,res)=>{
 
   .then(function (response) {
     if (response.data.success==true){
+      req.session.token = response.data.token;
+      req.session.username = username;
       req.flash("success", "Registrado com sucesso");
       res.redirect("/");
     }else{
@@ -159,7 +162,6 @@ router.get('/wallet',isLoggedIn, async(req, res)=>{
     axios.get(url, options)
 
     .then(function (response) {
-      console.log(`Hello theere: ${response.data.result.ClientAccountBalance}`)
       let ftBalance = response.data.result.ClientAccountBalance;
       res.render("wallet", {title: "My Wallet", cssPath: "css/wallet.css", ftBalance});
     })

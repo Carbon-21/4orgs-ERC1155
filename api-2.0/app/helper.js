@@ -15,6 +15,7 @@ const util = require("util");
 //const { IdentityService }= require("fabric-ca-client");
 const { User } = require("fabric-common");
 const execPromise = util.promisify(exec);
+const auth = require("../util/auth");
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
   try {
@@ -312,6 +313,7 @@ const registerAndGerSecret = async (user, useCSR) => {
     logger.error(`An identity for the user ${username} already exists in the wallet`);
     var response = {
       success: true,
+      token: auth.createJWT(user.username, user.org),
       message: username + " enrolled Successfully",
     };
     return response;
@@ -396,6 +398,7 @@ const registerAndGerSecret = async (user, useCSR) => {
   var response = {
     success: true,
     message: username + " enrolled Successfully",
+    token: auth.createJWT(user.username, user.org),
     secret: secret,
     certificate: enrollment.certificate,
   };
