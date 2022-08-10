@@ -1,14 +1,39 @@
 # CARBON21
 
 ## Como rodar
+### Clonando repositorio
+```
+git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
+cd 4orgs-ERC1155
+```
+
+### Pré-requisitos
+
+Para instalar os pré-requisitos:
+```
+chmod +x ./installPreReq
+./installPreReq
+```
+_Nota: Aconselhavel reiniciar a maquina ao fim das instalações_
+
+Obtenção dos Samples do Hyperledger Fabric
+```
+chmod +x ./obtainSamples
+./obtainSamples
+```
+
+Atribuição ao path
+```
+chmod +x ./atribuiPath
+./atribuiPath
+```
+_Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
 
 ### Rede
 
 Para subir a rede:
 
 ```
-git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
-cd 4orgs-ERC1155
 chmod +x init
 ./init
 ```
