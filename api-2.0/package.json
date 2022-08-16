@@ -21,5 +21,10 @@
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.5.2",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "babelify": "^10.0.0"
   }
 }

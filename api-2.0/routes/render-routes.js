@@ -26,4 +26,8 @@ router.get('/mintNFT', function(req, res) {
   res.render('mintNFT', {title: "Mint NFT", cssPath: "css/mintNFT.css"});
 });
 
+router.get('/generateCrypto', function(req, res) {
+  res.render('generateCrypto', {title: "Generate Crypto"});
+});
+
 module.exports = router;
