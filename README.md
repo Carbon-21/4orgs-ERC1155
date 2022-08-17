@@ -64,7 +64,7 @@ _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 <br><br>
 
 
-ATUALIZAÇÃO: Para gerar os materiais criptográficos (par de chaves e CSR) do lado do cliente, é preciso instalar o browserify, que une códigos com suas dependências em um único arquivo (<i>bundle.js</i>). Para isso, rode o script <i>install-dependencies</i> (Ao rodar o init, esse script já é chamado automaticamente)
+ATUALIZAÇÃO: Para gerar os materiais criptográficos (par de chaves e CSR) do lado do cliente, é preciso instalar o browserify, que une códigos com suas dependências em um único arquivo (<i>bundle.js</i>). Para isso, rode o script <i>install-dependencies</i> (Ao rodar o init, esse script já é chamado automaticamente).
 <br>
 <br>
 ### Browserify
@@ -74,6 +74,9 @@ O browserify já é chamado automaticamente ao rodar o script <i>init</i>. Entre
 ```
 browserify ./public/browser-src/crypto-generator.js > ./public/dist/bundle.js -t babelify
 ```
+
+### Geração de material criptográfico
+A rota para testar a geração de materiais criptográficos é: [localhost:4000/generateCrypto](http://localhost:4000/generateCrypto)
 
 ### Git
 
