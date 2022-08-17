@@ -1,0 +1,28 @@
+#install node modules if they are not installed already
+echo "Installing node modules if they are not installed already"
+if [ -d ./node_modules/babelify ]; then
+  echo "     Folder node_modules already exists (including new dependency babelify) --> OK"
+else
+  echo "Folder node_modules doesn't exist OR new dependency babelify isn't installed --> Running npm install"
+  npm install
+fi
+
+#create directory where bundle.js will be stored
+mkdir -p dist/
+
+#install browserify globally if it's not installed already
+echo "Installing browserify globally if not installed already"
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+if [[ ":$PATH:" == *".npm-global/bin"* ]]; then
+  echo "     Your path already includes ~/npm-global/bin --> OK"
+else
+  echo "     Your path is missing ~/.npm-global/bin --> Adding it"
+  echo "     export PATH=~/.npm-global/bin:$PATH" >> ~/.profile
+fi
+source ~/.profile
+[ -f ~/.npm-global/bin/browserify ] || npm install -g browserify
+
+#create bundle.js
+echo "Creating bundle.js"
+browserify ./public/browser-src/crypto-generator.js > ./public/dist/bundle.js -t babelify
