@@ -60,9 +60,6 @@ cd api-2.0/config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
 cd ..
 
-#install node modules if they are not installed already
-[ -d ./node_modules/ ] || npm install
-
-#install browserify globally if it's not installed already
-chmod +x install-browserify
-./install-browserify
+#install dependencies if not already installed
+chmod +x install-dependencies
+./install-dependencies
