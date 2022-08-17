@@ -58,5 +58,11 @@ chmod +x deployChaincode.sh
 #create connection profiles if they don't exist already
 cd api-2.0/config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
-
 cd ..
+
+#install node modules if they are not installed already
+[ -d ./node_modules/ ] || npm install
+
+#install browserify globally if it's not installed already
+chmod +x install-browserify
+./install-browserify
