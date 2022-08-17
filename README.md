@@ -63,6 +63,18 @@ nodemon
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 <br><br>
 
+
+ATUALIZAÇÃO: Para gerar os materiais criptográficos (par de chaves e CSR) do lado do cliente, é preciso instalar o browserify, que une códigos com suas dependências em um único arquivo (<i>bundle.js</i>). Para isso, rode o script <i>install-dependencies</i> (Ao rodar o init, esse script já é chamado automaticamente)
+<br>
+<br>
+### Browserify
+
+O browserify já é chamado automaticamente ao rodar o script <i>init</i>. Entretanto, toda vez que o script relacionado à geração de chaves e CSR (<i>crypto-generator.js</i>) for alterado, é necessário utilizar chamar o browserify novamente. Para isso, na pasta da api-2.0, execute o seguinte comando:
+
+```
+browserify ./public/browser-src/crypto-generator.js > ./public/dist/bundle.js -t babelify
+```
+
 ### Git
 
 Para atualizar os arquivos locais (pull) e criar um novo branch para trabalhar:
