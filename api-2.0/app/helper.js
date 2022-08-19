@@ -289,7 +289,7 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGerSecret = async (user, useCSR) => {
+const registerAndGetSecret = async (user, useCSR) => {
   let username = user.username;
   let userOrg = user.org;
   let email = user.email;
@@ -300,7 +300,7 @@ const registerAndGerSecret = async (user, useCSR) => {
 
   const caURL = await getCaUrl(userOrg, ccp);
   const ca = new FabricCAServices(caURL);
-  console.log("ca name " + ca.getCaName());
+  logger.debug("ca name " + ca.getCaName());
 
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -320,10 +320,10 @@ const registerAndGerSecret = async (user, useCSR) => {
   // Check to see if we've already enrolled the admin user.
   let adminIdentity = await wallet.get("admin");
   if (!adminIdentity) {
-    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    logger.info('An identity for the admin user "admin" does not exist in the wallet');
     await enrollAdmin(userOrg, ccp);
     adminIdentity = await wallet.get("admin");
-    console.log("Admin Enrolled Successfully");
+    logger.info("Admin Enrolled Successfully");
   }
 
   // build a user object for authenticating with the CA
@@ -337,16 +337,16 @@ const registerAndGerSecret = async (user, useCSR) => {
         affiliation: await getAffiliation(userOrg),
         enrollmentID: user.username,
         role: "client",
-        attrs: [
-          { name: "cpf", value: cpf },
-          { name: "email", value: email },
-          { name: "password", value: password },
-        ],
+        // attrs: [
+        //   { name: "cpf", value: cpf },
+        //   { name: "email", value: email },
+        //   { name: "password", value: password },
+        // ],
       },
       adminUser
     );
 
-    if (useCSR == true) {
+    if (useCSR) {
       logger.debug(`Using CSR mode`);
 
       // Gera chave privada localmente. Aqui ainda salva dentro da API. Ideal é que ao gerar o usuário decida onde salvar a chave.
@@ -389,6 +389,8 @@ const registerAndGerSecret = async (user, useCSR) => {
       type: "X.509",
     };
     await wallet.put(username, x509Identity);
+
+    //add user to DB
   } catch (error) {
     return error.message;
   }
@@ -458,7 +460,7 @@ module.exports = {
   getRegisteredUser: getRegisteredUser,
   getRegisteredUserFromCA: getRegisteredUserFromCA,
   isUserRegistered: isUserRegistered,
-  registerAndGerSecret: registerAndGerSecret,
+  registerAndGetSecret: registerAndGetSecret,
   getAccountId: getAccountId,
   updateAttribute: updateAttribute,
   queryAttribute: queryAttribute,
