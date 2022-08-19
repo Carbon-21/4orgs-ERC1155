@@ -1,4 +1,19 @@
 #!/bin/bash
+kill-hlf () {
+	docker-compose down 
+	containers=$(docker ps -q) && docker kill $containers
+	docker network prune -f && docker volume prune -f
+}
+
+#only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
+start-mysql() {
+  if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
+    echo "MySQL already running"
+  else
+    sudo systemctl start mysql
+    echo "Started MySQL"
+  fi
+}
 
 ###### +X ######
 chmod +x kill
@@ -8,19 +23,10 @@ chmod +x cc-debug
 chmod +x cc-build
 
 ###### KILL ######
-kill-hlf () {
-	docker-compose down 
-	containers=$(docker ps -q) && docker kill $containers
-	docker network prune -f && docker volume prune -f
-}
-
-# Build mock File Server docker img
+#kill other dockers 
 cd metasrv
-docker build . -t mockmeta
-cd ..
-
-# #kill other dockers 
-cd Explorer
+kill-hlf
+cd ../Explorer
 kill-hlf
 cd ../artifacts
 kill-hlf
@@ -28,7 +34,15 @@ cd channel/create-certificate-with-ca
 kill-hlf
 
 ###### RUN ######
+#run mysql
+start-mysql
+
+#build mock File Server docker img
+cd ../../../metasrv
+docker build . -t mockmeta
+
 #run one docker for each CA (each org has 1, incluind the orderer)
+cd ../artifacts/channel/create-certificate-with-ca
 docker-compose up -d
 sleep 15
 

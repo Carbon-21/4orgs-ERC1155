@@ -7,10 +7,15 @@ kill-hlf () {
 	docker network prune -f && docker volume prune -f
 }
 
-# #kill other dockers 
-cd Explorer
+#kill other dockers 
+cd metasrv
+kill-hlf
+cd ../Explorer
 kill-hlf
 cd ../artifacts
 kill-hlf
 cd channel/create-certificate-with-ca
 kill-hlf
+
+#stop mysql
+sudo systemctl stop mysql
