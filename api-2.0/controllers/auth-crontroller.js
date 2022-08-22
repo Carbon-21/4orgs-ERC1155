@@ -29,6 +29,7 @@ exports.signup = async (req, res, next) => {
       user.org
     );
     res.json(response);
+    
   } else {
     logger.error(
       "Failed to register the username %s for organization %s with::%s",
