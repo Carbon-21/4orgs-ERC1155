@@ -1,6 +1,5 @@
 const { Router } = require("express");
 const { body } = require("express-validator");
-
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
 const authController = require("../controllers/auth-crontroller.js");
@@ -32,10 +31,6 @@ router.post(
 );
 
 ///// AUTHENTICATED ROUTES /////
-
-//// Login ////
-
 router.use(checkAuth);
-
 
 module.exports = router;
