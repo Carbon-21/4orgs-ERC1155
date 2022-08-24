@@ -1,12 +1,12 @@
 "use strict";
 
-var { Gateway, Wallets } = require("fabric-network");
-
 const logger = require("../util/logger");
-const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
+const models = require("../util/sequelize");
+const HttpError = require("../util/http-error");
 const fs = require("fs");
-
+const path = require("path");
+var { Gateway, Wallets } = require("fabric-network");
 const IdentityService = require("fabric-ca-client");
 
 // Added to allow waiting generateCSR script execution
@@ -289,12 +289,12 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGetSecret = async (user, useCSR) => {
-  let username = user.username;
-  let userOrg = user.org;
-  let email = user.email;
-  let password = user.password;
-  let cpf = user.cpf;
+const registerAndGetSecret = async (user, useCSR, next) => {
+  const username = user.username;
+  const userOrg = user.org;
+  // let email = user.email;
+  // let password = user.password;
+  // let cpf = user.cpf;
 
   let ccp = await getCCP(userOrg);
 
@@ -391,6 +391,20 @@ const registerAndGetSecret = async (user, useCSR) => {
     await wallet.put(username, x509Identity);
 
     //add user to DB
+    try {
+      console.log("ue");
+      user = await models.users.create(user);
+
+      //ok
+      // res.status(201).json({
+      //   message: `Usuário criado!`,
+      // });
+    } catch (err) {
+      //throw error if user exists (409) or 500
+      let code;
+      err.parent.errno == 1062 ? (code = 409) : (code = 500);
+      return next(new HttpError(code));
+    }
   } catch (error) {
     return error.message;
   }
