@@ -22,6 +22,7 @@
     "fabric-ca-client": "^2.1.0",
     "fabric-common": "^2.2.3",
     "fabric-network": "^2.2.2",
+    "ipfs-mini": "^1.1.5",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.5.2",
     "mysql2": "^2.3.3",

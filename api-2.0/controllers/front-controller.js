@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
+const ipfs = require("../util/ipfs");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
@@ -392,6 +393,12 @@ exports.postMintNFT = async (req, res, next) => {
     phyto: phyto,
     location: location,
   };
+
+  // Uploading Metadata to IPFS
+
+  console.log("Uploading to ipfs (infura)");
+  const hash = await ipfs.uploadIPFS(JSON.stringify(meta));
+  console.log("Uploaded to :" + hash);
 
   // Groups the data
 
