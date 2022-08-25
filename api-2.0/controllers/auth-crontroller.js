@@ -69,8 +69,8 @@ exports.login = async (req, res, next) => {
     return next(new HttpError(401));
   }
 
-  //if pwd doesnt match => log this activity and don't authenticate
-  if (user.password !== password) {
+  //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
+  if (user.password !== password || user.org !== org) {
     //log activity
     try {
       await models.authenticationLog.create({
@@ -105,6 +105,7 @@ exports.login = async (req, res, next) => {
       token,
     });
   } catch (err) {
+    console.log(err);
     return next(new HttpError(500));
   }
 };

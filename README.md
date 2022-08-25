@@ -41,7 +41,7 @@ chmod +x ./atribuiPath
 
 _Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
 <br><br>
-Por fim, certifique-se de que configurou o banco de dados de usuários (https://github.com/Carbon-21/database)
+Por fim, certifique-se de que configurou o banco de dados de usuários, conforme ./database/README
 <br><br>
 
 ### Rede

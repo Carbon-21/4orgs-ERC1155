@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
+start-mysql() {
+  if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
+    echo "MySQL already running"
+  else
+    sudo systemctl start mysql
+    echo "Started MySQL"
+  fi
+}
+
+#run mysql
+start-mysql
+
+#create carbon db again
+mysql -u carbon -p --execute "source carbon.sql"
+echo "Carbon db recreated"

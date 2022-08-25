@@ -25,6 +25,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(60),
       allowNull: false
     },
+    org: {
+      type: DataTypes.STRING(30),
+      allowNull: false
+    },
     avatar: {
       type: DataTypes.STRING(255),
       allowNull: true

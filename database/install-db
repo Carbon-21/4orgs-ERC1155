@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#install mysql
+sudo apt install mysql-server
+
+#set systemd
+sudo systemctl disable mysql
+sudo systemctl start mysql
+
+#create carbon user with low password policy and all permissions
+sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
+sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY '12345678'"
+sudo mysql --execute "GRANT ALL ON *.* TO carbon@localhost WITH GRANT OPTION"
+
+#create carbon db
+mysql -u carbon -p --execute "source carbon.sql"

@@ -403,6 +403,7 @@ const registerAndGetSecret = async (user, useCSR, next) => {
       // });
     } catch (err) {
       //throw error if user exists (409) or 500
+      console.log(err);
       let code;
       err.parent.errno == 1062 ? (code = 409) : (code = 500);
       return next(new HttpError(code));
