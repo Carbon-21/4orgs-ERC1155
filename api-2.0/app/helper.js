@@ -289,7 +289,7 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGerSecret = async (user, useCSR) => {
+const registerAndGerSecret = async (user, useCSR, csr) => {
   let username = user.username;
   let userOrg = user.org;
   let email = user.email;
@@ -348,23 +348,7 @@ const registerAndGerSecret = async (user, useCSR) => {
 
     if (useCSR == true) {
       logger.debug(`Using CSR mode`);
-
-      // Gera chave privada localmente. Aqui ainda salva dentro da API. Ideal é que ao gerar o usuário decida onde salvar a chave.
-      // TODO: substituir o script por uma rotina em js
-
-      //  Gera o CSR a partir do username e Org
-      //  Precisa ter openssl instalado
-      //  Script gera uma chave privada (salva em ./api-2.0/pkey.pem) e a partir dela um CSR (./api-2.0/certreq.csr)
-      //  Common Name (CN) = username
-      //  Org. Unit (OU) = client.userOrg.department1
-      var command = "./generateCSR.sh " + username + " " + userOrg;
-      await execWrapper(command);
-
-      // // Le o csr gerado e adiciona no enroll
-      const csr = fs.readFileSync("./certreq.csr", "utf8");
-      // Le a pkey para add na wallet
-      var pkey = fs.readFileSync("./pkey.pem", "utf8");
-      logger.debug(`certreq:  ${csr}`);
+      logger.info('CSR:\n' + csr);
       var enrollment = await ca.enroll({
         enrollmentID: username,
         enrollmentSecret: secret,
@@ -383,7 +367,7 @@ const registerAndGerSecret = async (user, useCSR) => {
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: pkey,
+        privateKey: 'blablabla',
       },
       mspId: orgMSPId,
       type: "X.509",

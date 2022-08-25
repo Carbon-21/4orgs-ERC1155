@@ -25,4 +25,4 @@ source ~/.profile
 
 #create bundle.js
 echo "Creating bundle.js"
-browserify ./public/browser-src/crypto-generator.js > ./public/dist/bundle.js -t babelify
+browserify ./public/scripts/request-handler.js > ./public/dist/bundle.js -t babelify
