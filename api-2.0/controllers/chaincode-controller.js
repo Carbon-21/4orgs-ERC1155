@@ -13,7 +13,7 @@ exports.invoke = async (req, res, next) => {
     const peers = req.body.peers;
     const transient = req.body.transient;
     const username = req.jwt.username;
-    args[0] = username
+    args[0] = username;
     const org = req.jwt.org;
 
     logger.debug(`transient data ;${transient}`);
@@ -65,6 +65,7 @@ exports.query = async (req, res, next) => {
 
     logger.debug("channelName : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
+    logger.debug("org : " + org);
     logger.debug("fcn : " + fcn);
     logger.debug("args : " + args);
 
@@ -89,71 +90,3 @@ exports.query = async (req, res, next) => {
     res.send(response_payload);
   }
 };
-
-// app.get(
-//   "/qscc/channels/:channelName/chaincodes/:chaincodeName",
-//   async function (req, res) {
-//     try {
-//       logger.debug(
-//         "==================== QUERY BY CHAINCODE =================="
-//       );
-
-//       var channelName = req.params.channelName;
-//       var chaincodeName = req.params.chaincodeName;
-//       console.log(`chaincode name is :${chaincodeName}`);
-//       let args = req.query.args;
-//       let fcn = req.query.fcn;
-//       // let peer = req.query.peer;
-
-//       logger.debug("channelName : " + channelName);
-//       logger.debug("chaincodeName : " + chaincodeName);
-//       logger.debug("fcn : " + fcn);
-//       logger.debug("args : " + args);
-
-//       if (!chaincodeName) {
-//         res.json(getErrorMessage("'chaincodeName'"));
-//         return;
-//       }
-//       if (!channelName) {
-//         res.json(getErrorMessage("'channelName'"));
-//         return;
-//       }
-//       if (!fcn) {
-//         res.json(getErrorMessage("'fcn'"));
-//         return;
-//       }
-//       if (!args) {
-//         res.json(getErrorMessage("'args'"));
-//         return;
-//       }
-//       console.log("args==========", args);
-//       args = args.replace(/'/g, '"');
-//       args = JSON.parse(args);
-//       logger.debug(args);
-
-//       let response_payload = await qscc.qscc(
-//         channelName,
-//         chaincodeName,
-//         args,
-//         fcn,
-//         req.username,
-//         req.org
-//       );
-
-//       // const response_payload = {
-//       //     result: message,
-//       //     error: null,
-//       //     errorData: null
-//       // }
-
-//       res.send(response_payload);
-//     } catch (error) {
-//       const response_payload = {
-//         result: null,
-//         error: error.name,
-//         errorData: error.message,
-//       };
-//       res.send(response_payload);
-//     }
-//   }
-// );

@@ -19,6 +19,7 @@ exports.postSignup = async (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
   let cpf = req.body.cpf;
+  let name = req.body.name;
 
   // Groups the data
 
@@ -28,6 +29,7 @@ exports.postSignup = async (req, res, next) => {
     email: email,
     password: password,
     cpf: cpf,
+    name,
   };
 
   // Data to JSON
@@ -53,7 +55,7 @@ exports.postSignup = async (req, res, next) => {
 
       if (response.data.success == true) {
         req.session.token = response.data.token;
-        req.session.username = username;
+        req.session.username = email;
         req.flash("success", "Registrado com sucesso");
         res.redirect("/");
       } else {
@@ -165,6 +167,7 @@ exports.getWallet = async (req, res, next) => {
     // If successful, return user Sylvas balance
 
     .then(function (response) {
+      console.log(response.data.result);
       let ftBalance = response.data.result.ClientAccountBalance;
       res.render("wallet", {
         title: "My Wallet",

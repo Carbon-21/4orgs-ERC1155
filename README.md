@@ -1,33 +1,48 @@
 # CARBON21
 
 ## Como rodar
-### Clonando repositorio
+
+### Clonando o repositorio
+
 ```
 git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
 ```
 
+<br>
+
 ### Pré-requisitos
 
 Para instalar os pré-requisitos:
+
 ```
 chmod +x ./installPreReq
 ./installPreReq
 ```
+
 _Nota: Aconselhavel reiniciar a maquina ao fim das instalações_
+<br><br>
 
 Obtenção dos Samples do Hyperledger Fabric
+
 ```
 chmod +x ./obtainSamples
 ./obtainSamples
 ```
 
+<br>
+
 Atribuição ao path
+
 ```
 chmod +x ./atribuiPath
 ./atribuiPath
 ```
+
 _Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
+<br><br>
+Por fim, certifique-se de que configurou o banco de dados de usuários, conforme ./database/README
+<br><br>
 
 ### Rede
 
@@ -61,7 +76,8 @@ nodemon
 ```
 
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
-<br><br>
+
+<br>
 
 ### Git
 
@@ -79,7 +95,7 @@ Para dar push direto para o branch em que se encontra:
 ./git-push <mensagem_de_commit>
 ```
 
-<br><br>
+<br>
 
 ### Blockchain explorer
 
@@ -92,7 +108,7 @@ cd Explorer
 
 _Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
 
-<br><br>
+<br>
 
 ### Chaincode Debugging
 
@@ -109,11 +125,3 @@ Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados 
 ```
 
 <br>
-
-## Todo
-
-- [x] Remover vulnerabilidades da API
-- [ ] Documentar instalação dos pré-requisitos
-- [ ] Modificar as funções batch do chaincode de modo a corrigir a identificação do operador
-- [ ] Adicionar suporte à função que permite aprovar novos operadores para uma conta
-      <br><br>

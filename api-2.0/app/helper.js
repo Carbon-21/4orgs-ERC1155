@@ -1,12 +1,12 @@
 "use strict";
 
-var { Gateway, Wallets } = require("fabric-network");
-
 const logger = require("../util/logger");
-const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
+const models = require("../util/sequelize");
+const HttpError = require("../util/http-error");
 const fs = require("fs");
-
+const path = require("path");
+var { Gateway, Wallets } = require("fabric-network");
 const IdentityService = require("fabric-ca-client");
 
 // Added to allow waiting generateCSR script execution
@@ -289,18 +289,19 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGerSecret = async (user, useCSR) => {
-  let username = user.username;
-  let userOrg = user.org;
-  let email = user.email;
-  let password = user.password;
-  let cpf = user.cpf;
+const registerAndGetSecret = async (user, useCSR, next) => {
+  const username = user.username;
+  const userOrg = user.org;
+  let token;
+  // let email = user.email;
+  // let password = user.password;
+  // let cpf = user.cpf;
 
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
   const ca = new FabricCAServices(caURL);
-  console.log("ca name " + ca.getCaName());
+  logger.debug("ca name " + ca.getCaName());
 
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -309,9 +310,11 @@ const registerAndGerSecret = async (user, useCSR) => {
   const userIdentity = await wallet.get(username);
   if (userIdentity) {
     logger.error(`An identity for the user ${username} already exists in the wallet`);
+
+    token = auth.createJWT(username, userOrg);
     var response = {
       success: true,
-      token: auth.createJWT(user.username, user.org),
+      token,
       message: username + " enrolled Successfully",
     };
     return response;
@@ -320,10 +323,10 @@ const registerAndGerSecret = async (user, useCSR) => {
   // Check to see if we've already enrolled the admin user.
   let adminIdentity = await wallet.get("admin");
   if (!adminIdentity) {
-    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    logger.info('An identity for the admin user "admin" does not exist in the wallet');
     await enrollAdmin(userOrg, ccp);
     adminIdentity = await wallet.get("admin");
-    console.log("Admin Enrolled Successfully");
+    logger.info("Admin Enrolled Successfully");
   }
 
   // build a user object for authenticating with the CA
@@ -337,16 +340,16 @@ const registerAndGerSecret = async (user, useCSR) => {
         affiliation: await getAffiliation(userOrg),
         enrollmentID: user.username,
         role: "client",
-        attrs: [
-          { name: "cpf", value: cpf },
-          { name: "email", value: email },
-          { name: "password", value: password },
-        ],
+        // attrs: [
+        //   { name: "cpf", value: cpf },
+        //   { name: "email", value: email },
+        //   { name: "password", value: password },
+        // ],
       },
       adminUser
     );
 
-    if (useCSR == true) {
+    if (useCSR) {
       logger.debug(`Using CSR mode`);
 
       // Gera chave privada localmente. Aqui ainda salva dentro da API. Ideal é que ao gerar o usuário decida onde salvar a chave.
@@ -389,14 +392,31 @@ const registerAndGerSecret = async (user, useCSR) => {
       type: "X.509",
     };
     await wallet.put(username, x509Identity);
+
+    //add user to DB
+    try {
+      user = await models.users.create(user);
+
+      //ok
+      // res.status(201).json({
+      //   message: `Usuário criado!`,
+      // });
+    } catch (err) {
+      //throw error if user exists (409) or 500
+      console.log(err);
+      let code;
+      err.parent.errno == 1062 ? (code = 409) : (code = 500);
+      return next(new HttpError(code));
+    }
   } catch (error) {
     return error.message;
   }
+  token = auth.createJWT(username, userOrg);
 
   var response = {
     success: true,
     message: username + " enrolled Successfully",
-    token: auth.createJWT(user.username, user.org),
+    token,
     secret: secret,
     certificate: enrollment.certificate,
   };
@@ -458,7 +478,7 @@ module.exports = {
   getRegisteredUser: getRegisteredUser,
   getRegisteredUserFromCA: getRegisteredUserFromCA,
   isUserRegistered: isUserRegistered,
-  registerAndGerSecret: registerAndGerSecret,
+  registerAndGetSecret: registerAndGetSecret,
   getAccountId: getAccountId,
   updateAttribute: updateAttribute,
   queryAttribute: queryAttribute,

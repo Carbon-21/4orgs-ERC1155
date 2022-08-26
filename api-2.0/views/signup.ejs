@@ -2,11 +2,9 @@
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
   <%- include("partials/head") %>
 
   <body>
-
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -14,99 +12,119 @@
     <!-- Register Section -->
 
     <section id="register">
-
       <div class="container-fluid">
         <div class="register-form card shadow">
-
           <form action="/signup" method="POST" class="validated-form" novalidate>
-
             <div class="row">
-
               <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                <h1 class="sign-up-header">Sign up</h1>
+                <h1 class="sign-up-header">Registrar</h1>
 
-                  <div class="register-data">
-                    <i class="fas fa-user fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="text" name="username" id="username" class="form-control" required/>
-                      <label class="form-label" for="username">Username</label>
-                    </div>
+                <!-- <div class="register-data">
+                  <i class="fas fa-user fa-lg"></i>
+                  <div class="flex-fill">
+                    <input
+                      type="text"
+                      name="username"
+                      id="username"
+                      class="form-control"
+                      required
+                    />
+                    <label class="form-label" for="username">Username</label>
                   </div>
+                </div> -->
 
-                  <div class="register-data">
-                    <i class="fas fa-user fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="text" name="name" id="name" class="form-control" required/>
-                      <label class="form-label" for="name">Your name</label>
-                    </div>
+                <div class="register-data">
+                  <i class="fas fa-user fa-lg"></i>
+                  <div class="flex-fill">
+                    <input type="text" name="name" id="name" class="form-control" required />
+                    <label class="form-label" for="name">Nome completo</label>
                   </div>
+                </div>
 
-                  <div class="register-data">
-                    <i class="fas fa-building fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="text" name="org" id="org" class="form-control" required/>
-                      <label class="form-label" for="org">Org name</label>
-                    </div>
+                <!-- <div class="register-data">
+                  <i class="fas fa-building fa-lg"></i>
+                  <div class="flex-fill">
+                    <input type="text" name="org" id="org" class="form-control" required />
+                    <label class="form-label" for="org">Org name</label>
                   </div>
+                </div> -->
 
-                  <div class="register-data">
-                    <i class="fas fa-envelope fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="email" name="email" id="email" class="form-control" required />
-                      <label class="form-label" for="email">Your Email</label>
-                    </div>
+                <div class="register-data">
+                  <i class="fa-solid fa-id-card"></i>
+                  <div class="flex-fill">
+                    <input type="text" name="cpf" id="cpf" class="form-control" required />
+                    <label class="form-label" for="cpf">CPF</label>
                   </div>
+                </div>
 
-                  <div class="register-data">
-                    <i class="fa-solid fa-id-card"></i>
-                    <div class="flex-fill">
-                      <input type="text" name="cpf" id="cpf" class="form-control" required/>
-                      <label class="form-label" for="cpf">Your CPF</label>
-                    </div>
+                <div class="register-data">
+                  <i class="fas fa-envelope fa-lg"></i>
+                  <div class="flex-fill">
+                    <input type="email" name="email" id="email" class="form-control" required />
+                    <label class="form-label" for="email">Email</label>
                   </div>
+                </div>
 
-                  <div class="register-data">
-                    <i class="fas fa-lock fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="password" name="password" id="password" class="form-control" required/>
-                      <label class="form-label" for="password">Password</label>
-                    </div>
+                <div class="register-data">
+                  <i class="fas fa-lock fa-lg"></i>
+                  <div class="flex-fill">
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      class="form-control"
+                      required
+                    />
+                    <label class="form-label" for="password">Senha</label>
                   </div>
+                </div>
 
-                  <div class="register-data">
-                    <i class="fas fa-key fa-lg"></i>
-                    <div class="flex-fill">
-                      <input type="password" name="password-repeat" id="password-repeat" class="form-control" required/>
-                      <label class="form-label" for="password-repeat">Repeat your password</label>
-                    </div>
+                <!-- <div class="register-data">
+                  <i class="fas fa-key fa-lg"></i>
+                  <div class="flex-fill">
+                    <input
+                      type="password"
+                      name="password-repeat"
+                      id="password-repeat"
+                      class="form-control"
+                      required
+                    />
+                    <label class="form-label" for="password-repeat">Repeat your password</label>
                   </div>
+                </div> -->
 
-                  <div class="form-check">
-                    <input type="checkbox" name="tos" value="" id="tos" class="form-check-input" required/>
-                    <label class="form-check-label">I agree all statements in <a href="#!">Terms of service</a></label>
-                  </div>
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    name="tos"
+                    value=""
+                    id="tos"
+                    class="form-check-input"
+                    required
+                  />
+                  <label class="form-check-label"
+                    >Concordo com os <a href="#!">termos de serviço</a></label
+                  >
+                </div>
 
-                  <div class="register-button">
-                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
-                  </div>
-
+                <div class="register-button">
+                  <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
+                </div>
               </div>
 
               <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo-container">
-                <img src="../images/carbon21-logo.webp"class="img-fluid carbon-logo" alt="Carbon21 logo">
+                <img
+                  src="../images/carbon21-logo.webp"
+                  class="img-fluid carbon-logo"
+                  alt="Carbon21 logo"
+                />
               </div>
-
             </div>
-
           </form>
-
         </div>
       </div>
-    
     </section>
 
     <script src="/scripts/validateForms.js"></script>
-
   </body>
-
 </html>
