@@ -72,7 +72,7 @@ ATUALIZAÇÃO: Para gerar os materiais criptográficos (par de chaves e CSR) do 
 O browserify já é chamado automaticamente ao rodar o script <i>init</i>. Entretanto, toda vez que o script relacionado à geração de chaves e CSR (<i>crypto-generator.js</i>) for alterado, é necessário utilizar chamar o browserify novamente. Para isso, na pasta da api-2.0, execute o seguinte comando:
 
 ```
-browserify ./public/browser-src/crypto-generator.js > ./public/dist/bundle.js -t babelify
+browserify ./public/scripts/crypto-generator.js > ./public/dist/bundle.js -t babelify
 ```
 
 ### Geração de material criptográfico

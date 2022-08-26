@@ -8,7 +8,7 @@ else
 fi
 
 #create directory where bundle.js will be stored
-mkdir -p dist/
+mkdir -p ./public/dist/
 
 #install browserify globally if it's not installed already
 echo "Installing browserify globally if not installed already"

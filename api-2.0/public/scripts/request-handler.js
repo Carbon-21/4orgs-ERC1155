@@ -1,4 +1,4 @@
-const crypto = require('../browser-src/crypto-generator.js')
+const crypto = require('./crypto-generator.js')
 
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
@@ -58,7 +58,7 @@ const wrapRequest = async function (requestType) {
 
   switch (requestType) {
     case "Signup":
-      url = "signup";
+      url = "auth/signup";
       username = document.getElementById("username").value;
       name = document.getElementById("name").value;
       org = document.getElementById("org").value;
@@ -66,7 +66,7 @@ const wrapRequest = async function (requestType) {
       cpf = document.getElementById("cpf").value;
       password = document.getElementById("password").value;
 
-      let csr = await window.generateCryptoMaterial(username);
+      let crypto = await window.generateCryptoMaterial(username);
 
       body = {
         username: username,
@@ -75,12 +75,13 @@ const wrapRequest = async function (requestType) {
         email: email,
         cpf: cpf,
         password: password,
-        csr: csr,
+        csr: crypto.csr,
         useCSR: true
       };
-      return [url, body, null]
-
-    case "Login":
+      return {url: url, body: body, token: null, privateKey: crypto.privateKey}
+      //return [url, body, null]
+    
+      case "Login":
       url = "login";
       username = document.getElementById("username").value;
       password = document.getElementById("password").value;
@@ -88,7 +89,7 @@ const wrapRequest = async function (requestType) {
         username: username,
         password: password,
       };
-      return [url, body, null];
+      return [url, body, null]; //TODO: convert to DICT
 
     case "MintFT":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
@@ -100,7 +101,7 @@ const wrapRequest = async function (requestType) {
         fcn: "Mint",
         args: [username, "$ylvas", qty],
       };
-      return [url, body, token];
+      return [url, body, token]; //TODO: convert to DICT
 
     case "MintNFT":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
@@ -168,18 +169,26 @@ const wrapRequest = async function (requestType) {
 window.sendRequest = async function (requestType) {
   event.preventDefault();
   try{
-    let [url, body, token] = await wrapRequest(requestType);
+    //let [url, body, token] = await wrapRequest(requestType);
+    let wrapped = await wrapRequest(requestType);
     let response;
-    console.log('saiu wrapRequest');
 
     // Request sending
-    if (postMethods.includes(requestType)) response = await window.sendToServer("POST", url, body, token);
-    else response = await window.sendToServer("GET", url, body, token);
+    if (postMethods.includes(requestType)) response = await window.sendToServer("POST", wrapped.url, wrapped.body, wrapped.token);
+    else response = await window.sendToServer("GET", wrapped.url, wrapped.body, wrapped.token);
 
     console.log("response = ", response);
 
     // Response handling
     switch (requestType) {
+      case "Signup":
+        if (response.success) {
+          if (response.certificate != undefined) {
+            await window.downloadCrypto(wrapped.privateKey, 'privateKey');
+            await window.downloadCrypto(response.certificate, 'certificate');
+          }
+        }
+
       case "Login":
         localStorage.setItem("token", response.token); // store token in local storage
         localStorage.setItem("username", document.getElementById("username").value);

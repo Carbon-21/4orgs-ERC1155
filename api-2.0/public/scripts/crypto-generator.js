@@ -8,7 +8,8 @@ window.generateCryptoMaterial = async function (username) {
     var domains = [ username, 'www.example.com', 'api.example.com' ];
     let csr = await ecdsa({ key: privateKey, domains: domains });
     console.log('CSR\n',csr);
-    return csr;
+    //return csr;
+    return {csr: csr, privateKey: privateKey};
     //document.getElementById("pk").innerHTML = "<pre>" + privateKey + "</pre>";
     //document.getElementById("csr").innerHTML = "<pre>" + csr + "</pre>";
   } catch (e) {
@@ -70,4 +71,24 @@ window.generateKeyPair = async function () {
   } catch(e) {
     return e.message
   }
+}
+
+window.downloadCrypto = async function (material, materialType) {
+  let filename;
+  if (materialType == "privateKey") filename = "pk.pem";
+  else if (materialType == "certificate") filename = "certificate.pem";
+  else throw new Error(`InvalidArgumentException - materialType ${materialType} is not valid`);
+
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(material));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+  
+
 }
