@@ -5,7 +5,7 @@
 const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
-const axios = require('axios').default;
+const axios = require("axios").default;
 
 //native packages
 const bodyParser = require("body-parser");
@@ -47,11 +47,11 @@ const sessionConfig = {
   resave: false,
   saveUnitialized: true,
   cookie: {
-      httpOnly: true,
-      expires: Date.now() + 1000*60*60*24*7,
-      maxAge: 1000*60*60*24*7
-  }
-}
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 app.use(session(sessionConfig));
 app.use(flash());
 

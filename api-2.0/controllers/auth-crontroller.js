@@ -3,7 +3,47 @@ const logger = require("../util/logger");
 const auth = require("../util/auth");
 const models = require("../util/sequelize");
 const HttpError = require("../util/http-error");
+const crypto = require("crypto");
 const { IdentityService } = require("fabric-ca-client");
+
+//given the username, return a salt so the user can perform the PHS
+exports.getSalt = async (req, res, next) => {
+  const email = req.body.email;
+  const isSignUp = req.body.isSignUp;
+
+  const weed = "1e578388e2d1778e313e855e95aec08bcd1d77166df5ac0a67c49b41593987af"; // .env
+  let seed = generateSeed(); //must be generated here, so all cases have the same response time
+
+  //look for user with given email
+  let user;
+  try {
+    user = await models.users.findOne({
+      where: { email },
+    });
+  } catch (err) {
+    return next(new HttpError(500));
+  }
+
+  //signup and user already exists => error
+  if (isSignUp && user) {
+    return next(new HttpError(409));
+  }
+
+  //login and user doesnt exist => generate HKDF salt from weed
+  if (!isSignUp && !user) {
+    const salt = generateSalt(email, weed);
+  } else {
+    const salt = generateSalt(email, seed);
+  }
+
+  //add PHS info to DB
+  try {
+    user = await models.users.phs({ email, salt, seed });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
+  }
+};
 
 exports.signup = async (req, res, next) => {
   let user = req.body;
@@ -54,7 +94,7 @@ exports.login = async (req, res, next) => {
   logger.debug("Password: " + password);
   logger.debug("Org: " + org);
 
-  //look for user with given email (status is verified later)
+  //look for user with given email
   let user;
   try {
     user = await models.users.findOne({
@@ -108,4 +148,20 @@ exports.login = async (req, res, next) => {
     console.log(err);
     return next(new HttpError(500));
   }
+};
+
+//derive key from seed, which will be sent to the user so they can use it as salt to perform PHS
+const generateSalt = (username, seed) => {
+  const domain = "cabon21.com";
+
+  const derivedKey = crypto.hkdfSync("sha256", seed, username, domain, 32);
+
+  return Buffer.from(derivedKey).toString("hex");
+};
+
+//generate 256 bit seed
+const generateSeed = () => {
+  const seed = crypto.randomBytes(32).toString("hex");
+  console.log(seed);
+  return seed;
 };

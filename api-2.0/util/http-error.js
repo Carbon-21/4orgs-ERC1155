@@ -12,9 +12,7 @@ const notFound = new ErrorMessage(
 );
 const serverError = new ErrorMessage("Ocorreu um erro. Por favor, tente novamente.");
 const unauthorized = new ErrorMessage("Autenticação incorreta. Por favor, tente novamente.");
-const forbidden = new ErrorMessage(
-  "Acesso não permitido. O líder do seu time e a equipe do FluxoTest serão notificados."
-);
+const forbidden = new ErrorMessage("Acesso não permitido. A equipe do Carbon21 será notificada.");
 const validationError = new ErrorMessage("Dados inválidos, por favor verifique-os.");
 const conflict = new ErrorMessage(
   'Usuário já cadastrado. Por favor, realize o login ou clique em "esqueci minha senha".'

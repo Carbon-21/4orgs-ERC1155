@@ -3,6 +3,7 @@
 const Sequelize = require("sequelize");
 const initModels = require("../models/init-models");
 
+//.env
 const sequelize = new Sequelize("carbon", "carbon", "12345678", {
   dialect: "mysql",
   host: "localhost",

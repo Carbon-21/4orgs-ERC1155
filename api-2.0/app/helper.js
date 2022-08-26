@@ -396,14 +396,10 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     //add user to DB
     try {
       user = await models.users.create(user);
-
-      //ok
-      // res.status(201).json({
-      //   message: `Usuário criado!`,
-      // });
     } catch (err) {
+      logger.error(err);
+
       //throw error if user exists (409) or 500
-      console.log(err);
       let code;
       err.parent.errno == 1062 ? (code = 409) : (code = 500);
       return next(new HttpError(code));
