@@ -11,13 +11,13 @@ const { sign, verify, decode } = require("jsonwebtoken");
 //   return isValid;
 // };
 
-// exports.hashPassword = async (password) => {
+// exports.hashPassword = async (password, salt) => {
 //   const hashedPassword = await hash(password, 11);
 //   return hashedPassword;
 // };
 
-//IMPORTANT: if you change the expiration date, change it on client side too (auth-hook.js)
 exports.createJWT = (username, org, expiration = "7d") => {
+  //.env
   const token = sign({ username, org }, "supersecreeeet_dont_share", {
     expiresIn: expiration,
   });

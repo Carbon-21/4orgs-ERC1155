@@ -38,7 +38,15 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     password: {
-      type: DataTypes.STRING(60),
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    seed: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    salt: {
+      type: DataTypes.STRING(64),
       allowNull: true
     },
     org: {
@@ -50,7 +58,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     status: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(12),
       allowNull: true
     }
   }, {

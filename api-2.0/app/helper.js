@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 var { Gateway, Wallets } = require("fabric-network");
 const IdentityService = require("fabric-ca-client");
+const crypto = require("crypto");
 
 // Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
@@ -16,6 +17,8 @@ const util = require("util");
 const { User } = require("fabric-common");
 const execPromise = util.promisify(exec);
 const auth = require("../util/auth");
+
+const domain = "carbon21.com";
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
   try {
@@ -393,15 +396,42 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     };
     await wallet.put(username, x509Identity);
 
-    //add user to DB
+    //get user object from DB, already created during getSalt()
+    let obj;
     try {
-      user = await models.users.create(user);
+      obj = await models.users.findOne({
+        where: {
+          email: username,
+          status: "registering",
+        },
+      });
+    } catch (err) {
+      return next(new HttpError(500));
+    }
+
+    //check if obj exists
+    if (obj == null) return next(new HttpError(404));
+
+    //complete user info on DB
+    try {
+      //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
+      user.password = Buffer.from(
+        crypto.hkdfSync("sha256", user.password, obj.seed, domain, 32)
+      ).toString("hex");
+
+      //update user object with new info sent from client
+      //TODO mudar para pending quando houver validação de conta por email
+      obj.status = "active";
+      Object.assign(obj, user);
+      console.log(obj);
+      await obj.save();
+      // return res.status(200).json(filterData(obj));
     } catch (err) {
       logger.error(err);
 
       //throw error if user exists (409) or 500
-      let code;
-      err.parent.errno == 1062 ? (code = 409) : (code = 500);
+      // let code;
+      // err.parent.errno == 1062 ? (code = 409) : (code = 500);
       return next(new HttpError(code));
     }
   } catch (error) {
@@ -413,7 +443,7 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     success: true,
     message: username + " enrolled Successfully",
     token,
-    secret: secret,
+    // secret: secret,
     certificate: enrollment.certificate,
   };
   return response;

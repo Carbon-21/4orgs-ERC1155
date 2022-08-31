@@ -9,8 +9,8 @@ const router = Router();
 //// UNAUTHENTICATED ROUTES ////
 router.post(
   "/getSalt",
-  // [body("email").not().isEmpty(), body("isSignUp").not().isEmpty().isBoolean(), validateAll],
-  authController.login
+  [body("email").not().isEmpty(), body("isSignUp").not().isEmpty().isBoolean(), validateAll],
+  authController.getSalt
 );
 
 router.post(

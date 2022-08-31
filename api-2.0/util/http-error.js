@@ -7,9 +7,7 @@ class ErrorMessage {
   }
 }
 
-const notFound = new ErrorMessage(
-  "Estamos com dificuldades em encontrar o que você procura. Talvez alguém do seu time tenha feito modificações por aqui... Por favor, recarregue a página."
-);
+const notFound = new ErrorMessage("Estamos com dificuldades em encontrar o que você procura.");
 const serverError = new ErrorMessage("Ocorreu um erro. Por favor, tente novamente.");
 const unauthorized = new ErrorMessage("Autenticação incorreta. Por favor, tente novamente.");
 const forbidden = new ErrorMessage("Acesso não permitido. A equipe do Carbon21 será notificada.");
