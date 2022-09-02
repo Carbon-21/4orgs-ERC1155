@@ -34,7 +34,7 @@ class HttpError extends Error {
     //add code property
     this.code = code;
 
-    logger.error(code, codes[code].messagePT);
+    logger.error(code, message);
   }
 }
 

@@ -52,22 +52,27 @@ exports.postSignup = async (req, res, next) => {
 
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
+      req.session.token = response.data.token;
+      req.session.username = email;
+      req.flash("success", "Registrado com sucesso");
+      res.redirect("/");
 
-      if (response.data.success == true) {
-        req.session.token = response.data.token;
-        req.session.username = email;
-        req.flash("success", "Registrado com sucesso");
-        res.redirect("/");
-      } else {
-        req.flash("error", "Usuario ja existe");
-        res.redirect("/signup");
-      }
+      // if (response.data.success == true) {
+      //   req.session.token = response.data.token;
+      //   req.session.username = email;
+      //   req.flash("success", "Registrado com sucesso");
+      //   res.redirect("/");
+      // } else {
+      //   req.flash("error", "Usuario ja existe");
+      //   res.redirect("/signup");
+      // }
     })
 
     // If an error occurs, redirects to the login page and send error message
 
-    .catch(function (error) {
-      req.flash("error", "Falha no registro");
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
+      // req.flash("error", "Falha no registro");
       res.redirect("/signup");
     });
 };
@@ -113,22 +118,26 @@ exports.postLogin = async (req, res, next) => {
     .post(url, jsonData, options)
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
-
-      if (response.data.success == true) {
-        req.flash("success", "Logado com sucesso");
-        req.session.token = response.data.token;
-        req.session.username = username;
-        res.redirect("/");
-      } else {
-        req.flash("error", "Username ou senha incorreta");
-        res.redirect("/login");
-      }
+      req.flash("success", "Logado com sucesso");
+      req.session.token = response.data.token;
+      req.session.username = username;
+      res.redirect("/");
+      // if (response.data.success == true) {
+      //   req.flash("success", "Logado com sucesso");
+      //   req.session.token = response.data.token;
+      //   req.session.username = username;
+      //   res.redirect("/");
+      // } else {
+      //   req.flash("error", "Username ou senha incorreta");
+      //   res.redirect("/login");
+      // }
     })
 
     // If an error occurs, redirect to the login page and send error message
 
-    .catch(function (error) {
-      req.flash("error", "Falha no login");
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
+      // req.flash("error", "Falha no login");
       res.redirect("/login");
     });
 };

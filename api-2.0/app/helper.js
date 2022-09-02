@@ -1,22 +1,16 @@
 "use strict";
 
 const logger = require("../util/logger");
-const FabricCAServices = require("fabric-ca-client");
 const models = require("../util/sequelize");
 const HttpError = require("../util/http-error");
+const auth = require("../util/auth");
 const fs = require("fs");
 const path = require("path");
 var { Gateway, Wallets } = require("fabric-network");
-const IdentityService = require("fabric-ca-client");
+const FabricCAServices = require("fabric-ca-client");
 const crypto = require("crypto");
-
-// Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
 const util = require("util");
-//const { IdentityService }= require("fabric-ca-client");
-const { User } = require("fabric-common");
-const execPromise = util.promisify(exec);
-const auth = require("../util/auth");
 
 const domain = "carbon21.com";
 
@@ -292,6 +286,7 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
+//deprecated: see auth-controller.js (signup())
 const registerAndGetSecret = async (user, useCSR, next) => {
   const username = user.username;
   const userOrg = user.org;
@@ -300,16 +295,22 @@ const registerAndGetSecret = async (user, useCSR, next) => {
   // let password = user.password;
   // let cpf = user.cpf;
 
+  //get org CCP (its configs, such as CA path and tlsCACerts)
   let ccp = await getCCP(userOrg);
 
+  //create CA object
   const caURL = await getCaUrl(userOrg, ccp);
   const ca = new FabricCAServices(caURL);
   logger.debug("ca name " + ca.getCaName());
+  logger.debug("ca: ", ca);
 
+  //get wallets' path for the given org and create wallet object
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
   logger.debug(`Wallet path: ${walletPath}`);
+  logger.debug("wallet: ", wallet);
 
+  //check if a wallet for the given user already exists
   const userIdentity = await wallet.get(username);
   if (userIdentity) {
     logger.error(`An identity for the user ${username} already exists in the wallet`);
@@ -323,7 +324,7 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     return response;
   }
 
-  // Check to see if we've already enrolled the admin user.
+  //check to see if wea lready have an admin user
   let adminIdentity = await wallet.get("admin");
   if (!adminIdentity) {
     logger.info('An identity for the admin user "admin" does not exist in the wallet');
@@ -332,12 +333,13 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     logger.info("Admin Enrolled Successfully");
   }
 
-  // build a user object for authenticating with the CA
+  //build an admin user object (necessary for authenticating with the CA and thus enrolling a new user)
   const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
   const adminUser = await provider.getUserContext(adminIdentity, "admin");
+
+  //register the user, enroll the user, and import the new identity into the wallet.
   let secret;
   try {
-    // Register the user, enroll the user, and import the new identity into the wallet.
     secret = await ca.register(
       {
         affiliation: await getAffiliation(userOrg),
@@ -385,6 +387,8 @@ const registerAndGetSecret = async (user, useCSR, next) => {
       pkey = enrollment.key.toBytes();
     }
 
+    //save cert and pkey to wallet
+    //TODO sepa a pkey tem que ser salva só quando CSR não é usado
     let orgMSPId = getOrgMSP(userOrg);
     const x509Identity = {
       credentials: {
@@ -396,6 +400,7 @@ const registerAndGetSecret = async (user, useCSR, next) => {
     };
     await wallet.put(username, x509Identity);
 
+    /////////
     //get user object from DB, already created during getSalt()
     let obj;
     try {
@@ -496,21 +501,8 @@ const queryAttribute = async (username, org, key) => {
   return attribute;
 };
 
-exports.getRegisteredUser = getRegisteredUser;
-
-module.exports = {
-  getCCP: getCCP,
-  getWalletPath: getWalletPath,
-  getRegisteredUser: getRegisteredUser,
-  getRegisteredUserFromCA: getRegisteredUserFromCA,
-  isUserRegistered: isUserRegistered,
-  registerAndGetSecret: registerAndGetSecret,
-  getAccountId: getAccountId,
-  updateAttribute: updateAttribute,
-  queryAttribute: queryAttribute,
-};
-
 async function execWrapper(cmd) {
+  const execPromise = util.promisify(exec);
   const { stdout, stderr } = await execPromise(cmd);
   if (stdout) {
     console.log(`stderr: ${stdout}`);
@@ -519,3 +511,20 @@ async function execWrapper(cmd) {
     console.log(`stderr: ${stderr}`);
   }
 }
+
+module.exports = {
+  getCaUrl,
+  getAffiliation,
+  getCCP,
+  getWalletPath,
+  enrollAdmin,
+  getRegisteredUser,
+  getRegisteredUserFromCA,
+  isUserRegistered,
+  registerAndGetSecret,
+  getAccountId,
+  updateAttribute,
+  queryAttribute,
+  execWrapper,
+  getOrgMSP,
+};
