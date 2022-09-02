@@ -9,14 +9,18 @@ const router = Router();
 //// UNAUTHENTICATED ROUTES ////
 router.post(
   "/getSalt",
-  [body("email").not().isEmpty(), body("isSignUp").not().isEmpty().isBoolean(), validateAll],
+  [
+    body("email").not().isEmpty().isEmail(),
+    body("isSignUp").not().isEmpty().isBoolean(),
+    validateAll,
+  ],
   authController.getSalt
 );
 
 router.post(
   "/signup",
   [
-    body("email").not().isEmpty(),
+    body("email").not().isEmpty().isEmail(),
     body("name").not().isEmpty(),
     body("password").not().isEmpty(),
     body("cpf").not().isEmpty(),
@@ -27,13 +31,7 @@ router.post(
 
 router.post(
   "/login",
-  [body("username").not().isEmpty(), body("password").not().isEmpty(), validateAll],
-  authController.login
-);
-
-router.post(
-  "/login",
-  //[body("username").not().isEmpty(), body("org").not().isEmpty(), validateAll],
+  [body("username").not().isEmpty().isEmail(), body("password").not().isEmpty(), validateAll],
   authController.login
 );
 

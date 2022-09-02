@@ -24,11 +24,11 @@ exports.postSignup = async (req, res, next) => {
   // Groups the data
 
   let data = {
-    username: username,
-    org: org,
-    email: email,
-    password: password,
-    cpf: cpf,
+    username,
+    org,
+    email,
+    password,
+    cpf,
     name,
   };
 
