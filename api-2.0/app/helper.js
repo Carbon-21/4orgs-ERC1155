@@ -1,18 +1,12 @@
 "use strict";
 
 const logger = require("../util/logger");
-const models = require("../util/sequelize");
-const HttpError = require("../util/http-error");
-const auth = require("../util/auth");
 const fs = require("fs");
 const path = require("path");
 var { Gateway, Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
-const crypto = require("crypto");
 const { exec } = require("child_process");
 const util = require("util");
-
-const domain = "carbon21.com";
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
   try {
