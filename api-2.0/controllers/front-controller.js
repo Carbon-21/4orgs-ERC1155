@@ -2,6 +2,7 @@ const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
 const ipfs = require("../util/ipfs");
+//const ipfsHttp = require("../util/ipfsHttp");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
@@ -275,8 +276,34 @@ exports.getCollection = async (req, res, next) => {
     };
 
     // IPFS Metadata (TODO: funcional com map de id e hash, usando db?)
-    const hash = "QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo"; 
-    const metadata = ipfs.getMetadata(hash);
+    // const hash = "QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo"; // string file
+    // const hash = "QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD"; // json file
+    const hash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j"; // hello world string
+    // let ipfsData;
+    const ipfsData = ipfs.getMetadata(hash);
+    // const ipfsData = await axios.get("https://ipfs.io/ipfs/QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD");
+    // axios({
+    //   method: "get",
+    //   url: "https://ipfs.io/ipfs/QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo",
+    //   responseType: "json",
+    // })
+
+    // axios.get("http://127.0.0.1:8080/ipfs/QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD")
+    // .then(function (response) {
+    //   console.log("AXIOS RESPONSE: " + response.toString());
+    //   ipfsData = JSON.parse(response.toString());
+    //   console.log("AXIOS IPFS GET: " + ipfsData);
+    // }).catch(function (error) {
+    //   console.log("Axios ipfs get error: "+ error);
+    // });
+
+    const metadata = ipfsData
+      ? JSON.parse(ipfsData)
+      : //null;
+        {
+          phyto: "testePhyto",
+          location: "testeLocation",
+        };
 
     // HTTP GET request
 

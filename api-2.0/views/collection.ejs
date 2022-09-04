@@ -30,9 +30,9 @@
                         <h4>NFT</h4>
                         <p class="mb-0">id: <%= key %></p>
                         <p class="mb-0">valor: <%= balances[key] %> </p>
-                        <% if(key === "LARC") {%> 
-                          <p class="mb-0">fitofisiologia: <%= metadata?.phyto %> </p> 
-                          <p class="mb-0">localização: <%= metadata?.location %> </p> 
+                        <% if(key === "LARC" && metadata) {%> 
+                          <p class="mb-0">fitofisiologia: <%= metadata.phyto %> </p> 
+                          <p class="mb-0">localização: <%= metadata.location %> </p> 
                         <% } %> 
                       </div>
                     </div>
