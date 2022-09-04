@@ -274,6 +274,10 @@ exports.getCollection = async (req, res, next) => {
       },
     };
 
+    // IPFS Metadata (TODO: funcional com map de id e hash, usando db?)
+    const hash = "QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo"; 
+    const metadata = ipfs.getMetadata(hash);
+
     // HTTP GET request
 
     axios
@@ -287,6 +291,7 @@ exports.getCollection = async (req, res, next) => {
           title: "My Collection",
           cssPath: "css/collection.css",
           balances,
+          metadata,
         });
       })
 
