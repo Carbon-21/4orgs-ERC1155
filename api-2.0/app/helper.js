@@ -346,6 +346,8 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
       adminUser
     );
 
+    let pkey;
+
     if (useCSR == true) {
       logger.debug(`Using CSR mode`);
       logger.info('CSR:\n' + csr);
@@ -367,7 +369,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: 'blablabla',
+        privateKey: pkey
       },
       mspId: orgMSPId,
       type: "X.509",
