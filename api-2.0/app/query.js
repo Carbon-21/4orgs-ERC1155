@@ -1,8 +1,10 @@
+const { Query, User, Client} = require("fabric-common");
 const { Gateway, Wallets } = require("fabric-network");
-
 const logger = require("../util/logger");
 
 const helper = require("./helper");
+
+const FabricCAServices = require("fabric-ca-client");
 
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
   try {
@@ -32,12 +34,54 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     const gateway = new Gateway();
     await gateway.connect(ccp, {
       wallet,
-      identity: username,
+      identity: 'admin',
       discovery: { enabled: true, asLocalhost: true },
     });
 
     // Get the network (channel) our contract is deployed to.
     const network = await gateway.getNetwork(channelName);
+    let identityNetwork = await gateway.getIdentity();
+    console.log('### identityNetwork ###\n',identityNetwork)
+    // await identityNetwork.serialize()
+    // console.log('### PASSOU!!! ###')
+
+    // ### TESTE ASSINATURA ###
+    // User, Client, idx, channel, query, commit, endorsement,
+    //try{
+      // let config = new Object();
+      // config.enrollmentId = 'admin';
+      // //config.affiliation = 'carbon.department1';
+      // console.log('flag1')
+      // let userTeste = new User(config);
+      // //console.log('###################IDN private key= ######################',identityNetwork.privateKey)
+      // await userTeste.setEnrollment(
+      //   identityNetwork.credentials.privateKey,
+      //   identityNetwork.credentials.certificate,
+      //   identityNetwork.mspId
+      // );
+      // //let identityFromCA = await helper.getRegisteredUserFromCA(username, org_name);
+      // //userTeste._identity = identityFromCA;
+      // console.log('### userTeste ###',userTeste)
+      // console.log('flag2')
+      // let clientTeste = new Client(username);
+      // //console.log('### clienTeste ###\n',clientTeste)
+      // let idx = clientTeste.newIdentityContext(userTeste);
+      // let channel = network.getChannel();
+      // console.log('####### channel ####### = \n',channel)
+      // let query = channel.newQuery('erc1155');
+      // //console.log('query é igual a\n',query)
+      // let build_options = {fcn: 'ClientAccountBalance', args: ['$ylvas']};
+      // let proposalBytes = query.build(idx, build_options);
+      // console.log('### proposal bytes: ###\n' + typeof proposalBytes,proposalBytes);
+      
+      // let hash = crypto.createHash("sha256").update(proposalBytes).digest("hex")
+      // console.log('### proposalBytes hash ### =',hash);
+      //console.log('### channel ###\n',channel);
+      //console.log('### endorsement ###\n',endorsement);
+
+    // } catch(e){
+    //   console.log('### Erro query ### : ', e.message);
+    // }
 
     // Get the contract from the network.
     const contract = network.getContract(chaincodeName);

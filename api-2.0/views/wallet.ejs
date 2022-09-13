@@ -6,7 +6,6 @@
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
-
     <section id="wallet">
       <div class="container-fuid wallet-container">
         <h1 class="wallet-header">Minha Carteira</h1>
@@ -26,6 +25,9 @@
               <div class="align-self-center">
                 <h2 id="balanceHeader" class="h1 mb-0"><%= ftBalance %> $yl</h2>
               </div>
+            </div>
+            <div>
+              <button id="button" class="btn btn-primary btn-lg" onclick="sendRequest('ClientAccountBalance')">Generate key pair and CSR</button>
             </div>
           </div>
         </div>

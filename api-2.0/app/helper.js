@@ -6,16 +6,21 @@ const logger = require("../util/logger");
 const path = require("path");
 const FabricCAServices = require("fabric-ca-client");
 const fs = require("fs");
-
+const common = require("fabric-common");
 const IdentityService = require("fabric-ca-client");
 
 // Added to allow waiting generateCSR script execution
 const { exec } = require("child_process");
 const util = require("util");
 //const { IdentityService }= require("fabric-ca-client");
-const { User } = require("fabric-common");
+const { User, Query, Client } = require("fabric-common");
 const execPromise = util.promisify(exec);
-const auth = require("../util/auth");
+const auth = require("../util/auth"); 
+const Channel = require("fabric-common/lib/Channel");
+const crypto = require("crypto");
+
+const transactionBuffer = []
+var globalChannel = null;
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
   try {
@@ -139,7 +144,30 @@ const getRegisteredUserFromCA = async (username, org) => {
 
   try {
     const query = await identityService.getOne(username, adminUser);
-    //console.log(query['result'])
+    console.log('user from CA: type ' + typeof query + '\n',query)
+    let client = new Client(username);
+    //let config = new Object();
+    //config.enrollmentId = username;
+    //config.affiliation = 'carbon.department1';
+    //console.log('print=',config.enrollmentId)
+    
+    //let userTeste = new User(config);
+    //let clientTeste = new Client(username);
+    //console.log('### clienTeste ###\n',clientTeste)
+    //let idx = clientTeste.newIdentityContext(userTeste);
+    //console.log('### idx ###\n',idx)
+    //console.log('#### userTeste #### =\n',userTeste);
+    // let channel = new Channel('mychannel', clientTeste)
+    // let endorsement = channel.newCommit('erc1155');
+    // const build_options = {fcn: 'Mint', args: ['as', 'nft01', '100']};
+    // const proposalBytes = endorsement.build(idx, build_options);
+    // console.log('### proposalBytes ###', proposalBytes);
+    //console.log('### channel ###\n',channel);
+    //console.log('### endorsement ###\n',endorsement);
+    // let teste = client.newIdentityContext(query)
+    // console.log('idx teste:\n', teste)
+    // //idx = new IdentityService()
+    // //console.log(query['result'])
     return query["result"];
   } catch (error) {
     logger.error(`Getting error: ${error}`);
@@ -295,7 +323,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
   let email = user.email;
   let password = user.password;
   let cpf = user.cpf;
-
+  let pkey;
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
@@ -362,6 +390,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
         enrollmentID: username,
         enrollmentSecret: secret,
       });
+      console.log('flag1');
       pkey = enrollment.key.toBytes();
     }
 
@@ -369,7 +398,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: pkey
+        privateKey: pkey,
       },
       mspId: orgMSPId,
       type: "X.509",
@@ -436,6 +465,123 @@ const queryAttribute = async (username, org, key) => {
   return attribute;
 };
 
+const digestTransaction = async(build_options, username, org_name, channelName) => {
+  // load the network configuration
+  const ccp = await getCCP(org_name);
+
+  // Create a new file system based wallet for managing identities.
+  const walletPath = await getWalletPath(org_name);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  logger.debug(`Wallet path: ${walletPath}`);
+
+  //TODO após estudar wallets, temos que olhar se isso aqui será mantido
+  // Check to see if we've already enrolled the user.
+  // let identity = await wallet.get(username);
+  // if (!identity) {
+  //   logger.log(
+  //     `An identity for the user ${username} does not exist in the wallet, so registering user`
+  //   );
+  //   await helper.getRegisteredUser(username, org_name, true);
+  //   identity = await wallet.get(username);
+  //   console.log("Run the registerUser.js application before retrying");
+  //   return;
+  // }
+  // console.log(identity);
+
+  // Create a new gateway for connecting to our peer node.
+  const gateway = new Gateway();
+  await gateway.connect(ccp, {
+    wallet,
+    identity: 'admin',
+    discovery: { enabled: true, asLocalhost: true },
+  });
+
+  // Get the network (channel) our contract is deployed to.
+  const network = await gateway.getNetwork(channelName);
+  let identityNetwork = await gateway.getIdentity();
+  console.log('### identityNetwork ###\n',identityNetwork)
+  // await identityNetwork.serialize()
+  // console.log('### PASSOU!!! ###')
+
+  // ### TESTE ASSINATURA ###
+  // User, Client, idx, channel, query, commit, endorsement,
+  //try{
+    let config = new Object();
+    config.enrollmentId = 'admin';
+    //config.affiliation = 'carbon.department1';
+    console.log('flag1')
+    let userTeste = new User(config);
+    //console.log('###################IDN private key= ######################',identityNetwork.privateKey)
+    await userTeste.setEnrollment(
+      identityNetwork.credentials.privateKey,
+      identityNetwork.credentials.certificate,
+      identityNetwork.mspId
+    );
+    //let identityFromCA = await helper.getRegisteredUserFromCA(username, org_name);
+    //userTeste._identity = identityFromCA;
+    console.log('### userTeste ###',userTeste)
+    console.log('flag2')
+    let identityClient = await getRegisteredUserFromCA(username, org_name);
+    console.log('identityClient\n',identityClient)
+    let clientTeste = new Client(username);
+    //console.log('### clienTeste ###\n',clientTeste)
+    let idx = clientTeste.newIdentityContext(userTeste);
+    let channel = network.getChannel();
+    globalChannel = channel;
+    //channel.getIdentity()
+    console.log('####### channel ####### = \n',channel)
+    let query = channel.newQuery('erc1155');
+    //console.log('query é igual a\n',query)
+    let proposalBytes = query.build(idx, build_options);
+    console.log('### proposal bytes: ###\n' + typeof proposalBytes,proposalBytes);
+    let hash = crypto.createHash("sha256").update(proposalBytes).digest("hex")
+    console.log('### proposalBytes hash ### =',hash);
+    transactionBuffer.push(query);
+
+    //segunda forma
+    //segunda forma
+  let qqPEM = "-----BEGIN CERTIFICATE-----\n\
+  MIICdTCCAhygAwIBAgIUYyJH5p1EK2FqBOtlLA9LFTHYqN8wCgYIKoZIzj0EAwIw\n\
+  aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\n\
+  EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt\n\
+  Y2Etc2VydmVyMB4XDTIyMDkxMjIzNDEwMFoXDTIzMDkxMjIzNDYwMFowQTEyMA0G\n\
+  A1UECxMGY2xpZW50MA0GA1UECxMGY2FyYm9uMBIGA1UECxMLZGVwYXJ0bWVudDEx\n\
+  CzAJBgNVBAMTAnFxMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEZS+em6eU4eTI\n\
+  /eyzrBT6ZQX8GqiZKGP+yW2pSxIPX3XfCGnKkwvJA672Ur1QrZaMtFss4Jhn2dSY\n\
+  /XS12lIvJKOByjCBxzAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNV\n\
+  HQ4EFgQUPYirAW3I4Sfesh4/96C02jkLm48wHwYDVR0jBBgwFoAUyYDsQOohQyzK\n\
+  fjq7JhPyBNQ8sbowZwYIKgMEBQYHCAEEW3siYXR0cnMiOnsiaGYuQWZmaWxpYXRp\n\
+  b24iOiJjYXJib24uZGVwYXJ0bWVudDEiLCJoZi5FbnJvbGxtZW50SUQiOiJxcSIs\n\
+  ImhmLlR5cGUiOiJjbGllbnQifX0wCgYIKoZIzj0EAwIDRwAwRAIgR59tEw8uP5Pi\n\
+  jF/NLTxEhRkMnyX2kJlxXrl78+40lXwCIFkBdWIStkTZ56QhUJD5df/ds8dtoQ40\n\
+  zPIWa7o7KwCQ\n\
+  -----END CERTIFICATE-----";
+
+  let mspId = "CarbonMSP";
+
+
+    return hash;
+}
+
+const signTransaction = async(signature) => {
+  let transaction = transactionBuffer.pop();
+  transaction.sign(signature);
+  console.log('get Endorser\n',globalChannel.getEndorsers("CarbonMSP"));
+  let proposalResponse = await transaction.send({targets: [globalChannel.getEndorser("peer0.carbon.example.com:7051")]});
+  console.log('### proposalResponse ###\n',proposalResponse);
+
+  
+}
+
+const str2ab = function (str) {
+  const buf = new ArrayBuffer(str.length);
+  const bufView = new Uint8Array(buf);
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+}
+
 exports.getRegisteredUser = getRegisteredUser;
 
 module.exports = {
@@ -448,6 +594,9 @@ module.exports = {
   getAccountId: getAccountId,
   updateAttribute: updateAttribute,
   queryAttribute: queryAttribute,
+  digestTransaction: digestTransaction,
+  signTransaction: signTransaction,
+  str2ab: str2ab
 };
 
 async function execWrapper(cmd) {

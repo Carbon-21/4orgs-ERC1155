@@ -1,6 +1,10 @@
+const { Client, User } = require("fabric-common");
 const invoke = require("../app/invoke");
 const query = require("../app/query");
+const helper = require("../app/helper");
 const logger = require("../util/logger");
+
+const transactionBuffer = [];
 
 exports.invoke = async (req, res, next) => {
   try {
@@ -89,6 +93,30 @@ exports.query = async (req, res, next) => {
     res.send(response_payload);
   }
 };
+
+exports.teste = async function (req, res) {
+  username = req.body.username;
+  org_name = req.body.org_name;
+  
+  await helper.teste(username, org_name);
+
+};
+
+exports.getProposal = async function (req, res){
+  let build_options = req.body.transaction;
+  let username = req.body.username
+  let proposalDigest = await helper.digestTransaction(build_options, username, "Carbon", "mychannel");
+  res.send({digest: proposalDigest});
+}
+
+exports.signProposal = async function (req, res){
+  let signatureString = req.body.signature;
+  //let signature = helper.str2ab(signatureString);
+  let signature = Buffer.from(signatureString, 'hex');
+  console.log('signature arrayada',signature)
+  await helper.signTransaction(signature);
+  res.send({message:"sucess"});
+}
 
 // app.get(
 //   "/qscc/channels/:channelName/chaincodes/:chaincodeName",

@@ -1,3 +1,4 @@
+const { sign } = require('jsonwebtoken');
 const crypto = require('./crypto-generator.js')
 
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
@@ -65,9 +66,9 @@ const wrapRequest = async function (requestType) {
       email = document.getElementById("email").value;
       cpf = document.getElementById("cpf").value;
       password = document.getElementById("password").value;
-
+      console.log('flag 68');
       let crypto = await window.generateCryptoMaterial(username);
-
+      console.log('flag 70');
       body = {
         username: username,
         name: name,
@@ -169,10 +170,40 @@ const wrapRequest = async function (requestType) {
 window.sendRequest = async function (requestType) {
   event.preventDefault();
   try{
+    console.log('flag x');
+    // Transaction Proposal Signing
+    if (requestType == "ClientAccountBalance") {
+      let url = "chaincode/get-proposal";
+      let username = localStorage.getItem("username");
+      let transaction = {
+        fcn: requestType,
+        args: ["$ylvas"] //Hardcoded temporarily
+      }
+      let body = {
+        username: username,
+        transaction: transaction 
+      }
+      let token = localStorage.getItem("token");
+      let proposalResponse = await window.sendToServer("POST", url, body, token);
+      
+      let digest = proposalResponse.digest;
+      console.log("digest =",digest)
+      let signature = await window.signTransaction(digest);
+      console.log('### signature = ###\n',signature);
+      //var signatureString = new TextDecoder().decode(signature);
+      let signatureHex = Buffer.from(signature).toString('hex');
+      console.log('signature String = ',signatureHex);
+      url = "/chaincode/sign-proposal";
+      body = {
+        signature: signatureHex
+      };
+      let signResponse = await window.sendToServer("POST", url, body, token);
+      console.log('signResponse =',signResponse);
+    }
+
     //let [url, body, token] = await wrapRequest(requestType);
     let wrapped = await wrapRequest(requestType);
     let response;
-
     // Request sending
     if (postMethods.includes(requestType)) response = await window.sendToServer("POST", wrapped.url, wrapped.body, wrapped.token);
     else response = await window.sendToServer("GET", wrapped.url, wrapped.body, wrapped.token);

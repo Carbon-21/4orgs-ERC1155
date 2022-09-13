@@ -1,15 +1,20 @@
 const ecdsa = require('./ecdsacsr.js');
+const elliptic = require('elliptic');
+const { KEYUTIL } = require('jsrsasign');
 
 console.log('entrou script ecdsa');
 
 window.generateCryptoMaterial = async function (username) {
   try{
-    let [publicKey, privateKey] = await window.generateKeyPair();
+    console.log('flag 1a');
+    let [publicKey, privateKey, cryptoPK] = await window.generateKeyPair();
+    console.log('flag 1b');
     var domains = [ username, 'www.example.com', 'api.example.com' ];
     let csr = await ecdsa({ key: privateKey, domains: domains });
+    console.log('flag 1c');
     console.log('CSR\n',csr);
     //return csr;
-    return {csr: csr, privateKey: privateKey};
+    return {csr: csr, privateKey: privateKey, cryptoPK: cryptoPK};
     //document.getElementById("pk").innerHTML = "<pre>" + privateKey + "</pre>";
     //document.getElementById("csr").innerHTML = "<pre>" + csr + "</pre>";
   } catch (e) {
@@ -20,6 +25,15 @@ window.generateCryptoMaterial = async function (username) {
 
 window.ab2str = async function (buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+window.str2ab = async function (str) {
+  const buf = new ArrayBuffer(str.length);
+  const bufView = new Uint8Array(buf);
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
 }
 
 window.exportCryptoKey = async function (keyType, key) {
@@ -52,22 +66,25 @@ window.exportCryptoKey = async function (keyType, key) {
 
 window.generateKeyPair = async function () {
   try {
+  console.log('flag 1d');
   let keyPair = await window.crypto.subtle.generateKey(
     {
       name: "ECDSA",
       namedCurve: "P-256"
     },
     true,
-    ["sign", "verify"]
+    ["sign"]
   );
 
   //console.log('keyPair = ', keyPair)
   let privateKey = await exportCryptoKey('private', keyPair.privateKey)
   console.log(privateKey)
-
+  console.log('antes do teste')
+  //let objeto = await window.importPrivateKey(privateKey);
+  //console.log('depois do teste',objeto)
   let publicKey = await exportCryptoKey('public', keyPair.publicKey)
   console.log(publicKey)
-  return [publicKey, privateKey]
+  return [publicKey, privateKey, keyPair.privateKey];
   } catch(e) {
     return e.message
   }
@@ -89,6 +106,78 @@ window.downloadCrypto = async function (material, materialType) {
   element.click();
 
   document.body.removeChild(element);
-  
+}
 
+// window.signTransaction = async function (message /*, privateKey*/) {
+//   let privateKey = "-----BEGIN PRIVATE KEY-----\n\
+//   MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgxej0Ek7NVlv2f/TxHhrQLQHV76IuECZ8Vs0YNEb6SQyhRANCAARt15BmyMMwIJ1C59aMPivsIveM4mwiGmXPwoFZNVS7Qc/44khMl6SodVSrep73U1590uAtfq2aMzYFNG3P7gUi\n\
+//   -----END PRIVATE KEY-----";
+//   let cryptoPK = await window.importPrivateKey(privateKey);
+//   console.log('object PK = ',cryptoPK);
+//   let enc = new TextEncoder();
+//   let encoded = enc.encode(message);
+//   let signature = await window.crypto.subtle.sign(
+//     {
+//       name: "ECDSA",
+//       hash: {name: "SHA-256"},
+//     },
+//     cryptoPK,
+//     encoded
+//   );
+//   return signature;
+// }
+
+window.signTransaction = async function(digest/*,privateKey*/){
+  console.log('entrou signtransaction')
+  const privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n\
+  MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgfUyaHRXteJBDcduTsSAolZ6YHq3e1pPGlVsyk1XQkEyhRANCAARyhtThyn1qxxbY7evrtvjhKH7NhDROlK0rfl4SZ6mTp/5eU2eaXsEe6VoSCQMR7RblvsHqn0YKo30jwU9MREiz\n\
+  -----END PRIVATE KEY-----";
+  //const { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM); // convert the pem encoded key to hex encoded private key
+  let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
+  console.log('prvKeyHex ',prvKeyHex)
+  const EC = elliptic.ec;
+  const ecdsaCurve = elliptic.curves['p256'];
+  const ecdsa2 = new EC(ecdsaCurve);
+  const signKey = await ecdsa2.keyFromPrivate(prvKeyHex.prvKeyHex, 'hex');
+  const sig = await ecdsa2.sign(Buffer.from(digest, 'hex'), signKey);
+
+
+  // now we have the signature, next we should send the signed transaction proposal to the peer
+  const signature = Buffer.from(sig.toDER());
+  return signature;
+}
+
+/*
+(This code is from Web Crypto API website)
+Import a PEM encoded RSA private key, to use for RSA-PSS signing.
+Takes a string containing the PEM encoded key, and returns a Promise
+that will resolve to a CryptoKey representing the private key.
+*/
+window.importPrivateKey = async function (pem) {
+  try{
+    // fetch the part of the PEM string between header and footer
+    const pemHeader = "-----BEGIN PRIVATE KEY-----";
+    const pemFooter = "-----END PRIVATE KEY-----";
+    const pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length);
+    console.log('substring\n',pemContents);
+    // base64 decode the string to get the binary data
+    const binaryDerString = window.atob(pemContents);
+    // convert from a binary string to an ArrayBuffer
+    console.log('flag9');
+    const binaryDer = window.str2ab(binaryDerString);
+    console.log('flag10');
+    let cryptoPK = window.crypto.subtle.importKey(
+      "pkcs8",
+      binaryDer,
+      {
+        name: "ECDSA",
+        namedCurve: "P-256",
+      },
+      true,
+      ["sign"]
+    );
+    return cryptoPK;
+    } catch(e){
+      console.log("erro miportkey:", e.message)
+    }
 }

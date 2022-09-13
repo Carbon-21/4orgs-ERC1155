@@ -9,6 +9,7 @@ exports.signup = async (req, res, next) => {
   //var useCSR = req.body.useCSR;
   var useCSR = false;
   let csr = req.body.csr;
+  console.log('body=',req.body)
 
   logger.debug("End point : /users");
   logger.debug("Username: " + user.username);

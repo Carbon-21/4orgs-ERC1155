@@ -37,4 +37,14 @@ router.post(
   chaincodeController.invoke
 );
 
+router.post(
+  "/get-proposal",
+  chaincodeController.getProposal
+);
+
+router.post(
+  "/sign-proposal",
+  chaincodeController.signProposal
+);
+
 module.exports = router;
