@@ -3,58 +3,120 @@ const logger = require("../util/logger");
 const auth = require("../util/auth");
 const models = require("../util/sequelize");
 const HttpError = require("../util/http-error");
-const { IdentityService } = require("fabric-ca-client");
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+var { Gateway, Wallets } = require("fabric-network");
+const FabricCAServices = require("fabric-ca-client");
+const { exec } = require("child_process");
+const util = require("util");
 
-exports.signup = async (req, res, next) => {
-  let user = req.body;
-  user.username = user.email;
-  const useCSR = req.body.csr;
-  user.org = "Carbon";
+//.env
+const weed = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1";
+const domain = "carbon21.com";
 
-  logger.debug("End point : /users");
-  logger.debug("Username: " + user.username);
-  logger.debug("Org: " + user.org);
+//////////DIRECT API CALLS//////////
+//given the username, return a salt so the user can perform the PHS
+exports.getSalt = async (req, res, next) => {
+  const email = req.body.email;
+  const isSignUp = req.body.isSignUp;
 
-  //attemp to register user
-  let response = await helper.registerAndGetSecret(user, useCSR, next);
+  //look for user with given email
+  let user;
+  try {
+    user = await models.users.findOne({
+      where: { email },
+    });
+  } catch (err) {
+    return next(new HttpError(500));
+  }
 
-  //response
-  logger.debug(
-    "-- returned from registering the username %s for organization %s",
-    user.username,
-    user.org
-  );
-  if (response && typeof response !== "string") {
-    logger.info(
-      "Successfully registered the username %s for organization %s",
-      user.username,
-      user.org
-    );
-    res.json(response);
-  } else {
-    logger.error(
-      "Failed to register the username %s for organization %s with::%s",
-      user.username,
-      user.org,
-      user.response
-    );
-    res.json({ success: false, message: response });
+  if (isSignUp) {
+    if (user) {
+      //user already registering/signing up => return salt
+      if (user.status === "registering") {
+        return res.status(200).json({
+          success: true,
+          salt: user.salt,
+        });
+      }
+      //user already exists and its not still registering/signing up => error
+      else {
+        return next(new HttpError(409));
+      }
+    }
+    //
+    else {
+      //generate random seed and derive a key (salt) from it, using HKDF. This will be sent to the user so they can use it as salt to perform PHS
+      const seed = generateSeed();
+      const salt = hkdf(email, seed);
+
+      //add PHS info to DB
+      try {
+        await models.users.create({ email, seed, salt });
+      } catch (err) {
+        logger.error(err);
+        return next(new HttpError(500));
+      }
+
+      return res.status(200).json({
+        success: true,
+        salt,
+      });
+    }
+  }
+
+  // login: return weeded (dummy) salt if user doesn't exist
+  else {
+    // TODO validar que é assim mesmo. faz sentiudo, para deixar o tempo de resposta igual nos dois cenários abaixo, no entanto é um procedimento desnecessário quando o usuário de fato existir.
+    const weededSalt = hkdf(email, weed);
+
+    if (user && user.status === "active") {
+      return res.status(200).json({
+        success: true,
+        salt: user.salt,
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        salt: weededSalt,
+      });
+    }
   }
 };
 
+exports.signup = async (req, res, next) => {
+  logger.trace("Entered signup controller");
+
+  const user = req.body;
+  user.org = "Carbon";
+  logger.debug("Username: " + user.email);
+
+  //update user on DB
+  let response = await saveUserToDatabase(user, next);
+  if (!response) return;
+
+  //enroll user in the CA and save it in the wallet
+  if (!enrollUserInCA(user, next)) return;
+
+  //create JWT, add to reponse
+  response.token = auth.createJWT(user.email, user.org);
+
+  res.json(response);
+};
+
 exports.login = async (req, res, next) => {
-  logger.info("Entered login route");
-  // const { email, password } = req.body;
-  let email = req.body.username;
+  logger.trace("Entered login controller");
+
+  const org = "Carbon"; // hardcoded
+  const email = req.body.username;
   let password = req.body.password;
-  //var org = req.body.org;
-  let org = "Carbon"; // hardcoded
 
   logger.debug("Email: " + email);
   logger.debug("Password: " + password);
   logger.debug("Org: " + org);
 
-  //look for user with given email (status is verified later)
+  //look for user with given email
   let user;
   try {
     user = await models.users.findOne({
@@ -65,9 +127,24 @@ exports.login = async (req, res, next) => {
   }
 
   //user doesnt exist => error
-  if (!user) {
+  //registering means that the signup process wasn't complete
+  if (!user || user.status === "registering") {
     return next(new HttpError(401));
   }
+
+  //user registering  => error
+  if (user.status === "pending") {
+    return next(new HttpError(403, "Por favor, confirme seu cadastro via email."));
+  }
+
+  //on a shell, user must be active
+  if (user.status !== "active") {
+    return next(new HttpError(412, "Usuário inativo. Contate o suporte para mais informações."));
+  }
+
+  //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
+  //derive it again so we can check if the given pwd is correct
+  password = hkdf(password, user.seed);
 
   //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
   if (user.password !== password || user.org !== org) {
@@ -105,7 +182,178 @@ exports.login = async (req, res, next) => {
       token,
     });
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     return next(new HttpError(500));
   }
+};
+
+//////////HELPER CALLS//////////
+//derive key from seed. The derived key is used as salt to perform PHS, on the client side. It is then used on the server side to derive the PHS and store it in the password field (users table).
+// TODO validar 4 chamadas (ordem dos parâmetros)
+const hkdf = (ikm, salt) => {
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 32);
+
+  return Buffer.from(derivedKey).toString("hex");
+};
+
+//generate 256 bit seed
+const generateSeed = () => {
+  const seed = crypto.randomBytes(32).toString("hex");
+  console.log(seed);
+  return seed;
+};
+
+//caled on signup
+const saveUserToDatabase = async (user, next) => {
+  //get user object from DB, already created during getSalt()
+  let obj;
+  try {
+    obj = await models.users.findOne({
+      where: {
+        email: user.email,
+        status: "registering",
+      },
+    });
+  } catch (err) {
+    logger.debug(err);
+    return next(new HttpError(500));
+  }
+
+  //if obj doesnt exist => error
+  if (!obj) return next(new HttpError(404));
+
+  //complete user info on DB
+  try {
+    //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
+    user.password = hkdf(user.password, obj.seed);
+
+    //update object with info sent from client (merge obj and user)
+    //TODO mudar para pending quando houver validação de conta por email
+    obj.status = "active";
+    Object.assign(obj, user);
+
+    //save on DB
+    await obj.save();
+  } catch (err) {
+    logger.error(err);
+    let code, message;
+    err.parent.errno == 1062 ? ((code = 409), (message = "CPF já cadastrado")) : (code = 500);
+    return next(new HttpError(code, message));
+  }
+
+  //OK
+  const response = {
+    success: true,
+    message: "Cadastrado realizado com sucesso!",
+  };
+  return response;
+};
+
+//register the user in the CA, enroll the user in the CA, and save the new identity into the wallet. Returns true if things went as expected.
+const enrollUserInCA = async (user, next) => {
+  //get org CCP (its configs, such as CA path and tlsCACerts)
+  let ccp = await helper.getCCP(user.org);
+
+  //create CA object
+  const caURL = await helper.getCaUrl(user.org, ccp);
+  const ca = new FabricCAServices(caURL);
+  logger.debug("ca name " + ca.getCaName());
+  logger.debug("ca: ", ca);
+
+  //get wallets' path for the given org and create wallet object
+  const walletPath = await helper.getWalletPath(user.org);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  logger.debug(`Wallet path: ${walletPath}`);
+  logger.debug("wallet: ", wallet);
+
+  //check if a wallet for the given user already exists
+  const userIdentity = await wallet.get(user.email);
+  if (userIdentity) {
+    logger.error(`An identity for the user ${user.email} already exists in the wallet`);
+
+    return true;
+  }
+
+  //enroll an admin user if it doesn't exist yet
+  let adminIdentity = await wallet.get("admin");
+  if (!adminIdentity) {
+    logger.info('An identity for the admin user "admin" does not exist in the wallet');
+
+    await helper.enrollAdmin(user.org, ccp);
+    adminIdentity = await wallet.get("admin");
+
+    logger.info("Admin Enrolled Successfully");
+  }
+
+  //build an admin user object (necessary for authenticating with the CA and thus enrolling a new user)
+  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+  const adminUser = await provider.getUserContext(adminIdentity, "admin");
+
+  let secret;
+  try {
+    //register user, using admin account
+    secret = await ca.register(
+      {
+        affiliation: await helper.getAffiliation(user.org),
+        enrollmentID: user.email,
+        role: "client",
+      },
+      adminUser
+    );
+
+    //CSR
+    if (user.useCSR) {
+      logger.debug(`Using CSR mode`);
+
+      //generate private key
+      // TODO: tirar isso quando a geração no front estiver ok
+      var command = "./generateCSR.sh " + user.email + " " + user.org;
+      await helper.execWrapper(command);
+
+      const csr = fs.readFileSync("./certreq.csr", "utf8");
+      var pkey = fs.readFileSync("./pkey.pem", "utf8");
+      logger.debug(`certreq:  ${csr}`);
+
+      //enroll user in the CA
+      var enrollment = await ca.enroll({
+        enrollmentID: user.email,
+        enrollmentSecret: secret,
+        csr: csr,
+      });
+    }
+
+    //Not CSR: just enroll user in the CA
+    else {
+      logger.debug(`NOT using CSR mode`);
+
+      var enrollment = await ca.enroll({
+        enrollmentID: user.email,
+        enrollmentSecret: secret,
+      });
+      pkey = enrollment.key.toBytes();
+    }
+
+    //save cert and pkey to wallet
+    //TODO sepa a pkey tem que ser salva só quando CSR não é usado
+    let orgMSPId = helper.getOrgMSP(user.org);
+    const x509Identity = {
+      credentials: {
+        certificate: enrollment.certificate,
+        privateKey: pkey,
+      },
+      mspId: orgMSPId,
+      type: "X.509",
+    };
+    await wallet.put(user.email, x509Identity);
+  } catch (err) {
+    //change user status in DB, so they can try to sign up again
+    await models.users.update({ status: "registering" }, { where: { email: user.email } });
+
+    //issue error
+    logger.debug(err);
+    return next(new HttpError(500));
+  }
+
+  //OK
+  return true;
 };

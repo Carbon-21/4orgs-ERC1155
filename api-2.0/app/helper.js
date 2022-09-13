@@ -1,21 +1,12 @@
 "use strict";
 
 const logger = require("../util/logger");
-const FabricCAServices = require("fabric-ca-client");
-const models = require("../util/sequelize");
-const HttpError = require("../util/http-error");
 const fs = require("fs");
 const path = require("path");
 var { Gateway, Wallets } = require("fabric-network");
-const IdentityService = require("fabric-ca-client");
-
-// Added to allow waiting generateCSR script execution
+const FabricCAServices = require("fabric-ca-client");
 const { exec } = require("child_process");
 const util = require("util");
-//const { IdentityService }= require("fabric-ca-client");
-const { User } = require("fabric-common");
-const execPromise = util.promisify(exec);
-const auth = require("../util/auth");
 
 const getAccountId = async (channelName, chaincodeName, username, org_name) => {
   try {
@@ -289,140 +280,6 @@ const enrollAdmin = async (org, ccp) => {
   }
 };
 
-const registerAndGetSecret = async (user, useCSR, next) => {
-  const username = user.username;
-  const userOrg = user.org;
-  let token;
-  // let email = user.email;
-  // let password = user.password;
-  // let cpf = user.cpf;
-
-  let ccp = await getCCP(userOrg);
-
-  const caURL = await getCaUrl(userOrg, ccp);
-  const ca = new FabricCAServices(caURL);
-  logger.debug("ca name " + ca.getCaName());
-
-  const walletPath = await getWalletPath(userOrg);
-  const wallet = await Wallets.newFileSystemWallet(walletPath);
-  logger.debug(`Wallet path: ${walletPath}`);
-
-  const userIdentity = await wallet.get(username);
-  if (userIdentity) {
-    logger.error(`An identity for the user ${username} already exists in the wallet`);
-
-    token = auth.createJWT(username, userOrg);
-    var response = {
-      success: true,
-      token,
-      message: username + " enrolled Successfully",
-    };
-    return response;
-  }
-
-  // Check to see if we've already enrolled the admin user.
-  let adminIdentity = await wallet.get("admin");
-  if (!adminIdentity) {
-    logger.info('An identity for the admin user "admin" does not exist in the wallet');
-    await enrollAdmin(userOrg, ccp);
-    adminIdentity = await wallet.get("admin");
-    logger.info("Admin Enrolled Successfully");
-  }
-
-  // build a user object for authenticating with the CA
-  const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-  const adminUser = await provider.getUserContext(adminIdentity, "admin");
-  let secret;
-  try {
-    // Register the user, enroll the user, and import the new identity into the wallet.
-    secret = await ca.register(
-      {
-        affiliation: await getAffiliation(userOrg),
-        enrollmentID: user.username,
-        role: "client",
-        // attrs: [
-        //   { name: "cpf", value: cpf },
-        //   { name: "email", value: email },
-        //   { name: "password", value: password },
-        // ],
-      },
-      adminUser
-    );
-
-    if (useCSR) {
-      logger.debug(`Using CSR mode`);
-
-      // Gera chave privada localmente. Aqui ainda salva dentro da API. Ideal é que ao gerar o usuário decida onde salvar a chave.
-      // TODO: substituir o script por uma rotina em js
-
-      //  Gera o CSR a partir do username e Org
-      //  Precisa ter openssl instalado
-      //  Script gera uma chave privada (salva em ./api-2.0/pkey.pem) e a partir dela um CSR (./api-2.0/certreq.csr)
-      //  Common Name (CN) = username
-      //  Org. Unit (OU) = client.userOrg.department1
-      var command = "./generateCSR.sh " + username + " " + userOrg;
-      await execWrapper(command);
-
-      // // Le o csr gerado e adiciona no enroll
-      const csr = fs.readFileSync("./certreq.csr", "utf8");
-      // Le a pkey para add na wallet
-      var pkey = fs.readFileSync("./pkey.pem", "utf8");
-      logger.debug(`certreq:  ${csr}`);
-      var enrollment = await ca.enroll({
-        enrollmentID: username,
-        enrollmentSecret: secret,
-        csr: csr,
-      });
-    } else {
-      logger.debug(`NOT using CSR mode`);
-      var enrollment = await ca.enroll({
-        enrollmentID: username,
-        enrollmentSecret: secret,
-      });
-      pkey = enrollment.key.toBytes();
-    }
-
-    let orgMSPId = getOrgMSP(userOrg);
-    const x509Identity = {
-      credentials: {
-        certificate: enrollment.certificate,
-        privateKey: pkey,
-      },
-      mspId: orgMSPId,
-      type: "X.509",
-    };
-    await wallet.put(username, x509Identity);
-
-    //add user to DB
-    try {
-      user = await models.users.create(user);
-
-      //ok
-      // res.status(201).json({
-      //   message: `Usuário criado!`,
-      // });
-    } catch (err) {
-      //throw error if user exists (409) or 500
-      console.log(err);
-      let code;
-      err.parent.errno == 1062 ? (code = 409) : (code = 500);
-      return next(new HttpError(code));
-    }
-  } catch (error) {
-    return error.message;
-  }
-  token = auth.createJWT(username, userOrg);
-
-  var response = {
-    success: true,
-    message: username + " enrolled Successfully",
-    token,
-    secret: secret,
-    certificate: enrollment.certificate,
-  };
-  return response;
-};
-
 /**
  * Updates a user's attribute within its CA's database. The attribute is identified by its key. If the provided key doesn't exist in the database,
  * it is created and receives the value provided. If it already exists, the value in the database is overwritten by the value provided as argument.
@@ -470,21 +327,8 @@ const queryAttribute = async (username, org, key) => {
   return attribute;
 };
 
-exports.getRegisteredUser = getRegisteredUser;
-
-module.exports = {
-  getCCP: getCCP,
-  getWalletPath: getWalletPath,
-  getRegisteredUser: getRegisteredUser,
-  getRegisteredUserFromCA: getRegisteredUserFromCA,
-  isUserRegistered: isUserRegistered,
-  registerAndGetSecret: registerAndGetSecret,
-  getAccountId: getAccountId,
-  updateAttribute: updateAttribute,
-  queryAttribute: queryAttribute,
-};
-
 async function execWrapper(cmd) {
+  const execPromise = util.promisify(exec);
   const { stdout, stderr } = await execPromise(cmd);
   if (stdout) {
     console.log(`stderr: ${stdout}`);
@@ -493,3 +337,19 @@ async function execWrapper(cmd) {
     console.log(`stderr: ${stderr}`);
   }
 }
+
+module.exports = {
+  getCaUrl,
+  getAffiliation,
+  getCCP,
+  getWalletPath,
+  enrollAdmin,
+  getRegisteredUser,
+  getRegisteredUserFromCA,
+  isUserRegistered,
+  getAccountId,
+  updateAttribute,
+  queryAttribute,
+  execWrapper,
+  getOrgMSP,
+};

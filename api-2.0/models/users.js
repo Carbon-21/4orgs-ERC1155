@@ -9,11 +9,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     cpf: {
       type: DataTypes.STRING(11),
-      allowNull: false,
+      allowNull: true,
       unique: "cpf"
     },
     email: {
@@ -22,21 +22,30 @@ module.exports = function(sequelize, DataTypes) {
       unique: "email"
     },
     password: {
-      type: DataTypes.STRING(60),
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    seed: {
+      type: DataTypes.STRING(64),
+      allowNull: false
+    },
+    salt: {
+      type: DataTypes.STRING(64),
       allowNull: false
     },
     org: {
       type: DataTypes.STRING(30),
-      allowNull: false
+      allowNull: false,
+      defaultValue: "Carbon"
     },
     avatar: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
     status: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(12),
       allowNull: false,
-      defaultValue: "pending"
+      defaultValue: "registering"
     },
     updateUser: {
       type: DataTypes.STRING(10),
@@ -59,19 +68,19 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "cpf",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "cpf" },
-        ]
-      },
-      {
         name: "email",
         unique: true,
         using: "BTREE",
         fields: [
           { name: "email" },
+        ]
+      },
+      {
+        name: "cpf",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "cpf" },
         ]
       },
     ]
