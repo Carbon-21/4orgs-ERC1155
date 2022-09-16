@@ -18,6 +18,7 @@ module.exports = (req, res, next) => {
     }
 
     //decode token and get user info
+    //TODO .env
     const decodedToken = jwt.verify(token, "supersecreeeet_dont_share");
 
     //pass user info to next middleware

@@ -18,8 +18,11 @@ const domain = "carbon21.com";
 //////////DIRECT API CALLS//////////
 //given the username, return a salt so the user can perform the PHS
 exports.getSalt = async (req, res, next) => {
+  logger.trace("Entered getSalt controller");
+
   const email = req.body.email;
   const isSignUp = req.body.isSignUp;
+  logger.debug(`Email: ${email}, isSignUp: ${isSignUp}`);
 
   //look for user with given email
   let user;
@@ -35,17 +38,18 @@ exports.getSalt = async (req, res, next) => {
     if (user) {
       //user already registering/signing up => return salt
       if (user.status === "registering") {
+        logger.info(`User already registering, previously created salt returned`);
         return res.status(200).json({
-          success: true,
           salt: user.salt,
         });
       }
       //user already exists and its not still registering/signing up => error
       else {
+        logger.warning(`User is being shady`);
         return next(new HttpError(409));
       }
     }
-    //
+    //user doesn't exist yet
     else {
       //generate random seed and derive a key (salt) from it, using HKDF. This will be sent to the user so they can use it as salt to perform PHS
       const seed = generateSeed();
@@ -59,8 +63,8 @@ exports.getSalt = async (req, res, next) => {
         return next(new HttpError(500));
       }
 
+      logger.info(`Salt created and returned`);
       return res.status(200).json({
-        success: true,
         salt,
       });
     }
@@ -72,13 +76,13 @@ exports.getSalt = async (req, res, next) => {
     const weededSalt = hkdf(email, weed);
 
     if (user && user.status === "active") {
+      logger.info(`Valid email, salt returned`);
       return res.status(200).json({
-        success: true,
         salt: user.salt,
       });
     } else {
+      logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
-        success: true,
         salt: weededSalt,
       });
     }
@@ -109,7 +113,7 @@ exports.login = async (req, res, next) => {
   logger.trace("Entered login controller");
 
   const org = "Carbon"; // hardcoded
-  const email = req.body.username;
+  const email = req.body.email;
   let password = req.body.password;
 
   logger.debug("Email: " + email);
@@ -178,7 +182,6 @@ exports.login = async (req, res, next) => {
     //send OK response
     return res.status(200).json({
       message: `Welcome!`,
-      success: true,
       token,
     });
   } catch (err) {
@@ -192,14 +195,12 @@ exports.login = async (req, res, next) => {
 // TODO validar 4 chamadas (ordem dos parâmetros)
 const hkdf = (ikm, salt) => {
   const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 32);
-
   return Buffer.from(derivedKey).toString("hex");
 };
 
 //generate 256 bit seed
 const generateSeed = () => {
   const seed = crypto.randomBytes(32).toString("hex");
-  console.log(seed);
   return seed;
 };
 
@@ -243,7 +244,6 @@ const saveUserToDatabase = async (user, next) => {
 
   //OK
   const response = {
-    success: true,
     message: "Cadastrado realizado com sucesso!",
   };
   return response;

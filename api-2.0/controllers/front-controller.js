@@ -78,34 +78,28 @@ exports.postSignup = async (req, res, next) => {
 };
 
 ///// LOGIN CONTROLLERS /////
-
-exports.getLogin = (req, res, next) => {
-  res.render("login", {
-    title: "Login",
-    cssPath: "css/login.css",
+exports.getPreLogin = (req, res, next) => {
+  res.render("prelogin", {
+    title: "Entrar",
+    cssPath: "css/prelogin.css",
   });
 };
 
-exports.postLogin = async (req, res, next) => {
+exports.postPreLogin = async (req, res, next) => {
   // Collects data from html login form
-
-  let username = req.body.username;
-  let password = req.body.password;
+  const email = req.body.username;
 
   // Groups the data
-
-  let data = {
-    username: username,
-    password: password,
+  const data = {
+    email,
+    isSignUp: false,
   };
 
   // Data to JSON
-
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-
-  const url = "http://localhost:4000/auth/login";
+  const url = "http://localhost:4000/auth/getSalt";
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -113,28 +107,72 @@ exports.postLogin = async (req, res, next) => {
   };
 
   // HTTP POST request
+  axios
+    .post(url, jsonData, options)
+    .then(function (response) {
+      // if the user has successfully logged in, stores user jwt and username info in session
+      // req.flash("success", "Logado com sucesso");
+      // req.session.token = response.data.token;
+      // req.session.username = username;
+      const salt = response.data.salt;
+      res.redirect(`/login?email=${email}&salt=${salt}`);
+    })
 
+    // If an error occurs, redirect to the login page and send error message
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
+      res.redirect("/prelogin");
+    });
+};
+
+exports.getLogin = (req, res, next) => {
+  //get salt and email from URL parameters
+  const salt = req.query.salt;
+  const email = req.query.email;
+
+  //pass salt and email forward
+  res.render("login", {
+    title: "Entrar",
+    cssPath: "css/login.css",
+    salt,
+    email,
+  });
+};
+
+exports.postLogin = async (req, res, next) => {
+  // Collects data from html login form
+  const email = req.body.email.slice(0, -1);
+  const password = req.body.password;
+
+  // Groups the data
+  let data = {
+    email,
+    password,
+  };
+
+  // Data to JSON
+  const jsonData = JSON.stringify(data);
+
+  // Set url and headers
+  const url = "http://localhost:4000/auth/getSalt";
+  const options = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  // HTTP POST request
   axios
     .post(url, jsonData, options)
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.flash("success", "Logado com sucesso");
       req.session.token = response.data.token;
-      req.session.username = username;
+      req.session.username = email;
       res.redirect("/");
-      // if (response.data.success == true) {
-      //   req.flash("success", "Logado com sucesso");
-      //   req.session.token = response.data.token;
-      //   req.session.username = username;
-      //   res.redirect("/");
-      // } else {
-      //   req.flash("error", "Username ou senha incorreta");
-      //   res.redirect("/login");
-      // }
     })
 
     // If an error occurs, redirect to the login page and send error message
-
     .catch(function (err) {
       req.flash("error", err.response.data.message);
       // req.flash("error", "Falha no login");
