@@ -23,6 +23,7 @@ const authRoutes = require("./routes/auth-routes");
 const invokeRoutes = require("./routes/invoke-routes");
 const queryRoutes = require("./routes/query-routes");
 const frontRoutes = require("./routes/front-routes");
+const metadataRoutes = require("./routes/metadata-routes");
 
 ///// CONFIGS /////
 //express
@@ -77,6 +78,7 @@ app.use("/auth", authRoutes);
 app.use("/invoke", invokeRoutes);
 app.use("/query", queryRoutes);
 app.use("/", frontRoutes);
+app.use("/meta", metadataRoutes);
 
 ///// SERVER INIT /////
 app.listen(port);
