@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
     actionDate: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: Sequelize.Sequelize.fn('current_timestamp'),
       field: 'action_date'
     },
     actionUser: {

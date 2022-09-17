@@ -68,7 +68,6 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
         result = `{"ClientAccountBalance":"${result.toString()}"}`;
         break;
-
       /*
       ClientAccountTotalBalance: Gets the total balance of all the client's NFTs, without the need to provide its ids 
       (the original CLientAccountBalance gets only one balance per id). This new case route calls ClientAccountBalance 

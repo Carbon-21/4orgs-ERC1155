@@ -13,28 +13,17 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"strings"
-	"net/http"
-	"bytes"
-	"io/ioutil"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-
-	// files "github.com/ipfs/go-ipfs-files"
-	
 
 
 )
 
-const uriKey = "uri"
+// const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
 const minterMSPID = "CarbonMSP"
-
-//  CARBON FEATURE
-var filesrv string
-var filesrvport string
 
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
@@ -569,42 +558,44 @@ func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterf
 	return clientAccountID, nil
 }
 
-// SetURI set the URI value
-// This function triggers URI event for each token id
-func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, uri string) error {
+// // SetURI set the URI value
+// // This function triggers URI event for each token id
+// func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, uri string) error {
 
-	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
-	err := authorizationHelper(ctx)
-	if err != nil {
-		return err
-	}
+// 	// MAM: Gravar URIs usando uma chave do tipo tokenid~uri para poder recuperar com a função URI
 
-	if !strings.Contains(uri, "{id}") {
-		return fmt.Errorf("failed to set uri, uri should contain '{id}'")
-	}
+// 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+// 	err := authorizationHelper(ctx)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	err = ctx.GetStub().PutState(uriKey, []byte(uri))
-	if err != nil {
-		return fmt.Errorf("failed to set uri: %v", err)
-	}
+// 	// if !strings.Contains(uri, "{id}") {
+// 	// 	return fmt.Errorf("failed to set uri, uri should contain '{id}'")
+// 	// }
 
-	return nil
-}
+// 	err = ctx.GetStub().PutState(uriKey, []byte(uri))
+// 	if err != nil {
+// 		return fmt.Errorf("failed to set uri: %v", err)
+// 	}
 
-// URI returns the URI
-func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id string) (string, error) {
+// 	return nil
+// }
 
-	uriBytes, err := ctx.GetStub().GetState(uriKey)
-	if err != nil {
-		return "", fmt.Errorf("failed to get uri: %v", err)
-	}
+// // // URI returns the URI
+// // func (s *SmartContract) URI(ctx contractapi.TransactionContextInterface, id string) (string, error) {
 
-	if uriBytes == nil {
-		return "", fmt.Errorf("no uri is set: %v", err)
-	}
+// // 	uriBytes, err := ctx.GetStub().GetState(uriKey)
+// // 	if err != nil {
+// // 		return "", fmt.Errorf("failed to get uri: %v", err)
+// // 	}
 
-	return string(uriBytes), nil
-}
+// // 	if uriBytes == nil {
+// // 		return "", fmt.Errorf("no uri is set: %v", err)
+// // 	}
+
+// // 	return string(uriBytes), nil
+// // }
 
 func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionContextInterface, id string) error {
 
@@ -659,8 +650,6 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 }
 
 func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
-	// Convert id to string
-	// idString := strconv.FormatUint(uint64(id), 10)
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -688,8 +677,6 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 }
 
 func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
-	// Convert id to string
-	// idString := strconv.FormatUint(uint64(id), 10)
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -718,7 +705,6 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 	// Check whether the sender has the necessary funds and withdraw them from the account
 	for _, tokenId := range necessaryFundsKeys {
 		neededAmount, _ := necessaryFunds[tokenId]
-		// idString := strconv.FormatUint(uint64(tokenId), 10)
 
 		var partialBalance uint64
 		var selfRecipientKeyNeedsToBeRemoved bool
@@ -834,9 +820,6 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 		return 0, fmt.Errorf("balance query for the zero address")
 	}
 
-	// Convert id to string
-	// idString := strconv.FormatUint(uint64(id), 10)
-
 	var balance uint64
 
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, idString})
@@ -891,108 +874,6 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 	return keys
 }
 
-// NEW Carbon21
-
-// Mint with meta creates amount tokens of token type id and assigns them to account, and save the metadata string (that should be a JSON) in a local ipfs node.
-// TODO: implementing IPFS will no more need metadata string. This metadata will be saved directly in IPFS, and here we will need only the link
-
-// This function emits a TransferSingle event.
-func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, meta string) error {
-
-	fmt.Println("Received Metadatavalue: ",  meta)
-
-	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
-	err := authorizationHelper(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Get ID of submitting client identity
-	operator, err := ctx.GetClientIdentity().GetID()
-	if err != nil {
-		return fmt.Errorf("failed to get client id: %v", err)
-	}
-
-	// Mint tokens
-	err = mintHelper(ctx, operator, account, id, amount)
-	if err != nil {
-		return err
-	} else {
-		// In case of success, save metadata in file server
-		savemeta, err := addmeta(meta)
-		if err != nil {
-			fmt.Errorf("error: %s", err)
-			return err
-		}
-		fmt.Println("Metadata's successfully stored: ", savemeta)
-	}
-
-	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
-	return emitTransferSingle(ctx, transferSingleEvent)
-}
-
-// CARBON21:
-// Auxiliar function to add metadata in mockmeta server
-// Function to support development. Will be removed when IPFS implemented
-// When starting contract its necessary to perform a "SetFileSrvCFG" transaction, defining the filesrv and filesrvport values.
-// 
-// Usage: mockmeta is configured to be running in http://address:port/
-// invoke SetFileSrvCFG(address, port) (2x :D) 
-// POST http://address:port/addnft sending an JSON in body, to add it
-// GET  http://address:port/{tokenid}.json to retrieve tokenid metadata in JSON format 
-// 
-func addmeta(meta string) (string, error) {
-
-    url := "http://"+filesrv+":"+filesrvport+"/addnft"
-    fmt.Println("Fileserver URL:>", url)
-
-    var jsonStr = []byte(meta)
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-    req.Header.Set("X-Custom-Header", "nftmetadata")
-    req.Header.Set("Content-Type", "application/json")
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        fmt.Errorf("error: %s", err)
-        return "", err
-    }
-    defer resp.Body.Close()
-
-    fmt.Println("response Status:", resp.Status)
-    fmt.Println("response Headers:", resp.Header)
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("response Body:", string(body))
-
-	return string(body), nil
-}
-
-// During development phase, its necessary to define a specific file server address, to offer token JSON metadata 
-// In production environment we'll use IPFS, and this configuration wont be necessary anymore
-func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterface, address string, port string) error {
-
-	// Check minter authorization - this sample assumes Carbon is the org allowed to change configs
-	err := authorizationHelper(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Set file server address
-	fmt.Println("Setting file server address: ", address)
-	filesrv = address
-
-	// Set file server port
-	fmt.Println("Setting file server port: ", port)
-	filesrvport = port
-
-	fmt.Println("New file server address: ", filesrv)
-	fmt.Println("New file server port: ", filesrvport)
-	return nil
-}
-
-// Return Total Supply of a specific tokenid
-// 
 func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface, tokenid string) (uint64, error) {
 
 	var balance uint64
@@ -1031,3 +912,141 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 	return balance, nil
 
 }
+
+func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
+
+	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func  (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
+
+	uriBytes, err := ctx.GetStub().GetState(tokenID)
+	if err != nil {
+		return "", fmt.Errorf("failed to read key from world state: %v", err)
+	}
+
+	var tokenURI string
+	if uriBytes != nil {
+		tokenURI = string(uriBytes)
+	}
+
+
+	return tokenURI, nil
+}
+
+// // NEW Carbon21
+// REMOVED - Deprecated since IPFS implementation
+
+// // Mint with meta creates amount tokens of token type id and assigns them to account, and save the metadata string (that should be a JSON) in a local ipfs node.
+// // TODO: implementing IPFS will no more need metadata string. This metadata will be saved directly in IPFS, and here we will need only the link
+
+// // This function emits a TransferSingle event.
+// func (s *SmartContract) MintNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, meta string) error {
+
+// 	fmt.Println("Received Metadatavalue: ",  meta)
+
+// 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+// 	err := authorizationHelper(ctx)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	// Get ID of submitting client identity
+// 	operator, err := ctx.GetClientIdentity().GetID()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get client id: %v", err)
+// 	}
+
+// 	// Mint tokens
+// 	err = mintHelper(ctx, operator, account, id, amount)
+// 	if err != nil {
+// 		return err
+// 	}	
+// 	// REMOVED - Deprecated since IPFS implementation
+// 	// Metadata is being added by API
+// 	// } else {
+// 	// 	// In case of success, save metadata in file server
+// 	// 	savemeta, err := addmeta(meta)
+// 	// 	if err != nil {
+// 	// 		fmt.Errorf("error: %s", err)
+// 	// 		return err
+// 	// 	}
+// 	// 	fmt.Println("Metadata's successfully stored: ", savemeta)
+// 	// }
+
+// 	// Emit TransferSingle event
+// 	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
+// 	return emitTransferSingle(ctx, transferSingleEvent)
+// }
+
+
+
+// REMOVED - Deprecated since IPFS implementation
+
+// // CARBON21:
+// // Auxiliar function to add metadata in mockmeta server
+// // Function to support development. Will be removed when IPFS implemented
+// // When starting contract its necessary to perform a "SetFileSrvCFG" transaction, defining the filesrv and filesrvport values.
+// // 
+// // Usage: mockmeta is configured to be running in http://address:port/
+// // invoke SetFileSrvCFG(address, port) (2x :D) 
+// // POST http://address:port/addnft sending an JSON in body, to add it
+// // GET  http://address:port/{tokenid}.json to retrieve tokenid metadata in JSON format 
+// // 
+// func addmeta(meta string) (string, error) {
+
+//     url := "http://"+filesrv+":"+filesrvport+"/addnft"
+//     fmt.Println("Fileserver URL:>", url)
+
+//     var jsonStr = []byte(meta)
+//     req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+//     req.Header.Set("X-Custom-Header", "nftmetadata")
+//     req.Header.Set("Content-Type", "application/json")
+
+//     client := &http.Client{}
+//     resp, err := client.Do(req)
+//     if err != nil {
+//         fmt.Errorf("error: %s", err)
+//         return "", err
+//     }
+//     defer resp.Body.Close()
+
+//     fmt.Println("response Status:", resp.Status)
+//     fmt.Println("response Headers:", resp.Header)
+//     body, _ := ioutil.ReadAll(resp.Body)
+//     fmt.Println("response Body:", string(body))
+
+// 	return string(body), nil
+// }
+
+//  REMOVED - Deprecated since IPFS implementation
+// // During development phase, its necessary to define a specific file server address, to offer token JSON metadata 
+// // In production environment we'll use IPFS, and this configuration wont be necessary anymore
+// func (s *SmartContract) SetFileSrvCFG(ctx contractapi.TransactionContextInterface, address string, port string) error {
+
+// 	// Check minter authorization - this sample assumes Carbon is the org allowed to change configs
+// 	err := authorizationHelper(ctx)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	// Set file server address
+// 	fmt.Println("Setting file server address: ", address)
+// 	filesrv = address
+
+// 	// Set file server port
+// 	fmt.Println("Setting file server port: ", port)
+// 	filesrvport = port
+
+// 	fmt.Println("New file server address: ", filesrv)
+// 	fmt.Println("New file server port: ", filesrvport)
+// 	return nil
+// }
+
+// Return Total Supply of a specific tokenid
+// 

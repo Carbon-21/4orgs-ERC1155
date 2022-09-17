@@ -10,7 +10,7 @@ start-mysql() {
   if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
     echo "MySQL already running"
   else
-    sudo systemctl start mysql
+    sudo systemctl restart mysql
     echo "Started MySQL"
   fi
 }
@@ -24,9 +24,7 @@ chmod +x cc-build
 
 ###### KILL ######
 #kill other dockers 
-cd metasrv
-kill-hlf
-cd ../Explorer
+cd ./Explorer
 kill-hlf
 cd ../artifacts
 kill-hlf
@@ -36,13 +34,12 @@ kill-hlf
 ###### RUN ######
 #run mysql
 start-mysql
-
-#build mock File Server docker img
-cd ../../../metasrv
-docker build . -t mockmeta
+cd ../../../database
+chmod +x reset-db
+./reset-db
+cd ../artifacts/channel/create-certificate-with-ca
 
 #run one docker for each CA (each org has 1, incluind the orderer)
-cd ../artifacts/channel/create-certificate-with-ca
 docker-compose up -d
 sleep 15
 
