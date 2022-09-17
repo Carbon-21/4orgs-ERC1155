@@ -1,9 +1,0 @@
-// IPFS
-const ipfsClient = require('ipfs-http-client');
-
-exports.getMetadata = (hash) => {
-  const ipfs = ipfsClient('http://localhost:5001');
-  const metadata = ipfs.cat(hash);
-  console.log("METADATA RECUPERADA: " + metadata);
-  return JSON.stringify(metadata);
-};

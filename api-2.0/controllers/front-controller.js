@@ -263,6 +263,7 @@ exports.getWallet = async (req, res, next) => {
 exports.getCollection = async (req, res, next) => {
   if (req.session.token) {
     let token = req.session.token;
+    // TODO: avaliar se aqui seria um bom local para recuperar os metadados. Imagino que uma opção é criar um modal quando o usuario deseja ver mais informações do NFT e realizar o request la
 
     // Set url and headers
 
@@ -274,36 +275,6 @@ exports.getCollection = async (req, res, next) => {
         Authorization: `Bearer ${token}`,
       },
     };
-
-    // IPFS Metadata (TODO: funcional com map de id e hash, usando db?)
-    // const hash = "QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo"; // string file
-    // const hash = "QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD"; // json file
-    const hash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j"; // hello world string
-    // let ipfsData;
-    const ipfsData = ipfs.getMetadata(hash);
-    // const ipfsData = await axios.get("https://ipfs.io/ipfs/QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD");
-    // axios({
-    //   method: "get",
-    //   url: "https://ipfs.io/ipfs/QmTWZRZfMuStYjmH687ys5oTqGCw44vLR4RAEpgX9bwBVo",
-    //   responseType: "json",
-    // })
-
-    // axios.get("http://127.0.0.1:8080/ipfs/QmbAcm3pxgpx9cBtdBBnM1fjQ3U4SUZJ3i3rH9UDKQsSbD")
-    // .then(function (response) {
-    //   console.log("AXIOS RESPONSE: " + response.toString());
-    //   ipfsData = JSON.parse(response.toString());
-    //   console.log("AXIOS IPFS GET: " + ipfsData);
-    // }).catch(function (error) {
-    //   console.log("Axios ipfs get error: "+ error);
-    // });
-
-    const metadata = ipfsData
-      ? JSON.parse(ipfsData)
-      : //null;
-        {
-          phyto: "testePhyto",
-          location: "testeLocation",
-        };
 
     // HTTP GET request
 
@@ -318,7 +289,7 @@ exports.getCollection = async (req, res, next) => {
           title: "My Collection",
           cssPath: "css/collection.css",
           balances,
-          metadata,
+          // metadata,
         });
       })
 
@@ -426,10 +397,10 @@ exports.postMintNFT = async (req, res, next) => {
     location: location,
   };
 
+  //TODO: update to new method of publishing metadata
   // Uploading Metadata to IPFS
-
   console.log("Uploading to ipfs (infura)");
-  const hash = await ipfs.uploadIPFS(JSON.stringify(meta));
+  const hash = await ipfs.uploadIPFS(meta);
   console.log("Uploaded to :" + hash);
 
   // Groups the data
