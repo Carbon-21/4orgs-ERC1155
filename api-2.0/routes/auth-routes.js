@@ -31,7 +31,7 @@ router.post(
 
 router.post(
   "/login",
-  [body("username").not().isEmpty().isEmail(), body("password").not().isEmpty(), validateAll],
+  [body("email").not().isEmpty().isEmail(), body("password").not().isEmpty(), validateAll],
   authController.login
 );
 

@@ -5,11 +5,8 @@ const models = require("../util/sequelize");
 const HttpError = require("../util/http-error");
 const crypto = require("crypto");
 const fs = require("fs");
-const path = require("path");
-var { Gateway, Wallets } = require("fabric-network");
+var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
-const { exec } = require("child_process");
-const util = require("util");
 
 //.env
 const weed = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1";
@@ -18,8 +15,11 @@ const domain = "carbon21.com";
 //////////DIRECT API CALLS//////////
 //given the username, return a salt so the user can perform the PHS
 exports.getSalt = async (req, res, next) => {
+  logger.trace("Entered getSalt controller");
+
   const email = req.body.email;
   const isSignUp = req.body.isSignUp;
+  logger.debug(`Email: ${email}, isSignUp: ${isSignUp}`);
 
   //look for user with given email
   let user;
@@ -35,17 +35,18 @@ exports.getSalt = async (req, res, next) => {
     if (user) {
       //user already registering/signing up => return salt
       if (user.status === "registering") {
+        logger.info(`User already registering, previously created salt returned`);
         return res.status(200).json({
-          success: true,
           salt: user.salt,
         });
       }
       //user already exists and its not still registering/signing up => error
       else {
+        logger.warning(`User is being shady`);
         return next(new HttpError(409));
       }
     }
-    //
+    //user doesn't exist yet
     else {
       //generate random seed and derive a key (salt) from it, using HKDF. This will be sent to the user so they can use it as salt to perform PHS
       const seed = generateSeed();
@@ -59,8 +60,8 @@ exports.getSalt = async (req, res, next) => {
         return next(new HttpError(500));
       }
 
+      logger.info(`Salt created and returned`);
       return res.status(200).json({
-        success: true,
         salt,
       });
     }
@@ -72,13 +73,13 @@ exports.getSalt = async (req, res, next) => {
     const weededSalt = hkdf(email, weed);
 
     if (user && user.status === "active") {
+      logger.info(`Valid email, salt returned`);
       return res.status(200).json({
-        success: true,
         salt: user.salt,
       });
     } else {
+      logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
-        success: true,
         salt: weededSalt,
       });
     }
@@ -109,7 +110,7 @@ exports.login = async (req, res, next) => {
   logger.trace("Entered login controller");
 
   const org = "Carbon"; // hardcoded
-  const email = req.body.username;
+  const email = req.body.email;
   let password = req.body.password;
 
   logger.debug("Email: " + email);
@@ -178,7 +179,6 @@ exports.login = async (req, res, next) => {
     //send OK response
     return res.status(200).json({
       message: `Welcome!`,
-      success: true,
       token,
     });
   } catch (err) {
@@ -191,15 +191,13 @@ exports.login = async (req, res, next) => {
 //derive key from seed. The derived key is used as salt to perform PHS, on the client side. It is then used on the server side to derive the PHS and store it in the password field (users table).
 // TODO validar 4 chamadas (ordem dos parâmetros)
 const hkdf = (ikm, salt) => {
-  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 32);
-
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 11);
   return Buffer.from(derivedKey).toString("hex");
 };
 
 //generate 256 bit seed
 const generateSeed = () => {
   const seed = crypto.randomBytes(32).toString("hex");
-  console.log(seed);
   return seed;
 };
 
@@ -243,7 +241,6 @@ const saveUserToDatabase = async (user, next) => {
 
   //OK
   const response = {
-    success: true,
     message: "Cadastrado realizado com sucesso!",
   };
   return response;

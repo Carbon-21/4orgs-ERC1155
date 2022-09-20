@@ -30,11 +30,12 @@ class HttpError extends Error {
   constructor(code, message = null) {
     //add message property (Error constructor)
     message === null ? super(codes[code].messagePT) : super(message);
+    // console.log("oi", codes[code].messagePT);
 
     //add code property
     this.code = code;
 
-    logger.error(code, message);
+    logger.error(code, message === null ? codes[code].messagePT : message);
   }
 }
 

@@ -1,20 +1,11 @@
 //auxiliary functions, used by auth controller
-// const Sequelize = require("sequelize");
-// const { hash, compare } = require("bcryptjs");
-const { sign, verify, decode } = require("jsonwebtoken");
 
+// const Sequelize = require("sequelize");
+// const { compare, hash } = require("bcryptjs");
 // const transport = require("../util/mailing");
 // const models = require("../util/sequelize");
 
-// exports.verifyPassword = async (password, hasehdPassword) => {
-//   const isValid = await compare(password, hasehdPassword);
-//   return isValid;
-// };
-
-// exports.hashPassword = async (password, salt) => {
-//   const hashedPassword = await hash(password, 11);
-//   return hashedPassword;
-// };
+const { sign } = require("jsonwebtoken");
 
 exports.createJWT = (username, org, expiration = "7d") => {
   //.env
@@ -23,6 +14,14 @@ exports.createJWT = (username, org, expiration = "7d") => {
   });
   return token;
 };
+
+//check if plain text password matches the hashed one
+// exports.verifyPassword = async (plainPassword, hashedPassword) => {
+//   hashedPassword = "$2a$11" + hashedPassword; //bcrypt hash pattern
+
+//   const isValid = await compare(plainPassword, hashedPassword);
+//   return isValid;
+// };
 
 // //used to confirm user's email
 // exports.createConfirmationToken = (email, oldEmail = null) => {
@@ -101,7 +100,7 @@ exports.createJWT = (username, org, expiration = "7d") => {
 //       //TODO mudar email
 //       transport.sendMail({
 //         to: user.email,
-//         from: '"FluxoTest" <cadastro@fluxotest.com>',
+//         from: '"Carbon21" <cadastro@carbon21.com>',
 //         subject: "Desbloqueie sua conta",
 //         html: `<h1>Desbloqueio de conta</h1> <p>${
 //           user.name
