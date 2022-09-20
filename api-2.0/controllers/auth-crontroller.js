@@ -5,11 +5,8 @@ const models = require("../util/sequelize");
 const HttpError = require("../util/http-error");
 const crypto = require("crypto");
 const fs = require("fs");
-const path = require("path");
-var { Gateway, Wallets } = require("fabric-network");
+var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
-const { exec } = require("child_process");
-const util = require("util");
 
 //.env
 const weed = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1";
@@ -194,7 +191,7 @@ exports.login = async (req, res, next) => {
 //derive key from seed. The derived key is used as salt to perform PHS, on the client side. It is then used on the server side to derive the PHS and store it in the password field (users table).
 // TODO validar 4 chamadas (ordem dos parâmetros)
 const hkdf = (ikm, salt) => {
-  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 32);
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 11);
   return Buffer.from(derivedKey).toString("hex");
 };
 

@@ -1,11 +1,10 @@
-const { hash, compare } = require("bcryptjs");
+const { hashSync } = require("bcryptjs");
 
-exports.verifyPassword = async (password, hasehdPassword) => {
-  const isValid = await compare(password, hasehdPassword);
-  return isValid;
-};
-
-exports.hashPassword = async (password, salt) => {
-  const hashedPassword = await hash(password, 11);
-  return hashedPassword;
+//client side PHS
+global.hashPassword = (plaintextPassword, salt) => {
+  salt = salt.slice(0, -1); //removes additional / in the end
+  salt = "$2a$11$" + salt; //bcrypt salt format
+  
+  const hash = hashSync(plaintextPassword, salt);
+  return hash;
 };

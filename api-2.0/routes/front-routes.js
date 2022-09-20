@@ -7,9 +7,9 @@ const isLoggedIn = require("../middleware/is-logged-in");
 const router = Router();
 
 ///// SIGNUP ROUTES /////
-// router.get("/presignup", frontController.getPreSignup);
+router.get("/presignup", frontController.getPreSignup);
 
-// router.post("/presignup", frontController.postPreSignup);
+router.post("/presignup", frontController.postPreSignup);
 
 router.get("/signup", frontController.getSignup);
 
