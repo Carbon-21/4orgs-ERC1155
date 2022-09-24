@@ -176,6 +176,7 @@ const getRegisteredUserFromCA = async (username, org) => {
 };
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
+  let enrollmentSecret = username + "pw";
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
@@ -212,7 +213,11 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
   try {
     // Register the user, enroll the user, and import the new identity into the wallet.
     secret = await ca.register(
-      { affiliation: await getAffiliation(userOrg), enrollmentID: username, role: "client" },
+      { affiliation: await getAffiliation(userOrg), 
+        enrollmentID: username,
+        enrollmentSecret: username + "pw", //temporary 
+        role: "client" 
+      }, 
       adminUser
     );
     // const secret = await ca.register({ affiliation: 'carbon.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
@@ -220,13 +225,16 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     return error.message;
   }
 
-  const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret });
+  const enrollment = await ca.enroll(
+    { enrollmentID: username, 
+      enrollmentSecret: username + "pw"
+    });
   // const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret, attr_reqs: [{ name: 'role', optional: false }] });
 
   let x509Identity = {
     credentials: {
-      certificate: enrollment.certificate,
-      privateKey: enrollment.key.toBytes(),
+      certificate: enrollment.certificate
+      //privateKey: enrollment.key.toBytes(),
     },
     mspId: `${userOrg}MSP`,
     type: "X.509",
@@ -364,6 +372,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
       {
         affiliation: await getAffiliation(userOrg),
         enrollmentID: user.username,
+        encollmentSecret: user.username + "pw",
         role: "client",
         attrs: [
           { name: "cpf", value: cpf },
@@ -381,7 +390,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
       logger.info('CSR:\n' + csr);
       var enrollment = await ca.enroll({
         enrollmentID: username,
-        enrollmentSecret: secret,
+        enrollmentSecret: username + "pw",
         csr: csr,
       });
     } else {
@@ -397,8 +406,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
     let orgMSPId = getOrgMSP(userOrg);
     const x509Identity = {
       credentials: {
-        certificate: enrollment.certificate,
-        privateKey: pkey,
+        certificate: enrollment.certificate
       },
       mspId: orgMSPId,
       type: "X.509",
@@ -512,30 +520,34 @@ const digestTransaction = async(build_options, username, org_name, channelName) 
     console.log('flag1')
     let userTeste = new User(config);
     //console.log('###################IDN private key= ######################',identityNetwork.privateKey)
-    await userTeste.setEnrollment(
-      identityNetwork.credentials.privateKey,
-      identityNetwork.credentials.certificate,
-      identityNetwork.mspId
-    );
+    // await userTeste.setEnrollment(
+    //   identityNetwork.credentials.privateKey,
+    //   identityNetwork.credentials.certificate,
+    //   identityNetwork.mspId
+    // );
     //let identityFromCA = await helper.getRegisteredUserFromCA(username, org_name);
     //userTeste._identity = identityFromCA;
-    console.log('### userTeste ###',userTeste)
-    console.log('flag2')
-    let identityClient = await getRegisteredUserFromCA(username, org_name);
-    console.log('identityClient\n',identityClient)
+    //console.log('### userTeste ###',userTeste)
+    //console.log('flag2')
+    //let identityClient = await getRegisteredUserFromCA(username, org_name);
+    //console.log('identityClient\n',identityClient)
     let clientTeste = new Client(username);
+    let channel = clientTeste.newChannel(username);
+    let user = await wallet.get(username);
+    console.log("### teste ### ", teste);
+    //let user = User.createUser(username, username + "pw", "CarbonMSP", )
     //console.log('### clienTeste ###\n',clientTeste)
     let idx = clientTeste.newIdentityContext(userTeste);
-    let channel = network.getChannel();
+    //let channel = network.getChannel();
     globalChannel = channel;
     //channel.getIdentity()
-    console.log('####### channel ####### = \n',channel)
+    //console.log('####### channel ####### = \n',channel)
     let query = channel.newQuery('erc1155');
     //console.log('query é igual a\n',query)
     let proposalBytes = query.build(idx, build_options);
-    console.log('### proposal bytes: ###\n' + typeof proposalBytes,proposalBytes);
+    //console.log('### proposal bytes: ###\n' + typeof proposalBytes,proposalBytes);
     let hash = crypto.createHash("sha256").update(proposalBytes).digest("hex")
-    console.log('### proposalBytes hash ### =',hash);
+    //console.log('### proposalBytes hash ### =',hash);
     transactionBuffer.push(query);
 
     //segunda forma
@@ -567,10 +579,8 @@ const signTransaction = async(signature) => {
   let transaction = transactionBuffer.pop();
   transaction.sign(signature);
   console.log('get Endorser\n',globalChannel.getEndorsers("CarbonMSP"));
-  let proposalResponse = await transaction.send({targets: [globalChannel.getEndorser("peer0.carbon.example.com:7051")]});
-  console.log('### proposalResponse ###\n',proposalResponse);
-
-  
+  let proposalResponse = await transaction.send({targets: globalChannel.getEndorsers()});
+  console.log('### proposalResponse ###\n',proposalResponse); 
 }
 
 const str2ab = function (str) {
