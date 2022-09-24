@@ -3,6 +3,7 @@ const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
 const frontController = require("../controllers/front-controller.js");
 const isLoggedIn = require("../middleware/is-logged-in");
+const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
 

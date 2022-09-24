@@ -1,8 +1,6 @@
 const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
-const ipfs = require("../util/ipfs");
-//const ipfsHttp = require("../util/ipfsHttp");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
@@ -263,7 +261,6 @@ exports.getWallet = async (req, res, next) => {
 exports.getCollection = async (req, res, next) => {
   if (req.session.token) {
     let token = req.session.token;
-    // TODO: avaliar se aqui seria um bom local para recuperar os metadados. Imagino que uma opção é criar um modal quando o usuario deseja ver mais informações do NFT e realizar o request la
 
     // Set url and headers
 
@@ -390,18 +387,15 @@ exports.postMintNFT = async (req, res, next) => {
   let token = req.session.token;
 
   // Groups the NFT metadata
-
-  let meta = {
-    nftId: nftId,
-    phyto: phyto,
-    location: location,
+  let metadata = {
+    id: nftId,
+    land_info: {
+      land: location,
+      biome: phyto,
+    },
   };
 
   //TODO: update to new method of publishing metadata
-  // Uploading Metadata to IPFS
-  console.log("Uploading to ipfs (infura)");
-  const hash = await ipfs.uploadIPFS(meta);
-  console.log("Uploaded to :" + hash);
 
   // Groups the data
 
