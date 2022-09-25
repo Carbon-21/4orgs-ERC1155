@@ -37,7 +37,9 @@ start-mysql
 cd ../../../database
 chmod +x reset-db
 ./reset-db
-cd ../artifacts/channel/create-certificate-with-ca
+cd ./sequelize-auto
+npm install
+cd ../../artifacts/channel/create-certificate-with-ca
 
 #run one docker for each CA (each org has 1, incluind the orderer)
 docker-compose up -d
