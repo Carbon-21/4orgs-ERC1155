@@ -10,7 +10,7 @@ start-mysql() {
   if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
     echo "MySQL already running"
   else
-    sudo systemctl restart mysql
+    sudo systemctl start mysql
     echo "Started MySQL"
   fi
 }
@@ -34,12 +34,12 @@ kill-hlf
 ###### RUN ######
 #run mysql
 start-mysql
-cd ../../../database
+cd ../../../database/sequelize-auto
+npm install
+cd ..
 chmod +x reset-db
 ./reset-db
-cd ./sequelize-auto
-npm install
-cd ../../artifacts/channel/create-certificate-with-ca
+cd ../artifacts/channel/create-certificate-with-ca
 
 #run one docker for each CA (each org has 1, incluind the orderer)
 docker-compose up -d
