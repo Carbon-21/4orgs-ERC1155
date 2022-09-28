@@ -108,40 +108,24 @@ const invokeTransaction = async (
         logger.info("Transfer successful");
         result = { txid: result.toString() };
         break;
-      case "MintNFT":
-        const destNFTClientAccountId = await helper.getAccountId(
-          channelName,
-          chaincodeName,
-          args[0],
-          org_name
-        );
-        result = await contract.submitTransaction(
-          "SmartContract:" + fcn,
-          destNFTClientAccountId,
-          args[1],
-          args[2],
-          args[3]
-        );
-        logger.info("Mint meta successful");
-        result = { MintNFT: result.toString() };
-        break;       
-      case "SetFileSrvCFG":
-        result = await contract.submitTransaction(
-          "SmartContract:" + fcn,
-          args[0],
-          args[1]
-        );
-        logger.info("SetFileSrvCFG successful");
-        result = { SetFileSrvCFG: result.toString() };
-        break;
       case "SetURI":
         result = await contract.submitTransaction(
           "SmartContract:" + fcn,
-          args[0]
+          args[1],
+          args[2]
         );
         logger.info("SetURI successful");
         result = { SetURI: result.toString() };
         break;  
+      //TODO: GetURI deveria ser uma função QUERY, porém só está funcionando como INVOKE. Verificar...
+      case "GetURI":
+        result = await contract.submitTransaction(
+          "SmartContract:" + fcn,
+          args[1]
+        );
+        logger.info("GetURI successful");
+        result = { GetURI: result.toString() };
+        break;          
       default:
         break;
     }

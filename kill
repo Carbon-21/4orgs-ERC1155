@@ -8,9 +8,7 @@ kill-hlf () {
 }
 
 #kill other dockers 
-cd metasrv
-kill-hlf
-cd ../Explorer
+cd ./Explorer
 kill-hlf
 cd ../artifacts
 kill-hlf

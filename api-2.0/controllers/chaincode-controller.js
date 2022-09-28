@@ -13,6 +13,10 @@ exports.invoke = async (req, res, next) => {
     const peers = req.body.peers;
     const transient = req.body.transient;
     const username = req.jwt.username;
+    // TODO: Setar o arg[0] como username pode levar a situações indesejadas, já que nem todo invoke tem obrigatoriamente isso como parâmetro.
+    // Ex: funções como SetURI, que tem como args apenas tokenID e TokenURI (respectivamente arg[0] e arg[1])
+    // Para funções assim tem que fazer uma gambi, chamando a função assim: seturi("", tokenid, tokenURI)
+    // Recomendável rever e modificar isso aqui
     args[0] = username;
     const org = req.jwt.org;
 
