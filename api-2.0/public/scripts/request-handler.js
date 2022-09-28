@@ -1,5 +1,6 @@
 const { sign } = require('jsonwebtoken');
 const crypto = require('./crypto-generator.js')
+const fabric = require('./fabric.js')
 
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
@@ -170,9 +171,11 @@ const wrapRequest = async function (requestType) {
 window.sendRequest = async function (requestType) {
   event.preventDefault();
   try{
+    console.log('antes de chamar main')
+    await window.execute();
     console.log('flag x');
     // Transaction Proposal Signing
-    if (requestType == "ClientAccountBalance") {
+    if (requestType == "ClientAccountBalance error") {
       let url = "chaincode/get-proposal";
       let username = localStorage.getItem("username");
       let transaction = {

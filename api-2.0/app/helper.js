@@ -534,7 +534,7 @@ const digestTransaction = async(build_options, username, org_name, channelName) 
     let clientTeste = new Client(username);
     let channel = clientTeste.newChannel(username);
     let user = await wallet.get(username);
-    console.log("### teste ### ", teste);
+    //console.log("### teste ### ", teste);
     //let user = User.createUser(username, username + "pw", "CarbonMSP", )
     //console.log('### clienTeste ###\n',clientTeste)
     let idx = clientTeste.newIdentityContext(userTeste);
