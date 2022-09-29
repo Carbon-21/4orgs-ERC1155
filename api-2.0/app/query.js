@@ -12,21 +12,19 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     // Create a new file system based wallet for managing identities.
     const walletPath = await helper.getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
-    logger.debug(`Wallet path: ${walletPath}`);
 
-    //TODO após estudar wallets, temos que olhar se isso aqui será mantido
+    //TODO tirar isso quando docker for persistente
     // Check to see if we've already enrolled the user.
     let identity = await wallet.get(username);
     if (!identity) {
-      logger.log(
+      logger.info(
         `An identity for the user ${username} does not exist in the wallet, so registering user`
       );
       await helper.getRegisteredUser(username, org_name, true);
       identity = await wallet.get(username);
-      console.log("Run the registerUser.js application before retrying");
+
       return;
     }
-    console.log(identity);
 
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();

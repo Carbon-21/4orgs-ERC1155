@@ -213,7 +213,7 @@ const saveUserToDatabase = async (user, next) => {
       },
     });
   } catch (err) {
-    logger.debug(err);
+    logger.error(err);
     return next(new HttpError(500));
   }
 

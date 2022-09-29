@@ -7,14 +7,79 @@ var { Gateway, Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 const { exec } = require("child_process");
 const util = require("util");
+const HttpError = require("../util/http-error");
 
-const getAccountId = async (channelName, chaincodeName, username, org_name) => {
+//connect to a channel and get a given chaincode
+const getChaincode = async (org, channel, chaincodeName, username, next) => {
+  try {
+    // load the network configuration
+    const ccp = await getCCP(org);
+
+    // Create a new file system based wallet for managing identities.
+    const walletPath = await getWalletPath(org);
+    const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+    //TODO tirar isso quando docker for persistente
+    // Check to see if we've already enrolled the user.
+    let identity = await wallet.get(username);
+    if (!identity) {
+      logger.info(
+        `An identity for the user ${username} does not exist in the wallet. Registering user...`
+      );
+      await getRegisteredUser(username, org, true);
+      identity = await wallet.get(username);
+
+      return;
+    }
+
+    // Create a new gateway for connecting to our peer node.
+    const gateway = new Gateway();
+    await gateway.connect(ccp, {
+      wallet,
+      identity: username,
+      discovery: { enabled: true, asLocalhost: true },
+    });
+
+    // Get the network (channel) our contract is deployed to.
+    const network = await gateway.getNetwork(channel);
+
+    // Get the contract from the network.
+    const contract = network.getContract(chaincodeName);
+
+    //TODO o pavan deixou um TODO escondido aqui kkk
+    // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.
+    // Instead create separate function and call it once server started, it will keep listening.
+    //Listen for new events emitted by the smart contract
+    // await contract.addContractListener(contractListener);
+    //Listen for new emitted block events
+    // await network.addBlockListener(blockListener);
+    return [contract, gateway];
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
+  }
+};
+
+const getAccountIdFromChaincode = async (chaincode, next) => {
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:ClientAccountID");
+    result = result.toString();
+
+    logger.debug("ClientAccountID retrieved: " + result);
+
+    return result;
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
+  }
+};
+
+const getAccountId = async (channelName, chaincodeName, username, org_name, next) => {
   try {
     const ccp = await getCCP(org_name);
 
     const walletPath = await getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
-    logger.debug(`Wallet path: ${walletPath}`);
 
     //TODO após estudar wallets, temos que olhar se isso aqui será mantido
     let identity = await wallet.get(username);
@@ -44,14 +109,14 @@ const getAccountId = async (channelName, chaincodeName, username, org_name) => {
     let result = await contract.submitTransaction("SmartContract:ClientAccountID");
     result = result.toString();
 
-    logger.debug("Destiny ClientAccountID retrieved: " + result);
+    logger.debug("ClientAccountID retrieved: " + result);
 
     await gateway.disconnect();
 
     return result;
-  } catch (error) {
-    logger.error(`Getting error: ${error}`);
-    return error.message;
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
   }
 };
 
@@ -142,12 +207,10 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
   let ccp = await getCCP(userOrg);
 
   const caURL = await getCaUrl(userOrg, ccp);
-  console.log("ca url is ", caURL);
   const ca = new FabricCAServices(caURL);
 
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
-  console.log(`Wallet path: ${walletPath}`);
 
   const userIdentity = await wallet.get(username);
   if (userIdentity) {
@@ -209,7 +272,6 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
 const isUserRegistered = async (username, userOrg) => {
   const walletPath = await getWalletPath(userOrg);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
-  console.log(`Wallet path: ${walletPath}`);
 
   const userIdentity = await wallet.get(username);
   if (userIdentity) {
@@ -251,7 +313,6 @@ const enrollAdmin = async (org, ccp) => {
     // Create a new file system based wallet for managing identities.
     const walletPath = await getWalletPath(org); //path.join(process.cwd(), 'wallet');
     const wallet = await Wallets.newFileSystemWallet(walletPath);
-    console.log(`Wallet path: ${walletPath}`);
 
     // Check to see if we've already enrolled the admin user.
     const identity = await wallet.get("admin");
@@ -352,4 +413,6 @@ module.exports = {
   queryAttribute,
   execWrapper,
   getOrgMSP,
+  getChaincode,
+  getAccountIdFromChaincode,
 };

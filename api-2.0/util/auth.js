@@ -4,6 +4,7 @@
 // const { compare, hash } = require("bcryptjs");
 // const transport = require("../util/mailing");
 // const models = require("../util/sequelize");
+const logger = require("../util/logger");
 
 const { sign } = require("jsonwebtoken");
 
@@ -12,6 +13,8 @@ exports.createJWT = (username, org, expiration = "7d") => {
   const token = sign({ username, org }, "supersecreeeet_dont_share", {
     expiresIn: expiration,
   });
+  logger.debug(`JWT: ${token}`);
+
   return token;
 };
 

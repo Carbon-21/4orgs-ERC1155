@@ -20,6 +20,8 @@ const error = require("./middleware/error");
 //routes
 const authRoutes = require("./routes/auth-routes");
 const chaincodeRoutes = require("./routes/chaincode-routes");
+const invokeRoutes = require("./routes/invoke-routes");
+const queryRoutes = require("./routes/query-routes");
 const frontRoutes = require("./routes/front-routes");
 
 ///// CONFIGS /////
@@ -72,6 +74,8 @@ app.get("/", function (req, res) {
 ///// ROUTES /////
 app.use("/auth", authRoutes);
 app.use("/chaincode", chaincodeRoutes);
+app.use("/invoke", invokeRoutes);
+app.use("/query", queryRoutes);
 app.use("/", frontRoutes);
 
 ///// SERVER INIT /////
