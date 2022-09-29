@@ -2,6 +2,7 @@ const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
 
+//mint given token for a user
 exports.mint = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
@@ -33,11 +34,12 @@ exports.mint = async (req, res, next) => {
   }
 
   //send OK response
-  return res.status(200).json({
-    message: "success",
+  return res.json({
+    result: "success",
   });
 };
 
+//transfer a given amount of a token from a user to another
 exports.transfer = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
@@ -70,7 +72,39 @@ exports.transfer = async (req, res, next) => {
 
     //send OK response
     return res.json({
-      message: "success",
+      result: "success",
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
+
+//set a URI for a given token
+exports.setURI = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const URI = req.body.URI;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //set URI
+  try {
+    await chaincode.submitTransaction("SmartContract:SetURI", tokenId, URI);
+    logger.info("URI set successfully");
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result: "success",
     });
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);

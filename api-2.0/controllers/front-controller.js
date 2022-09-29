@@ -223,7 +223,8 @@ exports.getWallet = async (req, res, next) => {
 
   // Set url and headers
 
-  const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance&args=[\"$ylvas\"]`;
+  const url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`;
+  // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=SelfBalance&args=[\"$ylvas\"]`;
 
   const options = {
     headers: {
@@ -239,8 +240,7 @@ exports.getWallet = async (req, res, next) => {
     // If successful, return user Sylvas balance
 
     .then(function (response) {
-      console.log(response.data.result);
-      let ftBalance = response.data.result.ClientAccountBalance;
+      let ftBalance = response.data.result;
       res.render("wallet", {
         title: "My Wallet",
         cssPath: "css/wallet.css",
@@ -250,9 +250,8 @@ exports.getWallet = async (req, res, next) => {
 
     // If an error occurs, redirect to the homepage and send error message
 
-    .catch(function (error) {
-      console.log(error);
-      req.flash("error", "Ocorreu um erro");
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
       res.redirect("/");
     });
 };
@@ -265,7 +264,8 @@ exports.getCollection = async (req, res, next) => {
 
     // Set url and headers
 
-    const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
+    const url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
+    // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
 
     const options = {
       headers: {
@@ -281,7 +281,7 @@ exports.getCollection = async (req, res, next) => {
       // If successful, return user NFT balance
 
       .then(function (response) {
-        let balances = response.data.result.balances;
+        let balances = response.data.result;
         res.render("collection", {
           title: "My Collection",
           cssPath: "css/collection.css",
@@ -291,9 +291,13 @@ exports.getCollection = async (req, res, next) => {
 
       // If an error occurs, redirect to the homepage and send error message
 
-      .catch(function (error) {
-        console.log(error);
-        req.flash("error", "Ocorreu um erro");
+      // .catch(function (error) {
+      //   console.log(error);
+      //   req.flash("error", "Ocorreu um erro");
+      //   res.redirect("/");
+      // });
+      .catch(function (err) {
+        req.flash("error", err.response.data.message);
         res.redirect("/");
       });
   }
@@ -312,14 +316,14 @@ exports.postMintFT = async (req, res, next) => {
   // Collects data from html Sylvas Mint form
   let username = req.body.username;
   let qty = req.body.qty;
-
   let token = req.session.token;
 
   // Groups the data
 
   let data = {
-    fcn: "Mint",
-    args: [username, "$ylvas", qty],
+    tokenId: "$ylvas",
+    tokenAmount: qty,
+    tokenReceiver: username,
   };
 
   // Data to JSON
@@ -328,7 +332,8 @@ exports.postMintFT = async (req, res, next) => {
 
   // Set url and headers
 
-  const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
+  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
 
   const options = {
     method: "POST",
@@ -352,8 +357,12 @@ exports.postMintFT = async (req, res, next) => {
 
     // If an error occurs, redirect to  the mint page and send error message
 
-    .catch(function (error) {
-      req.flash("error", "Ocorreu um erro");
+    // .catch(function (error) {
+    //   req.flash("error", "Ocorreu um erro");
+    //   res.redirect("/ft/mint");
+    // });
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
       res.redirect("/ft/mint");
     });
 };
@@ -370,12 +379,10 @@ exports.getMintNFT = (req, res, next) => {
 exports.postMintNFT = async (req, res, next) => {
   // Collects data from html NFT Mint form
   let username = req.body.username;
-  let qty = req.body.qty;
+  let qty = req.body.amount;
   let nftId = req.body.nftId;
   let phyto = req.body.phyto;
   let location = req.body.location;
-  let amount = req.body.amount;
-
   let token = req.session.token;
 
   // Groups the NFT metadata
@@ -388,18 +395,25 @@ exports.postMintNFT = async (req, res, next) => {
 
   // Groups the data
 
+  // let data = {
+  //   fcn: "Mint",
+  //   args: [username, nftId, amount, meta],
+  // };
   let data = {
-    fcn: "Mint",
-    args: [username, nftId, amount, meta],
+    tokenId: nftId,
+    tokenAmount: qty,
+    tokenReceiver: username,
   };
+
+  console.log(data);
 
   // Data to JSON
 
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-
-  const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
+  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
 
   const options = {
     method: "POST",
@@ -423,8 +437,12 @@ exports.postMintNFT = async (req, res, next) => {
 
     // If an error occurs, redirect to the NFT Mint page and send error message
 
-    .catch(function (error) {
-      req.flash("error", "Ocorreu um erro");
+    // .catch(function (error) {
+    //   req.flash("error", "Ocorreu um erro");
+    //   res.redirect("/nft/mint");
+    // });
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
       res.redirect("/nft/mint");
     });
 };
@@ -443,15 +461,20 @@ exports.postTransfer = async (req, res, next) => {
   let usernameDest = req.body.usernameDest;
   let tokenId = req.body.tokenId;
   let qty = req.body.qty;
-
   let usernameSource = req.session.username;
   let token = req.session.token;
 
   // Groups the data
 
+  // let data = {
+  //   fcn: "TransferFrom",
+  //   args: [usernameSource, usernameDest, tokenId, qty],
+  // };
   let data = {
-    fcn: "TransferFrom",
-    args: [usernameSource, usernameDest, tokenId, qty],
+    tokenId,
+    tokenAmount: qty,
+    tokenSender: usernameSource,
+    tokenReceiver: usernameDest,
   };
 
   // Data to JSON
@@ -460,7 +483,8 @@ exports.postTransfer = async (req, res, next) => {
 
   // Set url and headers
 
-  const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
+  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
+  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
 
   const options = {
     method: "POST",
@@ -484,8 +508,12 @@ exports.postTransfer = async (req, res, next) => {
 
     // If an error occurs, redirect to the transfer page and send error message
 
-    .catch(function (error) {
-      req.flash("error", "Ocorreu um erro");
+    // .catch(function (error) {
+    //   req.flash("error", "Ocorreu um erro");
+    //   res.redirect("/transfer");
+    // });
+    .catch(function (err) {
+      req.flash("error", err.response.data.message);
       res.redirect("/transfer");
     });
 };

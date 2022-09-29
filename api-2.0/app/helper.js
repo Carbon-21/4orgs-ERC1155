@@ -23,9 +23,7 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
     // Check to see if we've already enrolled the user.
     let identity = await wallet.get(username);
     if (!identity) {
-      logger.info(
-        `An identity for the user ${username} does not exist in the wallet. Registering user...`
-      );
+      logger.info(`An identity for the user ${username} does not exist in the wallet. Registering user...`);
       await getRegisteredUser(username, org, true);
       identity = await wallet.get(username);
 
@@ -65,7 +63,7 @@ const getAccountIdFromChaincode = async (chaincode, next) => {
     let result = await chaincode.submitTransaction("SmartContract:ClientAccountID");
     result = result.toString();
 
-    logger.debug("ClientAccountID retrieved: " + result);
+    // logger.debug("ClientAccountID retrieved: " + result);
 
     return result;
   } catch (err) {
@@ -84,9 +82,7 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
     //TODO após estudar wallets, temos que olhar se isso aqui será mantido
     let identity = await wallet.get(username);
     if (!identity) {
-      console.log(
-        `An identity for the user ${username} does not exist in the wallet, so registering user`
-      );
+      console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
       await getRegisteredUser(username, org_name, true);
       identity = await wallet.get(username);
       console.log("Run the registerUser.js application before retrying");
@@ -109,7 +105,7 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
     let result = await contract.submitTransaction("SmartContract:ClientAccountID");
     result = result.toString();
 
-    logger.debug("ClientAccountID retrieved: " + result);
+    // logger.debug("ClientAccountID retrieved: " + result);
 
     await gateway.disconnect();
 
@@ -122,18 +118,10 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
 
 const getCCP = async (org) => {
   let ccpPath = null;
-  org == "Carbon"
-    ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-carbon.json"))
-    : null;
-  org == "Users"
-    ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-users.json"))
-    : null;
-  org == "Cetesb"
-    ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-cetesb.json"))
-    : null;
-  org == "Ibama"
-    ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-ibama.json"))
-    : null;
+  org == "Carbon" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-carbon.json")) : null;
+  org == "Users" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-users.json")) : null;
+  org == "Cetesb" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-cetesb.json")) : null;
+  org == "Ibama" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-ibama.json")) : null;
   const ccpJSON = fs.readFileSync(ccpPath, "utf8");
   const ccp = JSON.parse(ccpJSON);
   return ccp;
@@ -237,10 +225,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
   let secret;
   try {
     // Register the user, enroll the user, and import the new identity into the wallet.
-    secret = await ca.register(
-      { affiliation: await getAffiliation(userOrg), enrollmentID: username, role: "client" },
-      adminUser
-    );
+    secret = await ca.register({ affiliation: await getAffiliation(userOrg), enrollmentID: username, role: "client" }, adminUser);
     // const secret = await ca.register({ affiliation: 'carbon.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
   } catch (error) {
     return error.message;
@@ -258,9 +243,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     type: "X.509",
   };
   await wallet.put(username, x509Identity);
-  console.log(
-    `Successfully registered and enrolled admin user ${username} and imported it into the wallet`
-  );
+  console.log(`Successfully registered and enrolled admin user ${username} and imported it into the wallet`);
 
   var response = {
     success: true,
@@ -304,11 +287,7 @@ const enrollAdmin = async (org, ccp) => {
   try {
     const caInfo = await getCaInfo(org, ccp); //ccp.certificateAuthorities['ca.carbon.example.com'];
     const caTLSCACerts = caInfo.tlsCACerts.pem;
-    const ca = new FabricCAServices(
-      caInfo.url,
-      { trustedRoots: caTLSCACerts, verify: false },
-      caInfo.caName
-    );
+    const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
     // Create a new file system based wallet for managing identities.
     const walletPath = await getWalletPath(org); //path.join(process.cwd(), 'wallet');
@@ -323,7 +302,7 @@ const enrollAdmin = async (org, ccp) => {
 
     // Enroll the admin user, and import the new identity into the wallet.
     const enrollment = await ca.enroll({ enrollmentID: "admin", enrollmentSecret: "adminpw" });
-    console.log("Enrollment object is : ", enrollment);
+    // console.log("Enrollment object is : ", enrollment);
     let x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
@@ -381,8 +360,7 @@ const queryAttribute = async (username, org, key) => {
   if (typeof registeredUser !== "string") {
     // Fetches the user's registered password
     for (let i = 0; i < registeredUser["attrs"].length && attribute == null; i++) {
-      if (registeredUser["attrs"][i]["name"] == key)
-        attribute = registeredUser["attrs"][i]["value"];
+      if (registeredUser["attrs"][i]["name"] == key) attribute = registeredUser["attrs"][i]["value"];
     }
   }
   return attribute;

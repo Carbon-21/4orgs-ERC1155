@@ -254,14 +254,14 @@ const enrollUserInCA = async (user, next) => {
   //create CA object
   const caURL = await helper.getCaUrl(user.org, ccp);
   const ca = new FabricCAServices(caURL);
-  logger.debug("ca name " + ca.getCaName());
-  logger.debug("ca: ", ca);
+  // logger.debug("ca name " + ca.getCaName());
+  // logger.debug("ca: ", ca);
 
   //get wallets' path for the given org and create wallet object
   const walletPath = await helper.getWalletPath(user.org);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
-  logger.debug(`Wallet path: ${walletPath}`);
-  logger.debug("wallet: ", wallet);
+  // logger.debug(`Wallet path: ${walletPath}`);
+  // logger.debug("wallet: ", wallet);
 
   //check if a wallet for the given user already exists
   const userIdentity = await wallet.get(user.email);

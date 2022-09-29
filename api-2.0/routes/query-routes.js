@@ -3,7 +3,7 @@ const { body, query, param } = require("express-validator");
 
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
-const chaincodeController = require("../controllers/chaincode-controller.js");
+const queryController = require("../controllers/query-controller.js");
 
 const router = Router();
 
@@ -13,28 +13,27 @@ const router = Router();
 router.use(checkAuth);
 
 router.get(
-  "/channels/:channelName/chaincodes/:chaincodeName",
-  [
-    param("channelName").not().isEmpty(),
-    param("chaincodeName").not().isEmpty(),
-    query("fcn").not().isEmpty(),
-    // mam: Algumas funções não requerem parâmetros (e.g. ClientAccountID)
-    // query("args").not().isEmpty(),
-    validateAll,
-  ],
-  chaincodeController.query
+  "/channels/:channel/chaincodes/:chaincode/balance",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), query("tokenOwner").not().isEmpty(), validateAll],
+  queryController.balance
 );
 
-router.post(
-  "/channels/:channelName/chaincodes/:chaincodeName",
-  [
-    param("channelName").not().isEmpty(),
-    param("chaincodeName").not().isEmpty(),
-    body("fcn").not().isEmpty(),
-    // body("args").not().isEmpty(),
-    validateAll,
-  ],
-  chaincodeController.invoke
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/selfBalance",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), validateAll],
+  queryController.selfBalance
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/totalSupply",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), validateAll],
+  queryController.totalSupply
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getURI",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), validateAll],
+  queryController.getURI
 );
 
 module.exports = router;

@@ -1,5 +1,5 @@
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
-var getMethods = ["ClientAccountBalance", "BalanceOf"];
+var getMethods = ["SelfBalance", "BalanceOf"];
 
 /**
  * Sends Request to the server. Returns the server's response
@@ -92,9 +92,9 @@ function wrapRequest(requestType) {
       };
       return [url, body, token];
 
-    case "ClientAccountBalance":
+    case "SelfBalance":
       nftId = document.getElementById("nftId").value;
-      url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance&args=[\"${nftId}\"]`;
+      url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=SelfBalance&args=[\"${nftId}\"]`;
       token = document.getElementById("token").value;
       return [url, null, token];
 
@@ -129,7 +129,7 @@ function wrapRequest(requestType) {
 }
 
 /**
- * Main function, which receives input from the web page, wraps it into HTTP request components 
+ * Main function, which receives input from the web page, wraps it into HTTP request components
  * (calling wrapRequest()) and sends it to the server (calling sendToServer())
  * @param {*} requestType Server requested to the server
  */
@@ -151,7 +151,7 @@ async function sendRequest(requestType) {
       localStorage.setItem("username", document.getElementById("username").value);
       if (response.success) {
         alert("Logado com Sucesso!");
-        window.location.href = '/wallet';
+        window.location.href = "/wallet";
       } else {
         alert("Falha no login.");
       }
@@ -174,10 +174,10 @@ async function sendRequest(requestType) {
         alert("Mint de NFTs realizado com sucesso");
       }
       break;
-      
-    case "ClientAccountBalance":
-      if (response.result.ClientAccountBalance == null) alert("Id não encontrado");
-      else balanceHeader.innerText = response.result.ClientAccountBalance + " Sylvas";
+
+    case "SelfBalance":
+      if (response.result.SelfBalance == null) alert("Id não encontrado");
+      else balanceHeader.innerText = response.result.SelfBalance + " Sylvas";
       break;
 
     case "ClientAccountTotalBalance":
@@ -188,25 +188,24 @@ async function sendRequest(requestType) {
         //element = '<div class="d-flex flex-column justify-content-between p-md-1">'
         //for (var i = 0; i < Object.keys(response.result.balances).length; i++) {
         for (var key in balances) {
-          element += 
-          '<div class="card shadow-lg">' +
+          element +=
+            '<div class="card shadow-lg">' +
             '<div class="card-body flex-column">' +
-              '<div class="d-flex justify-content-between p-md-1">' +
-                  '<div class="d-flex flex-row">' +
-                    '<div class="align-self-center">' +
-                      '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
-                    '</div>' +
-                    '<div>' +
-                      '<h4>NFT</h4>' +
-                      `<p class="mb-0">id: ${key}</p>` +
-                      `<p class="mb-0">valor: ${balances[key]}</p>` +
-                    '</div>' +
-                  '</div>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>'
-              
+            '<div class="d-flex justify-content-between p-md-1">' +
+            '<div class="d-flex flex-row">' +
+            '<div class="align-self-center">' +
+            '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+            "</div>" +
+            "<div>" +
+            "<h4>NFT</h4>" +
+            `<p class="mb-0">id: ${key}</p>` +
+            `<p class="mb-0">valor: ${balances[key]}</p>` +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
         }
         document.getElementById("nft-showroom").innerHTML = element;
       }

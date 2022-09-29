@@ -74,7 +74,9 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
       case "SetURI":
         result = await contract.submitTransaction("SmartContract:" + fcn, args[1], args[2]);
         logger.info("SetURI successful");
-        result = { SetURI: result.toString() };
+        logger.info(result);
+        result = { oi: "oi" };
+        // result = { SetURI: result.toString() };
         break;
       //TODO: GetURI deveria ser uma função QUERY, porém só está funcionando como INVOKE. Verificar...
       case "GetURI":

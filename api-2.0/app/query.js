@@ -17,9 +17,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     // Check to see if we've already enrolled the user.
     let identity = await wallet.get(username);
     if (!identity) {
-      logger.info(
-        `An identity for the user ${username} does not exist in the wallet, so registering user`
-      );
+      logger.info(`An identity for the user ${username} does not exist in the wallet, so registering user`);
       await helper.getRegisteredUser(username, org_name, true);
       identity = await wallet.get(username);
 
@@ -42,18 +40,9 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     let result;
     switch (fcn) {
       case "BalanceOf":
-        const clientAccountId = await helper.getAccountId(
-          channelName,
-          chaincodeName,
-          args[0],
-          org_name
-        );
+        const clientAccountId = await helper.getAccountId(channelName, chaincodeName, args[0], org_name);
 
-        result = await contract.evaluateTransaction(
-          "SmartContract:" + fcn,
-          clientAccountId,
-          args[1]
-        );
+        result = await contract.evaluateTransaction("SmartContract:" + fcn, clientAccountId, args[1]);
         break;
       case "TotalSupply":
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
@@ -62,13 +51,13 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         result = await contract.evaluateTransaction("SmartContract:" + fcn);
         result = `{"ClientID":"${result.toString()}"}`;
         break;
-      case "ClientAccountBalance":
+      case "SelfBalance":
         result = await contract.evaluateTransaction("SmartContract:" + fcn, args[0]);
-        result = `{"ClientAccountBalance":"${result.toString()}"}`;
+        result = `{"SelfBalance":"${result.toString()}"}`;
         break;
       /*
       ClientAccountTotalBalance: Gets the total balance of all the client's NFTs, without the need to provide its ids 
-      (the original CLientAccountBalance gets only one balance per id). This new case route calls ClientAccountBalance 
+      (the original SelfBalance gets only one balance per id). This new case route calls SelfBalance 
       iteratively for every id of the user's NFTs.
       */
       case "ClientAccountTotalBalance":
@@ -81,10 +70,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
           let nftValue;
           for (var i = 0; i < clientNfts.length; i++) {
             console.log(clientNfts[i]);
-            nftValue = await contract.evaluateTransaction(
-              "SmartContract:ClientAccountBalance",
-              clientNfts[i]
-            );
+            nftValue = await contract.evaluateTransaction("SmartContract:SelfBalance", clientNfts[i]);
             nftValue = nftValue.toString();
             balances[clientNfts[i]] = nftValue;
           }

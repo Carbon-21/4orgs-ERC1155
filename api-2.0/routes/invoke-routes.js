@@ -39,4 +39,10 @@ router.post(
   invokeController.transfer
 );
 
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/setURI",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("tokenId").not().isEmpty(), body("URI").not().isEmpty(), validateAll],
+  invokeController.setURI
+);
+
 module.exports = router;

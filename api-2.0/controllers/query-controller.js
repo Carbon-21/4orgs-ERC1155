@@ -1,92 +1,137 @@
-const invoke = require("../app/invoke");
-const query = require("../app/query");
 const logger = require("../util/logger");
+const HttpError = require("../util/http-error");
+const helper = require("../app/helper");
 
-exports.invoke = async (req, res, next) => {
+//get user's balance of a given token
+exports.balance = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.query.tokenId;
+  const tokenOwner = req.query.tokenOwner;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get owner id
+  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
+  if (!ownerAccountId) return;
+
+  //get balance
   try {
-    logger.debug("==================== INVOKE ON CHAINCODE ==================");
+    let result = await chaincode.evaluateTransaction("SmartContract:BalanceOf", ownerAccountId, tokenId);
+    result = JSON.parse(result.toString());
 
-    const chaincodeName = req.params.chaincodeName;
-    const channelName = req.params.channelName;
-    const fcn = req.body.fcn;
-    const args = req.body.args;
-    const peers = req.body.peers;
-    const transient = req.body.transient;
-    const username = req.jwt.username;
-    args[0] = username;
-    const org = req.jwt.org;
+    //close communication channel
+    await gateway.disconnect();
 
-    logger.debug(`transient data ;${transient}`);
-    logger.debug("channelName  : " + channelName);
-    logger.debug("chaincodeName : " + chaincodeName);
-    logger.debug("fcn  : " + fcn);
-    logger.debug("args  : " + args);
-    logger.debug("peers  : " + peers);
-    logger.debug("username  : " + username);
-
-    let message = await invoke.invokeTransaction(
-      channelName,
-      chaincodeName,
-      fcn,
-      args,
-      username,
-      org,
-      transient
-    );
-    logger.info(`Message result is : ${JSON.stringify(message)}`);
-
-    const response_payload = {
-      result: message,
-      error: null,
-      errorData: null,
-    };
-    res.send(response_payload);
-  } catch (error) {
-    const response_payload = {
-      result: null,
-      error: error.name,
-      errorData: error.message,
-    };
-    res.send(response_payload);
+    //send OK response
+    logger.info(`${tokenId} balance retrieved successfully: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
   }
 };
 
-exports.query = async (req, res, next) => {
+//return the balance of the requesting client's account, for a given token
+exports.selfBalance = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.query.tokenId;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get balance
   try {
-    logger.debug("==================== QUERY BY CHAINCODE ==================");
+    let result = await chaincode.evaluateTransaction("SmartContract:SelfBalance", tokenId);
+    result = JSON.parse(result.toString());
 
-    const channelName = req.params.channelName;
-    const chaincodeName = req.params.chaincodeName;
-    let args = req.query.args;
-    const fcn = req.query.fcn;
-    const peer = req.query.peer;
-    const username = req.jwt.username;
-    const org = req.jwt.org;
+    //close communication channel
+    await gateway.disconnect();
 
-    logger.debug("channelName : " + channelName);
-    logger.debug("chaincodeName : " + chaincodeName);
-    logger.debug("org : " + org);
-    logger.debug("fcn : " + fcn);
-    logger.debug("args : " + args);
+    //send OK response
+    logger.info(`${tokenId} balance retrieved successfully: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
 
-    args = args.replace(/'/g, '"');
-    args = JSON.parse(args);
+//get total supply of a given token
+exports.totalSupply = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.query.tokenId;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
 
-    let message = await query.query(channelName, chaincodeName, args, fcn, username, org);
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
 
-    const response_payload = {
-      result: message,
-      error: null,
-      errorData: null,
-    };
+  //get total supply
+  try {
+    let result = await chaincode.evaluateTransaction("SmartContract:TotalSupply", tokenId);
+    result = JSON.parse(result.toString());
 
-    res.send(response_payload);
-  } catch (error) {
-    const response_payload = {
-      result: null,
-      error: error.name,
-      errorData: error.message,
-    };
-    res.send(response_payload);
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`${tokenId} total supply successfully: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
+
+//get the URI for a given token
+exports.getURI = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.query.tokenId;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get URI
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:GetURI", tokenId);
+    result = result.toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`${tokenId} URI retrieved successfully: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
   }
 };
