@@ -1,4 +1,5 @@
 /* create a connection pool */
+//disclaimer: sequelize obj/connection do mysql is only created once, even if "models" is used multiple times
 
 const Sequelize = require("sequelize");
 const initModels = require("../models/init-models");

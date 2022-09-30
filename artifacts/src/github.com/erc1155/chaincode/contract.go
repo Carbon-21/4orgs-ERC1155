@@ -533,8 +533,8 @@ func (s *SmartContract) BalanceOfBatch(ctx contractapi.TransactionContextInterfa
 	return balances, nil
 }
 
-// ClientAccountBalance returns the balance of the requesting client's account
-func (s *SmartContract) ClientAccountBalance(ctx contractapi.TransactionContextInterface, id string) (uint64, error) {
+// SelfBalance returns the balance of the requesting client's account
+func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface, id string) (uint64, error) {
 
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
