@@ -14,14 +14,7 @@ router.use(checkAuth);
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/mint",
-  [
-    param("channel").not().isEmpty(),
-    param("chaincode").not().isEmpty(),
-    body("tokenId").not().isEmpty(),
-    body("tokenAmount").not().isEmpty().isInt(),
-    body("tokenReceiver").not().isEmpty(),
-    validateAll,
-  ],
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("tokenId").not().isEmpty(), body("tokenAmount").isInt(), body("tokenReceiver").isEmail(), validateAll],
   invokeController.mint
 );
 
@@ -31,9 +24,9 @@ router.post(
     param("channel").not().isEmpty(),
     param("chaincode").not().isEmpty(),
     body("tokenId").not().isEmpty(),
-    body("tokenAmount").not().isEmpty().isInt(),
-    body("tokenSender").not().isEmpty(),
-    body("tokenReceiver").not().isEmpty(),
+    body("tokenAmount").isInt(),
+    body("tokenSender").isEmail(),
+    body("tokenReceiver").isEmail(),
     validateAll,
   ],
   invokeController.transfer
@@ -41,7 +34,7 @@ router.post(
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/setURI",
-  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("tokenId").not().isEmpty(), body("URI").not().isEmpty(), validateAll],
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("tokenId").not().isEmpty(), body("URI").isURL(), validateAll],
   invokeController.setURI
 );
 

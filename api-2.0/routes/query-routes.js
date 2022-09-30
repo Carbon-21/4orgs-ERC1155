@@ -14,7 +14,7 @@ router.use(checkAuth);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/balance",
-  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), query("tokenOwner").not().isEmpty(), validateAll],
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenId").not().isEmpty(), query("tokenOwner").isEmail(), validateAll],
   queryController.balance
 );
 

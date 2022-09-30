@@ -405,8 +405,6 @@ exports.postMintNFT = async (req, res, next) => {
     tokenReceiver: username,
   };
 
-  console.log(data);
-
   // Data to JSON
 
   const jsonData = JSON.stringify(data);
