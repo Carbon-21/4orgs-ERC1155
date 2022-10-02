@@ -1,6 +1,5 @@
 const { sign } = require('jsonwebtoken');
 const crypto = require('./crypto-generator.js')
-const fabric = require('./fabric.js')
 
 var postMethods = ["Login", "Signup", "MintFT", "MintNFT", "TransferFrom"];
 var getMethods = ["ClientAccountBalance", "BalanceOf"];
@@ -171,34 +170,66 @@ const wrapRequest = async function (requestType) {
 window.sendRequest = async function (requestType) {
   event.preventDefault();
   try{
-    console.log('antes de chamar main')
-    await window.execute();
-    console.log('flag x');
     // Transaction Proposal Signing
-    if (requestType == "ClientAccountBalance error") {
-      let url = "chaincode/get-proposal";
+    if (requestType == "ClientAccountBalance") {
+      console.log('flag1')
+      let url = "chaincode/generate-proposal";
       let username = localStorage.getItem("username");
-      let transaction = {
+      // let transaction = {
+      //   fcn: requestType,
+      //   args: ["$ylvas"] //Hardcoded temporarily
+      // }
+      var transaction = {
+        chaincodeId: 'erc1155',
+        channelId: 'mychannel',
         fcn: requestType,
-        args: ["$ylvas"] //Hardcoded temporarily
-      }
+        args: ["$ylvas"],
+      };
       let body = {
         username: username,
         transaction: transaction 
       }
       let token = localStorage.getItem("token");
+      console.log('username',username,'token',token)
       let proposalResponse = await window.sendToServer("POST", url, body, token);
       
-      let digest = proposalResponse.digest;
+      let digest = proposalResponse.result.digest;
+      let proposalHex = proposalResponse.result.proposal;
+      console.log('proposal1 bytes', Buffer.from(proposalHex, 'hex'))
+      //let proposalBytes = Buffer.from(proposalHex, 'hex');
+
       console.log("digest =",digest)
-      let signature = await window.signTransaction(digest);
+      let proposalSignature = await window.signTransaction(digest);
+      let proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
+      console.log('signature 1', proposalSignature);
+      console.log('proposalHex',proposalHex);
+      let signedProposal = {
+        signature: proposalSignatureHex, 
+        proposal: proposalHex
+      };
+
+      let sendProposalResponse = await window.sendToServer("POST", "chaincode/send-proposal", 
+      signedProposal, token);
+      let transactionDigest = sendProposalResponse.result.transactionDigest;
+      let transactionHex = sendProposalResponse.result.transaction;
+
+      let transactionSignature = await window.signTransaction(transactionDigest);
+      let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
+      var signedTransactionProposal = {
+        signature: transactionSignatureHex,
+        transaction: transactionHex,
+      };
+
+      let commitTransactionResponse = await window.sendToServer("POST", "chaincode/commit-transaction",
+      signedTransactionProposal, token);
+
       console.log('### signature = ###\n',signature);
       //var signatureString = new TextDecoder().decode(signature);
-      let signatureHex = Buffer.from(signature).toString('hex');
-      console.log('signature String = ',signatureHex);
+      //let transactionSignatureHex = Buffer.from(signature).toString('hex');
+      console.log('signature String = ',transactionSignatureHex);
       url = "/chaincode/sign-proposal";
       body = {
-        signature: signatureHex
+        signature: transactionSignatureHex
       };
       let signResponse = await window.sendToServer("POST", url, body, token);
       console.log('signResponse =',signResponse);

@@ -38,13 +38,18 @@ router.post(
 );
 
 router.post(
-  "/get-proposal",
-  chaincodeController.getProposal
+  "/generate-proposal",
+  chaincodeController.generateTransactionProposal
 );
 
 router.post(
-  "/sign-proposal",
-  chaincodeController.signProposal
+  "/send-proposal",
+  chaincodeController.sendSignedProposal
+);
+
+router.post(
+  "/commit-transaction",
+  chaincodeController.commitSignedTransaction
 );
 
 module.exports = router;

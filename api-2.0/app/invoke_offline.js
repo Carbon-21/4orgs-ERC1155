@@ -8,7 +8,7 @@ var fs = require('fs');
 const crypto = require('crypto');
 const elliptic = require('elliptic');
 const { KEYUTIL } = require('jsrsasign');
-const config = require('./config');
+//const config = require('./config');
 
 //
 // Script configuartion variables
@@ -80,12 +80,12 @@ function _preventMalleability(sig) {
 client.initCredentialStores()
 .then((nothing) => {
 
-channel = client.getChannel(config.CHANNEL_NAME);
+channel = client.getChannel('mychannel');
 
 // 1. Generate unsigned transaction proposal
 var transaction_proposal = {
-  chaincodeId: config.CHAINCODE_NAME,
-  channelId: config.CHANNEL_NAME,
+  chaincodeId: 'erc1155',
+  channelId: 'mychannel',
   fcn: fcn,
   args: args,
 };

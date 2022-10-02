@@ -3,8 +3,20 @@ const invoke = require("../app/invoke");
 const query = require("../app/query");
 const helper = require("../app/helper");
 const logger = require("../util/logger");
+const crypto = require('crypto')
+const FabricClient = require('fabric-client')
 
-const transactionBuffer = [];
+var client = null;
+var channel = null;
+var transactionBuffer = [];
+
+const setupClient = async () => {
+  client = FabricClient.loadFromConfig('../network_org1.yaml');
+  await client.initCredentialStores();
+  channel = client.getChannel('mychannel');
+}
+
+setupClient();
 
 exports.invoke = async (req, res, next) => {
   try {
@@ -102,20 +114,144 @@ exports.teste = async function (req, res) {
 
 };
 
-exports.getProposal = async function (req, res){
-  let build_options = req.body.transaction;
-  let username = req.body.username
-  let proposalDigest = await helper.digestTransaction(build_options, username, "Carbon", "mychannel");
-  res.send({digest: proposalDigest});
+exports.generateTransactionProposal = async function (req, res){
+  let transaction_proposal = req.body.transaction;
+  // user: p
+  let certPem = `-----BEGIN CERTIFICATE-----
+    MIICczCCAhqgAwIBAgIURBmdnZAKsS55apNGANCWcaQ33gEwCgYIKoZIzj0EAwIw
+    aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
+    EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
+    Y2Etc2VydmVyMB4XDTIyMDkyNDEyMjQwMFoXDTIzMDkyNDEyMjkwMFowQDEyMA0G
+    A1UECxMGY2xpZW50MA0GA1UECxMGY2FyYm9uMBIGA1UECxMLZGVwYXJ0bWVudDEx
+    CjAIBgNVBAMTAXAwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYj0oKJYog9BbK
+    gVEo1fACEyOWCpxgMCfeUSWGnlojaW/Te6Gu6Q2AmnktMTxBYxV6TJ7PgGSciaJ1
+    5202wHtDo4HJMIHGMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMB0GA1Ud
+    DgQWBBQiMHmP22fSoBnIBF7Y6WcJR/oPWDAfBgNVHSMEGDAWgBTJgOxA6iFDLMp+
+    OrsmE/IE1DyxujBmBggqAwQFBgcIAQRaeyJhdHRycyI6eyJoZi5BZmZpbGlhdGlv
+    biI6ImNhcmJvbi5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6InAiLCJo
+    Zi5UeXBlIjoiY2xpZW50In19MAoGCCqGSM49BAMCA0cAMEQCIDd50vFkCS3YcRCH
+    Va7uzVS+9C3OEENn00ZlvJePqackAiArcj56ytkC1w6y82whE40Abr22vu6S7oXB
+    IHxgZC0D1Q==
+    -----END CERTIFICATE-----`;
+  try {
+    //const channel = client.getChannel('mychannel');
+
+    var { proposal, tx_id } = channel.generateUnsignedProposal(transaction_proposal, 'CarbonMSP', certPem);
+    transactionBuffer.push({proposal: proposal});
+    //Hash the transaction proposal
+    var proposalBytes = proposal.toBuffer();
+    console.log('typeof buffer=', typeof proposalBytes)
+    var digest = client.getCryptoSuite().hash(proposalBytes);
+    let proposalHex = Buffer.from(proposalBytes).toString('hex');
+    console.log('proposal 1', proposalBytes);
+    return res.json({
+      result: {digest: digest, proposal: proposalHex}
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
 }
 
-exports.signProposal = async function (req, res){
-  let signatureString = req.body.signature;
-  //let signature = helper.str2ab(signatureString);
-  let signature = Buffer.from(signatureString, 'hex');
-  console.log('signature arrayada',signature)
-  await helper.signTransaction(signature);
-  res.send({message:"sucess"});
+exports.sendSignedProposal = async function (req, res){
+  try {
+    let signatureHex = req.body.signature;
+    let proposalHex = req.body.proposal;
+    //Hex to bytes
+    let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
+    let proposalBytes = Buffer.from(proposalHex, 'hex');
+
+    console.log('signature 2', signature);
+    console.log('proposal 2', proposalBytes);
+  
+    signedProposal = {
+      signature,
+      proposal_bytes: proposalBytes
+    }
+  
+    var targets1 = client.getPeersForOrg('CarbonMSP');
+    var targets2 = client.getPeersForOrg('UsersMSP');
+    var targets3 = client.getPeersForOrg('IbamaMSP');
+    var targets4 = client.getPeersForOrg('CetesbMSP');
+
+    // console.log('########targets1',targets1)
+    // console.log('########targets2',targets1)
+    // console.log('########targets3',targets1)
+    // console.log('########targets4',targets1)
+  
+    var proposal_request = {
+      signedProposal: signedProposal,
+      // Ele está enviando para todos, porém ao receber a primeira resposta já encaminha para o orderer.
+      // Soluções possíveis: mudar a politica de endosso pra Any ou fazer ele agrupar mais endossos antes de enviar.
+      // Fui pelo mais fácil e mudei a política de endosso para Any, e funcionou. 
+      targets: targets1, targets2, targets3, targets4
+    }
+  
+    let proposalResponses = await channel.sendSignedProposal(proposal_request);
+    console.log('######Proposal responses:', proposalResponses);
+  
+    // 5. Generate unsigned transaction
+    transaction_request = {
+      proposalResponses: proposalResponses,
+      //proposal: proposalBytes,
+      proposal: transactionBuffer[0].proposal
+    };
+
+    transactionBuffer[0].transaction_request = transaction_request;
+  
+    var commitProposal = await channel.generateUnsignedTransaction(transaction_request);
+    let transactionBytes = commitProposal.toBuffer();
+    let transactionHex = Buffer.from(transactionBytes).toString('hex');
+    var transactionDigest = client.getCryptoSuite().hash(transactionBytes);
+    return res.json({
+      result: {transaction: transactionHex, transactionDigest: transactionDigest}
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+  
+}
+
+exports.commitSignedTransaction = async function (req, res){
+  try {
+    let signatureHex = req.body.signature;
+    let transactionHex = req.body.transaction;
+    //Hex to bytes
+    let signature = Buffer.from(signatureHex, 'hex');
+    let transactionBytes = Buffer.from(transactionHex, 'hex');
+
+    var signedTransactionProposal = {
+      signature: signature,
+      proposal_bytes: transactionBytes,
+    };
+
+    let transaction_request = transactionBuffer.pop().transaction_request;
+
+    var signedTransaction = {
+      signedProposal: signedTransactionProposal,
+      request: transaction_request,
+    }
+
+    console.log('Transaction request sent to the orderer:');
+    console.log(util.inspect(signedTransaction));
+
+    // 7. Commit the signed transaction
+    let commitTransactionResponse = await channel.sendSignedTransaction(signedTransaction);
+    console.log('Successfully sent transaction');
+    console.log('Return code: '+commitTransactionResponse.status);
+    return res.json({result: commitTransactionResponse.status});
+
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
 }
 
 // app.get(

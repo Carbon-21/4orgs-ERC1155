@@ -63,19 +63,19 @@ orderers:
     grpcOptions:
       ssl-target-name-override: orderer.example.com
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
+      path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
   orderer2.example.com:
     url: grpcs://localhost:8050
     grpcOptions:
       ssl-target-name-override: orderer2.example.com
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
+      path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
   orderer3.example.com:
     url: grpcs://localhost:9050
     grpcOptions:
       ssl-target-name-override: orderer3.example.com
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
+      path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
 peers:
   peer0.carbon.example.com:
     url: grpcs://localhost:7051
@@ -83,35 +83,35 @@ peers:
       ssl-target-name-override: peer0.carbon.example.com
       grpc-max-send-message-length: -1
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/tlsca/tlsca.carbon.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/tlsca/tlsca.carbon.example.com-cert.pem
   peer0.users.example.com:
     url: grpcs://localhost:9051
     grpcOptions:
       ssl-target-name-override: peer0.users.example.com
       grpc-max-send-message-length: -1
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/peerOrganizations/users.example.com/tlsca/tlsca.users.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/users.example.com/tlsca/tlsca.users.example.com-cert.pem
   peer0.ibama.example.com:
     url: grpcs://localhost:11051
     grpcOptions:
       ssl-target-name-override: peer0.ibama.example.com
       grpc-max-send-message-length: -1
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/peerOrganizations/ibama.example.com/tlsca/tlsca.ibama.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/ibama.example.com/tlsca/tlsca.ibama.example.com-cert.pem
   peer0.cetesb.example.com:
     url: grpcs://localhost:13051
     grpcOptions:
       ssl-target-name-override: peer0.cetesb.example.com
       grpc-max-send-message-length: -1
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/peerOrganizations/cetesb.example.com/tlsca/tlsca.cetesb.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/cetesb.example.com/tlsca/tlsca.cetesb.example.com-cert.pem
 certificateAuthorities:
   ca.carbon.example.com:
     url: https://localhost:7054
     httpOptions:
       verify: false
     tlsCACerts:
-      path: /teste/4orgs-ERC1155/artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/ca/ca.carbon.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/ca/ca.carbon.example.com-cert.pem
     registrar:
       - enrollId: admin
         enrollSecret: adminpw

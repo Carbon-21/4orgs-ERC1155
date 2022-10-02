@@ -127,20 +127,33 @@ window.downloadCrypto = async function (material, materialType) {
 //   return signature;
 // }
 
+//
+// Helper function
+//
+const _preventMalleability = (sig) => {
+	const halfOrder = elliptic.curves.p256.n.shrn(1);
+	if (sig.s.cmp(halfOrder) === 1) {
+		const bigNum = elliptic.curves.p256.n;
+		sig.s = bigNum.sub(sig.s);
+	}
+	return sig;
+}
+
 window.signTransaction = async function(digest/*,privateKey*/){
   console.log('entrou signtransaction')
-  const privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n\
-  MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgfUyaHRXteJBDcduTsSAolZ6YHq3e1pPGlVsyk1XQkEyhRANCAARyhtThyn1qxxbY7evrtvjhKH7NhDROlK0rfl4SZ6mTp/5eU2eaXsEe6VoSCQMR7RblvsHqn0YKo30jwU9MREiz\n\
-  -----END PRIVATE KEY-----";
-  //const { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM); // convert the pem encoded key to hex encoded private key
-  let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
+  const privateKeyPEM = 
+    `-----BEGIN PRIVATE KEY-----
+    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQghryhRdhaPR8dWCdfuTGDICrz7GQfNEP+SZXirr1cMw6hRANCAATGHzRs2N8LlhUzkK/G63z7mw/qrVulvoZ7EHumjG+iGQwcvh8iviL4Zo3YTpcczHSL0ZbWAXTGdTErpDYI7pOs
+    -----END PRIVATE KEY-----`
+  //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
+  var { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM, 'wisekey'); 
   console.log('prvKeyHex ',prvKeyHex)
   const EC = elliptic.ec;
   const ecdsaCurve = elliptic.curves['p256'];
-  const ecdsa2 = new EC(ecdsaCurve);
-  const signKey = await ecdsa2.keyFromPrivate(prvKeyHex.prvKeyHex, 'hex');
-  const sig = await ecdsa2.sign(Buffer.from(digest, 'hex'), signKey);
-
+  const ecdsa = new EC(ecdsaCurve);
+  const signKey = await ecdsa.keyFromPrivate(prvKeyHex, 'hex');
+  let sig = await ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
+  sig = _preventMalleability(sig);
 
   // now we have the signature, next we should send the signed transaction proposal to the peer
   const signature = Buffer.from(sig.toDER());
