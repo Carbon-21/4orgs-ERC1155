@@ -66,7 +66,6 @@ exports.postSignup = async (req, res, next) => {
   let password = req.body.password;
   let cpf = req.body.cpf;
   let name = req.body.name;
-  // const email = req.body.
 
   // Groups the data
   let data = {
@@ -94,10 +93,9 @@ exports.postSignup = async (req, res, next) => {
 
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
-      req.session.token = response.data.token;
       req.session.username = email;
       req.flash("success", "Registrado com sucesso");
-      res.redirect("/");
+      res.json({success:true, token:response.data.token})
     })
 
     // If an error occurs, redirects to the login page and send error message
@@ -193,9 +191,8 @@ exports.postLogin = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.flash("success", "Boas-vindas");
-      req.session.token = response.data.token;
       req.session.username = email;
-      res.redirect("/");
+      res.json({success:true, token:response.data.token})
     })
 
     // If an error occurs, redirect to the login page and send error message
@@ -219,41 +216,12 @@ exports.getLogout = (req, res, next) => {
 ///// WALLET CONTROLLERS /////
 
 exports.getWallet = async (req, res, next) => {
-  let token = req.session.token;
 
-  // Set url and headers
-
-  const url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`;
-  // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=SelfBalance&args=[\"$ylvas\"]`;
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  // HTTP GET request
-
-  axios
-    .get(url, options)
-
-    // If successful, return user Sylvas balance
-
-    .then(function (response) {
-      let ftBalance = response.data.result;
       res.render("wallet", {
         title: "My Wallet",
         cssPath: "css/wallet.css",
-        ftBalance,
       });
-    })
 
-    // If an error occurs, redirect to the homepage and send error message
-
-    .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/");
-    });
 };
 
 ///// COLLECTION CONTROLLERS /////

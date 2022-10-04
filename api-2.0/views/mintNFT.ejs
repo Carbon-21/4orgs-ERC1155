@@ -51,7 +51,7 @@
 
                     <h1 class="mint-header">Emissão de NFT</h1>
                     
-                    <form id="form" action="/nft" method="POST" class="validated-form" novalidate>
+                    <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFT()" >
 
                         <div class="flex-fill">
                             <div class="mint-data">
@@ -111,7 +111,7 @@
                         </script> -->
 
                         <div class="mint-button mb-5">
-                            <!-- <img id="loader" class="loading-icon" src="./images/loader.gif" /> -->
+                            <img id="loader" class="loading-icon" src="../images/loader.gif" />
                             <button id="submitButton" type="submit" class="btn btn-primary btn-md">Emitir</button>
                         </div>
 
@@ -125,7 +125,7 @@
 
     </section>
 
-    <script src="/scripts/validateForms.js"></script>
+    <script src="/scripts/mint.js"></script>
 
   </body>
 

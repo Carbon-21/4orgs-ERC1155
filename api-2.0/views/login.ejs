@@ -19,7 +19,7 @@
         <div class="container-fluid">
           <div class="register-form card shadow">
 
-            <form action="/login" method="POST" class="validated-form" novalidate>
+            <form action="" method="POST" onsubmit="login()">
               <div class="row">
 
                 <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
@@ -40,7 +40,7 @@
                   <input type="text" name="salt" id="salt" hidden value=<%= salt %>/>
 
                   <div class="login-button mt-4">
-                    <button type="submit" onclick="password.value= hashPassword(password.value,salt.value)" class="btn btn-primary btn-lg" value="run external javascript">Entrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg" value="run external javascript">Entrar</button>
                   </div>
                 </div>
 
@@ -55,8 +55,9 @@
           </div>
         </div>
 
-        <script src="/scripts/validateForms.js"></script>
         <script src="/scripts/bundle.js"></script>
+        <script src="/scripts/auth.js"></script>
+        
   </body>
 
 </html>
