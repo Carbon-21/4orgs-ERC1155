@@ -41,7 +41,7 @@ chmod +x ./atribuiPath
 
 _Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
 <br><br>
-Por fim, certifique-se de que configurou o banco de dados de usuários, conforme ./database/README
+Por fim, certifique-se de que configurou o banco de dados de usuários, conforme a seção "instalação" do ./database/README
 <br><br>
 
 ### Rede
@@ -53,8 +53,6 @@ chmod +x init
 ./init
 ```
 
-_Nota: o script init irá matar qualquer docker previamente ativo!_
-
 <br>
 Para matar a rede, sem subir uma nova:
 
@@ -62,6 +60,8 @@ Para matar a rede, sem subir uma nova:
 ./kill
 ```
 
+_Nota: o script init também roda o kill, e ambos matam qualquer conatiner docker previamente ativo!_
+<br>
 <br>
 
 ### API

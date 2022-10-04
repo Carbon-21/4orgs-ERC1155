@@ -8,9 +8,12 @@ const fs = require("fs");
 var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 
-//.env
-const weed = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1";
-const domain = "carbon21.com";
+//////////////CONSTANTS//////////////
+const WEED = "fe3d29e07ed7b249a55da6dd578d18e1"; //.env
+const DOMAIN = "carbon21.com";
+const BCRYPT_ALGORITHM = "$2a";
+const BCRYPT_ROUNDS = "$11$";
+const SALT_BYTES_LENGTH = 16;
 
 //////////DIRECT API CALLS//////////
 //given the username, return a salt so the user can perform the PHS
@@ -36,13 +39,16 @@ exports.getSalt = async (req, res, next) => {
       //user already registering/signing up => return salt
       if (user.status === "registering") {
         logger.info(`User already registering, previously created salt returned`);
+
+        //send back bcrypt-like salt, so the client can perform PHS
+        const bcryptSalt = generateBcryptSalt(user.salt);
         return res.status(200).json({
-          salt: user.salt,
+          salt: bcryptSalt,
         });
       }
       //user already exists and its not still registering/signing up => error
       else {
-        logger.warning(`User is being shady`);
+        logger.warn(`User is being shady`);
         return next(new HttpError(409));
       }
     }
@@ -60,27 +66,34 @@ exports.getSalt = async (req, res, next) => {
         return next(new HttpError(500));
       }
 
-      logger.info(`Salt created and returned`);
+      //send back bcrypt-like salt, so the client can perform PHS
+      const bcryptSalt = generateBcryptSalt(salt);
       return res.status(200).json({
-        salt,
+        salt: bcryptSalt,
       });
     }
   }
 
   // login: return weeded (dummy) salt if user doesn't exist
   else {
-    // TODO validar que é assim mesmo. faz sentiudo, para deixar o tempo de resposta igual nos dois cenários abaixo, no entanto é um procedimento desnecessário quando o usuário de fato existir.
-    const weededSalt = hkdf(email, weed);
+    // TODO validar que é assim mesmo. faz sentiudo, para deixar o tempo de resposta igual nos dois cenários abaixo, no entanto é um procedimento desnecessário quando o usuário de fato existir. acho que está certo, mas...
+    const weededSalt = hkdf(email, WEED);
 
     if (user && user.status === "active") {
       logger.info(`Valid email, salt returned`);
+
+      //send back bcrypt-like salt, so the client can perform PHS
+      const bcryptSalt = generateBcryptSalt(user.salt);
       return res.status(200).json({
-        salt: user.salt,
+        salt: bcryptSalt,
       });
     } else {
       logger.info(`Unknown email, weeded salt returned`);
+
+      //send back bcrypt-like salt, so the client can perform PHS
+      const bcryptSalt = generateBcryptSalt(weededSalt);
       return res.status(200).json({
-        salt: weededSalt,
+        salt: bcryptSalt,
       });
     }
   }
@@ -188,17 +201,59 @@ exports.login = async (req, res, next) => {
 };
 
 //////////HELPER CALLS//////////
-//derive key from seed. The derived key is used as salt to perform PHS, on the client side. It is then used on the server side to derive the PHS and store it in the password field (users table).
+//derive 128-bit key. The derived key (email,seed) is used as salt to perform PHS, on the client side. This functions is then used again on (PHS,seed) and the derivation is saved as the password (user table in the DB).
 // TODO validar 4 chamadas (ordem dos parâmetros)
 const hkdf = (ikm, salt) => {
-  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 11);
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, DOMAIN, SALT_BYTES_LENGTH);
   return Buffer.from(derivedKey).toString("hex");
 };
 
-//generate 256 bit seed
+//generate 128-bit seed
 const generateSeed = () => {
-  const seed = crypto.randomBytes(32).toString("hex");
+  const seed = crypto.randomBytes(SALT_BYTES_LENGTH).toString("hex");
   return seed;
+};
+
+//transform 128-bit salt to bcrypt standard salt
+//bcrypt salt = PHS algorithm + # round + b64 of the 128-bit salt
+const generateBcryptSalt = (originalSalt) => {
+  const saltBufer = Buffer.from(originalSalt, "hex");
+  const b64Salt = base64_encode(saltBufer, SALT_BYTES_LENGTH);
+
+  const bcryptSalt = BCRYPT_ALGORITHM + BCRYPT_ROUNDS + b64Salt;
+  return bcryptSalt;
+};
+
+//transform buffer b of len bytes to b64
+const base64_encode = (b, len) => {
+  const BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
+  var off = 0,
+    rs = [],
+    c1,
+    c2;
+  if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
+  while (off < len) {
+    c1 = b[off++] & 0xff;
+    rs.push(BASE64_CODE[(c1 >> 2) & 0x3f]);
+    c1 = (c1 & 0x03) << 4;
+    if (off >= len) {
+      rs.push(BASE64_CODE[c1 & 0x3f]);
+      break;
+    }
+    c2 = b[off++] & 0xff;
+    c1 |= (c2 >> 4) & 0x0f;
+    rs.push(BASE64_CODE[c1 & 0x3f]);
+    c1 = (c2 & 0x0f) << 2;
+    if (off >= len) {
+      rs.push(BASE64_CODE[c1 & 0x3f]);
+      break;
+    }
+    c2 = b[off++] & 0xff;
+    c1 |= (c2 >> 6) & 0x03;
+    rs.push(BASE64_CODE[c1 & 0x3f]);
+    rs.push(BASE64_CODE[c2 & 0x3f]);
+  }
+  return rs.join("");
 };
 
 //caled on signup
