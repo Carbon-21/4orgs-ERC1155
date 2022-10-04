@@ -116,23 +116,24 @@ exports.teste = async function (req, res) {
 
 exports.generateTransactionProposal = async function (req, res){
   let transaction_proposal = req.body.transaction;
-  // user: p
+  // user: d8
   let certPem = `-----BEGIN CERTIFICATE-----
-    MIICczCCAhqgAwIBAgIURBmdnZAKsS55apNGANCWcaQ33gEwCgYIKoZIzj0EAwIw
-    aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
-    EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
-    Y2Etc2VydmVyMB4XDTIyMDkyNDEyMjQwMFoXDTIzMDkyNDEyMjkwMFowQDEyMA0G
-    A1UECxMGY2xpZW50MA0GA1UECxMGY2FyYm9uMBIGA1UECxMLZGVwYXJ0bWVudDEx
-    CjAIBgNVBAMTAXAwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYj0oKJYog9BbK
-    gVEo1fACEyOWCpxgMCfeUSWGnlojaW/Te6Gu6Q2AmnktMTxBYxV6TJ7PgGSciaJ1
-    5202wHtDo4HJMIHGMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMB0GA1Ud
-    DgQWBBQiMHmP22fSoBnIBF7Y6WcJR/oPWDAfBgNVHSMEGDAWgBTJgOxA6iFDLMp+
-    OrsmE/IE1DyxujBmBggqAwQFBgcIAQRaeyJhdHRycyI6eyJoZi5BZmZpbGlhdGlv
-    biI6ImNhcmJvbi5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6InAiLCJo
-    Zi5UeXBlIjoiY2xpZW50In19MAoGCCqGSM49BAMCA0cAMEQCIDd50vFkCS3YcRCH
-    Va7uzVS+9C3OEENn00ZlvJePqackAiArcj56ytkC1w6y82whE40Abr22vu6S7oXB
-    IHxgZC0D1Q==
-    -----END CERTIFICATE-----`;
+  MIICpzCCAk2gAwIBAgIUfjz2czIRojqbTe8/RFknapunCpswCgYIKoZIzj0EAwIw
+  aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
+  EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
+  Y2Etc2VydmVyMB4XDTIyMTAwNDE4MjUwMFoXDTIzMTAwNDE4MzAwMFowQTEyMA0G
+  A1UECxMGY2xpZW50MA0GA1UECxMGY2FyYm9uMBIGA1UECxMLZGVwYXJ0bWVudDEx
+  CzAJBgNVBAMTAmQ4MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExutN6Z5ZW0Yo
+  PydIRmO3y5PgWivYXQsDS0GRupeH3Xz309JWfKkcsfJd64DScQXJZavQsyHlhCp0
+  t+N1KLI8K6OB+zCB+DAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNV
+  HQ4EFgQUEUHODt/LV3AMpQQDpYtzA8dxFX4wHwYDVR0jBBgwFoAUyYDsQOohQyzK
+  fjq7JhPyBNQ8sbowLwYDVR0RBCgwJoICZDiCD3d3dy5leGFtcGxlLmNvbYIPYXBp
+  LmV4YW1wbGUuY29tMGcGCCoDBAUGBwgBBFt7ImF0dHJzIjp7ImhmLkFmZmlsaWF0
+  aW9uIjoiY2FyYm9uLmRlcGFydG1lbnQxIiwiaGYuRW5yb2xsbWVudElEIjoiZDgi
+  LCJoZi5UeXBlIjoiY2xpZW50In19MAoGCCqGSM49BAMCA0gAMEUCIQDu23L+ZicO
+  qctWMTgbdVVs1yAhjr5FGgKEhhARIZoBEQIgJ3S802qs6j+uhI9W2LPLIj25q40a
+  9VAYBKzHoFQLjxE=
+  -----END CERTIFICATE-----`;
   try {
     //const channel = client.getChannel('mychannel');
 
@@ -155,7 +156,7 @@ exports.generateTransactionProposal = async function (req, res){
   }
 }
 
-exports.sendSignedProposal = async function (req, res){
+exports.sendSignedProposal = async function (req, res, next){
   try {
     let signatureHex = req.body.signature;
     let proposalHex = req.body.proposal;

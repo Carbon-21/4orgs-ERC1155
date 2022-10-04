@@ -6,8 +6,7 @@ const { IdentityService } = require("fabric-ca-client");
 exports.signup = async (req, res, next) => {
   let user = req.body;
   user.org = req.body.org;
-  //var useCSR = req.body.useCSR;
-  var useCSR = false;
+  var useCSR = req.body.useCSR;
   let csr = req.body.csr;
   console.log('body=',req.body)
 

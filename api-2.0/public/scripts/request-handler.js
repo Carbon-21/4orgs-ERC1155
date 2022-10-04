@@ -83,14 +83,14 @@ const wrapRequest = async function (requestType) {
       //return [url, body, null]
     
       case "Login":
-      url = "login";
+      url = "auth/login";
       username = document.getElementById("username").value;
       password = document.getElementById("password").value;
       body = {
         username: username,
         password: password,
       };
-      return [url, body, null]; //TODO: convert to DICT
+      return {url: url, body: body, token: null} //TODO: convert to DICT
 
     case "MintFT":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
@@ -102,7 +102,7 @@ const wrapRequest = async function (requestType) {
         fcn: "Mint",
         args: [username, "$ylvas", qty],
       };
-      return [url, body, token]; //TODO: convert to DICT
+      return {url: url, body: body, token: token}; //TODO: convert to DICT
 
     case "MintNFT":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
@@ -124,24 +124,24 @@ const wrapRequest = async function (requestType) {
         fcn: fcn,
         args: ["", nftId, amount, JSON.stringify(meta)],
       };
-      return [url, body, token];
+      return {url: url, body: body, token: token};
 
     case "ClientAccountBalance":
       nftId = document.getElementById("nftId").value;
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountBalance&args=[\"${nftId}\"]`;
       token = document.getElementById("token").value;
-      return [url, null, token];
+      return {url: url, body: body, token: token};
 
     case "ClientAccountTotalBalance":
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
       token = document.getElementById("token").value;
-      return [url, null, token];
+      return {url: url, body: body, token: token};
 
     case "BalanceOf":
       username = localStorage.getItem("username");
       url = `chaincode/channels/mychannel/chaincodes/erc1155?fcn=BalanceOf&args=[\"${username}\",\"$ylvas\"]`;
       token = localStorage.getItem("token");
-      return [url, null, token];
+      return {url: url, body: body, token: token};
 
     case "TransferFrom":
       url = "chaincode/channels/mychannel/chaincodes/erc1155";
@@ -155,7 +155,7 @@ const wrapRequest = async function (requestType) {
         fcn: "TransferFrom",
         args: [usernameSource, usernameDest, tokenId, qty],
       };
-      return [url, body, token];
+      return {url: url, body: body, token: token};
 
     default:
       console.log("None");

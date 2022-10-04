@@ -373,7 +373,7 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
       {
         affiliation: await getAffiliation(userOrg),
         enrollmentID: user.username,
-        encollmentSecret: user.username + "pw",
+        enrollmentSecret: user.username + "pw",
         role: "client",
         attrs: [
           { name: "cpf", value: cpf },
@@ -400,7 +400,6 @@ const registerAndGerSecret = async (user, useCSR, csr) => {
         enrollmentID: username,
         enrollmentSecret: secret,
       });
-      console.log('flag1');
       pkey = enrollment.key.toBytes();
     }
 

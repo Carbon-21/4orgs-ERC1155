@@ -143,7 +143,7 @@ window.signTransaction = async function(digest/*,privateKey*/){
   console.log('entrou signtransaction')
   const privateKeyPEM = 
     `-----BEGIN PRIVATE KEY-----
-    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQghryhRdhaPR8dWCdfuTGDICrz7GQfNEP+SZXirr1cMw6hRANCAATGHzRs2N8LlhUzkK/G63z7mw/qrVulvoZ7EHumjG+iGQwcvh8iviL4Zo3YTpcczHSL0ZbWAXTGdTErpDYI7pOs
+    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgySowcCjI2f5RheYQhX+JGa01/KfmRaIE4b/N1zaXNHShRANCAATG603pnllbRig/J0hGY7fLk+BaK9hdCwNLQZG6l4fdfPfT0lZ8qRyx8l3rgNJxBcllq9CzIeWEKnS343Uosjwr
     -----END PRIVATE KEY-----`
   //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
   var { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM, 'wisekey'); 
