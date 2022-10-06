@@ -14,24 +14,10 @@
     <section id="register">
       <div class="container-fluid">
         <div class="register-form card shadow">
-          <form action="/signup" method="POST" class="validated-form" novalidate>
+          <form action="/signup" method="POST" class="validated-form" id="form" novalidate>
             <div class="row">
               <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                 <h1 class="sign-up-header">Registrar</h1>
-
-                <!-- <div class="register-data">
-                  <i class="fas fa-user fa-lg"></i>
-                  <div class="flex-fill">
-                    <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      class="form-control"
-                      required
-                    />
-                    <label class="form-label" for="username">Username</label>
-                  </div>
-                </div> -->
 
                 <div class="register-data">
                   <i class="fas fa-user fa-lg"></i>
@@ -40,14 +26,6 @@
                     <label class="form-label" for="name">Nome completo</label>
                   </div>
                 </div>
-
-                <!-- <div class="register-data">
-                  <i class="fas fa-building fa-lg"></i>
-                  <div class="flex-fill">
-                    <input type="text" name="org" id="org" class="form-control" required />
-                    <label class="form-label" for="org">Org name</label>
-                  </div>
-                </div> -->
 
                 <div class="register-data">
                   <i class="fa-solid fa-id-card"></i>
@@ -66,24 +44,14 @@
                       id="password"
                       class="form-control"
                       required
+                      oninput="argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then(h =>
+                      hashedPassword.value=h.hashHex).catch(e => console.error(e.message, e.code));"
                     />
                     <label class="form-label" for="password">Senha</label>
                   </div>
                 </div>
 
-                <!-- <div class="register-data">
-                  <i class="fas fa-key fa-lg"></i>
-                  <div class="flex-fill">
-                    <input
-                      type="password"
-                      name="password-repeat"
-                      id="password-repeat"
-                      class="form-control"
-                      required
-                    />
-                    <label class="form-label" for="password-repeat">Repeat your password</label>
-                  </div>
-                </div> -->
+                <output name="x" ></output>
 
                 <div class="form-check">
                   <input
@@ -105,9 +73,14 @@
                 <!--get salt, use it on client's PHS -->
                 <input type="text" name="salt" id="salt" hidden value=<%= salt %>/>
 
+                <!--each time the user type in the password field, update this with the hash of the input -->
+                <input type="password" name="hashedPassword" id="hashedPassword" hidden/>
+
+
                 <div class="register-button">
-                  <button type="submit" onclick="password.value= hashPassword(password.value,salt.value)" class="btn btn-primary btn-lg" value="run external javascript">Registrar</button>
+                  <button type="submit" id="submitBtn" class="btn btn-primary btn-lg" value="run external javascript">Registrar</button>
                 </div>
+
               </div>
 
               <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo-container">
@@ -123,7 +96,67 @@
       </div>
     </section>
 
+    <script src="/scripts/argon2-bundled.min.js"></script>
     <script src="/scripts/validateForms.js"></script>
-    <script src="/scripts/bundle.js"></script>
+    <!-- <script src="/scripts/bundle.js"></script> -->
+    
+    <!-- <script>
+      submitBtn.addEventListener("click", function(event){
+        event.preventDefault();
+      });
+      submitBtn2.addEventListener("click", function(event){
+        event.preventDefault();
+      });
+      submitBtn2.click();
+    </script> -->
+
+    <!-- <script>
+      // let hash="nop";
+      hashPassword =  async () => {
+        argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then(h =>
+        document.getElementById("submitBtn").setAttribute("value",h.hashHex)).then(
+        console.log(document.getElementById("submitBtn").value)).catch(e => console.error(e.message, e.code));
+        
+        if(submitBtn.value == 0)
+        {
+          // try {
+          //   // let res = await argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 });
+          //   // console.log("res",res);
+            
+          // } catch (error) {
+            
+          // }
+          // argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then(h => hash = h).then(console.log("hash1",hash)).then(password.value = "oi").
+          // then(submitBtn.value = 1).then(console.log("btn ",submitBtn.value,"pwd",password.value))
+          // .catch(e => console.error(e.message, e.code));
+        }
+        // if(submitBtn.value == 1)
+        // {
+        //   form.submit()
+        // }
+        // console.log("hash2",hash);
+        // document.getElementById("password").value = h.hashHex
+        // .then(forms.submit())
+        // ;submitBtn.click()
+        // console.log(password.value,salt.value,submitBtn.value);
+        // submitBtn.value = 1;
+        // submitBtn.click();
+        // document.getElementById("submitBtn").addEventListener("click", function(event){
+        //   event.preventDefault()
+        // })
+        // password.value= argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then().catch(e => console.error(e.message, e.code))
+      };
+    </script>
+    <script>
+      function subt () {
+      // password.value.then
+      console.log("btn2 ",submitBtn.value,"pwd2",password.value);
+      }
+      // form.submit();
+//  <script src="/scripts/argon2-bundled.min.js"></script>
+    <script src="/scripts/validateForms.js"></script>
+    <!-- <script src="/scripts/bundle.js"></script> --> return true;
+// });
+    </script>  -->
   </body>
 </html>

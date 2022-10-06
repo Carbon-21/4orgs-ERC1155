@@ -40,10 +40,8 @@ exports.getSalt = async (req, res, next) => {
       if (user.status === "registering") {
         logger.info(`User already registering, previously created salt returned`);
 
-        //send back bcrypt-like salt, so the client can perform PHS
-        const bcryptSalt = generateBcryptSalt(user.salt);
         return res.status(200).json({
-          salt: bcryptSalt,
+          salt: user.salt,
         });
       }
       //user already exists and its not still registering/signing up => error
@@ -66,10 +64,8 @@ exports.getSalt = async (req, res, next) => {
         return next(new HttpError(500));
       }
 
-      //send back bcrypt-like salt, so the client can perform PHS
-      const bcryptSalt = generateBcryptSalt(salt);
       return res.status(200).json({
-        salt: bcryptSalt,
+        salt,
       });
     }
   }
@@ -81,19 +77,13 @@ exports.getSalt = async (req, res, next) => {
 
     if (user && user.status === "active") {
       logger.info(`Valid email, salt returned`);
-
-      //send back bcrypt-like salt, so the client can perform PHS
-      const bcryptSalt = generateBcryptSalt(user.salt);
       return res.status(200).json({
-        salt: bcryptSalt,
+        salt: user.salt,
       });
     } else {
       logger.info(`Unknown email, weeded salt returned`);
-
-      //send back bcrypt-like salt, so the client can perform PHS
-      const bcryptSalt = generateBcryptSalt(weededSalt);
       return res.status(200).json({
-        salt: bcryptSalt,
+        salt: weededSalt,
       });
     }
   }
@@ -105,6 +95,26 @@ exports.signup = async (req, res, next) => {
   const user = req.body;
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
+
+  // try {
+  //   let r = await user.password.then(function (res) {
+  //     console.log("res", res);
+  //     // do something with result
+  //   });
+  //   // console.log("r", r);
+  //   // let result = await user.password;
+  //   // // let result = await Promise.resolve(user.password);
+  //   // console.log("result", result, user.password);
+  // } catch (e) {
+  //   console.log(e);
+  // }
+  const printres = async () => {
+    const a = await user.password;
+    console.log(a);
+  };
+  printres();
+
+  logger.debug("Password:", user.password);
 
   //update user on DB
   let response = await saveUserToDatabase(user, next);
@@ -159,9 +169,13 @@ exports.login = async (req, res, next) => {
   //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
   //derive it again so we can check if the given pwd is correct
   password = hkdf(password, user.seed);
+  logger.debug("HKDF: " + password);
+  logger.debug("ACtual pwd: " + user.password);
 
   //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
   if (user.password !== password || user.org !== org) {
+    logger.info("Credentials do not match");
+
     //log activity
     try {
       await models.authenticationLog.create({
@@ -212,48 +226,6 @@ const hkdf = (ikm, salt) => {
 const generateSeed = () => {
   const seed = crypto.randomBytes(SALT_BYTES_LENGTH).toString("hex");
   return seed;
-};
-
-//transform 128-bit salt to bcrypt standard salt
-//bcrypt salt = PHS algorithm + # round + b64 of the 128-bit salt
-const generateBcryptSalt = (originalSalt) => {
-  const saltBufer = Buffer.from(originalSalt, "hex");
-  const b64Salt = base64_encode(saltBufer, SALT_BYTES_LENGTH);
-
-  const bcryptSalt = BCRYPT_ALGORITHM + BCRYPT_ROUNDS + b64Salt;
-  return bcryptSalt;
-};
-
-//transform buffer b of len bytes to b64
-const base64_encode = (b, len) => {
-  const BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
-  var off = 0,
-    rs = [],
-    c1,
-    c2;
-  if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
-  while (off < len) {
-    c1 = b[off++] & 0xff;
-    rs.push(BASE64_CODE[(c1 >> 2) & 0x3f]);
-    c1 = (c1 & 0x03) << 4;
-    if (off >= len) {
-      rs.push(BASE64_CODE[c1 & 0x3f]);
-      break;
-    }
-    c2 = b[off++] & 0xff;
-    c1 |= (c2 >> 4) & 0x0f;
-    rs.push(BASE64_CODE[c1 & 0x3f]);
-    c1 = (c2 & 0x0f) << 2;
-    if (off >= len) {
-      rs.push(BASE64_CODE[c1 & 0x3f]);
-      break;
-    }
-    c2 = b[off++] & 0xff;
-    c1 |= (c2 >> 6) & 0x03;
-    rs.push(BASE64_CODE[c1 & 0x3f]);
-    rs.push(BASE64_CODE[c2 & 0x3f]);
-  }
-  return rs.join("");
 };
 
 //caled on signup
@@ -409,3 +381,45 @@ const enrollUserInCA = async (user, next) => {
   //OK
   return true;
 };
+
+//transform 128-bit salt to bcrypt standard salt
+//bcrypt salt = PHS algorithm + # round + b64 of the 128-bit salt
+// const generateBcryptSalt = (originalSalt) => {
+//   const saltBufer = Buffer.from(originalSalt, "hex");
+//   const b64Salt = base64_encode(saltBufer, SALT_BYTES_LENGTH);
+
+//   const bcryptSalt = BCRYPT_ALGORITHM + BCRYPT_ROUNDS + b64Salt;
+//   return bcryptSalt;
+// };
+
+//transform buffer b of len bytes to b64 (bcrypt)
+// const base64_encode = (b, len) => {
+//   const BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
+//   var off = 0,
+//     rs = [],
+//     c1,
+//     c2;
+//   if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
+//   while (off < len) {
+//     c1 = b[off++] & 0xff;
+//     rs.push(BASE64_CODE[(c1 >> 2) & 0x3f]);
+//     c1 = (c1 & 0x03) << 4;
+//     if (off >= len) {
+//       rs.push(BASE64_CODE[c1 & 0x3f]);
+//       break;
+//     }
+//     c2 = b[off++] & 0xff;
+//     c1 |= (c2 >> 4) & 0x0f;
+//     rs.push(BASE64_CODE[c1 & 0x3f]);
+//     c1 = (c2 & 0x0f) << 2;
+//     if (off >= len) {
+//       rs.push(BASE64_CODE[c1 & 0x3f]);
+//       break;
+//     }
+//     c2 = b[off++] & 0xff;
+//     c1 |= (c2 >> 6) & 0x03;
+//     rs.push(BASE64_CODE[c1 & 0x3f]);
+//     rs.push(BASE64_CODE[c2 & 0x3f]);
+//   }
+//   return rs.join("");
+// };
