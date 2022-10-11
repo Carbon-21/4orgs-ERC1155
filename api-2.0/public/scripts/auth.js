@@ -11,6 +11,9 @@ async function signup(){
     let password = document.getElementById("password").value;
     let cpf = document.getElementById("cpf").value;
     let name = document.getElementById("name").value;
+    let salt= document.getElementById("salt").value;
+
+    password = await hashPassword(password,salt)
 
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
