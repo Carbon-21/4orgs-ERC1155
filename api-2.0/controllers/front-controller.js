@@ -94,14 +94,12 @@ exports.postSignup = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
       req.session.username = email;
-      req.flash("success", "Registrado com sucesso");
       res.json({success:true, token:response.data.token})
     })
 
     // If an error occurs, redirects to the login page and send error message
     .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/presignup");
+      res.json({success:false, err: err.response.data.message})
     });
 };
 
@@ -190,15 +188,13 @@ exports.postLogin = async (req, res, next) => {
     .post(url, jsonData, options)
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
-      req.flash("success", "Boas-vindas");
       req.session.username = email;
       res.json({success:true, token:response.data.token})
     })
 
     // If an error occurs, redirect to the login page and send error message
     .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/prelogin");
+      res.json({success:false, err: err.response.data.message})
     });
 };
 
@@ -325,10 +321,6 @@ exports.postMintFT = async (req, res, next) => {
 
     // If an error occurs, redirect to  the mint page and send error message
 
-    // .catch(function (error) {
-    //   req.flash("error", "Ocorreu um erro");
-    //   res.redirect("/ft/mint");
-    // });
     .catch(function (err) {
       req.flash("error", err.response.data.message);
       res.redirect("/ft/mint");

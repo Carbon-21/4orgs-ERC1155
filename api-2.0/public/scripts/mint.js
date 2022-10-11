@@ -32,15 +32,35 @@ async function mintFT(){
 
     if (response.ok) {
         response = await response.json();
-        if (response.result==null) {
-            alert(`Emissao de Sylvas falhou`);
+        if (response.result!="success") {
+          document.getElementById("submitButton").style.display = "flex";
+          document.getElementById("loader").style.display = "none";
+          element =     
+          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+              `Ocorreu um erro na emissao`+
+              `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+          `</div>`
+          document.getElementById("flash").innerHTML = element;
         } else {
-            document.getElementById("submitButton").style.display = "flex";
-            document.getElementById("loader").style.display = "none";
-            alert("Emissao de Sylvas realizado com sucesso");
+          document.getElementById("submitButton").style.display = "flex";
+          document.getElementById("loader").style.display = "none";
+          element =     
+            `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                `$ylvas emitidos com sucesso`+
+                `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+            `</div>`
+          document.getElementById("flash").innerHTML = element;
         }
     } else {
       console.log("HTTP Error ", response.status);
+      document.getElementById("submitButton").style.display = "flex";
+      document.getElementById("loader").style.display = "none";
+      element =     
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+          `Ocorreu um erro na emissao`+
+          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+      `</div>`
+      document.getElementById("flash").innerHTML = element;
       return null;
     }
 
@@ -84,14 +104,33 @@ async function mintNFT(){
     if (response.ok) {
         response = await response.json();
         if (response.result==null) {
-            alert(`Emissao de NFT falhou`);
+          document.getElementById("submitButton").style.display = "flex";
+          document.getElementById("loader").style.display = "none";
+          element =     
+          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+              `Ocorreu um erro na emissao`+
+              `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+          `</div>`
+          document.getElementById("flash").innerHTML = element;
         } else {
-            document.getElementById("submitButton").style.display = "flex";
-            document.getElementById("loader").style.display = "none";
-            alert("Emissao de NFT realizado com sucesso");
+          element =     
+            `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                `NFT emitido com sucesso`+
+                `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+            `</div>`
+          document.getElementById("flash").innerHTML = element;
         }
     } else {
+
       console.log("HTTP Error ", response.status);
+      document.getElementById("submitButton").style.display = "flex";
+      document.getElementById("loader").style.display = "none";
+      element =     
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+          `Ocorreu um erro na emissao`+
+          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+      `</div>`
+      document.getElementById("flash").innerHTML = element;
       return null;
     }
 

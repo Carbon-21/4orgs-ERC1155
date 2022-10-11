@@ -37,14 +37,18 @@ async function signup(){
         if (response.success) {
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.slice(0, -1));
-            alert(`Registrado com Sucesso! ${localStorage.token} ${localStorage.username}`);
             window.location.href = '/';
         } else {
-          alert(`Falha no registro!`);
+            element =     
+                `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                    `${response.err}`+
+                    `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+                `</div>`
+            document.getElementById("flash").innerHTML = element;
         }
     } else {
-      console.log("HTTP Error ", response.status);
-      return null;
+        console.log("HTTP Error ", response.status);
+        return null;
     }
 
 }
@@ -82,10 +86,14 @@ async function login(){
         if (response.success) {
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.slice(0, -1));
-            alert(`Logado com Sucesso! ${localStorage.token} ${localStorage.username}`);
             window.location.href = '/';
         } else {
-          alert(`A PQP Falha no Login!`);
+            element =     
+            `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                `${response.err}`+
+                `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+            `</div>`
+            document.getElementById("flash").innerHTML = element;
         }
     } else {
       console.log("HTTP Error ", response.status);
