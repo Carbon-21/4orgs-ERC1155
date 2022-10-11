@@ -113,6 +113,8 @@ async function mintNFT(){
           `</div>`
           document.getElementById("flash").innerHTML = element;
         } else {
+          document.getElementById("submitButton").style.display = "flex";
+          document.getElementById("loader").style.display = "none";
           element =     
             `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
                 `NFT emitido com sucesso`+
