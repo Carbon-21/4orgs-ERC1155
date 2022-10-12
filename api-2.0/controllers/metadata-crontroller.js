@@ -7,26 +7,27 @@ const ipfs = require("../util/ipfs");
 exports.getMetadata = async (req, res, next) => {
   // NOTE: NFT token Id
   let tokenId = req.body.tokenId;
-  // let token = req.session.token;
-  let token = req.body.token;
+  let token = req.session.token || req.body.token;
   let URI;
 
-  // Hash por meio de chamada no chaincode (GetURI)
+  // Hash por meio de query no chaincode (GetURI)
   axios
-    .post(
-      "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155",
-      JSON.stringify({
-        fcn: "GetURI",
-        args: [tokenId],
-      }),
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      }
-    )
-    .then(function (response) {
+    .get(`http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    })
+    .then(async function (response) {
       // Get hash (URI) from response
-      URI = response;
+      URI = response.data;
+      let metadata = await getMetadataFromURI(URI.result);
+      if (Object.keys(metadata).length != 0) {
+        return res.status(200).json({
+          message: metadata,
+          success: true,
+        });
+      } else {
+        return res.status(404).json({ success: false });
+      }
     })
     .catch(function (error) {
       logger.error(error);
@@ -35,15 +36,17 @@ exports.getMetadata = async (req, res, next) => {
         success: false,
       });
     });
+};
 
-  const hashRegEx = /(?<=ipfs:\/\/).+/;
-  let hash = hashRegEx.exec(URI) || "";
-
-  //---------- NOTE: Testes - idealmente sera usado o tokenId para recuperar o hash
-  hash = req.body.cid;
-  // hash = "QmU93oY6pU3f64qd2fBiHEgVj8Va4pFUnCAYGbBYjTaeio"; // json file (mais atual, com schema v0.1)
+async function getMetadataFromURI(URI) {
+  const hashRegEx = /(?<=ipfs:\/\/).+/; // NOTE: correto, para quando a validacao de URI estiver corrigida
+  let hash = hashRegEx.exec(URI);
+  hash = hash || URI.slice(7, URI.length - 4); // temporario para remover o http:// e .com
+  if (!hash) {
+    logger.error("Não conseguimos recuperar o hash do URI fornecido");
+    return null;
+  }
   logger.debug("Hash received: " + hash);
-  //---------
 
   // NOTE: IPFS cat
   let metadata;
@@ -52,40 +55,23 @@ exports.getMetadata = async (req, res, next) => {
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
     logger.debug("Metadata: " + JSON.stringify(metadata));
   } catch (error) {
+    // Como tratar timeouts?
     logger.error(error);
   }
-
-  // NOTE: resposta
-
-  if (metadata) {
-    return res.status(200).json({
-      message: metadata,
-      success: true,
-    });
-  } else {
-    return next(new HttpError(404));
-  }
-};
+  return metadata;
+}
 
 exports.postMetadata = async (req, res, next) => {
   // NOTE: Metadata to be put in IPFS
   let metadata;
-  let token = req.session.token;
-  let tokenId;
+  let token = req.session.token || req.body.token;
+  let tokenId = req.body.tokenId;
   let hash;
-
-  // let reqMetadata = {
-  //   id: req.body.nftId,
-  //   land_info: {
-  //     land: req.body.location,
-  //     biome: req.body.phyto,
-  //   },
-  // };
 
   try {
     metadata = makeMetadata(req.body.metadata);
     // metadata = makeMetadata(reqMetadata);
-    tokenId = metadata.properties.id;
+    tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
     logger.debug("Hash of uploaded Metadata: " + hash);
   } catch (error) {
@@ -96,15 +82,14 @@ exports.postMetadata = async (req, res, next) => {
     });
   }
 
-  // Publicar URI e TokenId no chaincode por meio de chamada (SetURI)
-
+  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
   const URI = `ipfs://${hash}`;
   axios
     .post(
-      "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155",
+      "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI",
       JSON.stringify({
-        fcn: "SetURI",
-        args: ["", tokenId, URI],
+        tokenId: tokenId,
+        URI: `http://${hash}.com`, // TODO: Deve se deixar no padrao, que eh somente o URI, mas a validacao impede nesse momento
       }),
       {
         method: "POST",
@@ -112,11 +97,8 @@ exports.postMetadata = async (req, res, next) => {
       }
     )
     .then(function (response) {
-      logger.debug("Publicado Metadados - " + response);
-      return res.status(200).json({
-        message: response,
-        success: true,
-      });
+      logger.debug("Publicado Metadados - " + response.statusText);
+      return res.status(200).json({ ...response.data, message: "Publicado Metadados e URI setada" });
     })
     .catch(function (error) {
       logger.error(error);
