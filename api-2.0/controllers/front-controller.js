@@ -286,7 +286,6 @@ exports.getCollection = async (req, res, next) => {
           title: "My Collection",
           cssPath: "css/collection.css",
           balances,
-          // metadata,
         });
       })
 

@@ -1,5 +1,4 @@
 const logger = require("../util/logger");
-const invoke = require("../app/invoke");
 const axios = require("axios").default;
 const HttpError = require("../util/http-error");
 
@@ -105,7 +104,7 @@ exports.postMetadata = async (req, res, next) => {
       "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155",
       JSON.stringify({
         fcn: "SetURI",
-        args: ["", tokenId, hash],
+        args: ["", tokenId, URI],
       }),
       {
         method: "POST",
