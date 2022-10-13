@@ -62,10 +62,12 @@ exports.getSignup = (req, res, next) => {
 
 exports.postSignup = async (req, res, next) => {
   // Collects data from html signup form
-  let email = req.body.email.slice(0, -1); //removes additional / in the end;
+  let email = req.body.email //removes additional / in the end;
   let password = req.body.password;
   let cpf = req.body.cpf;
   let name = req.body.name;
+  let csr = req.body.csr;
+  let useCSR = req.body.useCSR;
 
   // Groups the data
   let data = {
@@ -73,6 +75,8 @@ exports.postSignup = async (req, res, next) => {
     password,
     cpf,
     name,
+    csr,
+    useCSR
   };
 
   // Data to JSON
@@ -94,7 +98,7 @@ exports.postSignup = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
       req.session.username = email;
-      res.json({success:true, token:response.data.token})
+      res.json({success:true, token:response.data.token, certificate: response.data.certificate})
     })
 
     // If an error occurs, redirects to the login page and send error message

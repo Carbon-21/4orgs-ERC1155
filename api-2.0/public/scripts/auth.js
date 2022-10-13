@@ -1,17 +1,20 @@
-const { hashSync } = require("bcryptjs");
+const crypto = require("./crypto-generator");
 
 let username;
 let token;
 
-async function signup(){
+window.signup = async function () {
 
     event.preventDefault();
     
-    let email = document.getElementById("email").value;
+    let email = document.getElementById("email").value.slice(0,-1);
     let password = document.getElementById("password").value;
     let cpf = document.getElementById("cpf").value;
     let name = document.getElementById("name").value;
     let salt= document.getElementById("salt").value;
+    
+    // Generation of user's private key and CSR
+    let cryptoMaterials = await crypto.generateCryptoMaterial(email);
 
     password = await hashPassword(password,salt)
 
@@ -24,11 +27,13 @@ async function signup(){
         headers: headers,
     };
 
-    body = {
+    let body = {
         password: password,
         cpf: cpf,
         email: email,
         name: name,
+        csr: cryptoMaterials.csr,
+        useCSR: true
     };
 
     init.body = JSON.stringify(body);
@@ -40,7 +45,12 @@ async function signup(){
         if (response.success) {
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.slice(0, -1));
-            window.location.href = '/';
+            console.log('response',response);
+            if (response.certificate) {
+                await crypto.downloadCrypto(cryptoMaterials.privateKey, 'privateKey');
+                await crypto.downloadCrypto(response.certificate, 'certificate');
+            }
+            //window.location.href = '/';
         } else {
             element =     
                 `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
@@ -56,7 +66,7 @@ async function signup(){
 
 }
 
-async function login(){
+window.login = async function () {
 
     event.preventDefault();
 

@@ -98,7 +98,9 @@ exports.signup = async (req, res, next) => {
   if (!response) return;
 
   //enroll user in the CA and save it in the wallet
-  if (!enrollUserInCA(user, next)) return;
+  let enrollResponse = await enrollUserInCA(user);
+  if (!enrollResponse.success) return;
+  response.certificate = enrollResponse.certificate;
 
   //create JWT, add to reponse
   response.token = auth.createJWT(user.email, user.org);
@@ -247,7 +249,7 @@ const saveUserToDatabase = async (user, next) => {
 };
 
 //register the user in the CA, enroll the user in the CA, and save the new identity into the wallet. Returns true if things went as expected.
-const enrollUserInCA = async (user, next) => {
+const enrollUserInCA = async (user) => {
   //get org CCP (its configs, such as CA path and tlsCACerts)
   let ccp = await helper.getCCP(user.org);
 
@@ -268,7 +270,7 @@ const enrollUserInCA = async (user, next) => {
   if (userIdentity) {
     logger.error(`An identity for the user ${user.email} already exists in the wallet`);
 
-    return true;
+    return {success:false, err: "Usuário já cadastrado"};
   }
 
   //enroll an admin user if it doesn't exist yet
@@ -288,6 +290,8 @@ const enrollUserInCA = async (user, next) => {
 
   let secret;
   try {
+    var certificate;
+
     //register user, using admin account
     secret = await ca.register(
       {
@@ -298,25 +302,19 @@ const enrollUserInCA = async (user, next) => {
       adminUser
     );
 
+    let pkey;
+
     //CSR
     if (user.useCSR) {
       logger.debug(`Using CSR mode`);
-
-      //generate private key
-      // TODO: tirar isso quando a geração no front estiver ok
-      var command = "./generateCSR.sh " + user.email + " " + user.org;
-      await helper.execWrapper(command);
-
-      const csr = fs.readFileSync("./certreq.csr", "utf8");
-      var pkey = fs.readFileSync("./pkey.pem", "utf8");
-      logger.debug(`certreq:  ${csr}`);
 
       //enroll user in the CA
       var enrollment = await ca.enroll({
         enrollmentID: user.email,
         enrollmentSecret: secret,
-        csr: csr,
+        csr: user.csr,
       });
+      certificate = enrollment.certificate;
     }
 
     //Not CSR: just enroll user in the CA
@@ -328,6 +326,7 @@ const enrollUserInCA = async (user, next) => {
         enrollmentSecret: secret,
       });
       pkey = enrollment.key.toBytes();
+      certificate = enrollment.certificate
     }
 
     //save cert and pkey to wallet
@@ -336,21 +335,24 @@ const enrollUserInCA = async (user, next) => {
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: pkey,
       },
       mspId: orgMSPId,
       type: "X.509",
     };
+
+    //saves user's server-side generated private key if no CSR was provided
+    if (!user.useCSR) x509Identity.credentials.privateKey = pkey;
+
     await wallet.put(user.email, x509Identity);
+
+    //OK
+    return {success: true, certificate: certificate};
   } catch (err) {
     //change user status in DB, so they can try to sign up again
     await models.users.update({ status: "registering" }, { where: { email: user.email } });
 
     //issue error
     logger.debug(err);
-    return next(new HttpError(500));
+    return {success: false, err: err.message}
   }
-
-  //OK
-  return true;
 };

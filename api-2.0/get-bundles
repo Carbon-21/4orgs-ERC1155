@@ -1,0 +1,3 @@
+#create bundle.js
+echo "Creating bundle.js"
+browserify ./public/scripts/auth.js > ./public/scripts/bundles/auth-bundle.js -t babelify
