@@ -2,8 +2,9 @@
 <html lang="en" dir="ltr">
 
   <%- include("partials/head") %>
+  <script src="/scripts/collection.js"></script>
 
-  <body onload="document.getElementById('token').value = localStorage.getItem('token')">
+  <body onload="collection()">
 
     <!-- Navbar -->
 
@@ -15,31 +16,9 @@
   
           <h1 class="collection-header">Minha Coleção</h1>
 
-          <% for( let key in balances) { %>
-
-            <% if (balances[key]!= 0) { %>
-
-            <div class="card shadow-lg mt-3">
-              <div class="card-body flex-column">
-                <div class="d-flex justify-content-between p-md-1">
-                    <div class="d-flex flex-row">
-                      <div class="align-self-center">
-                        <i class="fa-solid fa-tree fa-4x tree-icon"></i>
-                      </div>
-                      <div>
-                        <h4>NFT</h4>
-                        <p class="mb-0">id: <%= key %></p>
-                        <p class="mb-0">valor: <%= balances[key] %> </p>
-                      </div>
-                    </div>
-                  </div>
-                </div> 
-              </div>
-
-            <% } %>
-
-          <% } %>
-
+          <div id="nft-showroom">
+          </div>
+          
         </div>
 
     </section>

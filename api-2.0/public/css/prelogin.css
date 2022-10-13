@@ -8,35 +8,6 @@ i{
   margin:0 20px 35px 20px;
 }
 
-/* Navbar */
-
-.navbar{
-  padding: 5px 20px ;
-  background-color: #fff;
-}
-
-nav .navbar-nav li a:hover{
-  color: #00C897;
-}
-
-.navbar-brand{
-
-  font-weight: 500;
-  font-size: 2rem;
-}
-
-.navbar-brand .carbon21-logo{
-  height: 70px;
-  border-radius: 30%;
-  margin: 0 30px 0 20px;
-}
-
-.nav-item{
-  font-weight: 300;
-  margin: 0 4px;
-}
-
-
 /* Login Section */
 
 #login{

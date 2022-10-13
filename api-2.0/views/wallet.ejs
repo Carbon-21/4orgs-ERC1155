@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
+  <script src="/scripts/wallet.js"></script>
 
-  <body>
+  <body onload="wallet()">
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -24,7 +25,7 @@
                 </div>
               </div>
               <div class="align-self-center">
-                <h2 id="balanceHeader" class="h1 mb-0"><%= ftBalance %> $yl</h2>
+                <h2 id="balanceHeader" class="h1 mb-0">-</h2>
               </div>
             </div>
           </div>
@@ -53,5 +54,8 @@
         </div> -->
       </div>
     </section>
+
+    
+
   </body>
 </html>
