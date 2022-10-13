@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
-  <script src="/scripts/wallet.js"></script>
+  <script src="/scripts/bundles/wallet-bundle.js"></script>
 
-  <body onload="wallet()">
+  <body onload="walletServerSideSigning()">
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -11,7 +11,6 @@
     <section id="wallet">
       <div class="container-fuid wallet-container">
         <h1 class="wallet-header">Minha Carteira</h1>
-
         <div class="card shadow-lg">
           <div class="card-body">
             <div class="d-flex justify-content-between p-md-1">
@@ -30,6 +29,20 @@
             </div>
           </div>
         </div>
+        <br>
+        <br>
+        <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;" />
+        <div hidden id="signing-files" style="margin: auto; align-items: center;">
+          <form style="text-align: center;">
+            <p><strong>Faça o upload da sua chave privada</strong></p>
+            <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+            <p><strong>Faça o upload do seu certificado</strong></p>
+            <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+            <button onclick="walletClientSideSigning()" type="click" class="btn btn-primary btn-lg">Enviar transação</button><br><br>
+          </form>
+        </div>
+        
+        
 
         <!-- <div class="align-self-center d-flex justify-content-center">
           <img id="loader" class="loading-icon" src="./images/loader.gif" />

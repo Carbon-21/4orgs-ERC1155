@@ -49,6 +49,18 @@
                     <label class="form-label" for="password">Senha</label>
                   </div>
                 </div>
+                <div class="register-data">
+                  <i class="fa fa-key fa-lg"></i>
+                  <div class="flex-fill">
+                    <p>Onde você deseja gerar e armazenar a sua chave privada?</p>
+                    <input type="radio" name="save-key" id="saveKeyOnServer">
+                    <label for="yes">Desejo gerar e armazenar minha chave na Carbon </label><br>
+                    <input type="radio" name="save-key" id="saveKeyOnClient" checked>
+                    <label for="no">Desejo gerar e armazenar minha chave no meu computador</label><br>
+                  </div>
+                </div>
+
+
 
                 <!-- oninput="const initTime=performance.now();argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 32, type:argon2.ArgonType.Argon2id, time: 3, mem:16384, parallelism: 1 }).then(h =>
                       hashedPassword.value = h.hashHex).then(()=>hashTime.value=performance.now()-initTime).catch(e => console.error(e.message, e.code));" -->
@@ -101,6 +113,6 @@
 
     <script src="/scripts/argon2-bundled.min.js"></script>
     <script src="/scripts/validateForms.js"></script>
-    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/bundles/auth-bundle.js"></script>
   </body>
 </html>
