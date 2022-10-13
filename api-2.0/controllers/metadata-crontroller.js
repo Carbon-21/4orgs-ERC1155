@@ -7,9 +7,8 @@ const ipfs = require("../util/ipfs");
 exports.getMetadata = async (req, res, next) => {
   // NOTE: NFT token Id
   let tokenId = req.body.tokenId;
-  let token = req.session.token || req.body.token;
+  let token = req.body.token || req.session.token;
   let URI;
-
   // Hash por meio de query no chaincode (GetURI)
   axios
     .get(`http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
@@ -53,7 +52,7 @@ async function getMetadataFromURI(URI) {
   try {
     let ipfsData = await ipfs.getMetadata(hash);
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
-    logger.debug("Metadata: " + JSON.stringify(metadata));
+    // logger.debug("Metadata: " + JSON.stringify(metadata));
   } catch (error) {
     // Como tratar timeouts?
     logger.error(error);
@@ -64,7 +63,7 @@ async function getMetadataFromURI(URI) {
 exports.postMetadata = async (req, res, next) => {
   // NOTE: Metadata to be put in IPFS
   let metadata;
-  let token = req.session.token || req.body.token;
+  let token = req.body.token || req.session.token;
   let tokenId = req.body.tokenId;
   let hash;
 

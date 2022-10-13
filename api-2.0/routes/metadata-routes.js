@@ -3,7 +3,7 @@ const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
 
-router.post(
+router.post( // post funciona bem, avaliar possibilidade de get
   "/getMetadata",
   metadataController.getMetadata
 );
