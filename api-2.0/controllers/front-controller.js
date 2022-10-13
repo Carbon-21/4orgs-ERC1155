@@ -385,17 +385,6 @@ exports.postMintNFT = async (req, res, next) => {
   let location = req.body.location;
   let token = req.session.token;
 
-  // Groups the NFT metadata
-  let metadata = {
-    id: nftId,
-    land_info: {
-      land: location,
-      biome: phyto,
-    },
-  };
-
-  //TODO: update to new method of publishing metadata
-
   // Groups the data
 
   // let data = {
@@ -445,6 +434,24 @@ exports.postMintNFT = async (req, res, next) => {
     .catch(function (err) {
       req.flash("error", err.response.data.message);
       res.redirect("/nft/mint");
+    });
+
+  // Post NFT Metadata to IPFS
+  /// Groups the NFT metadata
+  let metadata = {
+    id: nftId,
+    land: location,
+    biome: phyto,
+  };
+
+  // Post metadata through ipfs node
+  axios
+    .post("http://localhost:4000/meta/postMetadata", JSON.stringify({ metadata, tokenId: nftId, token }), options)
+    .then(function (response) {
+      req.flash(response.status, "Metadados do NFT publicados corretamente");
+    })
+    .catch(function (err) {
+      // TODO: lidar com erro na postagem de metadados, a parte ou em conjunto?
     });
 };
 
