@@ -9,11 +9,11 @@ var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 
 //////////////CONSTANTS//////////////
-const WEED = "fe3d29e07ed7b249a55da6dd578d18e1"; //.env
+const WEED = "fe3d29e07ed7b24fe3d29e07ed7b249a55da6dd578d18e19a55da6dd578d18e1"; //.env
 const DOMAIN = "carbon21.com";
-const BCRYPT_ALGORITHM = "$2a";
-const BCRYPT_ROUNDS = "$11$";
-const SALT_BYTES_LENGTH = 16;
+const SALT_BYTES_LENGTH = 32;
+// const BCRYPT_ALGORITHM = "$2a";
+// const BCRYPT_ROUNDS = "$11$";
 
 //////////DIRECT API CALLS//////////
 //given the username, return a salt so the user can perform the PHS
@@ -58,7 +58,7 @@ exports.getSalt = async (req, res, next) => {
 
       //add PHS info to DB
       try {
-        await models.users.create({ email, seed, salt });
+        await models.users.create({ email, seed });
       } catch (err) {
         logger.error(err);
         return next(new HttpError(500));
@@ -72,15 +72,15 @@ exports.getSalt = async (req, res, next) => {
 
   // login: return weeded (dummy) salt if user doesn't exist
   else {
-    // TODO validar que é assim mesmo. faz sentiudo, para deixar o tempo de resposta igual nos dois cenários abaixo, no entanto é um procedimento desnecessário quando o usuário de fato existir. acho que está certo, mas...
-    const weededSalt = hkdf(email, WEED);
-
     if (user && user.status === "active") {
+      const salt = hkdf(email, user.seed);
+
       logger.info(`Valid email, salt returned`);
       return res.status(200).json({
-        salt: user.salt,
+        salt,
       });
     } else {
+      const weededSalt = hkdf(email, WEED);
       logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
         salt: weededSalt,
@@ -95,25 +95,6 @@ exports.signup = async (req, res, next) => {
   const user = req.body;
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
-
-  // try {
-  //   let r = await user.password.then(function (res) {
-  //     console.log("res", res);
-  //     // do something with result
-  //   });
-  //   // console.log("r", r);
-  //   // let result = await user.password;
-  //   // // let result = await Promise.resolve(user.password);
-  //   // console.log("result", result, user.password);
-  // } catch (e) {
-  //   console.log(e);
-  // }
-  const printres = async () => {
-    const a = await user.password;
-    console.log(a);
-  };
-  printres();
-
   logger.debug("Password:", user.password);
 
   //update user on DB
@@ -169,8 +150,6 @@ exports.login = async (req, res, next) => {
   //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
   //derive it again so we can check if the given pwd is correct
   password = hkdf(password, user.seed);
-  logger.debug("HKDF: " + password);
-  logger.debug("ACtual pwd: " + user.password);
 
   //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
   if (user.password !== password || user.org !== org) {
@@ -216,7 +195,6 @@ exports.login = async (req, res, next) => {
 
 //////////HELPER CALLS//////////
 //derive 128-bit key. The derived key (email,seed) is used as salt to perform PHS, on the client side. This functions is then used again on (PHS,seed) and the derivation is saved as the password (user table in the DB).
-// TODO validar 4 chamadas (ordem dos parâmetros)
 const hkdf = (ikm, salt) => {
   const derivedKey = crypto.hkdfSync("sha256", ikm, salt, DOMAIN, SALT_BYTES_LENGTH);
   return Buffer.from(derivedKey).toString("hex");

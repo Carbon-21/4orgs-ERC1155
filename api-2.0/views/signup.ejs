@@ -44,14 +44,12 @@
                       id="password"
                       class="form-control"
                       required
-                      oninput="console.time('doSomething');argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16, type:argon2.ArgonType.Argon2id, time: 3, mem:6024, parallelism: 3 }).then(console.timeEnd('doSomething')).then(h =>
-                      hashedPassword.value=h.hashHex).catch(e => console.error(e.message, e.code));"
+                      oninput="const initTime=performance.now();argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 32, type:argon2.ArgonType.Argon2id, time: 3, mem:16384, parallelism: 1 }).then(h =>
+                      hashedPassword.value = h.hashHex).then(()=>hashTime.value=performance.now()-initTime).catch(e => console.error(e.message, e.code));"
                     />
                     <label class="form-label" for="password">Senha</label>
                   </div>
                 </div>
-
-                <output name="x" ></output>
 
                 <div class="form-check">
                   <input
@@ -74,7 +72,10 @@
                 <input type="text" name="salt" id="salt" hidden value=<%= salt %>/>
 
                 <!--each time the user type in the password field, update this with the hash of the input -->
-                <input type="text" name="hashedPassword" id="hashedPassword" />
+                <input type="text" name="hashedPassword" id="hashedPassword" hidden/>
+
+                <!--each time the user type in the password field, update this with the time it took to perform the hash -->
+                <input type="text" name="hashTime" id="hashTime" hidden/>
 
 
                 <div class="register-button">
@@ -100,6 +101,10 @@
     <script src="/scripts/validateForms.js"></script>
     <!-- <script src="/scripts/bundle.js"></script> -->
     
+    <!-- <script>
+      hashedPassword.addEventListener("cjange", function(event){
+        console.log("oooi")
+      });</script> -->
     <!-- <script>
       submitBtn.addEventListener("click", function(event){
         event.preventDefault();

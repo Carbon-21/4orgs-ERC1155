@@ -9,9 +9,9 @@ const router = Router();
 //// UNAUTHENTICATED ROUTES ////
 router.post("/getSalt", [body("email").isEmail(), body("isSignUp").isBoolean(), validateAll], authController.getSalt);
 
-router.post("/signup", [body("email").isEmail(), body("name").not().isEmpty(), body("password").not().isEmpty(), body("cpf").not().isEmpty(), validateAll], authController.signup);
+router.post("/signup", [body("email").isEmail(), body("name").isString(), body("password").isString(), body("cpf").isString(), validateAll], authController.signup);
 
-router.post("/login", [body("email").isEmail(), body("password").not().isEmpty(), validateAll], authController.login);
+router.post("/login", [body("email").isEmail(), body("password").isString(), validateAll], authController.login);
 
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);

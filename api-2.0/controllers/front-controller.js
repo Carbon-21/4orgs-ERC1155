@@ -152,27 +152,9 @@ exports.postPreLogin = async (req, res, next) => {
 };
 
 exports.getLogin = (req, res, next) => {
-  // const argon2 = require("./public/scripts/argon2-bundled.min.js")
-
-// console.time('doSomething');
-// argon2.hash({ pass: "234", salt: "fe3d29e07ed7b249a55da6dd578d18e1", hashLen: 16, type:argon2.ArgonType.Argon2id, time: 2, mem:6024, parallelism: 3 }).then(console.timeEnd('doSomething'))
- 
-// const argon2 = require("argon2")
-
-// console.time('doSomething');
-
-
-// try {
-//   const hash = await argon2.hash("123")
-//   // const res = await argon2.hash("234", {salt: Buffer.from("fe3d29e07ed7b249a55da6dd578d18e1","hex"), hashLength: 16, timeCost: 2, memoryCost:6024, parallelism: 3 }).
-//   // console.log(res);
-//   // console.timeEnd('doSomething');
-// } catch (error) {
-
-// }
-//   //get salt and email from URL parameters
-//   const salt = req.query.salt;
-//   const email = req.query.email;
+  //get salt and email from URL parameters
+  const salt = req.query.salt;
+  const email = req.query.email;
 
   //pass salt and email forward (EJS)
   res.render("login", {
@@ -187,8 +169,6 @@ exports.postLogin = async (req, res, next) => {
   // Collects data from html login form
   const email = req.body.email.slice(0, -1); //removes additional / in the end
   const password = req.body.hashedPassword;
-
-  console.log("password!!!",password)
 
   // Groups the data
   let data = {
