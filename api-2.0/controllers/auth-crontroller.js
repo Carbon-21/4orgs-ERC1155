@@ -9,7 +9,7 @@ var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 
 //////////////CONSTANTS//////////////
-const WEED = "fe3d29e07ed7b24fe3d29e07ed7b249a55da6dd578d18e19a55da6dd578d18e1"; //.env
+const WEED = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1"; //.env
 const DOMAIN = "carbon21.com";
 const SALT_BYTES_LENGTH = 32;
 // const BCRYPT_ALGORITHM = "$2a";
