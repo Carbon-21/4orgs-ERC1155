@@ -7,14 +7,17 @@ window.signup = async function () {
 
     event.preventDefault();
     
-    let email = document.getElementById("email").value.slice(0,-1);
+    let email = document.getElementById("email").value.split("/")[0];
     let password = document.getElementById("password").value;
     let cpf = document.getElementById("cpf").value;
     let name = document.getElementById("name").value;
-    let salt= document.getElementById("salt").value;
+    let salt = document.getElementById("salt").value;
+    let saveKeyOnServer = document.getElementById("saveKeyOnServer").checked;
     
-    // Generation of user's private key and CSR
-    let cryptoMaterials = await crypto.generateCryptoMaterial(email);
+    let cryptoMaterials;
+    // Generation of user's private key and CSR in Client-Side Mode
+    if (!saveKeyOnServer)
+        cryptoMaterials = await crypto.generateCryptoMaterial(email);
 
     password = await hashPassword(password,salt)
 
@@ -32,9 +35,11 @@ window.signup = async function () {
         cpf: cpf,
         email: email,
         name: name,
-        csr: cryptoMaterials.csr,
-        useCSR: true
+        saveKeyOnServer: saveKeyOnServer
     };
+
+    if (!saveKeyOnServer)
+        body.csr = cryptoMaterials.csr;
 
     init.body = JSON.stringify(body);
 
@@ -47,10 +52,11 @@ window.signup = async function () {
             localStorage.setItem("username", email.slice(0, -1));
             console.log('response',response);
             if (response.certificate) {
-                await crypto.downloadCrypto(cryptoMaterials.privateKey, 'privateKey');
-                await crypto.downloadCrypto(response.certificate, 'certificate');
+                if (!saveKeyOnServer)
+                    await crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
+                await crypto.downloadCrypto(name, response.certificate, 'certificate');
             }
-            //window.location.href = '/';
+            window.location.href = '/';
         } else {
             element =     
                 `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
@@ -85,7 +91,7 @@ window.login = async function () {
         headers: headers,
     };
 
-    body = {
+    let body = {
         email: email,
         password: password,
     };

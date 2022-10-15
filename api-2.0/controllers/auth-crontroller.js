@@ -304,9 +304,8 @@ const enrollUserInCA = async (user) => {
 
     let pkey;
 
-    //CSR
-    if (user.useCSR) {
-      logger.debug(`Using CSR mode`);
+    if (!user.saveKeyOnServer) {
+      logger.debug(`--- Client-side Private Key and CSR Generation Mode ---`);
 
       //enroll user in the CA
       var enrollment = await ca.enroll({
@@ -317,9 +316,8 @@ const enrollUserInCA = async (user) => {
       certificate = enrollment.certificate;
     }
 
-    //Not CSR: just enroll user in the CA
     else {
-      logger.debug(`NOT using CSR mode`);
+      logger.debug(`--- Server-side Private Key and CSR Generation Mode ---`);
 
       var enrollment = await ca.enroll({
         enrollmentID: user.email,
@@ -340,8 +338,8 @@ const enrollUserInCA = async (user) => {
       type: "X.509",
     };
 
-    //saves user's server-side generated private key if no CSR was provided
-    if (!user.useCSR) x509Identity.credentials.privateKey = pkey;
+    // If user.saveKeyOnServer is true, saves user's server-side generated private key
+    if (user.saveKeyOnServer) x509Identity.credentials.privateKey = pkey;
 
     await wallet.put(user.email, x509Identity);
 

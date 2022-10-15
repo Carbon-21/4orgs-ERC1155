@@ -84,10 +84,10 @@ const generateKeyPair = async function () {
   }
 }
 
-export const downloadCrypto = async function (material, materialType) {
+export const downloadCrypto = async function (name, material, materialType) {
   let filename;
-  if (materialType == "privateKey") filename = "pk.pem";
-  else if (materialType == "certificate") filename = "certificate.pem";
+  if (materialType == "privateKey") filename = `pk_${name}.pem`;
+  else if (materialType == "certificate") filename = `certificate_${name}.pem`;
   else throw new Error(`InvalidArgumentException - materialType ${materialType} is not valid`);
 
   var element = document.createElement('a');

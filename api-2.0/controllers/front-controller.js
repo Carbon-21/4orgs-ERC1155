@@ -62,12 +62,11 @@ exports.getSignup = (req, res, next) => {
 
 exports.postSignup = async (req, res, next) => {
   // Collects data from html signup form
-  let email = req.body.email //removes additional / in the end;
+  let email = req.body.email
   let password = req.body.password;
   let cpf = req.body.cpf;
   let name = req.body.name;
-  let csr = req.body.csr;
-  let useCSR = req.body.useCSR;
+  let saveKeyOnServer = req.body.saveKeyOnServer;
 
   // Groups the data
   let data = {
@@ -75,9 +74,10 @@ exports.postSignup = async (req, res, next) => {
     password,
     cpf,
     name,
-    csr,
-    useCSR
+    saveKeyOnServer
   };
+
+  if (!saveKeyOnServer) data.csr = req.body.csr;
 
   // Data to JSON
   const jsonData = JSON.stringify(data);
