@@ -1,3 +1,6 @@
-#create bundle.js
-echo "Creating bundle.js"
+#create directory where the bundles will be stored
+mkdir -p ./public/scripts/bundles/
+
+#create auth-bundle.js
+echo "Creating auth-bundle.js"
 browserify ./public/scripts/auth.js > ./public/scripts/bundles/auth-bundle.js -t babelify
