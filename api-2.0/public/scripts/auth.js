@@ -104,7 +104,7 @@ window.login = async function () {
         response = await response.json();
         if (response.success) {
             localStorage.setItem("token", response.token);
-            localStorage.setItem("username", email.slice(0, -1));
+            localStorage.setItem("username", email.split("/")[0]);
             window.location.href = '/';
         } else {
             element =     
