@@ -136,6 +136,7 @@ exports.setURI = async (req, res, next) => {
   }
 };
 
+
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
 /** 
@@ -318,3 +319,41 @@ exports.commitSignedTransaction = async (req, res, next) => {
     return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily));
   }
 }
+
+//mint given token for a user
+exports.ftfromnft = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const tokenAmount = req.body.tokenAmount;
+  const tokenReceiver = req.body.tokenReceiver;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
+  if (!receiverAccountId) return;
+
+  //mint
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:FTFromNFT", receiverAccountId, tokenId, tokenAmount);
+    logger.info(`FT Minted From NFT ${result}`);
+
+    //close communication channel
+    await gateway.disconnect();
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+
+  //send OK response
+  return res.json({
+    result: "success",
+  });
+};
+
