@@ -105,6 +105,7 @@ window.login = async function () {
         if (response.success) {
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.split("/")[0]);
+            localStorage.setItem("keyOnServer", response.keyOnServer);
             window.location.href = '/';
         } else {
             element =     

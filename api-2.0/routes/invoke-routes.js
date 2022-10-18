@@ -38,4 +38,12 @@ router.post(
   invokeController.setURI
 );
 
+////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
+
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/generate-proposal",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("transaction").not().isEmpty(), body("username").not().isEmpty(), validateAll],
+  invokeController.generateTransactionProposal
+);
+
 module.exports = router;

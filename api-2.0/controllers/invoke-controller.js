@@ -112,3 +112,19 @@ exports.setURI = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 };
+
+////////// OFFLINE TRANSACTION SIGNING METHODS //////////
+
+exports.generateTransactionProposal = async (req, res, next) => {
+  console.log('req.body =\n',req.body);
+  try {
+    //send OK response
+    return res.json({
+      result: "success",
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+}
