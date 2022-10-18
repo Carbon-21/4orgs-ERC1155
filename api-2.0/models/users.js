@@ -52,6 +52,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "self",
       field: 'update_user'
+    },
+    keyOnServer: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'key_on_server'
     }
   }, {
     sequelize,

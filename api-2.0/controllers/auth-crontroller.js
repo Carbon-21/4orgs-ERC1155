@@ -206,6 +206,7 @@ const generateSeed = () => {
 //caled on signup
 const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
+  user.keyOnServer = user.saveKeyOnServer;
   let obj;
   try {
     obj = await models.users.findOne({
