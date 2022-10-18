@@ -18,7 +18,8 @@ create table users(
     org varchar(30) default 'Carbon' not null,
     avatar varchar(255),
     status varchar(12) default 'registering' not null,
-    update_user varchar(10) default 'self' not null -- not ID (self,admin etc)
+    update_user varchar(10) default 'self' not null, -- not ID (self,admin etc)
+    key_on_server boolean default false not null -- whether user's privete key is stored on the server (true or false)
 );
 
 -- create table salts(
