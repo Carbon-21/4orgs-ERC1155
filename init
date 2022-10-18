@@ -34,9 +34,7 @@ kill-hlf
 ###### RUN ######
 #run mysql
 start-mysql
-cd ../../../database/sequelize-auto
-npm install
-cd ..
+cd ../../../database
 chmod +x reset-db
 ./reset-db
 cd ../artifacts/channel/create-certificate-with-ca

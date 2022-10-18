@@ -18,10 +18,11 @@ cd "$(dirname "$0")"
 start-mysql
 
 #create carbon db again
-mysql -u carbon -p --execute "source carbon.sql"
+mysql -u carbon -p12345678 --execute "source carbon.sql"
 
 #recreate sequelize models
 cd sequelize-auto
+npm install
 node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h localhost -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
 
 rm -rf ../../api-2.0/models

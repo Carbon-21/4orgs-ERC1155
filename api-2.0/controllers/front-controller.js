@@ -63,7 +63,7 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = async (req, res, next) => {
   // Collects data from html signup form
   let email = req.body.email.slice(0, -1); //removes additional / in the end;
-  let password = req.body.password;
+  let password = req.body.hashedPassword;
   let cpf = req.body.cpf;
   let name = req.body.name;
 
@@ -164,7 +164,7 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = async (req, res, next) => {
   // Collects data from html login form
   const email = req.body.email.slice(0, -1); //removes additional / in the end
-  const password = req.body.password;
+  const password = req.body.hashedPassword;
 
   // Groups the data
   let data = {

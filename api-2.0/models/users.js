@@ -29,10 +29,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(64),
       allowNull: false
     },
-    salt: {
-      type: DataTypes.STRING(64),
-      allowNull: false
-    },
     org: {
       type: DataTypes.STRING(30),
       allowNull: false,
