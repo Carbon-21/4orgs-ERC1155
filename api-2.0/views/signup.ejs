@@ -14,7 +14,8 @@
     <section id="register">
       <div class="container-fluid">
         <div class="register-form card shadow">
-          <form action="/signup" method="POST" class="validated-form" id="form" novalidate>
+          <form action="" method="POST" onsubmit="signup()">
+
             <div class="row">
               <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                 <h1 class="sign-up-header">Registrar</h1>
@@ -79,7 +80,7 @@
 
 
                 <div class="register-button">
-                  <button type="submit" id="submitBtn" class="btn btn-primary btn-lg" value="run external javascript">Registrar</button>
+                  <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
                 </div>
 
               </div>
@@ -99,69 +100,6 @@
 
     <script src="/scripts/argon2-bundled.min.js"></script>
     <script src="/scripts/validateForms.js"></script>
-    <!-- <script src="/scripts/bundle.js"></script> -->
-    
-    <!-- <script>
-      hashedPassword.addEventListener("cjange", function(event){
-        console.log("oooi")
-      });</script> -->
-    <!-- <script>
-      submitBtn.addEventListener("click", function(event){
-        event.preventDefault();
-      });
-      submitBtn2.addEventListener("click", function(event){
-        event.preventDefault();
-      });
-      submitBtn2.click();
-    </script> -->
-
-    <!-- <script>
-      // let hash="nop";
-      hashPassword =  async () => {
-        argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then(h =>
-        document.getElementById("submitBtn").setAttribute("value",h.hashHex)).then(
-        console.log(document.getElementById("submitBtn").value)).catch(e => console.error(e.message, e.code));
-        
-        if(submitBtn.value == 0)
-        {
-          // try {
-          //   // let res = await argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 });
-          //   // console.log("res",res);
-            
-          // } catch (error) {
-            
-          // }
-          // argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then(h => hash = h).then(console.log("hash1",hash)).then(password.value = "oi").
-          // then(submitBtn.value = 1).then(console.log("btn ",submitBtn.value,"pwd",password.value))
-          // .catch(e => console.error(e.message, e.code));
-        }
-        // if(submitBtn.value == 1)
-        // {
-        //   form.submit()
-        // }
-        // console.log("hash2",hash);
-        // document.getElementById("password").value = h.hashHex
-        // .then(forms.submit())
-        // ;submitBtn.click()
-        // console.log(password.value,salt.value,submitBtn.value);
-        // submitBtn.value = 1;
-        // submitBtn.click();
-        // document.getElementById("submitBtn").addEventListener("click", function(event){
-        //   event.preventDefault()
-        // })
-        // password.value= argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 16 }).then().catch(e => console.error(e.message, e.code))
-      };
-    </script>
-    <script>
-      function subt () {
-      // password.value.then
-      console.log("btn2 ",submitBtn.value,"pwd2",password.value);
-      }
-      // form.submit();
-//  <script src="/scripts/argon2-bundled.min.js"></script>
-    <script src="/scripts/validateForms.js"></script>
-    <!-- <script src="/scripts/bundle.js"></script> --> return true;
-// });
-    </script>  -->
+    <script src="/scripts/auth.js"></script>
   </body>
 </html>

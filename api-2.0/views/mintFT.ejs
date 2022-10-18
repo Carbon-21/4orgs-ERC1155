@@ -26,7 +26,7 @@
 
                         <h1 class="mint-header">Emissão de $ylvas</h1>
                         
-                        <form action="/ft" class="validated-form" method="POST" novalidate>
+                        <form action="" class="validated-form" method="POST" onsubmit="mintFT()">
 
                             <div class="flex-fill">
                                 <div class="mint-data">
@@ -57,8 +57,9 @@
                                 document.getElementById("submitButton").style.display = "none";
                                 }
                             </script> -->
+
                             <div class="mint-button">
-                                <img id="loader" class="loading-icon" src="./images/loader.gif" />
+                                <img id="loader" class="loading-icon" src="../images/loader.gif" />
                                 <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Emitir</button>
                             </div>
 
@@ -72,7 +73,7 @@
 
         </section>
 
-        <script src="/scripts/validateForms.js"></script>
+        <script src="/scripts/mint.js"></script>
 
     </body>
 
