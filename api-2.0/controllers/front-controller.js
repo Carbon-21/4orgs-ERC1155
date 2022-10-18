@@ -62,8 +62,8 @@ exports.getSignup = (req, res, next) => {
 
 exports.postSignup = async (req, res, next) => {
   // Collects data from html signup form
-  let email = req.body.email.slice(0, -1); //removes additional / in the end;
-  let password = req.body.hashedPassword;
+  let email = req.body.email;
+  let password = req.body.password;
   let cpf = req.body.cpf;
   let name = req.body.name;
 
@@ -94,12 +94,12 @@ exports.postSignup = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
       req.session.username = email;
-      res.json({success:true, token:response.data.token})
+      res.json({ success: true, token: response.data.token });
     })
 
     // If an error occurs, redirects to the login page and send error message
     .catch(function (err) {
-      res.json({success:false, err: err.response.data.message})
+      res.json({ success: false, err: err.response.data.message });
     });
 };
 
@@ -163,8 +163,8 @@ exports.getLogin = (req, res, next) => {
 
 exports.postLogin = async (req, res, next) => {
   // Collects data from html login form
-  const email = req.body.email.slice(0, -1); //removes additional / in the end
-  const password = req.body.hashedPassword;
+  const email = req.body.email;
+  const password = req.body.password;
 
   // Groups the data
   let data = {
@@ -189,12 +189,12 @@ exports.postLogin = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.session.username = email;
-      res.json({success:true, token:response.data.token})
+      res.json({ success: true, token: response.data.token });
     })
 
     // If an error occurs, redirect to the login page and send error message
     .catch(function (err) {
-      res.json({success:false, err: err.response.data.message})
+      res.json({ success: false, err: err.response.data.message });
     });
 };
 
@@ -212,12 +212,10 @@ exports.getLogout = (req, res, next) => {
 ///// WALLET CONTROLLERS /////
 
 exports.getWallet = async (req, res, next) => {
-
-      res.render("wallet", {
-        title: "My Wallet",
-        cssPath: "css/wallet.css",
-      });
-
+  res.render("wallet", {
+    title: "My Wallet",
+    cssPath: "css/wallet.css",
+  });
 };
 
 ///// COLLECTION CONTROLLERS /////
@@ -275,7 +273,6 @@ exports.getMintFT = (req, res, next) => {
     cssPath: "../css/mintFT.css",
   });
 };
-
 
 ///// NFT MINT CONTROLLERS /////
 
