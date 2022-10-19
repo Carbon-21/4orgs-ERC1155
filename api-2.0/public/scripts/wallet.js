@@ -17,6 +17,8 @@ window.walletClientSideSigning = async () => {
         const certificate = await readUploadedFile("certificate");
 
         const transaction = {
+            chaincodeId: 'erc1155',
+            channelId: 'mychannel',
             fcn: "SelfBalance",
             args: ["$ylvas"]
         };

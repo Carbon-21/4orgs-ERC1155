@@ -1,6 +1,19 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
+const FabricClient = require('fabric-client')
+
+var client = null;
+var channel = null;
+var transactionBuffer = [];
+
+const setupClient = async () => {
+  client = FabricClient.loadFromConfig('../network_org1.yaml');
+  await client.initCredentialStores();
+  channel = client.getChannel('mychannel');
+}
+
+setupClient();
 
 //mint given token for a user
 exports.mint = async (req, res, next) => {
@@ -116,15 +129,31 @@ exports.setURI = async (req, res, next) => {
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
 exports.generateTransactionProposal = async (req, res, next) => {
-  console.log('req.body =\n',req.body);
+
+  const clientCertificate = req.body.certificate;
+  const transactionProposal = req.body.transaction;
+  const org = "CarbonMSP" // Hardcoded
+  await client.initCredentialStores();
+
   try {
-    //send OK response
+    var { proposal, tx_id } = channel.generateUnsignedProposal(transactionProposal, org, clientCertificate);
+    transactionBuffer = [];
+    transactionBuffer.push({proposal: proposal});
+
+    //Hash the transaction proposal
+    var proposalBytes = proposal.toBuffer();
+    logger.debug('typeof proposalBytes =', typeof proposalBytes)
+    var digest = client.getCryptoSuite().hash(proposalBytes);
+    logger.debug('Proposal Digest = ', digest)
+    let proposalHex = Buffer.from(proposalBytes).toString('hex');
+    logger.debug('proposal Hex =', proposalHex);
+    logger.debug('proposal Bytes =', proposalBytes);
     return res.json({
-      result: "success",
+      result: {result: "sucess", digest: digest, proposal: proposalHex}
     });
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, errMessage[1]));
+    return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily
   }
 }
