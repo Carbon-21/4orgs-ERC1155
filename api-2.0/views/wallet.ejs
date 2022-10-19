@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
-  <script src="/scripts/wallet.js"></script>
-  <script src="/scripts/transaction-handler.js"></script>
+  <script src="/scripts/bundles/wallet-bundle.js"></script>
 
-  <body>
+  <body onload="walletServerSideSigning()">
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -33,12 +32,12 @@
         <br>
         <br>
         <div hidden id="signing-files" class="card shadow-lg">
-          <form action="/action_page.php" style="text-align: center;">
+          <form style="text-align: center;">
             <p><strong>Faça o upload da sua chave privada</strong></p>
             <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
             <p><strong>Faça o upload do seu certificado</strong></p>
             <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
-            <button type="submit" class="btn btn-primary btn-lg">Enviar transação</button><br><br>
+            <button onclick="walletClientSideSigning()" type="click" class="btn btn-primary btn-lg">Enviar transação</button><br><br>
           </form>
         </div>
         

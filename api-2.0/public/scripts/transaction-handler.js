@@ -1,12 +1,3 @@
-
-window.addEventListener("load", (event) => {
-    const keyOnServer = localStorage.getItem("keyOnServer");
-    const signingFilesElement = document.getElementById("signing-files");
-
-    // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
-    signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
-});
-
 /**
  * Sends Request to the server. Returns the server's response
  * @param {*} method POST or GET
@@ -17,7 +8,6 @@ window.addEventListener("load", (event) => {
  */
 const sendToServer = async (method, url, body, token) => {
     //event.preventDefault();
-    console.log('entrou sendToServer');
     var headers = new Headers();
     headers.append("Content-Type", "application/json");
     if (token != null) headers.append("Authorization", "Bearer " + token);
@@ -40,19 +30,15 @@ const sendToServer = async (method, url, body, token) => {
     }
   }
 
-window.offlineTransaction = async (transaction) => {
+export const offlineTransaction = async (privateKey, certificate, transaction) => {
     
     // 1. Generate transaction proposal
     const url = "invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
     const body = {
         username: localStorage.getItem("username"),
-        transaction: transaction
-    }
+        transaction: transaction,
+        certificate: certificate
+    };
     const token = localStorage.getItem("token");
-    const response = await sendToServer("POST", url, body, token)
+    const proposalResponse = await sendToServer("POST", url, body, token);
 }
-
-window.offlineTransaction({
-    fcn: "testando fcn",
-    args: ["testando", "args"]
-})
