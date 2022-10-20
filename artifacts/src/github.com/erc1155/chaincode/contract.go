@@ -160,17 +160,30 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 //func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) (uint64,error) {
-func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) (uint64,error) {
-//func (s *SmartContract) MintFTFromNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
+func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
 
 	// -------- Obtem todos NFTs --------
+	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	var balance uint64
+	//var balance uint64
+	var amount uint64
 
 	if tokenid == "" {
 		return 0, fmt.Errorf("Please inform tokenid!")
 	}
 
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return 0,err
+	}
+
+	// Get ID of submitting client identity
+	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return 0,fmt.Errorf("failed to get client id: %v", err)
+	}
+	
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
 		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
@@ -184,74 +197,50 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface, a
 		}
 
 		fmt.Print(queryResponse)
-		// Split Key to search for specific tokenid
+		// Split Key to search for specific tokenid 
+		// The compositekey (account -  tokenid - senderer)
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
 		
       		  if err != nil {
       		      return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
      		   }
-
-		// Add all balances of informed tokenid
+     		   
+     		  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
-		accountNFT := compositeKeyParts[2]
+		
+		// Contains the account of the user who have the nft
+		accountNFT := compositeKeyParts[0]
 		
 		fmt.Print("nfts:" , accountNFT)
 		
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
 		if returnedTokenID != tokenid {
-			// Ao achar o NFT obtem o proprietario para gerar os FTs
-			
-			balAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
-			balance += balAmount
-			
-			// Gera (mint) os FTs de acordo com esses NFTs obtidos			
-			// Obtem que esta atribuindo os FTs (usuario logado)
-			// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
-			err := authorizationHelper(ctx)
-			if err != nil {
-				return 0,err
-			}
-
-			// Get ID of submitting client identity
-			operator, err := ctx.GetClientIdentity().GetID()
-			if err != nil {
-				return 0,fmt.Errorf("failed to get client id: %v", err)
-			}			
-			
+		
 			// Obtem os metadados do nft 
 			// ?
 			
-			// Obtenção do quando será criado 
-			var amount uint64
-			
 			amount = uint64(10)
 
-
-			// Gera novos tokes (FTs) a partir dos NFTs
-			err = mintHelper(ctx, operator, accountNFT, tokenid, amount)
+			// Obtain the total FTs from the current user
+			actFTBallance, err := balanceOfHelper(ctx, accountNFT, tokenid)
+			
+			fmt.Print(actFTBallance)
+	
+			// Generate new tokes FTs from NFTS
+			err = mintHelper(ctx, operator, accountNFT, tokenid, actFTBallance + amount)
 			if err != nil {
 				return 0,err
 			}
+			
+			// Gera uma lista com os tokens gerados
+			//...
 		}
 
 	}
 
-	return balance, nil
-
-//	return 200,nil
+	return uint64(0), nil
 }
 
-	// Analisa metadados desses nfts
-/*	
-
-
-	// Mint tokens
-
-
-	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
-	return emitTransferSingle(ctx, transferSingleEvent)
-}
-*/
 // MintBatch creates amount tokens for each token type id and assigns them to account.
 // This function emits a TransferBatch event.
 func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, account string, ids []string, amounts []uint64) error {
@@ -640,6 +629,28 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 	return balanceOfHelper(ctx, clientID, id)
 }
 
+// SelfBalance returns the balance of the requesting client's account
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) (string, error) {
+	// Get ID of submitting client identity
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return "0", fmt.Errorf("failed to get client id: %v", err)
+	}
+
+	return idNFTHelper(ctx, clientID)
+}
+
+// SelfBalance returns the balance of the requesting client's account
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) (string, error) {
+	// Get ID of submitting client identity
+	//clientID, err := ctx.GetClientIdentity().GetID()
+	//if err != nil {
+	//	return "0", fmt.Errorf("failed to get client id: %v", err)
+	//}
+
+	return idNFTHelper(ctx, account)
+}
+
 // ClientAccountID returns the id of the requesting client's account
 // In this implementation, the client account ID is the clientId itself
 // Users can use this function to get their own account id, which they can then give to others as the payment address
@@ -979,6 +990,55 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	}
 
 	return balance, nil
+}
+
+// balanceOfHelper returns the balance of the given account
+func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (string, error) {
+
+	if account == "0x0" {
+		return "0", fmt.Errorf("balance query for the zero address")
+	}
+
+	// -------- Obtem todos NFTs --------
+	// tokenid is the id of the FTs how will be generated from the NFTs
+	var tokenid = "$ylvas"
+	var nftlist string
+	
+	nftlist = ""
+	
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return "0", fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return "0", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		fmt.Print(queryResponse)
+		// Split Key to search for specific tokenid 
+		// The compositekey (account -  tokenid - senderer)
+	_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		
+	  if err != nil {
+	      return "0", fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+	   }
+     		   
+	  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+	returnedTokenID := compositeKeyParts[1]
+	
+	// Contains the account of the user who have the nft
+	//accountNFT := compositeKeyParts[0]
+	
+	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+	if returnedTokenID != tokenid {
+		nftlist = nftlist + string(returnedTokenID)
+	}
+}
+	return nftlist, nil
 }
 
 // Returns the sorted slice ([]string) copied from the keys of map[string]uint64

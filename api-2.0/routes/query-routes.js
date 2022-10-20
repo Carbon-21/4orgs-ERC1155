@@ -25,6 +25,18 @@ router.get(
 );
 
 router.get(
+  "/channels/:channel/chaincodes/:chaincode/balanceNFT",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), query("tokenOwner").isEmail(), validateAll],
+  queryController.balanceNFT
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/selfBalanceNFT",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
+  queryController.selfBalanceNFT
+);
+
+router.get(
   "/channels/:channel/chaincodes/:chaincode/totalSupply",
   [param("channel").isString(), param("chaincode").isString(), query("tokenId").isString(), validateAll],
   queryController.totalSupply

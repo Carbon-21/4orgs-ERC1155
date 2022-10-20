@@ -324,9 +324,6 @@ exports.commitSignedTransaction = async (req, res, next) => {
 exports.ftfromnft = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
-  const tokenId = req.body.tokenId;
-  const tokenAmount = req.body.tokenAmount;
-  const tokenReceiver = req.body.tokenReceiver;
   const username = req.jwt.username;
   const org = req.jwt.org;
 
@@ -334,13 +331,9 @@ exports.ftfromnft = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //get receiver id
-  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
-  if (!receiverAccountId) return;
-
   //mint
   try {
-    let result = await chaincode.submitTransaction("SmartContract:FTFromNFT", receiverAccountId, tokenId, tokenAmount);
+    let result = await chaincode.submitTransaction("SmartContract:FTFromNFT");
     logger.info(`FT Minted From NFT ${result}`);
 
     //close communication channel

@@ -21,7 +21,7 @@ router.post(
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/ftfromnft",
-  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("tokenId").not().isEmpty(), body("tokenAmount").isInt(), body("tokenReceiver").isEmail(), validateAll],
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
   invokeController.ftfromnft
 );
 router.post(
