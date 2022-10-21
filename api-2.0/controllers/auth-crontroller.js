@@ -81,6 +81,7 @@ exports.getSalt = async (req, res, next) => {
       });
     } else {
       const weededSalt = hkdf(email, WEED);
+
       logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
         salt: weededSalt,
@@ -119,7 +120,6 @@ exports.login = async (req, res, next) => {
 
   logger.debug("Email: " + email);
   logger.debug("Password: " + password);
-  logger.debug("Org: " + org);
 
   //look for user with given email
   let user;

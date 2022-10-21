@@ -6,44 +6,56 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 ## Autenticação
 
 - Getsalt
+
   - Descrição: retorna sal para que usuário performe o PHS
   - Argumentos:
     - email (email)
     - isSignUp (bool)
+  - Retorno:
+    - salt (str)
   - Cenários válidos:
     - Login com email correspondente a usuário existente e com status "active" 🟢
     - Login com email inexistente ou correpondente a usuário que não está com status "active" => retorna weededSalt 🟢
+    - Sign up com email não cadastrado 🟢
     - Sign up com email já cadastrado e com status "registering" 🟢
   - Cenários inválidos:
-    - Sign up com email já cadastrado e status "active" 🟢
-  - Observação: status "registering" existe quando usuário inicia processo de signup (getsalt com isSignUp == true), mas não o finaliza
+    - Sign up com email já cadastrado e status != "registering" 🟢
+  - Observação: status "registering" é settado quando usuário inicia processo de signup (getsalt com isSignUp == true), mas não o finaliza (rota Signup).
+
 - Login
 
   - Descrição: autentica usuário, retornando jwt
   - Argumentos:
     - username (email)
-    - password (obs: campo enviado pelo front é bcrypt (senha inserida, salt))
+    - password (str) (obs: campo enviado pelo front é argon2(senha inserida, salt))
+  - Retorno:
+    - token (str, jwt com email e org)
   - Cenários válidos:
-    - Email e senha corretos, correspondentes a um usuário com status "active" 🟢
+    - Email existente, senha corretos, status "active" e org == carbon 🟢
   - Cenários inválidos:
+    - status != active 🟢
+    - org != carbon 🟢
+    - senha incorreta 🟢
     - Uso de email inexistente no DB ou correspondente a usuário não ativo (terá recebido weededSalt previamente) 🟢
-    - Email válido, mas senha incorreta 🟢
 
 - Sign up
-  - Descrição: registra usuário no sistema
+  - Descrição: registra usuário no sistema, retornando jwt
   - Argumentos:
-    - name
+    - name (str)
     - email (email)
-    - nome
-    - cpf
-    - password
+    - nome (str)
+    - cpf (str)
+    - password (str) (obs: campo enviado pelo front é argon2(senha inserida, salt))
+  - Retorno:
+    - token (str, jwt com email e org)
   - Cenários válidos:
-    - Registrar com email e CPF não cadastrados 🟢
+    - Registrar com email e CPF não cadastrados, e status == registering 🟢
     - Registrar mesmo após ter iniciado o registro (inserção do email => criação de usuário no DB com status "registering"), saído e voltado 🟢
   - Cenários inválidos:
     - Registrar com email já cadastrado 🟢
     - Registrar com CPF já cadastrado 🟢
-  - Observação: implementar captcha para impedir mineração de usuários cadastrados. No login não precisa, pois email incorreto não é alegado (o usuário receb um weededSalt ao invés de um salt) 🔴
+    - Registrar com status != registering 🟢
+  - Observação: implementar captcha para impedir mineração de usuários cadastrados. No login não precisa, pois email incorreto não é alegado (o usuário recebe um weededSalt ao invés de um salt) 🔴
 
 ## Chaincode
 
@@ -53,7 +65,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 
   - Descrição: transfere ativos de um usuário a outro
   - Argumentos:
-    - tokenId
+    - tokenId (str)
     - tokenAmount (int)
     - tokenSender (email)
     - tokenReceiver (email)
@@ -64,7 +76,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 - Mint
   - Descrição: emite certa quantidade de um ativo para um usuário
   - Argumentos:
-    - tokenId
+    - tokenId (str)
     - tokenAmount (int)
     - tokenReceiver (email)
   - Autorizados: admin
@@ -75,7 +87,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 - SetURI
   - Descrição: cria URL para um ativo
   - Argumentos:
-    - tokenId
+    - tokenId (str)
     - URI (URL)
   - Autorizados: admin
   - Cenários válidos:
@@ -88,7 +100,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 
   - Descrição: checa o balanço de um token para um usuário
   - Argumentos:
-    - tokenId
+    - tokenId (str)
     - tokenOwner (email)
   - Autorizados:
   - Cenários válidos:
@@ -98,7 +110,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 
   - Descrição: checa seu balanço de um token
   - Argumentos:
-    - tokenId
+    - tokenId (str)
   - Autorizados:
   - Cenários inválidos:
   - Observação: antigo ClientAccountBalance
@@ -107,7 +119,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 
   - Descrição: checa a quantidade existente de dado token
   - Argumentos:
-    - tokenId
+    - tokenId (str)
   - Autorizados:
   - Cenários válidos:
   - Cenários inválidos:
@@ -115,7 +127,7 @@ Cenários implementados devem ser marcados com 🟢 e os não implementados com 
 - GetURI
   - Descrição: retorna URL de um ativo
   - Argumentos
-    - tokenId
+    - tokenId (str)
   - Autorizados: admin
   - Cenários inválidos:
   - Cenários válidos:
