@@ -110,7 +110,7 @@ async function main() {
     }
 
     // Create a new file system based wallet for managing identities.
-    const walletPath = path.join(process.cwd(), "../../api-2.0/org1-wallet/");
+    const walletPath = path.join(process.cwd(), "../../api/org1-wallet/");
     const wallet = await Wallets.newFileSystemWallet(walletPath);
 
     // Check to see if we've already enrolled the user.
@@ -124,7 +124,7 @@ async function main() {
     // Parse the connection profile. This would be the path to the file downloaded
     // from the IBM Blockchain Platform operational console.
     // const ccpPath = path.resolve(__dirname, '..', 'first-network', 'connection-org1.json');
-    const ccpPath = "../../api-2.0/config/connection-org1.json";
+    const ccpPath = "../../api/config/connection-org1.json";
     const ccp = JSON.parse(fs.readFileSync(ccpPath, "utf8"));
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();
@@ -174,13 +174,7 @@ async function processPendingBlocks(ProcessingMap) {
       }
 
       try {
-        await blockProcessing.processBlockEvent(
-          channelid,
-          processBlock,
-          use_couchdb,
-          nano,
-          mongodb
-        );
+        await blockProcessing.processBlockEvent(channelid, processBlock, use_couchdb, nano, mongodb);
       } catch (error) {
         console.error(`Failed to process block: ${error}`);
       }

@@ -25,8 +25,8 @@ cd sequelize-auto
 npm install
 node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h localhost -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
 
-rm -rf ../../api-2.0/models
-mv models ../../api-2.0
+rm -rf ../../api/models
+mv models ../../api
 
 echo "Carbon DB recreated"
 echo "Sequelize models recreated"
