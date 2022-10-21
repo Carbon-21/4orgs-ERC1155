@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
-  <script src="/scripts/collection.js"></script>
+  <script src="/scripts/bundles/collection-bundle.js"></script>
 
-  <body onload="collection()">
+  <body onload="collectionServerSideSigning()">
     <!-- Navbar -->
     <%- include("partials/navbar") %>
 
@@ -11,7 +11,16 @@
       <div class="container-fuid collection-container">
         <h1 class="collection-header">Minha Coleção</h1>
         <div id="nft-showroom"></div>
-        <img id="loader" class="loading-icon" src="../images/loader.gif" style="display: flex; margin: auto; width: 20%" />
+        <img id="loader" class="loading-icon" src="../images/loader.gif" style="display: none; margin: auto; width: 20%;" />
+        <div hidden id="signing-files" style="margin: auto; align-items: center;">
+          <form style="text-align: center;">
+            <p><strong>Faça o upload da sua chave privada</strong></p>
+            <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+            <p><strong>Faça o upload do seu certificado</strong></p>
+            <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+            <button onclick="collectionClientSideSigning()" type="click" class="btn btn-primary btn-lg">Consultar coleção</button><br><br>
+          </form>
+        </div>
       </div>
     </section>
   </body>

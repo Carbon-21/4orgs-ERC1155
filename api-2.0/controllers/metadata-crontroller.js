@@ -9,32 +9,33 @@ exports.getMetadata = async (req, res, next) => {
   let token = req.headers["authorization"].split(" ")[1];
   let URI;
 
-  // Hash por meio de query no chaincode (GetURI)
-  axios
-    .get(`https://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    })
-    .then(async function (response) {
-      // Get hash (URI) from response
-      URI = response.data;
-      let metadata = await getMetadataFromURI(URI.result);
-      if (Object.keys(metadata).length != 0) {
-        return res.status(200).json({
-          message: metadata,
-          success: true,
-        });
-      } else {
-        return res.status(404).json({ success: false });
-      }
-    })
-    .catch(function (error) {
-      logger.error(error);
-      return res.status(500).json({
-        message: "TokenID do NFT inválido",
-        success: false,
+  try {
+    if (req.body.URI) URI = req.body.URI;
+    else {
+      let response = await axios
+      .get(`https://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
+      URI = response.data.result;
+    }
+  
+    let metadata = await getMetadataFromURI(URI);
+    if (Object.keys(metadata).length != 0) {
+      return res.status(200).json({
+        message: metadata,
+        success: true,
+      });
+    } else {
+      return res.status(404).json({ success: false });
+    }
+  } catch (e) {
+    logger.error(e.message);
+    return res.status(500).json({
+      message: "TokenID do NFT inválido",
+      success: false,
     });
+  }
 };
 
 async function getMetadataFromURI(URI) {
@@ -71,11 +72,12 @@ exports.postMetadata = async (req, res, next) => {
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
     logger.debug("Hash of uploaded Metadata: " + hash);
+    return res.status(200).json({ result: "success", metadataHash: hash, message: "Metadados publicados." });
   } catch (error) {
     logger.error(error);
     return res.status(500).json({
       message: "Falha na aquisição dos metadados",
-      success: false,
+      result: "success",
     });
   }
 
@@ -83,7 +85,7 @@ exports.postMetadata = async (req, res, next) => {
   const URI = `ipfs://${hash}`;
   axios
     .post(
-      `https://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
+      `http://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
       JSON.stringify({
         tokenId: tokenId,
         URI: `http://${hash}.com`, // TODO: Deve se deixar no padrao, que eh somente o URI, mas a validacao impede nesse momento

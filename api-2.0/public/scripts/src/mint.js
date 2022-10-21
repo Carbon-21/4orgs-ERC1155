@@ -248,10 +248,33 @@ const mintNFTServerSideSigning = async () => {
   let metadataResponse = await fetch(postMetadataURL, init);
   let metadataResponseJson = await metadataResponse.json();
 
+  if (!metadataResponse.ok || metadataResponseJson.result != "success") {
+    document.getElementById("submitButton").style.display = "flex";
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    return null;
+  }
+
+  let metadataHash = metadataResponseJson.metadataHash;
+  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  const URI = `http://${metadataHash}.com`;
+  let setUriURL = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+  body = JSON.stringify({
+    URI: URI,
+    tokenId: nftId
+  });
+  init = {
+    method: "POST",
+    headers: headers,
+    body: body
+  };
+
+  let setURIResponse = await fetch(setUriURL, init);
+  
   document.getElementById("submitButton").style.display = "flex";
   document.getElementById("loader").style.display = "none";
 
-  if (!metadataResponse.ok || metadataResponseJson.result == null) {
+  if (!setURIResponse.ok) {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
   }

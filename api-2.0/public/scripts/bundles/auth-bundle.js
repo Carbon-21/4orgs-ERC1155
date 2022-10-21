@@ -21179,36 +21179,49 @@ utils.intFromLE = intFromLE;
 arguments[4][15][0].apply(exports,arguments)
 },{"buffer":19,"dup":15}],99:[function(require,module,exports){
 module.exports={
-  "name": "elliptic",
-  "version": "6.5.4",
-  "description": "EC cryptography",
-  "main": "lib/elliptic.js",
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "test": "npm run lint && npm run unit",
-    "version": "grunt dist && git add dist/"
+  "_from": "elliptic@^6.5.3",
+  "_id": "elliptic@6.5.4",
+  "_inBundle": false,
+  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
+  "_location": "/browserify/elliptic",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "elliptic@^6.5.3",
+    "name": "elliptic",
+    "escapedName": "elliptic",
+    "rawSpec": "^6.5.3",
+    "saveSpec": null,
+    "fetchSpec": "^6.5.3"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:indutny/elliptic"
-  },
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
+  "_requiredBy": [
+    "/browserify/browserify-sign",
+    "/browserify/create-ecdh"
   ],
-  "author": "Fedor Indutny <fedor@indutny.com>",
-  "license": "MIT",
+  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
+  "_shasum": "da37cebd31e79a1367e941b592ed1fbebd58abbb",
+  "_spec": "elliptic@^6.5.3",
+  "_where": "/home/matheus/.npm-global/lib/node_modules/browserify/node_modules/browserify-sign",
+  "author": {
+    "name": "Fedor Indutny",
+    "email": "fedor@indutny.com"
+  },
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "homepage": "https://github.com/indutny/elliptic",
+  "bundleDependencies": false,
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  },
+  "deprecated": false,
+  "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^2.0.2",
     "coveralls": "^3.1.0",
@@ -21224,15 +21237,31 @@ module.exports={
     "istanbul": "^0.4.5",
     "mocha": "^8.0.1"
   },
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  }
+  "files": [
+    "lib"
+  ],
+  "homepage": "https://github.com/indutny/elliptic",
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "license": "MIT",
+  "main": "lib/elliptic.js",
+  "name": "elliptic",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/indutny/elliptic.git"
+  },
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run lint && npm run unit",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "version": "grunt dist && git add dist/"
+  },
+  "version": "6.5.4"
 }
 
 },{}],100:[function(require,module,exports){
@@ -26660,8 +26689,64 @@ arguments[4][96][0].apply(exports,arguments)
 },{"dup":96}],203:[function(require,module,exports){
 arguments[4][97][0].apply(exports,arguments)
 },{"bn.js":187,"dup":97,"minimalistic-assert":220,"minimalistic-crypto-utils":221}],204:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],205:[function(require,module,exports){
+module.exports={
+  "name": "elliptic",
+  "version": "6.5.4",
+  "description": "EC cryptography",
+  "main": "lib/elliptic.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "test": "npm run lint && npm run unit",
+    "version": "grunt dist && git add dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:indutny/elliptic"
+  },
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/indutny/elliptic/issues"
+  },
+  "homepage": "https://github.com/indutny/elliptic",
+  "devDependencies": {
+    "brfs": "^2.0.2",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.6.0",
+    "grunt": "^1.2.1",
+    "grunt-browserify": "^5.3.0",
+    "grunt-cli": "^1.3.2",
+    "grunt-contrib-connect": "^3.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^5.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "grunt-saucelabs": "^9.0.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^8.0.1"
+  },
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  }
+}
+
+},{}],205:[function(require,module,exports){
 arguments[4][118][0].apply(exports,arguments)
 },{"./hash/common":206,"./hash/hmac":207,"./hash/ripemd":208,"./hash/sha":209,"./hash/utils":216,"dup":118}],206:[function(require,module,exports){
 arguments[4][119][0].apply(exports,arguments)
@@ -27099,7 +27184,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 47;
+            _context.next = 46;
             break;
           }
           _context.next = 28;
@@ -27107,40 +27192,39 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 43;
+            _context.next = 42;
             break;
           }
           localStorage.setItem("token", response.token);
-          localStorage.setItem("username", email.slice(0, -1));
+          localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", saveKeyOnServer);
-          console.log('response', response);
           if (!response.certificate) {
-            _context.next = 40;
+            _context.next = 39;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 38;
+            _context.next = 37;
             break;
           }
-          _context.next = 38;
+          _context.next = 37;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 38:
-          _context.next = 40;
+        case 37:
+          _context.next = 39;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 40:
+        case 39:
           window.location.href = '/';
-          _context.next = 45;
+          _context.next = 44;
           break;
-        case 43:
+        case 42:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 45:
-          _context.next = 49;
+        case 44:
+          _context.next = 48;
           break;
-        case 47:
+        case 46:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 49:
+        case 48:
         case "end":
           return _context.stop();
       }
@@ -27718,22 +27802,21 @@ var generateCryptoMaterial = /*#__PURE__*/function () {
             });
           case 11:
             csr = _context.sent;
-            console.log('CSR\n', csr);
             return _context.abrupt("return", {
               csr: csr,
               privateKey: privateKey,
               cryptoPK: cryptoPK
             });
-          case 16:
-            _context.prev = 16;
+          case 15:
+            _context.prev = 15;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0.message);
-          case 19:
+          case 18:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 16]]);
+    }, _callee, null, [[0, 15]]);
   }));
   return function generateCryptoMaterial(_x) {
     return _ref.apply(this, arguments);
@@ -27845,23 +27928,21 @@ var generateKeyPair = /*#__PURE__*/function () {
             return exportCryptoKey('private', keyPair.privateKey);
           case 6:
             privateKey = _context4.sent;
-            console.log(privateKey);
-            _context4.next = 10;
+            _context4.next = 9;
             return exportCryptoKey('public', keyPair.publicKey);
-          case 10:
+          case 9:
             publicKey = _context4.sent;
-            console.log(publicKey);
             return _context4.abrupt("return", [publicKey, privateKey, keyPair.privateKey]);
-          case 15:
-            _context4.prev = 15;
+          case 13:
+            _context4.prev = 13;
             _context4.t0 = _context4["catch"](0);
             return _context4.abrupt("return", _context4.t0.message);
-          case 18:
+          case 16:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[0, 15]]);
+    }, _callee4, null, [[0, 13]]);
   }));
   return function generateKeyPair() {
     return _ref4.apply(this, arguments);

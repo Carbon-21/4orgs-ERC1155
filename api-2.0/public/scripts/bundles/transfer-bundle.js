@@ -11557,50 +11557,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var client = require("./transaction-handler");
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
-var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Consulta realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na consulta" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Transa\xE7\xE3o realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na execu\xE7\xE3o da transa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
 
 /**
- * Executes "SelfBalance" transaction in Client-Side Signing Mode.
+ * Calls Server or Client-Side Signing Mint functions depending on where the user chose
+ * to store his Private Key (on his computer or on the server).
  */
-window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var _document$getElementB, transaction, response;
+window.transfer = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  var keyOnServer;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context.next = 13;
-            break;
-          }
-          // Hides the file upload fields and displays loading image while the transaction is processing.
-          document.getElementById("signing-files").style.display = "none";
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
-          balanceHeader.innerText = "-";
-          event.preventDefault();
-          transaction = {
-            chaincodeId: 'erc1155',
-            channelId: 'mychannel',
-            fcn: "SelfBalance",
-            args: ["$ylvas"]
-          }; // Executes the transaction in Client-Side Signing Mode
-          _context.next = 9;
-          return client.offlineTransaction(transaction);
-        case 9:
-          response = _context.sent;
-          // Hides the loading image and displays the file upload fields again
-          document.getElementById("signing-files").style.display = "block";
-          document.getElementById("loader").style.display = "none";
-
-          // Displays Flash Messages
-          if (response.result == "SUCCESS") {
-            balanceHeader.innerText = response.payload + " Sylvas";
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          } else {
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-          }
-        case 13:
+          keyOnServer = localStorage.getItem("keyOnServer");
+          if (keyOnServer == "true") transferServerSideSigning();else transferClientSideSigning();
+        case 2:
         case "end":
           return _context.stop();
       }
@@ -11609,58 +11581,194 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
 }));
 
 /**
- * Executes "SelfBalance" transaction in Server-Side Signing Mode.
+ * Executes "Transfer" transaction in Client-Side Signing Mode.
  */
-window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var _document$getElementB2, username, token, headers, url, init, response;
-  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-    while (1) {
-      switch (_context2.prev = _context2.next) {
-        case 0:
-          if (!(localStorage.getItem("keyOnServer") == "true")) {
+var transferClientSideSigning = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var _document$getElementB, usernameSource, usernameDest, tokenId, qty, token, receiverAccountId, senderAccountId, transaction, _yield$isUserRegister, headers, url, init, isUserRegisteredResponse, isUserRegistered, transactionResponse;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!(localStorage.getItem("keyOnServer") == "false")) {
+              _context2.next = 55;
+              break;
+            }
+            // Hides the file upload fields and displays loading image while the transaction is processing.
+            document.getElementById("signing-files").style.display = "none";
+            document.getElementById("submitButton").style.display = "none";
+            document.getElementById("loader").style.display = "flex";
+            (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
+            event.preventDefault();
+            usernameSource = localStorage.getItem("username");
+            usernameDest = document.getElementById("usernameDest").value;
+            tokenId = document.getElementById("tokenId").value;
+            qty = document.getElementById("qty").value;
+            token = localStorage.getItem("token"); // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
+            receiverAccountId = "x509::CN=".concat(usernameDest, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            senderAccountId = "x509::CN=".concat(usernameSource, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
+            receiverAccountId = window.btoa(receiverAccountId);
+            senderAccountId = window.btoa(senderAccountId);
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "TransferFrom",
+              args: [senderAccountId, receiverAccountId, tokenId, qty]
+            };
+            _context2.prev = 16;
+            // Verify if the user is registered
+            headers = new Headers();
+            headers.append("Authorization", "Bearer " + token);
+            url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/isUserRegistered?username=".concat(usernameDest, "&org=Carbon");
+            init = {
+              method: "GET",
+              headers: headers
+            };
             _context2.next = 23;
+            return fetch(url, init);
+          case 23:
+            isUserRegisteredResponse = _context2.sent;
+            _context2.next = 26;
+            return isUserRegisteredResponse.json();
+          case 26:
+            _context2.t1 = _yield$isUserRegister = _context2.sent;
+            _context2.t0 = _context2.t1 === null;
+            if (_context2.t0) {
+              _context2.next = 30;
+              break;
+            }
+            _context2.t0 = _yield$isUserRegister === void 0;
+          case 30:
+            if (!_context2.t0) {
+              _context2.next = 34;
+              break;
+            }
+            _context2.t2 = void 0;
+            _context2.next = 35;
             break;
-          }
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
-          balanceHeader.innerText = "-";
-          username = localStorage.getItem("username");
-          token = localStorage.getItem("token");
-          headers = new Headers();
-          headers.append("Authorization", "Bearer " + token);
-          url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
-          init = {
-            method: "GET",
-            headers: headers
-          };
-          _context2.next = 12;
-          return fetch(url, init);
-        case 12:
-          response = _context2.sent;
-          document.getElementById("loader").style.display = "none";
-          if (!response.ok) {
-            _context2.next = 21;
+          case 34:
+            _context2.t2 = _yield$isUserRegister.result;
+          case 35:
+            isUserRegistered = _context2.t2;
+            if (!(!isUserRegisteredResponse.ok || !isUserRegistered)) {
+              _context2.next = 42;
+              break;
+            }
+            document.getElementById("signing-files").style.display = "block";
+            document.getElementById("submitButton").style.display = "block";
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+            return _context2.abrupt("return", null);
+          case 42:
+            _context2.next = 44;
+            return client.offlineTransaction(transaction);
+          case 44:
+            transactionResponse = _context2.sent;
+            // Hides the loading image and displays the file upload fields again
+            document.getElementById("signing-files").style.display = "block";
+            document.getElementById("submitButton").style.display = "block";
+            document.getElementById("loader").style.display = "none";
+
+            // Displays Flash Messages
+            if (transactionResponse.result == "SUCCESS") {
+              document.getElementById("flash").innerHTML = successFlashMessage;
+            } else {
+              document.getElementById("flash").innerHTML = failureFlashMessage;
+            }
+            _context2.next = 55;
             break;
-          }
-          _context2.next = 17;
-          return response.json();
-        case 17:
-          response = _context2.sent;
-          if (response.result == null) alert("Falha de sincronização");else {
-            document.getElementById("flash").innerHTML = successFlashMessage;
-            balanceHeader.innerText = response.result + " Sylvas";
-          }
-          _context2.next = 23;
-          break;
-        case 21:
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("HTTP Error ", response.status);
-        case 23:
-        case "end":
-          return _context2.stop();
+          case 51:
+            _context2.prev = 51;
+            _context2.t3 = _context2["catch"](16);
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+            console.log("Error:", _context2.t3.message);
+          case 55:
+          case "end":
+            return _context2.stop();
+        }
       }
-    }
-  }, _callee2);
-}));
+    }, _callee2, null, [[16, 51]]);
+  }));
+  return function transferClientSideSigning() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+/**
+ * Executes "Transfer" transaction in Server-Side Signing Mode.
+ */
+var transferServerSideSigning = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var usernameDest, tokenId, qty, token, usernameSource, headers, url, init, body, response, element;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            event.preventDefault();
+            document.getElementById("loader").style.display = "flex";
+            document.getElementById("submitButton").style.display = "none";
+            usernameDest = document.getElementById("usernameDest").value;
+            tokenId = document.getElementById("tokenId").value;
+            qty = document.getElementById("qty").value;
+            token = localStorage.getItem("token");
+            usernameSource = localStorage.getItem("username");
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
+            init = {
+              method: "POST",
+              headers: headers
+            };
+            body = {
+              tokenId: tokenId,
+              tokenAmount: qty,
+              tokenSender: usernameSource,
+              tokenReceiver: usernameDest
+            };
+            init.body = JSON.stringify(body);
+            _context3.next = 17;
+            return fetch(url, init);
+          case 17:
+            response = _context3.sent;
+            if (!response.ok) {
+              _context3.next = 25;
+              break;
+            }
+            _context3.next = 21;
+            return response.json();
+          case 21:
+            response = _context3.sent;
+            if (response.result == null) {
+              document.getElementById("submitButton").style.display = "flex";
+              document.getElementById("loader").style.display = "none";
+              element = failureFlashMessage;
+              document.getElementById("flash").innerHTML = element;
+            } else {
+              document.getElementById("submitButton").style.display = "flex";
+              document.getElementById("loader").style.display = "none";
+              element = successFlashMessage;
+              document.getElementById("flash").innerHTML = element;
+            }
+            _context3.next = 31;
+            break;
+          case 25:
+            console.log("HTTP Error ", response.status);
+            document.getElementById("submitButton").style.display = "flex";
+            document.getElementById("loader").style.display = "none";
+            element = failureFlashMessage;
+            document.getElementById("flash").innerHTML = element;
+            return _context3.abrupt("return", null);
+          case 31:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return function transferServerSideSigning() {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 },{"./transaction-handler":40}]},{},[41]);

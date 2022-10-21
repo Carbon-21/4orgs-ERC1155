@@ -11277,6 +11277,531 @@ utils.encode = function encode(arr, enc) {
 };
 
 },{}],40:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+var client = require("./transaction-handler");
+var metadata;
+var metadataArray = [];
+
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
+var successCollectionFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Cole\xE7\xE3o obtida com sucesso." + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var failureCollectionFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro ao obter a cole\xE7\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var successCompensationFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Compensado com sucesso." + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var failureCompensationFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
+ */
+window.collectionClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  var _document$getElementB, nftTokens;
+  return _regeneratorRuntime().wrap(function _callee$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          if (!(localStorage.getItem("keyOnServer") == "false")) {
+            _context.next = 20;
+            break;
+          }
+          // Hides the file upload fields and displays loading image while the transaction is processing.
+          document.getElementById("signing-files").style.display = "none";
+          document.getElementById("loader").style.display = "block";
+          (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
+          event.preventDefault();
+          _context.prev = 5;
+          _context.next = 8;
+          return getNftTokens();
+        case 8:
+          nftTokens = _context.sent;
+          _context.next = 11;
+          return renderCollection(nftTokens);
+        case 11:
+          document.getElementById("flash").innerHTML = successCollectionFlashMessage;
+          _context.next = 18;
+          break;
+        case 14:
+          _context.prev = 14;
+          _context.t0 = _context["catch"](5);
+          document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
+          console.log("Erro: ", _context.t0.message);
+        case 18:
+          document.getElementById("signing-files").style.display = "block";
+          document.getElementById("loader").style.display = "none";
+        case 20:
+        case "end":
+          return _context.stop();
+      }
+    }
+  }, _callee, null, [[5, 14]]);
+}));
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Server-Side Signing Mode.
+ */
+window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  var _document$getElementB2, nftTokens;
+  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          if (!(localStorage.getItem("keyOnServer") == "true")) {
+            _context2.next = 20;
+            break;
+          }
+          // Hides the file upload fields and displays loading image while the transaction is processing.
+          document.getElementById("signing-files").style.display = "none";
+          document.getElementById("loader").style.display = "block";
+          (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
+          event.preventDefault();
+          _context2.prev = 5;
+          _context2.next = 8;
+          return getNftTokens();
+        case 8:
+          nftTokens = _context2.sent;
+          _context2.next = 11;
+          return renderCollection(nftTokens);
+        case 11:
+          document.getElementById("flash").innerHTML = successCollectionFlashMessage;
+          _context2.next = 18;
+          break;
+        case 14:
+          _context2.prev = 14;
+          _context2.t0 = _context2["catch"](5);
+          document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
+          console.log("Error: ", _context2.t0.message);
+        case 18:
+          document.getElementById("signing-files").style.display = "block";
+          document.getElementById("loader").style.display = "none";
+        case 20:
+        case "end":
+          return _context2.stop();
+      }
+    }
+  }, _callee2, null, [[5, 14]]);
+}));
+
+// Recupera os nfts do usuario logado
+function getNftTokens() {
+  return _getNftTokens.apply(this, arguments);
+}
+function _getNftTokens() {
+  _getNftTokens = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+    var result, _yield$_response$json, token, headers, url, init, _response, transaction, _response2, nftArray, i;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context4.next = 23;
+              break;
+            }
+            token = localStorage.getItem("token");
+            headers = new Headers();
+            headers.append("Authorization", "Bearer " + token);
+            url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT";
+            init = {
+              method: "GET",
+              headers: headers
+            };
+            _context4.next = 8;
+            return fetch(url, init);
+          case 8:
+            _response = _context4.sent;
+            _context4.next = 11;
+            return _response.json();
+          case 11:
+            _context4.t1 = _yield$_response$json = _context4.sent;
+            _context4.t0 = _context4.t1 === null;
+            if (_context4.t0) {
+              _context4.next = 15;
+              break;
+            }
+            _context4.t0 = _yield$_response$json === void 0;
+          case 15:
+            if (!_context4.t0) {
+              _context4.next = 19;
+              break;
+            }
+            _context4.t2 = void 0;
+            _context4.next = 20;
+            break;
+          case 19:
+            _context4.t2 = _yield$_response$json.result;
+          case 20:
+            result = _context4.t2;
+            _context4.next = 30;
+            break;
+          case 23:
+            // gets NFT tokens in Client-side signing mode
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "SelfBalanceNFT",
+              args: []
+            };
+            _context4.next = 26;
+            return client.offlineTransaction(transaction);
+          case 26:
+            _response2 = _context4.sent;
+            _context4.next = 29;
+            return JSON.parse(_response2.payload);
+          case 29:
+            result = _context4.sent;
+          case 30:
+            nftArray = []; // Retornar array contendo somente a lista de ids dos nfts
+            for (i in result) {
+              nftArray = nftArray.concat(result[i][0]);
+            }
+            return _context4.abrupt("return", nftArray);
+          case 33:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+  return _getNftTokens.apply(this, arguments);
+}
+function renderCollection(_x) {
+  return _renderCollection.apply(this, arguments);
+} //TODO: consertar getURI para modo offline
+// Recuperar json dos metadados do nft (dado tokenId)
+function _renderCollection() {
+  _renderCollection = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(nftTokens) {
+    var element, key, _yield$nftMetadata, tokenId;
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            if (!nftTokens) {
+              _context5.next = 36;
+              break;
+            }
+            element = '<div class="d-flex flex-column justify-content-between p-md-1">';
+            _context5.t0 = _regeneratorRuntime().keys(nftTokens);
+          case 3:
+            if ((_context5.t1 = _context5.t0()).done) {
+              _context5.next = 34;
+              break;
+            }
+            key = _context5.t1.value;
+            tokenId = nftTokens[key];
+            _context5.next = 8;
+            return nftMetadata(tokenId);
+          case 8:
+            _context5.t3 = _yield$nftMetadata = _context5.sent;
+            _context5.t2 = _context5.t3 === null;
+            if (_context5.t2) {
+              _context5.next = 12;
+              break;
+            }
+            _context5.t2 = _yield$nftMetadata === void 0;
+          case 12:
+            if (!_context5.t2) {
+              _context5.next = 16;
+              break;
+            }
+            _context5.t4 = void 0;
+            _context5.next = 17;
+            break;
+          case 16:
+            _context5.t4 = _yield$nftMetadata.message;
+          case 17:
+            metadata = _context5.t4;
+            metadataArray.push(metadata);
+            _context5.t5 = element;
+            _context5.t6 = '<div class="card shadow-lg mt-3">' + '<div class="card-body flex-column">' + '<div class="d-flex justify-content-between p-md-1">' + '<div class="d-flex flex-row">' + '<div class="align-self-center">' + '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' + "</div>" + "<div>" + "<button class=\"accordion-button\" type=\"button\" data-bs-toggle=\"collapse\" aria-expanded=\"true\" data-bs-target=\"#".concat(tokenId.replace(/\s/g, ""), "\" aria-controls=\"").concat(tokenId, "\"> <h3> ").concat(tokenId, "  </h3> </button>");
+            _context5.next = 23;
+            return renderMetadata(tokenId, metadata);
+          case 23:
+            _context5.t7 = _context5.sent;
+            _context5.t8 = _context5.t6 + _context5.t7;
+            _context5.t9 = _context5.t8 + "</div>";
+            _context5.t10 = _context5.t9 + "</div>";
+            _context5.t11 = _context5.t10 + "</div>";
+            _context5.t12 = _context5.t11 + "</div>";
+            _context5.t13 = _context5.t12 + "</div>";
+            element = _context5.t5 += _context5.t13 + "</div>";
+            // Renderizar a cada nft carregado
+            document.getElementById("nft-showroom").innerHTML = element;
+            _context5.next = 3;
+            break;
+          case 34:
+            _context5.next = 38;
+            break;
+          case 36:
+            console.log("HTTP Error ", response.status);
+            return _context5.abrupt("return", null);
+          case 38:
+            //Desabilitar gif do loader
+            document.getElementById("loader").style.display = "none";
+          case 39:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+  return _renderCollection.apply(this, arguments);
+}
+function nftMetadata(_x2) {
+  return _nftMetadata.apply(this, arguments);
+} // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
+function _nftMetadata() {
+  _nftMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(tokenId) {
+    var response, token, headers, url, init, transaction, URI, _token, _headers, body, _url;
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context6.next = 13;
+              break;
+            }
+            token = localStorage.getItem("token");
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+            url = "http://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
+            init = {
+              method: "POST",
+              headers: headers
+            };
+            console.log('keyOnServer true', 'getURI tokenId =', tokenId);
+            _context6.next = 10;
+            return fetch(url, init);
+          case 10:
+            response = _context6.sent;
+            _context6.next = 29;
+            break;
+          case 13:
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "GetURI",
+              args: [tokenId]
+            }; // GetURI Transaction
+            console.log('keyOnServer false getURI tokenId =', tokenId);
+            _context6.next = 17;
+            return client.offlineTransaction(transaction);
+          case 17:
+            response = _context6.sent;
+            URI = response.payload; // GetMetadata
+            _token = localStorage.getItem("token");
+            _headers = new Headers();
+            _headers.append("Content-Type", "application/json");
+            _headers.append("Authorization", "Bearer " + _token);
+            body = JSON.stringify({
+              URI: URI
+            });
+            _url = "http://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
+            init = {
+              method: "POST",
+              headers: _headers,
+              body: body
+            };
+            _context6.next = 28;
+            return fetch(_url, init);
+          case 28:
+            response = _context6.sent;
+          case 29:
+            return _context6.abrupt("return", response.json());
+          case 30:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6);
+  }));
+  return _nftMetadata.apply(this, arguments);
+}
+function renderMetadata(_x3, _x4) {
+  return _renderMetadata.apply(this, arguments);
+} // Retorna string do metadado de compensação, dependendo do estado
+function _renderMetadata() {
+  _renderMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(tokenId, metadata) {
+    var _metadata$properties, _metadata$properties2, _metadata$properties3, _metadata$properties4, _metadata$properties5, _metadata$properties6, _metadata$properties7;
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            if (metadata.name) {
+              _context7.next = 2;
+              break;
+            }
+            return _context7.abrupt("return", "Metadados não recuperados");
+          case 2:
+            return _context7.abrupt("return", "<div id=\"".concat(tokenId.replace(/\s/g, ""), "\" class=\"accordion-collapse collapse\" aria-labelledby=\"headingOne\" data-bs-parent=\"#accordionExample\"> <div class=\"accordion-body\">") + "<p>" + "<b> Status: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties = metadata.properties) === null || _metadata$properties === void 0 ? void 0 : _metadata$properties.status, " <br />") + // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
+            "<b> Propriet\xE1rio da Terra: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties2 = metadata.properties) === null || _metadata$properties2 === void 0 ? void 0 : _metadata$properties2.land_owner, " <br />") + "<b> \xC1rea (hectares): </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties3 = metadata.properties) === null || _metadata$properties3 === void 0 ? void 0 : _metadata$properties3.land, " <br />") + "<b> Fitofisiologia: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties4 = metadata.properties) === null || _metadata$properties4 === void 0 ? void 0 : _metadata$properties4.phyto, " <br />") + "<b> Geolocaliza\xE7\xE3o: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties5 = metadata.properties) === null || _metadata$properties5 === void 0 ? void 0 : _metadata$properties5.geolocation, " <br />") + "<b> Dono dos direitos de Compensa\xE7\xE3o: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties6 = metadata.properties) === null || _metadata$properties6 === void 0 ? void 0 : _metadata$properties6.compensation_owner, " <br />") + renderCompensation(tokenId.replace(/\s/g, ""), metadata === null || metadata === void 0 ? void 0 : (_metadata$properties7 = metadata.properties) === null || _metadata$properties7 === void 0 ? void 0 : _metadata$properties7.compensation_state) + "<p>" + "</div>");
+          case 3:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+  return _renderMetadata.apply(this, arguments);
+}
+function renderCompensation(tokenId, compensation_state) {
+  switch (compensation_state) {
+    case "Aguardando":
+      return "<b> Estado de compensa\xE7\xE3o:</b> Aguardando <br />";
+    case "Compensado":
+      return "<b> Estado de compensa\xE7\xE3o:</b> Compensado <br />";
+    // Inclui botão de compensação quando não compensado
+    case "Não Compensado":
+    default:
+      return "<b> Estado de compensa\xE7\xE3o:</b> N\xE3o compensado <br />" + "<button id=\"submitCompensationButton\" type=\"submit\" style=\"display: flex\" class=\"btn btn-primary btn-md mt-3\" onclick=\"window.compensate(".concat(tokenId, ")\">Compensar</button>");
+  }
+}
+
+//change token status to "Compensado" in the IPFS
+//OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
+window.compensate = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(tokenId) {
+    var _yield$patchMetadataR;
+    var jwt, headers, url, init, tokenInfo, body, patchMetadataResponse, metadataHash, URI, response, transaction, element, _element, _element2;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            event.preventDefault();
+
+            //set loading
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("submitCompensationButton").style.display = "none";
+            tokenId = tokenId.id;
+            jwt = localStorage.getItem("token"); // 1. Patch Metadata
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + jwt);
+            init = {
+              method: "PATCH",
+              headers: headers
+            }; //get token info
+            tokenInfo = metadataArray.filter(function (metadataArray) {
+              return metadataArray.name === tokenId;
+            });
+            tokenInfo = tokenInfo[0].properties;
+            body = {
+              tokenId: tokenId,
+              metadata: _objectSpread(_objectSpread({}, tokenInfo), {}, {
+                compensation_state: "Compensado"
+              })
+            };
+            init.body = JSON.stringify(body);
+
+            // POST to postMetadata
+            url = "http://localhost:4000/meta/patchMetadata";
+            _context3.next = 16;
+            return fetch(url, init);
+          case 16:
+            patchMetadataResponse = _context3.sent;
+            _context3.next = 19;
+            return patchMetadataResponse.json();
+          case 19:
+            _context3.t1 = _yield$patchMetadataR = _context3.sent;
+            _context3.t0 = _context3.t1 === null;
+            if (_context3.t0) {
+              _context3.next = 23;
+              break;
+            }
+            _context3.t0 = _yield$patchMetadataR === void 0;
+          case 23:
+            if (!_context3.t0) {
+              _context3.next = 27;
+              break;
+            }
+            _context3.t2 = void 0;
+            _context3.next = 28;
+            break;
+          case 27:
+            _context3.t2 = _yield$patchMetadataR.metadataHash;
+          case 28:
+            metadataHash = _context3.t2;
+            URI = "http://".concat(metadataHash, ".com"); // 2. Set URI Metadata in World State
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context3.next = 39;
+              break;
+            }
+            // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
+            body = JSON.stringify({
+              URI: URI,
+              tokenId: tokenId
+            });
+            init = {
+              method: "POST",
+              headers: headers,
+              body: body
+            };
+            _context3.next = 36;
+            return fetch(url, init);
+          case 36:
+            response = _context3.sent;
+            _context3.next = 43;
+            break;
+          case 39:
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "SetURI",
+              args: [tokenId, URI]
+            };
+            _context3.next = 42;
+            return client.offlineTransaction(transaction);
+          case 42:
+            response = _context3.sent;
+          case 43:
+            if (!(response.ok || !!response.result)) {
+              _context3.next = 53;
+              break;
+            }
+            document.getElementById("loader").style.display = "none";
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context3.next = 49;
+              break;
+            }
+            _context3.next = 48;
+            return response.json();
+          case 48:
+            response = _context3.sent;
+          case 49:
+            if (response.result.toLowerCase() != "success") {
+              element = failureCompensationFlashMessage;
+              document.getElementById("flash").innerHTML = element;
+            } else {
+              _element = successCompensationFlashMessage;
+              document.getElementById("flash").innerHTML = _element;
+            }
+            window.location.href = "/collection";
+            _context3.next = 58;
+            break;
+          case 53:
+            document.getElementById("loader").style.display = "none";
+            console.log("HTTP Error ", response.status);
+            _element2 = failureCompensationFlashMessage;
+            document.getElementById("flash").innerHTML = _element2;
+            return _context3.abrupt("return", null);
+          case 58:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return function (_x5) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+},{"./transaction-handler":41}],41:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 
@@ -11547,120 +12072,4 @@ var readUploadedFile = /*#__PURE__*/function () {
 }();
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":3,"elliptic":7,"jsrsasign":37}],41:[function(require,module,exports){
-"use strict";
-
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var client = require("./transaction-handler");
-
-// Flash messages that are displayed to the user in case of success or failure of the transaction execution
-var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Consulta realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na consulta" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-
-/**
- * Executes "SelfBalance" transaction in Client-Side Signing Mode.
- */
-window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var _document$getElementB, transaction, response;
-  return _regeneratorRuntime().wrap(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context.next = 13;
-            break;
-          }
-          // Hides the file upload fields and displays loading image while the transaction is processing.
-          document.getElementById("signing-files").style.display = "none";
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
-          balanceHeader.innerText = "-";
-          event.preventDefault();
-          transaction = {
-            chaincodeId: 'erc1155',
-            channelId: 'mychannel',
-            fcn: "SelfBalance",
-            args: ["$ylvas"]
-          }; // Executes the transaction in Client-Side Signing Mode
-          _context.next = 9;
-          return client.offlineTransaction(transaction);
-        case 9:
-          response = _context.sent;
-          // Hides the loading image and displays the file upload fields again
-          document.getElementById("signing-files").style.display = "block";
-          document.getElementById("loader").style.display = "none";
-
-          // Displays Flash Messages
-          if (response.result == "SUCCESS") {
-            balanceHeader.innerText = response.payload + " Sylvas";
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          } else {
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-          }
-        case 13:
-        case "end":
-          return _context.stop();
-      }
-    }
-  }, _callee);
-}));
-
-/**
- * Executes "SelfBalance" transaction in Server-Side Signing Mode.
- */
-window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var _document$getElementB2, username, token, headers, url, init, response;
-  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-    while (1) {
-      switch (_context2.prev = _context2.next) {
-        case 0:
-          if (!(localStorage.getItem("keyOnServer") == "true")) {
-            _context2.next = 23;
-            break;
-          }
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
-          balanceHeader.innerText = "-";
-          username = localStorage.getItem("username");
-          token = localStorage.getItem("token");
-          headers = new Headers();
-          headers.append("Authorization", "Bearer " + token);
-          url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
-          init = {
-            method: "GET",
-            headers: headers
-          };
-          _context2.next = 12;
-          return fetch(url, init);
-        case 12:
-          response = _context2.sent;
-          document.getElementById("loader").style.display = "none";
-          if (!response.ok) {
-            _context2.next = 21;
-            break;
-          }
-          _context2.next = 17;
-          return response.json();
-        case 17:
-          response = _context2.sent;
-          if (response.result == null) alert("Falha de sincronização");else {
-            document.getElementById("flash").innerHTML = successFlashMessage;
-            balanceHeader.innerText = response.result + " Sylvas";
-          }
-          _context2.next = 23;
-          break;
-        case 21:
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("HTTP Error ", response.status);
-        case 23:
-        case "end":
-          return _context2.stop();
-      }
-    }
-  }, _callee2);
-}));
-
-},{"./transaction-handler":40}]},{},[41]);
+},{"buffer":3,"elliptic":7,"jsrsasign":37}]},{},[40]);
