@@ -1,9 +1,116 @@
+const client = require("./transaction-handler");
+
 let metadata;
 let metadataArray = [];
 
-async function collection() {
-  // Recuperar todos os nfts do usuario
-  let nftTokens = await getNftTokens();
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
+const successFlashMessage =     
+    `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Transação realizada com sucesso`+
+        `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`;
+
+const failureFlashMessage =     
+    `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Ocorreu um erro na execução da transação`+
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
+ */
+ window.collectionClientSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "false") {
+    
+      // Hides the file upload fields and displays loading image while the transaction is processing.
+      document.getElementById("signing-files").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("flash-button")?.click();
+
+      event.preventDefault();
+     
+      try {
+        // Executes the transaction in Client-Side Signing Mode
+        let nftTokens = await getNftTokens();
+  
+        // Renderiza a tela de coleção
+        await renderCollection(nftTokens);
+        document.getElementById("flash").innerHTML = successFlashMessage;
+      } catch (e) {
+        document.getElementById("flash").innerHTML = failureFlashMessage;
+        console.log("Erro: ", e.message);
+      }
+      document.getElementById("signing-files").style.display = "block";
+      document.getElementById("loader").style.display = "none";      
+  }
+}
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Server-Side Signing Mode.
+ */
+window.collectionServerSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "true") {
+    
+    // Hides the file upload fields and displays loading image while the transaction is processing.
+    document.getElementById("signing-files").style.display = "none";
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("flash-button")?.click();
+
+    event.preventDefault();
+   
+    try {
+      // Executes the transaction in Client-Side Signing Mode
+      let nftTokens = await getNftTokens();
+
+      // Renderiza a tela de coleção
+      await renderCollection(nftTokens);
+      document.getElementById("flash").innerHTML = successFlashMessage;
+    } catch (e) {
+      document.getElementById("flash").innerHTML = failureFlashMessage;
+    }
+    document.getElementById("signing-files").style.display = "block";
+    document.getElementById("loader").style.display = "none";      
+  }
+}
+
+// Recupera os nfts do usuario logado
+async function getNftTokens() {
+  let result;
+
+  // gets NFT tokens in Server-side signing mode
+  if (localStorage.getItem("keyOnServer") == "true") {
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Authorization", "Bearer " + token);
+    let url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
+    var init = {
+      method: "GET",
+      headers: headers,
+    };
+  
+    let response = await fetch(url, init);
+    result = (await response.json())?.result;
+  } else {
+    // gets NFT tokens in Client-side signing mode
+    const transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "SelfBalanceNFT",
+      args: []
+    };
+    let response = await client.offlineTransaction(transaction);
+    result = await JSON.parse(response.payload);
+  }
+  let nftArray = [];
+  // Retornar array contendo somente a lista de ids dos nfts
+  for (var i in result) {
+    nftArray = nftArray.concat(result[i][0]);
+  }
+  return nftArray;
+}
+
+
+async function renderCollection(nftTokens) {
   // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
@@ -35,49 +142,64 @@ async function collection() {
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
     }
-    //Desabilitar gif do loader
-    document.getElementById("loader").style.display = "none";
+    // // Hides the loading image and displays the file upload fields again in case of client-side signing
+    // if (localStorage.getItem("keyOnServer") == "false")
+    //   document.getElementById("signing-files").style.display = "block";
+    // document.getElementById("loader").style.display = "none";
   } else {
     console.log("HTTP Error ", response.status);
     return null;
   }
 }
 
-// Recupera os nfts do usuario logado
-async function getNftTokens() {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
-
-  let response = await fetch(url, init);
-  let result = (await response.json())?.result;
-  let nftArray = [];
-  // Retornar array contendo somente a lista de ids dos nfts
-  for (var i in result) {
-    nftArray = nftArray.concat(result[i][0]);
-  }
-  return nftArray;
-}
+//TODO: consertar getURI para modo offline
 
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
+  let response
+  if (localStorage.getItem("keyOnServer") == "true") {
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + token);
+  
+    let url = `http://localhost:4000/meta/getMetadata?tokenId=${tokenId}`;
+    var init = {
+      method: "POST",
+      headers: headers,
+    };
+  
+    response = await fetch(url, init);
 
-  let url = `http://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
+  } else {
+    let transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "GetURI",
+      args: [tokenId]
+    };
+    // GetURI Transaction
+    response = await client.offlineTransaction(transaction);
+    let URI = response.payload;
 
-  let response = await fetch(url, init);
+    // GetMetadata
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + token);
+    let body = JSON.stringify({
+      URI: URI
+    });
+    let url = `http://localhost:4000/meta/getMetadata?tokenId=${tokenId}`;
+    var init = {
+      method: "POST",
+      headers: headers,
+      body: body
+    };
+  
+    response = await fetch(url, init);
+
+  }
   return response.json();
 }
 
