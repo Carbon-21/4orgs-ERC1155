@@ -8,9 +8,12 @@ const fs = require("fs");
 var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 
-//.env
-const weed = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1";
-const domain = "carbon21.com";
+//////////////CONSTANTS//////////////
+const WEED = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1"; //.env
+const DOMAIN = "carbon21.com";
+const SALT_BYTES_LENGTH = 32;
+// const BCRYPT_ALGORITHM = "$2a";
+// const BCRYPT_ROUNDS = "$11$";
 
 //////////DIRECT API CALLS//////////
 //given the username, return a salt so the user can perform the PHS
@@ -36,13 +39,14 @@ exports.getSalt = async (req, res, next) => {
       //user already registering/signing up => return salt
       if (user.status === "registering") {
         logger.info(`User already registering, previously created salt returned`);
+
         return res.status(200).json({
           salt: user.salt,
         });
       }
       //user already exists and its not still registering/signing up => error
       else {
-        logger.warning(`User is being shady`);
+        logger.warn(`User is being shady`);
         return next(new HttpError(409));
       }
     }
@@ -54,13 +58,12 @@ exports.getSalt = async (req, res, next) => {
 
       //add PHS info to DB
       try {
-        await models.users.create({ email, seed, salt });
+        await models.users.create({ email, seed });
       } catch (err) {
         logger.error(err);
         return next(new HttpError(500));
       }
 
-      logger.info(`Salt created and returned`);
       return res.status(200).json({
         salt,
       });
@@ -69,15 +72,15 @@ exports.getSalt = async (req, res, next) => {
 
   // login: return weeded (dummy) salt if user doesn't exist
   else {
-    // TODO validar que é assim mesmo. faz sentiudo, para deixar o tempo de resposta igual nos dois cenários abaixo, no entanto é um procedimento desnecessário quando o usuário de fato existir.
-    const weededSalt = hkdf(email, weed);
-
     if (user && user.status === "active") {
+      const salt = hkdf(email, user.seed);
+
       logger.info(`Valid email, salt returned`);
       return res.status(200).json({
-        salt: user.salt,
+        salt,
       });
     } else {
+      const weededSalt = hkdf(email, WEED);
       logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
         salt: weededSalt,
@@ -92,6 +95,7 @@ exports.signup = async (req, res, next) => {
   const user = req.body;
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
+  logger.debug("Password:", user.password);
 
   //update user on DB
   let response = await saveUserToDatabase(user, next);
@@ -149,6 +153,8 @@ exports.login = async (req, res, next) => {
 
   //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
   if (user.password !== password || user.org !== org) {
+    logger.info("Credentials do not match");
+
     //log activity
     try {
       await models.authenticationLog.create({
@@ -188,16 +194,15 @@ exports.login = async (req, res, next) => {
 };
 
 //////////HELPER CALLS//////////
-//derive key from seed. The derived key is used as salt to perform PHS, on the client side. It is then used on the server side to derive the PHS and store it in the password field (users table).
-// TODO validar 4 chamadas (ordem dos parâmetros)
+//derive 128-bit key. The derived key (email,seed) is used as salt to perform PHS, on the client side. This functions is then used again on (PHS,seed) and the derivation is saved as the password (user table in the DB).
 const hkdf = (ikm, salt) => {
-  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, domain, 11);
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, DOMAIN, SALT_BYTES_LENGTH);
   return Buffer.from(derivedKey).toString("hex");
 };
 
-//generate 256 bit seed
+//generate 128-bit seed
 const generateSeed = () => {
-  const seed = crypto.randomBytes(32).toString("hex");
+  const seed = crypto.randomBytes(SALT_BYTES_LENGTH).toString("hex");
   return seed;
 };
 
@@ -354,3 +359,45 @@ const enrollUserInCA = async (user, next) => {
   //OK
   return true;
 };
+
+//transform 128-bit salt to bcrypt standard salt
+//bcrypt salt = PHS algorithm + # round + b64 of the 128-bit salt
+// const generateBcryptSalt = (originalSalt) => {
+//   const saltBufer = Buffer.from(originalSalt, "hex");
+//   const b64Salt = base64_encode(saltBufer, SALT_BYTES_LENGTH);
+
+//   const bcryptSalt = BCRYPT_ALGORITHM + BCRYPT_ROUNDS + b64Salt;
+//   return bcryptSalt;
+// };
+
+//transform buffer b of len bytes to b64 (bcrypt)
+// const base64_encode = (b, len) => {
+//   const BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
+//   var off = 0,
+//     rs = [],
+//     c1,
+//     c2;
+//   if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
+//   while (off < len) {
+//     c1 = b[off++] & 0xff;
+//     rs.push(BASE64_CODE[(c1 >> 2) & 0x3f]);
+//     c1 = (c1 & 0x03) << 4;
+//     if (off >= len) {
+//       rs.push(BASE64_CODE[c1 & 0x3f]);
+//       break;
+//     }
+//     c2 = b[off++] & 0xff;
+//     c1 |= (c2 >> 4) & 0x0f;
+//     rs.push(BASE64_CODE[c1 & 0x3f]);
+//     c1 = (c2 & 0x0f) << 2;
+//     if (off >= len) {
+//       rs.push(BASE64_CODE[c1 & 0x3f]);
+//       break;
+//     }
+//     c2 = b[off++] & 0xff;
+//     c1 |= (c2 >> 6) & 0x03;
+//     rs.push(BASE64_CODE[c1 & 0x3f]);
+//     rs.push(BASE64_CODE[c2 & 0x3f]);
+//   }
+//   return rs.join("");
+// };

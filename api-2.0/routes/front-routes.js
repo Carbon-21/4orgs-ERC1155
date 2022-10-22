@@ -41,18 +41,12 @@ router.get("/collection", isLoggedIn, frontController.getCollection);
 
 router.get("/ft/mint", isLoggedIn, frontController.getMintFT);
 
-router.post("/ft", isLoggedIn, frontController.postMintFT);
-
 ///// NFT MINT ROUTES /////
 
 router.get("/nft/mint", isLoggedIn, frontController.getMintNFT);
 
-router.post("/nft", isLoggedIn, frontController.postMintNFT);
-
 ///// TRANSFER ROUTES /////
 
 router.get("/transfer", isLoggedIn, frontController.getTransfer);
-
-router.post("/transfer", isLoggedIn, frontController.postTransfer);
 
 module.exports = router;

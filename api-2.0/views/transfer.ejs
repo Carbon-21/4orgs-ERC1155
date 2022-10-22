@@ -17,7 +17,7 @@
           <div class="card-body">
             <div class="justify-content-between p-md-1">
               
-              <form action="/transfer" method="POST" class="validated-form" novalidate>
+              <form action="" method="POST" class="validated-form" onsubmit="transfer()">
 
                 <div class="flex-fill">
                   <div class="transfer-data">
@@ -59,7 +59,7 @@
                 </script> -->
 
                 <div class="transfer-button">
-                    <!-- <img id="loader" class="loading-icon" src="./images/loader.gif" /> -->
+                    <img id="loader" class="loading-icon" src="../images/loader.gif" />
                     <button id="submitButton" type="submit" class="btn btn-primary btn-md">Transferir</button>
                 </div>
               </form>
@@ -69,6 +69,8 @@
       </div>
     </section>
     
+    <script src="/scripts/transfer.js"></script>
+
   </body>
 
 </html>

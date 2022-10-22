@@ -1,9 +1,8 @@
 # CARBON21
 
-## Como rodar
+## Instalação
 
-### Clonando o repositorio
-
+Para clonar o repositório:
 ```
 git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
@@ -11,39 +10,25 @@ cd 4orgs-ERC1155
 
 <br>
 
-### Pré-requisitos
-
-Para instalar os pré-requisitos:
+Para instalar as dependências do fabric:
 
 ```
-chmod +x ./installPreReq
-./installPreReq
+chmod +x ./dependencies_install
+./dependencies_install
 ```
 
-_Nota: Aconselhavel reiniciar a maquina ao fim das instalações_
-<br><br>
-
-Obtenção dos Samples do Hyperledger Fabric
-
-```
-chmod +x ./obtainSamples
-./obtainSamples
-```
-
+Reinicie a máquina para garantir que o usuário foi adicionado ao grupo docker. 
 <br>
-
-Atribuição ao path
-
+<br>
+Em seguida, para instalar o fabric:
 ```
-chmod +x ./atribuiPath
-./atribuiPath
+chmod +x ./install
+./install
 ```
-
-_Notas desse script: Executar esse script de atribuição estando logado como root e como 'usuario normal' para vincular ao path de ambos_
-<br><br>
-Por fim, certifique-se de que configurou o banco de dados de usuários, conforme ./database/README
+Por fim, configure o banco de dados de usuários, conforme a seção "instalação" do ./database/README
 <br><br>
 
+## Como Usar
 ### Rede
 
 Para subir a rede:
@@ -53,8 +38,6 @@ chmod +x init
 ./init
 ```
 
-_Nota: o script init irá matar qualquer docker previamente ativo!_
-
 <br>
 Para matar a rede, sem subir uma nova:
 
@@ -62,6 +45,8 @@ Para matar a rede, sem subir uma nova:
 ./kill
 ```
 
+_Nota: o script init também roda o kill, e ambos matam qualquer conatiner docker previamente ativo!_
+<br>
 <br>
 
 ### API

@@ -19,7 +19,7 @@
         <div class="container-fluid">
           <div class="register-form card shadow">
 
-            <form action="/login" method="POST" class="validated-form" novalidate>
+            <form action="" method="POST" onsubmit="login()">
               <div class="row">
 
                 <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
@@ -28,10 +28,13 @@
 
                   <div class="row login-data">
                     <div class="row-md-6 row-lg-6 form-group">
-                      <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required />
+                      <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required/>
                     </div>
                     <a href="#!" class="mt-2">Esqueceu sua senha?</a>
                   </div>
+
+                  <!-- oninput="const initTime=performance.now();argon2.hash({ pass: password.value, salt: salt.value.slice(0, -1), hashLen: 32, type:argon2.ArgonType.Argon2id, time: 3, mem:16384, parallelism: 1 }).then(h =>
+                      hashedPassword.value = h.hashHex).then(()=>hashTime.value=performance.now()-initTime).catch(e => console.error(e.message, e.code));" -->
 
                   <!--get email, pass it to the server again -->
                   <input type="text" name="email" id="email" hidden value=<%= email %>/>
@@ -39,8 +42,14 @@
                   <!--get salt, use it on client's PHS -->
                   <input type="text" name="salt" id="salt" hidden value=<%= salt %>/>
 
+                  <!--each time the user type in the password field, update this with the hash of the input -->
+                  <!-- <input type="password" name="hashedPassword" id="hashedPassword" hidden/> -->
+
+                  <!--each time the user type in the password field, update this with the time it took to perform the hash -->
+                <!-- <input type="text" name="hashTime" id="hashTime" hidden/> -->
+
                   <div class="login-button mt-4">
-                    <button type="submit" onclick="password.value= hashPassword(password.value,salt.value)" class="btn btn-primary btn-lg" value="run external javascript">Entrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
                   </div>
                 </div>
 
@@ -55,8 +64,9 @@
           </div>
         </div>
 
+        <script src="/scripts/argon2-bundled.min.js"></script>
         <script src="/scripts/validateForms.js"></script>
-        <script src="/scripts/bundle.js"></script>
+        <script src="/scripts/auth.js"></script>
   </body>
 
 </html>

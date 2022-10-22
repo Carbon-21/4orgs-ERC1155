@@ -62,11 +62,10 @@ exports.getSignup = (req, res, next) => {
 
 exports.postSignup = async (req, res, next) => {
   // Collects data from html signup form
-  let email = req.body.email.slice(0, -1); //removes additional / in the end;
+  let email = req.body.email;
   let password = req.body.password;
   let cpf = req.body.cpf;
   let name = req.body.name;
-  // const email = req.body.
 
   // Groups the data
   let data = {
@@ -94,16 +93,13 @@ exports.postSignup = async (req, res, next) => {
 
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
-      req.session.token = response.data.token;
       req.session.username = email;
-      req.flash("success", "Registrado com sucesso");
-      res.redirect("/");
+      res.json({ success: true, token: response.data.token });
     })
 
     // If an error occurs, redirects to the login page and send error message
     .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/presignup");
+      res.json({ success: false, err: err.response.data.message });
     });
 };
 
@@ -167,7 +163,7 @@ exports.getLogin = (req, res, next) => {
 
 exports.postLogin = async (req, res, next) => {
   // Collects data from html login form
-  const email = req.body.email.slice(0, -1); //removes additional / in the end
+  const email = req.body.email;
   const password = req.body.password;
 
   // Groups the data
@@ -192,16 +188,13 @@ exports.postLogin = async (req, res, next) => {
     .post(url, jsonData, options)
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
-      req.flash("success", "Boas-vindas");
-      req.session.token = response.data.token;
       req.session.username = email;
-      res.redirect("/");
+      res.json({ success: true, token: response.data.token });
     })
 
     // If an error occurs, redirect to the login page and send error message
     .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/prelogin");
+      res.json({ success: false, err: err.response.data.message });
     });
 };
 
@@ -219,41 +212,10 @@ exports.getLogout = (req, res, next) => {
 ///// WALLET CONTROLLERS /////
 
 exports.getWallet = async (req, res, next) => {
-  let token = req.session.token;
-
-  // Set url and headers
-
-  const url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`;
-  // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=SelfBalance&args=[\"$ylvas\"]`;
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  // HTTP GET request
-
-  axios
-    .get(url, options)
-
-    // If successful, return user Sylvas balance
-
-    .then(function (response) {
-      let ftBalance = response.data.result;
-      res.render("wallet", {
-        title: "My Wallet",
-        cssPath: "css/wallet.css",
-        ftBalance,
-      });
-    })
-
-    // If an error occurs, redirect to the homepage and send error message
-
-    .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/");
-    });
+  res.render("wallet", {
+    title: "My Wallet",
+    cssPath: "css/wallet.css",
+  });
 };
 
 ///// COLLECTION CONTROLLERS /////
@@ -328,61 +290,6 @@ exports.getMintFT = (req, res, next) => {
   });
 };
 
-exports.postMintFT = async (req, res, next) => {
-  // Collects data from html Sylvas Mint form
-  let username = req.body.username;
-  let qty = req.body.qty;
-  let token = req.session.token;
-
-  // Groups the data
-
-  let data = {
-    tokenId: "$ylvas",
-    tokenAmount: qty,
-    tokenReceiver: username,
-  };
-
-  // Data to JSON
-
-  const jsonData = JSON.stringify(data);
-
-  // Set url and headers
-
-  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
-  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
-
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  // HTTP POST request
-
-  axios
-    .post(url, jsonData, options)
-
-    // If successful, mint the Sylvas amount to the specified user and send success message
-
-    .then(function (response) {
-      req.flash("success", "Emissão de $ylvas realizada com sucesso");
-      res.redirect("/ft/mint");
-    })
-
-    // If an error occurs, redirect to  the mint page and send error message
-
-    // .catch(function (error) {
-    //   req.flash("error", "Ocorreu um erro");
-    //   res.redirect("/ft/mint");
-    // });
-    .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/ft/mint");
-    });
-};
-
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
@@ -392,85 +299,6 @@ exports.getMintNFT = (req, res, next) => {
   });
 };
 
-exports.postMintNFT = async (req, res, next) => {
-  // Collects data from html NFT Mint form
-  let username = req.body.username;
-  let qty = req.body.amount;
-  let nftId = req.body.nftId;
-  let phyto = req.body.phyto;
-  let location = req.body.location;
-  let token = req.session.token;
-
-  // Groups the data
-
-  // let data = {
-  //   fcn: "Mint",
-  //   args: [username, nftId, amount, meta],
-  // };
-  let data = {
-    tokenId: nftId,
-    tokenAmount: qty,
-    tokenReceiver: username,
-  };
-
-  // Data to JSON
-
-  const jsonData = JSON.stringify(data);
-
-  // Set url and headers
-  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
-  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
-
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  // HTTP POST request
-
-  axios
-    .post(url, jsonData, options)
-
-    // If successful, mint NFT to the specified user and send success message
-
-    .then(function (response) {
-      req.flash("success", "Emissão de NFT realizada com sucesso");
-      res.redirect("/nft/mint");
-    })
-
-    // If an error occurs, redirect to the NFT Mint page and send error message
-
-    // .catch(function (error) {
-    //   req.flash("error", "Ocorreu um erro");
-    //   res.redirect("/nft/mint");
-    // });
-    .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/nft/mint");
-    });
-
-  // Post NFT Metadata to IPFS
-  /// Groups the NFT metadata
-  let metadata = {
-    id: nftId,
-    land: location,
-    biome: phyto,
-  };
-
-  // Post metadata through ipfs node
-  axios
-    .post("http://localhost:4000/meta/postMetadata", JSON.stringify({ metadata, tokenId: nftId, token }), options)
-    .then(function (response) {
-      req.flash(response.status, "Metadados do NFT publicados corretamente");
-    })
-    .catch(function (err) {
-      // TODO: lidar com erro na postagem de metadados, a parte ou em conjunto?
-    });
-};
-
 ///// TRANSFER CONTROLLERS /////
 
 exports.getTransfer = (req, res, next) => {
@@ -478,66 +306,4 @@ exports.getTransfer = (req, res, next) => {
     title: "Transfer",
     cssPath: "css/transfer.css",
   });
-};
-
-exports.postTransfer = async (req, res, next) => {
-  // Collects data from html Transfer form
-  let usernameDest = req.body.usernameDest;
-  let tokenId = req.body.tokenId;
-  let qty = req.body.qty;
-  let usernameSource = req.session.username;
-  let token = req.session.token;
-
-  // Groups the data
-
-  // let data = {
-  //   fcn: "TransferFrom",
-  //   args: [usernameSource, usernameDest, tokenId, qty],
-  // };
-  let data = {
-    tokenId,
-    tokenAmount: qty,
-    tokenSender: usernameSource,
-    tokenReceiver: usernameDest,
-  };
-
-  // Data to JSON
-
-  const jsonData = JSON.stringify(data);
-
-  // Set url and headers
-
-  const url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
-  // const url = "http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155";
-
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  // HTTP POST request
-
-  axios
-    .post(url, jsonData, options)
-
-    // If successful, transfer the tokens amount to the specified user and send success message
-
-    .then(function (response) {
-      req.flash("success", "Transferência realizada com sucesso");
-      res.redirect("/");
-    })
-
-    // If an error occurs, redirect to the transfer page and send error message
-
-    // .catch(function (error) {
-    //   req.flash("error", "Ocorreu um erro");
-    //   res.redirect("/transfer");
-    // });
-    .catch(function (err) {
-      req.flash("error", err.response.data.message);
-      res.redirect("/transfer");
-    });
 };
