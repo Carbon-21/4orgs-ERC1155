@@ -108,30 +108,33 @@ exports.postMetadata = async (req, res, next) => {
     });
 };
 
-// TODO: avaliar tipagem, estrutura e dados
-// Metadata Schema v0.1 : QmV2gJwWbDh2E3zzVV1CRpR3prgC6fZ828Yszs9HYxmezp
+// Metadata Schema v0.2
 function makeMetadata(dto) {
   const customData = {
     id: dto.id || "",
     verifier: dto.verifier || "",
-    compensation_owner: dto.compensation_owner || "",
+    private_verifier: dto.private_verifier || "",
     land_owner: dto.land_owner || "",
     land_info: {
+      phyto: dto.phyto || "",
       land: dto.land || "",
-      area_classification: dto.area_classification || "",
-      biome: dto.biome || "",
       geolocation: dto.geolocation || "",
+      area_classification: dto.area_classification || "",
     },
-    value: dto.value || "",
-    balance: dto.balance || "",
-    status: dto.status || "",
+    nft_info:{
+      status: dto.status || "",
+      nft_type: dto.nft_type || "",
+      value: dto.value || "",
+      can_mint_sylvas: dto.can_mint_sylvas || "",
+      sylvas_minted: dto.sylvas_minted || "",
+      bonus_ft: dto.bonus_ft || "",
+    },
+    compensation_owner: dto.compensation_owner || "",
     compensation_state: dto.compensation_state || "",
     certificate: dto.certificate || "",
-    bonus_ft: dto.bonus_ft || "",
     minter: dto.minter || "",
     queue: dto.queue || "",
-    can_mint_sylvas: dto.can_mint_sylvas || "",
-    nft_type: dto.nft_type || "",
+    custom_notes: dto.custom_notes || "",
   };
 
   return {
