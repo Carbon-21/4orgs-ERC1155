@@ -1,7 +1,6 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
-const axios = require("axios").default;
 
 //mint given token for a user
 exports.mint = async (req, res, next) => {
@@ -10,10 +9,8 @@ exports.mint = async (req, res, next) => {
   const tokenId = req.body.tokenId;
   const tokenAmount = req.body.tokenAmount;
   const tokenReceiver = req.body.tokenReceiver;
-  const jwt = req.jwt;
-  const username = jwt.username;
-  const org = jwt.org;
-  const metadata = req.body.metadata;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
@@ -35,24 +32,7 @@ exports.mint = async (req, res, next) => {
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
   }
-
-  if (metadata) {
-    // Post metadata through ipfs node
-    axios
-      .post("http://localhost:4000/meta/postMetadata", JSON.stringify({ metadata, tokenId, jwt }), {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .catch(function (err) {
-        const regexp = new RegExp(/message=(.*)$/g);
-        const errMessage = regexp.exec(err.message);
-        return next(new HttpError(500, errMessage[1]));
-      });
-  }
-
+  
   //send OK response
   return res.json({
     result: "success",
