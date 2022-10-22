@@ -140,14 +140,17 @@ exports.generateTransactionProposal = async (req, res, next) => {
     transactionBuffer = [];
     transactionBuffer.push({proposal: proposal});
 
-    //Hash the transaction proposal
     var proposalBytes = proposal.toBuffer();
     logger.debug('typeof proposalBytes =', typeof proposalBytes)
+    logger.debug('proposal Bytes =', proposalBytes);
+
+    //Hash the transaction proposal
     var digest = client.getCryptoSuite().hash(proposalBytes);
     logger.debug('Proposal Digest = ', digest)
+
     let proposalHex = Buffer.from(proposalBytes).toString('hex');
     logger.debug('proposal Hex =', proposalHex);
-    logger.debug('proposal Bytes =', proposalBytes);
+
     return res.json({
       result: {result: "sucess", digest: digest, proposal: proposalHex}
     });
@@ -155,5 +158,73 @@ exports.generateTransactionProposal = async (req, res, next) => {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily
+  }
+}
+
+exports.sendSignedTransactionProposal = async (req, res, next) => {
+  try {
+    let signatureHex = req.body.signature;
+    let proposalHex = req.body.proposal;
+
+    //Hex to bytes
+    let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
+    let proposalBytes = Buffer.from(proposalHex, 'hex');
+
+    // let signatureBuffer = Buffer.from(signatureHex, 'hex');
+    // console.log('signatureBuffer =',signatureBuffer);
+
+    console.log('signature 2', signature);
+    console.log('proposal 2', proposalBytes);
+  
+    signedProposal = {
+      signature,
+      proposal_bytes: proposalBytes
+    }
+  
+    var targets1 = client.getPeersForOrg('CarbonMSP');
+    var targets2 = client.getPeersForOrg('UsersMSP');
+    var targets3 = client.getPeersForOrg('IbamaMSP');
+    var targets4 = client.getPeersForOrg('CetesbMSP');
+
+    // console.log('########targets1',targets1)
+    // console.log('########targets2',targets1)
+    // console.log('########targets3',targets1)
+    // console.log('########targets4',targets1)
+  
+    var proposal_request = {
+      signedProposal: signedProposal,
+      // Ele está enviando para todos, porém ao receber a primeira resposta já encaminha para o orderer.
+      // Soluções possíveis: mudar a politica de endosso pra Any ou fazer ele agrupar mais endossos antes de enviar.
+      // Fui pelo mais fácil e mudei a política de endosso para Any, e funcionou. 
+      targets: targets1, targets2, targets3, targets4
+    }
+  
+    let proposalResponses = await channel.sendSignedProposal(proposal_request);
+    logger.debug('Send Proposal Response:', proposalResponses);
+    console.log('### Payload', proposalResponses[0].response.payload.toString());
+    //console.log('### Payload2', proposalResponses[0].payload.toString());
+  
+    // 5. Generate unsigned transaction
+    transaction_request = {
+      proposalResponses: proposalResponses,
+      //proposal: proposalBytes,
+      proposal: transactionBuffer[0].proposal
+    };
+
+    transactionBuffer[0].transaction_request = transaction_request;
+  
+    var commitProposal = await channel.generateUnsignedTransaction(transaction_request);
+    let transactionBytes = commitProposal.toBuffer();
+    let transactionHex = Buffer.from(transactionBytes).toString('hex');
+    var transactionDigest = client.getCryptoSuite().hash(transactionBytes);
+
+    return res.json({
+      result: {transaction: transactionHex, transactionDigest: transactionDigest}
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
   }
 }

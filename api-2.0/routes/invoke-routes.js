@@ -46,4 +46,10 @@ router.post(
   invokeController.generateTransactionProposal
 );
 
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/send-proposal",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("signature").not().isEmpty(), body("proposal").not().isEmpty(), validateAll],
+  invokeController.sendSignedTransactionProposal
+);
+
 module.exports = router;
