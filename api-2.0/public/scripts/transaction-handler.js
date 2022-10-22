@@ -63,8 +63,25 @@ export const offlineTransaction = async (privateKey, certificate, transaction) =
     // 3. Send signed transaction proposal to server
     console.log("### 3. Send signed transaction proposal to server");
     url = "invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-    let sendProposalResponse = await sendToServer("POST", url, 
+    const sendProposalResponse = await sendToServer("POST", url, 
       signedProposal, token);
+    const transactionDigest = sendProposalResponse.result.transactionDigest;
+    const transactionHex = sendProposalResponse.result.transaction;
+
+    // 4. Sign transaction
+    console.log("### 4. Sign transaction");
+    let transactionSignature = await signTransaction(transactionDigest, privateKey);
+    let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
+    var signedTransactionProposal = {
+      signature: transactionSignatureHex,
+      transaction: transactionHex,
+    };
+
+    // 5. Send signed transaction to server
+    url = "invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+    let commitTransactionResponse = await sendToServer("POST", url,
+      signedTransactionProposal, token);
+
 }
 
 /**

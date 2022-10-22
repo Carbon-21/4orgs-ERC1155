@@ -2,6 +2,7 @@ const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
 const FabricClient = require('fabric-client')
+var util = require('util');
 
 var client = null;
 var channel = null;
@@ -212,19 +213,65 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
     };
 
     transactionBuffer[0].transaction_request = transaction_request;
-  
     var commitProposal = await channel.generateUnsignedTransaction(transaction_request);
+    //logger.debug("commitProposal = ", commitProposal)
     let transactionBytes = commitProposal.toBuffer();
+
     let transactionHex = Buffer.from(transactionBytes).toString('hex');
+    logger.debug("transactionHex = ", transactionHex);
+
     var transactionDigest = client.getCryptoSuite().hash(transactionBytes);
+    logger.debug("transactionDigest =", transactionDigest);
+
 
     return res.json({
-      result: {transaction: transactionHex, transactionDigest: transactionDigest}
+      result: {result: "success", transaction: transactionHex, transactionDigest: transactionDigest}
     });
   } catch (err) {
     console.log(err);
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, errMessage[1]));
+    return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily
+  }
+}
+
+exports.commitSignedTransaction = async (req, res, next) => {
+  try {
+    let signatureHex = req.body.signature;
+    let transactionHex = req.body.transaction;
+    //Hex to bytes
+    //let signature = Buffer.from(signatureHex, 'hex');
+    // ou UInt8???
+    let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
+
+    let transactionBytes = Buffer.from(transactionHex, 'hex');
+
+    var signedTransactionProposal = {
+      signature: signature,
+      proposal_bytes: transactionBytes,
+    };
+
+    let transaction_request = transactionBuffer.pop().transaction_request;
+
+    var signedTransaction = {
+      signedProposal: signedTransactionProposal,
+      request: transaction_request,
+    }
+
+    console.log('Transaction request sent to the orderer:');
+    console.log(util.inspect(signedTransaction));
+
+    // 7. Commit the signed transaction
+    let commitTransactionResponse = await channel.sendSignedTransaction(signedTransaction);
+    console.log('Successfully sent transaction');
+    console.log('Return code: '+commitTransactionResponse.status);
+    console.log('Response message:', commitTransactionResponse)
+    return res.json({result: commitTransactionResponse.status});
+
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily));
   }
 }

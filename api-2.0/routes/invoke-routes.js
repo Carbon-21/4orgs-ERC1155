@@ -52,4 +52,10 @@ router.post(
   invokeController.sendSignedTransactionProposal
 );
 
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/commit-transaction",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("signature").not().isEmpty(), body("transaction").not().isEmpty(), validateAll],
+  invokeController.commitSignedTransaction
+);
+
 module.exports = router;
