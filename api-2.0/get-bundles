@@ -5,6 +5,10 @@ mkdir -p ./public/scripts/bundles/
 echo "Creating auth-bundle.js"
 browserify ./public/scripts/auth.js > ./public/scripts/bundles/auth-bundle.js -t babelify
 
-#create auth-bundle.js
+#create wallet-bundle.js
 echo "Creating wallet-bundle.js"
 browserify ./public/scripts/wallet.js > ./public/scripts/bundles/wallet-bundle.js -t babelify
+
+#create mint-bundle.js
+echo "Creating mint-bundle.js"
+browserify ./public/scripts/mint.js > ./public/scripts/bundles/mint-bundle.js -t babelify

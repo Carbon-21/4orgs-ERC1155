@@ -32,10 +32,13 @@ const sendToServer = async (method, url, body, token) => {
     }
   }
 
-export const offlineTransaction = async (privateKey, certificate, transaction) => {
+export const offlineTransaction = async (transaction) => {
     
+    const privateKey = await readUploadedFile("private-key");
+    const certificate = await readUploadedFile("certificate");
+
     // 1. Request transaction proposal generation
-    var url = "invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+    var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
     const body = {
         username: localStorage.getItem("username"),
         transaction: transaction,
@@ -62,7 +65,7 @@ export const offlineTransaction = async (privateKey, certificate, transaction) =
 
     // 3. Send signed transaction proposal to server
     console.log("### 3. Send signed transaction proposal to server");
-    url = "invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+    url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
     const sendProposalResponse = await sendToServer("POST", url, 
       signedProposal, token);
     const transactionDigest = sendProposalResponse.result.transactionDigest;
@@ -78,7 +81,7 @@ export const offlineTransaction = async (privateKey, certificate, transaction) =
     };
 
     // 5. Send signed transaction to server
-    url = "invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+    url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
     let commitTransactionResponse = await sendToServer("POST", url,
       signedTransactionProposal, token);
 
@@ -113,4 +116,20 @@ const _preventMalleability = (sig) => {
 		sig.s = bigNum.sub(sig.s);
 	}
 	return sig;
+}
+
+const readUploadedFile = async (fileId) => {
+    
+  return new Promise((resolve) => {
+      
+      var reader = new FileReader();
+  
+      reader.onload = () => {
+          resolve(reader.result)
+      }
+  
+      let file = document.getElementById(fileId).files[0];
+      reader.readAsText(file)
+  })
+
 }

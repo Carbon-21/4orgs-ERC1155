@@ -1,4 +1,39 @@
-async function mintFT(){
+const client = require("./transaction-handler");
+
+
+window.addEventListener("load", () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  const signingFilesElement = document.getElementById("signing-files");
+
+  // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
+  signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
+});
+
+window.mintFT = async () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  if (keyOnServer == "true") mintFTServerSideSigning();
+  else mintFTClientSideSigning();
+}
+
+const mintFTClientSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "false") {
+      event.preventDefault();
+
+      let username = document.getElementById("username").value;
+      let qty = document.getElementById("qty").value;
+
+      const transaction = {
+          chaincodeId: 'erc1155',
+          channelId: 'mychannel',
+          fcn: "Mint",
+          args: [username, "$ylvas", qty]
+      };
+
+      await client.offlineTransaction(transaction);
+  }
+}
+
+const mintFTServerSideSigning = async () => {
 
     event.preventDefault();
 
@@ -20,7 +55,7 @@ async function mintFT(){
         headers: headers,
     };
 
-      body = {
+    var body = {
         tokenId: "$ylvas",
         tokenAmount: qty,
         tokenReceiver: username,
@@ -35,7 +70,7 @@ async function mintFT(){
         if (response.result!="success") {
           document.getElementById("submitButton").style.display = "flex";
           document.getElementById("loader").style.display = "none";
-          element =     
+          let element =     
           `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
               `Ocorreu um erro na emissao`+
               `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -44,7 +79,7 @@ async function mintFT(){
         } else {
           document.getElementById("submitButton").style.display = "flex";
           document.getElementById("loader").style.display = "none";
-          element =     
+          let element =     
             `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
                 `$ylvas emitidos com sucesso`+
                 `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -55,7 +90,7 @@ async function mintFT(){
       console.log("HTTP Error ", response.status);
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
-      element =     
+      let element =     
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
           `Ocorreu um erro na emissao`+
           `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -91,7 +126,7 @@ async function mintNFT(){
         headers: headers,
     };
 
-      body = {
+    var body = {
         tokenId: nftId,
         tokenAmount: qty,
         tokenReceiver: username,
@@ -106,7 +141,7 @@ async function mintNFT(){
         if (response.result==null) {
           document.getElementById("submitButton").style.display = "flex";
           document.getElementById("loader").style.display = "none";
-          element =     
+          let element =     
           `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
               `Ocorreu um erro na emissao`+
               `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -115,7 +150,7 @@ async function mintNFT(){
         } else {
           document.getElementById("submitButton").style.display = "flex";
           document.getElementById("loader").style.display = "none";
-          element =     
+          let element =     
             `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
                 `NFT emitido com sucesso`+
                 `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -127,7 +162,7 @@ async function mintNFT(){
       console.log("HTTP Error ", response.status);
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
-      element =     
+      let element =     
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
           `Ocorreu um erro na emissao`+
           `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+

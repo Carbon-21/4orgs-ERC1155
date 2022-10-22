@@ -13,9 +13,6 @@ window.walletClientSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "false") {
         event.preventDefault();
 
-        const privateKey = await readUploadedFile("private-key");
-        const certificate = await readUploadedFile("certificate");
-
         const transaction = {
             chaincodeId: 'erc1155',
             channelId: 'mychannel',
@@ -23,7 +20,7 @@ window.walletClientSideSigning = async () => {
             args: ["$ylvas"]
         };
 
-        await client.offlineTransaction(privateKey, certificate, transaction);
+        await client.offlineTransaction(transaction);
     }
 }
 
@@ -54,20 +51,4 @@ window.walletServerSideSigning = async () => {
           return null;
         }
     }
-}
-
-const readUploadedFile = async (fileId) => {
-    
-    return new Promise((resolve) => {
-        
-        var reader = new FileReader();
-    
-        reader.onload = () => {
-            resolve(reader.result)
-        }
-    
-        let file = document.getElementById(fileId).files[0];
-        reader.readAsText(file)
-    })
-
 }
