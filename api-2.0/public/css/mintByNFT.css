@@ -1,0 +1,26 @@
+body{
+  font-family: 'Poppins', sans-serif;
+  background-image: url("../images/mintByNFT-bg.webp");
+  background-repeat: no-repeat;
+  background-size:cover;
+  padding: 10% 30% 5% 30%;
+  min-height: 100vh;
+}
+
+p{
+  padding: 0 100px 0 100px
+}
+
+#mintByNFT {
+  margin-top: 40px;
+}
+
+.card-header{
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.carbon-image{
+  width: 15% ;
+  border-radius: 25%;
+}

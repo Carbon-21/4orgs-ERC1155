@@ -5,32 +5,6 @@
 
   <%- include("partials/head") %>
   
-  <!--<script type="text/javascript" src="../scripts/test.js"></script>-->
-
-  <!--<script type="text/javascript">
-    function teste() {
-        //Wait for page to finish loading
-        window.addEventListener("load",function(){
-            //Run function when you submit form
-            document.getElementById("form").addEventListener("submit",function(e){
-                //Stop the form from submitting:
-                e.preventDefault();
-
-                //Get your input value
-                var username = document.getElementById("username").value;
-
-                //Log it to your console
-                console.log(username)
-                alert("username")
-            });
-        });
-    }
-
-
-  </script>-->
-
-  <!-- <body onload="document.getElementById('token').value = localStorage.getItem('token');
-                document.getElementById('username').value = localStorage.getItem('username')"> -->
     <body>
 
     <!-- Navbar -->
@@ -90,6 +64,14 @@
                             <label class="form-label" for="phyto">Insira a fitofisiologia da área</label>
                         </div>
 
+                        <hr>
+                            <div class="flex-fill">
+                                <div class="mint-data">
+                                    <i class="fa-solid fa-chart-area fa-lg"></i>
+                                    <input type="text" name="area" id="area" class="form-control" required/>
+                                </div>
+                                <label class="form-label" for="area">Insira o tamanho da área (hectares)</label>
+                            </div>
                         <hr>
 
                         <div class="flex-fill">

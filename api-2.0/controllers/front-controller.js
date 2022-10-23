@@ -274,6 +274,15 @@ exports.getMintFT = (req, res, next) => {
   });
 };
 
+///// $ILVAS MINT BY NFT CONTROLLERS /////
+
+exports.getMintByNFT = (req, res, next) => {
+  res.render("mintByNFT", {
+    title: "Mint by NFT",
+    cssPath: "../css/mintByNFT.css",
+  });
+};
+
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
