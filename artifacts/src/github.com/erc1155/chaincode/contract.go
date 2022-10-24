@@ -15,8 +15,6 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-
-
 )
 
 // const uriKey = "uri"
@@ -269,7 +267,7 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 // This function triggers a TransferSingle event
 func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id string, amount uint64) error {
 	if sender == recipient {
-		return fmt.Errorf("transfer to self")
+		return fmt.Errorf("Proibido transferir para si mesmo")
 	}
 
 	// Get ID of submitting client identity
@@ -285,7 +283,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 			return err
 		}
 		if !approved {
-			return fmt.Errorf("caller is not owner nor is approved")
+			return fmt.Errorf("Chamador não é o dono do token nem está aprovado a realizar esta transação")
 		}
 	}
 
@@ -669,7 +667,7 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 	}
 
 	if amount <= 0 {
-		return fmt.Errorf("mint amount must be a positive integer")
+		return fmt.Errorf("Quantidade emitida dever um inteiro positivo")
 	}
 
 	err := addBalance(ctx, operator, account, id, amount)
@@ -775,7 +773,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		}
 
 		if partialBalance < neededAmount {
-			return fmt.Errorf("sender has insufficient funds for token %v, needed funds: %v, available fund: %v", tokenId, neededAmount, partialBalance)
+			return fmt.Errorf("Remetente não possui %v suficientes. Quantia requisitada: %v. Quantia disponível: %v", tokenId, neededAmount, partialBalance)
 		} else if partialBalance > neededAmount {
 			// Send the remainder back to the sender
 			remainder := partialBalance - neededAmount

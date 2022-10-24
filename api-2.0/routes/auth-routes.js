@@ -7,11 +7,21 @@ const authController = require("../controllers/auth-crontroller.js");
 const router = Router();
 
 //// UNAUTHENTICATED ROUTES ////
-router.post("/getSalt", [body("email").isEmail(), body("isSignUp").isBoolean(), validateAll], authController.getSalt);
+router.post("/getSalt", [body("email").trim().not().isEmpty().isEmail(), body("isSignUp").trim().not().isEmpty().isBoolean(), validateAll], authController.getSalt);
 
-router.post("/signup", [body("email").not().isEmpty().isEmail(), body("name").not().isEmpty(), body("password").not().isEmpty(), body("cpf").not().isEmpty(), validateAll], authController.signup);
+router.post(
+  "/signup",
+  [
+    body("email").trim().not().isEmpty().isEmail(),
+    body("name").trim().not().isEmpty().isString(),
+    body("password").trim().not().isEmpty().isString(),
+    body("cpf").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  authController.signup
+);
 
-router.post("/login", [body("email").isEmail(), body("password").isString(), validateAll], authController.login);
+router.post("/login", [body("email").trim().not().isEmpty().isEmail(), body("password").trim().not().isEmpty().isString(), validateAll], authController.login);
 
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);

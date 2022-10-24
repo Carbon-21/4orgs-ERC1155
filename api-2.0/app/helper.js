@@ -79,14 +79,15 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
     const walletPath = await getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
 
-    //TODO após estudar wallets, temos que olhar se isso aqui será mantido
+    //if account doesn't exist => error
     let identity = await wallet.get(username);
     if (!identity) {
-      console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
-      await getRegisteredUser(username, org_name, true);
-      identity = await wallet.get(username);
-      console.log("Run the registerUser.js application before retrying");
-      return;
+      return next(new HttpError(422));
+      // console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
+      // await getRegisteredUser(username, org_name, true);
+      // identity = await wallet.get(username);
+      // console.log("Run the registerUser.js application before retrying");
+      // return;
     }
 
     const connectOptions = {
