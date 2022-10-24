@@ -77,6 +77,7 @@ async function mintNFT(){
     let nftId = document.getElementById("nftId").value
     let phyto = document.getElementById("phyto").value
     let location = document.getElementById("location").value
+    let area = document.getElementById("area").value
     let qty = document.getElementById("amount").value
 
     let token = localStorage.getItem("token");

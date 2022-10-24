@@ -276,10 +276,10 @@ exports.getMintFT = (req, res, next) => {
 
 ///// $ILVAS MINT BY NFT CONTROLLERS /////
 
-exports.getMintByNFT = (req, res, next) => {
-  res.render("mintByNFT", {
-    title: "Mint by NFT",
-    cssPath: "../css/mintByNFT.css",
+exports.getMintFromNFT = (req, res, next) => {
+  res.render("mintFromNFT", {
+    title: "Mint from NFT",
+    cssPath: "../css/mintFromNFT.css",
   });
 };
 

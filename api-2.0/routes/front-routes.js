@@ -40,9 +40,9 @@ router.get("/collection", isLoggedIn, frontController.getCollection);
 
 router.get("/ft/mint", isLoggedIn, frontController.getMintFT);
 
-///// $ILVAS MINT BY NFT ROUTES /////
+///// $ILVAS MINT FROM NFT ROUTES /////
 
-router.get("/ft/mintByNFT", isLoggedIn, frontController.getMintByNFT);
+router.get("/ft/mintFromNFT", isLoggedIn, frontController.getMintFromNFT);
 
 ///// NFT MINT ROUTES /////
 
