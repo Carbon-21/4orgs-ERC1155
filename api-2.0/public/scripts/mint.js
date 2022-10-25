@@ -22,11 +22,16 @@ const mintFTClientSideSigning = async () => {
       let username = document.getElementById("username").value;
       let qty = document.getElementById("qty").value;
 
+      // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
+      let clientAccountId = `x509::CN=${username},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+
+      clientAccountId = window.btoa(clientAccountId);
+
       const transaction = {
           chaincodeId: 'erc1155',
           channelId: 'mychannel',
           fcn: "Mint",
-          args: [username, "$ylvas", qty]
+          args: [clientAccountId, "$ylvas", qty]
       };
 
       await client.offlineTransaction(transaction);

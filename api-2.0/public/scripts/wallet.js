@@ -20,7 +20,10 @@ window.walletClientSideSigning = async () => {
             args: ["$ylvas"]
         };
 
-        await client.offlineTransaction(transaction);
+        let response = await client.offlineTransaction(transaction);
+
+        if (response.result == "SUCCESS")
+            balanceHeader.innerText = response.payload + " Sylvas";
     }
 }
 

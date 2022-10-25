@@ -70,20 +70,32 @@ export const offlineTransaction = async (transaction) => {
       signedProposal, token);
     const transactionDigest = sendProposalResponse.result.transactionDigest;
     const transactionHex = sendProposalResponse.result.transaction;
+    const proposalResponseStatus = sendProposalResponse.result.status;
+    const payload = sendProposalResponse.result.payload;
 
-    // 4. Sign transaction
-    console.log("### 4. Sign transaction");
-    let transactionSignature = await signTransaction(transactionDigest, privateKey);
-    let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
-    var signedTransactionProposal = {
-      signature: transactionSignatureHex,
-      transaction: transactionHex,
-    };
+    if (proposalResponseStatus == 200) {
+      // 4. Sign transaction
+      console.log("### 4. Sign transaction");
+      let transactionSignature = await signTransaction(transactionDigest, privateKey);
+      let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
+      var signedTransactionProposal = {
+        signature: transactionSignatureHex,
+        transaction: transactionHex,
+      };
 
-    // 5. Send signed transaction to server
-    url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-    let commitTransactionResponse = await sendToServer("POST", url,
-      signedTransactionProposal, token);
+      // 5. Send signed transaction to server
+      url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+      let commitTransactionResponse = await sendToServer("POST", url,
+        signedTransactionProposal, token);
+
+      let commitResult = commitTransactionResponse.result;
+      if (commitResult == "SUCCESS")
+        return {
+          result: "SUCCESS",
+          payload: payload
+        };
+    }
+    return {result: "FAILURE"}
 
 }
 

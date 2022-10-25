@@ -201,9 +201,12 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
     }
   
     let proposalResponses = await channel.sendSignedProposal(proposal_request);
+    let payload = proposalResponses[0].response.payload.toString();
+    let status = proposalResponses[0].response.status;
+    let message = proposalResponses[0].response.message;
+
     logger.debug('Send Proposal Response:', proposalResponses);
-    console.log('### Payload', proposalResponses[0].response.payload.toString());
-    //console.log('### Payload2', proposalResponses[0].payload.toString());
+    logger.debug('Payload =', payload);
   
     // 5. Generate unsigned transaction
     transaction_request = {
@@ -225,7 +228,7 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
 
 
     return res.json({
-      result: {result: "success", transaction: transactionHex, transactionDigest: transactionDigest}
+      result: {result: "success", transaction: transactionHex, transactionDigest: transactionDigest, payload: payload, status: status, message: message}
     });
   } catch (err) {
     console.log(err);
@@ -239,9 +242,8 @@ exports.commitSignedTransaction = async (req, res, next) => {
   try {
     let signatureHex = req.body.signature;
     let transactionHex = req.body.transaction;
+    
     //Hex to bytes
-    //let signature = Buffer.from(signatureHex, 'hex');
-    // ou UInt8???
     let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
 
     let transactionBytes = Buffer.from(transactionHex, 'hex');
@@ -266,7 +268,7 @@ exports.commitSignedTransaction = async (req, res, next) => {
     console.log('Successfully sent transaction');
     console.log('Return code: '+commitTransactionResponse.status);
     console.log('Response message:', commitTransactionResponse)
-    return res.json({result: commitTransactionResponse.status});
+    return res.json({result: commitTransactionResponse.status, message: commitTransactionResponse.info});
 
   } catch (err) {
     console.log(err);
