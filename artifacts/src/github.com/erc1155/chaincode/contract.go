@@ -1039,6 +1039,8 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (s
 		return "0", fmt.Errorf("balance query for the zero address")
 	}
 
+	fmt.Println(account)
+	
 	// -------- Obtem todos NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
