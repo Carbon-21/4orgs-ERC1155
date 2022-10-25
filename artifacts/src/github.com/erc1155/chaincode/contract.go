@@ -1039,7 +1039,6 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (s
 		return "0", fmt.Errorf("balance query for the zero address")
 	}
 
-	fmt.Println(account)
 	
 	// -------- Obtem todos NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
@@ -1073,10 +1072,10 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (s
 	returnedTokenID := compositeKeyParts[1]
 	
 	// Contains the account of the user who have the nft
-	//accountNFT := compositeKeyParts[0]
+	accountNFT := compositeKeyParts[2]
 	
 	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
-	if returnedTokenID != tokenid {
+	if ((returnedTokenID != tokenid) && (accountNFT == account)){
 		nftlist = nftlist + string(returnedTokenID)
 	}
 }
