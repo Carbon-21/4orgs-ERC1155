@@ -237,7 +237,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 				fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
 				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
 				fmt.Print(err)
-				NFTSumList[containInSliceIndex][2] = string(currentSylv + 10) 			
+				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + 10) 		
 			}else{
 				//fmt.Print("Adicionando Elemento", returnedTokenID, accountNFT)
 				element := []string{string(returnedTokenID),accountNFT,"10"}
