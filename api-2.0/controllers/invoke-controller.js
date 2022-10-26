@@ -201,11 +201,15 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
     }
   
     let proposalResponses = await channel.sendSignedProposal(proposal_request);
+    logger.debug('Send Proposal Response:', proposalResponses[0]);
+
+    if (proposalResponses[0] instanceof Error)
+      return res.json({result: "failure"});
+    
     let payload = proposalResponses[0].response.payload.toString();
     let status = proposalResponses[0].response.status;
     let message = proposalResponses[0].response.message;
 
-    logger.debug('Send Proposal Response:', proposalResponses);
     logger.debug('Payload =', payload);
   
     // 5. Generate unsigned transaction

@@ -50,6 +50,7 @@ window.signup = async function () {
         if (response.success) {
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.slice(0, -1));
+            localStorage.setItem("keyOnServer", saveKeyOnServer);
             console.log('response',response);
             if (response.certificate) {
                 if (!saveKeyOnServer)
@@ -58,7 +59,7 @@ window.signup = async function () {
             }
             window.location.href = '/';
         } else {
-            element =     
+            let element =     
                 `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
                     `${response.err}`+
                     `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
@@ -108,7 +109,7 @@ window.login = async function () {
             localStorage.setItem("keyOnServer", response.keyOnServer);
             window.location.href = '/';
         } else {
-            element =     
+            let element =     
             `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
                 `${response.err}`+
                 `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
