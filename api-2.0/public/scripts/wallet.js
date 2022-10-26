@@ -1,16 +1,13 @@
 const client = require("./transaction-handler");
 
 
-window.addEventListener("load", () => {
-    const keyOnServer = localStorage.getItem("keyOnServer");
-    const signingFilesElement = document.getElementById("signing-files");
-
-    // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
-    signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
-});
-
 window.walletClientSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "false") {
+        document.getElementById("signing-files").style.display = "none";
+        document.getElementById("loader").style.display = "flex";
+        document.getElementById("flash-button")?.click();
+        balanceHeader.innerText = "-";
+
         event.preventDefault();
 
         const transaction = {
@@ -21,9 +18,27 @@ window.walletClientSideSigning = async () => {
         };
 
         let response = await client.offlineTransaction(transaction);
-
-        if (response.result == "SUCCESS")
+        
+        document.getElementById("signing-files").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
+        
+        if (response.result == "SUCCESS") {
             balanceHeader.innerText = response.payload + " Sylvas";
+            let element =     
+            `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                `Consulta realizada com sucesso`+
+                `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+            `</div>`
+            document.getElementById("flash").innerHTML = element;
+        } else {
+            let element =     
+            `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+                `Ocorreu um erro na consulta`+
+                `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+            `</div>`
+            document.getElementById("flash").innerHTML = element;
+        }
+            
     }
 }
 

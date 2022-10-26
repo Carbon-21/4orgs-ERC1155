@@ -1,14 +1,6 @@
 const client = require("./transaction-handler");
 
 
-window.addEventListener("load", () => {
-  const keyOnServer = localStorage.getItem("keyOnServer");
-  const signingFilesElement = document.getElementById("signing-files");
-
-  // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
-  signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
-});
-
 window.mintFT = async () => {
   const keyOnServer = localStorage.getItem("keyOnServer");
   if (keyOnServer == "true") mintFTServerSideSigning();

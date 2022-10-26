@@ -1,6 +1,14 @@
 const elliptic = require('elliptic');
 const { KEYUTIL } = require('jsrsasign');
 
+window.addEventListener("load", () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  const signingFilesElement = document.getElementById("signing-files");
+
+  // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
+  signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
+});
+
 /**
  * Sends Request to the server. Returns the server's response
  * @param {*} method POST or GET
