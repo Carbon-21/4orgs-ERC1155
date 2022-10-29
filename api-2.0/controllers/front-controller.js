@@ -227,48 +227,10 @@ exports.getWallet = async (req, res, next) => {
 ///// COLLECTION CONTROLLERS /////
 
 exports.getCollection = async (req, res, next) => {
-  if (req.session.token) {
-    let token = req.session.token;
-
-    // Set url and headers
-
-    const url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
-    // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
-
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    // HTTP GET request
-
-    axios
-      .get(url, options)
-
-      // If successful, return user NFT balance
-
-      .then(function (response) {
-        let balances = response.data.result;
-        res.render("collection", {
-          title: "My Collection",
-          cssPath: "css/collection.css",
-          balances,
-        });
-      })
-
-      // If an error occurs, redirect to the homepage and send error message
-
-      // .catch(function (error) {
-      //   console.log(error);
-      //   req.flash("error", "Ocorreu um erro");
-      //   res.redirect("/");
-      // });
-      .catch(function (err) {
-        req.flash("error", err.response.data.message);
-        res.redirect("/");
-      });
-  }
+  res.render("collection", {
+    title: "Collection",
+    cssPath: "../css/collection.css",
+  });
 };
 
 ///// $ILVAS MINT CONTROLLERS /////

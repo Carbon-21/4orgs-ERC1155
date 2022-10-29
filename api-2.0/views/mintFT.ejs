@@ -46,34 +46,18 @@
                             </div>
 
                             <hr>
-                            
-                            <!-- <script type="text/javascript">
-                                function buttonPressed() {
-                                // Request
-                                sendRequest("MintFT");
-                                // Alterna visibilidade de botao e gif de carregamento
-                                document.getElementById("loader").style.display = "flex";
-                                document.getElementById("submitButton").style.display = "none";
-                                }
-                            </script> -->
+
+                            <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
                             <div hidden id="signing-files" style="text-align: center;">
                                 <p><strong>Faça o upload da sua chave privada</strong></p>
                                 <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
                                 <p><strong>Faça o upload do seu certificado</strong></p>
                                 <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+                                <div class="mint-button">
+                                    <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+                                </div>
                             </div>
-
-                            <div class="mint-button">
-                                <img id="loader" class="loading-icon" src="../images/loader.gif" />
-                                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
-                            </div>
-
-                        <div hidden id="signing-files">
-                            <p><strong>Faça o upload da sua chave privada</strong></p>
-                            <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
-                            <p><strong>Faça o upload do seu certificado</strong></p>
-                            <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
-                        </div>
+                            
 
                     </div>
         

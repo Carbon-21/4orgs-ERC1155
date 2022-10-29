@@ -5,8 +5,10 @@ window.addEventListener("load", () => {
   const keyOnServer = localStorage.getItem("keyOnServer");
   const signingFilesElement = document.getElementById("signing-files");
 
-  // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
-  signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
+  if (signingFilesElement && keyOnServer) {
+    // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
+    signingFilesElement.hidden = (keyOnServer == "true") ? true : false;
+  }
 });
 
 /**

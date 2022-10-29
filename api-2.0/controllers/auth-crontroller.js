@@ -42,7 +42,7 @@ exports.getSalt = async (req, res, next) => {
       }
       //user already exists and its not still registering/signing up => error
       else {
-        logger.warning(`User is being shady`);
+        logger.info(`User is being shady`);
         return next(new HttpError(409));
       }
     }

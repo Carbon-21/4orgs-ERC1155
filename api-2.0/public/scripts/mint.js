@@ -1,5 +1,16 @@
 const client = require("./transaction-handler");
 
+const successFlashMessage =     
+    `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Transação realizada com sucesso`+
+        `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`;
+
+const failureFlashMessage =     
+    `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Ocorreu um erro na execução da transação`+
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`
 
 window.mintFT = async () => {
   const keyOnServer = localStorage.getItem("keyOnServer");
@@ -7,8 +18,17 @@ window.mintFT = async () => {
   else mintFTClientSideSigning();
 }
 
+window.mintNFT = async () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  if (keyOnServer == "true") mintNFTServerSideSigning();
+  else mintNFTClientSideSigning();
+}
+
 const mintFTClientSideSigning = async () => {
   if (localStorage.getItem("keyOnServer") == "false") {
+      document.getElementById("signing-files").style.display = "none";
+      document.getElementById("loader").style.display = "flex";
+      document.getElementById("flash-button")?.click();
       event.preventDefault();
 
       let username = document.getElementById("username").value;
@@ -26,7 +46,22 @@ const mintFTClientSideSigning = async () => {
           args: [clientAccountId, "$ylvas", qty]
       };
 
-      await client.offlineTransaction(transaction);
+      try {
+        let response = await client.offlineTransaction(transaction);
+
+        document.getElementById("signing-files").style.display = "block";
+        document.getElementById("loader").style.display = "none";
+        
+        if (response.result == "SUCCESS") {
+            document.getElementById("flash").innerHTML = successFlashMessage;
+        } else {
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+        }
+      } catch (e) {
+        document.getElementById("flash").innerHTML = failureFlashMessage;
+        console.log("Error:", e.message)
+      }
+
   }
 }
 
@@ -98,7 +133,11 @@ const mintFTServerSideSigning = async () => {
 
 }
 
-async function mintNFT(){
+const mintNFTClientSideSigning = async () => {
+  console.log("nada")
+}
+
+const mintNFTServerSideSigning = async () => {
 
     event.preventDefault();
 

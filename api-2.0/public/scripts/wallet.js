@@ -1,6 +1,18 @@
 const client = require("./transaction-handler");
 
 
+const successFlashMessage =     
+    `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Consulta realizada com sucesso`+
+        `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`;
+
+const failureFlashMessage =     
+    `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Ocorreu um erro na consulta`+
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`
+
 window.walletClientSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "false") {
         document.getElementById("signing-files").style.display = "none";
@@ -24,19 +36,9 @@ window.walletClientSideSigning = async () => {
         
         if (response.result == "SUCCESS") {
             balanceHeader.innerText = response.payload + " Sylvas";
-            let element =     
-            `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
-                `Consulta realizada com sucesso`+
-                `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
-            `</div>`
-            document.getElementById("flash").innerHTML = element;
+            document.getElementById("flash").innerHTML = successFlashMessage;
         } else {
-            let element =     
-            `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
-                `Ocorreu um erro na consulta`+
-                `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
-            `</div>`
-            document.getElementById("flash").innerHTML = element;
+            document.getElementById("flash").innerHTML = failureFlashMessage;
         }
             
     }
@@ -44,6 +46,10 @@ window.walletClientSideSigning = async () => {
 
 window.walletServerSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "true") {
+        document.getElementById("loader").style.display = "flex";
+        document.getElementById("flash-button")?.click();
+        balanceHeader.innerText = "-";
+
         let username = localStorage.getItem("username");
         let token = localStorage.getItem("token");
     
@@ -57,16 +63,20 @@ window.walletServerSideSigning = async () => {
         };
     
         let response = await fetch(url, init);
+
+        document.getElementById("loader").style.display = "none";
     
         if (response.ok) {
             response = await response.json();
             if (response.result == null) alert("Falha de sincronização");
             else {
+                document.getElementById("flash").innerHTML = successFlashMessage;
                 balanceHeader.innerText = response.result + " Sylvas";
             }
         } else {
-          console.log("HTTP Error ", response.status);
-          return null;
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+            console.log("HTTP Error ", response.status);
+            return null;
         }
     }
 }
