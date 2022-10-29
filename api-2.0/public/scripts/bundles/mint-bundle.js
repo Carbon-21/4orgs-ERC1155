@@ -11443,17 +11443,57 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
 }();
 var mintNFTClientSideSigning = /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+    var _document$getElementB2, username, nftId, qty, clientAccountId, transaction, response;
     return _regeneratorRuntime().wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            console.log("nada");
-          case 1:
+            if (!(localStorage.getItem("keyOnServer") == "false")) {
+              _context5.next = 24;
+              break;
+            }
+            document.getElementById("signing-files").style.display = "none";
+            document.getElementById("loader").style.display = "flex";
+            (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
+            event.preventDefault();
+            username = document.getElementById("username").value;
+            nftId = document.getElementById("nftId").value;
+            qty = document.getElementById("amount").value; //let phyto = document.getElementById("phyto").value;
+            //let location = document.getElementById("location").value;
+            // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
+            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            clientAccountId = window.btoa(clientAccountId);
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "Mint",
+              args: [clientAccountId, nftId, qty]
+            };
+            _context5.prev = 11;
+            _context5.next = 14;
+            return client.offlineTransaction(transaction);
+          case 14:
+            response = _context5.sent;
+            document.getElementById("signing-files").style.display = "block";
+            document.getElementById("loader").style.display = "none";
+            if (response.result == "SUCCESS") {
+              document.getElementById("flash").innerHTML = successFlashMessage;
+            } else {
+              document.getElementById("flash").innerHTML = failureFlashMessage;
+            }
+            _context5.next = 24;
+            break;
+          case 20:
+            _context5.prev = 20;
+            _context5.t0 = _context5["catch"](11);
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+            console.log("Error:", _context5.t0.message);
+          case 24:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5);
+    }, _callee5, null, [[11, 20]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);

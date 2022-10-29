@@ -49,7 +49,7 @@
                         <div class="d-flex flex-column align-items-start">
                             <div class="mint-data">
                                 <i class="fa-solid fa-coins"></i>
-                                <input type="number" required name="amount" id="amount" min="0" value="0" step=".01">
+                                <input type="number" required name="amount" id="amount" min="0" value="0" step="1">
                             </div>
                             <label class="form-label" for="amount">Insira o valor a ser adicionado no NFT</label>
                         </div>
@@ -73,18 +73,16 @@
                             </div>
                             <label class="form-label" for="location">Insira localização da área</label>
                         </div>
+                        <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
                         <div hidden id="signing-files" style="text-align: center;">
                             <p><strong>Faça o upload da sua chave privada</strong></p>
                             <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
                             <p><strong>Faça o upload do seu certificado</strong></p>
                             <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+                            <div class="mint-button">
+                                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+                            </div>
                         </div>
-                        <div class="mint-button mb-5">
-                            <img id="loader" class="loading-icon" src="../images/loader.gif" />
-                            <button id="submitButton" type="submit" class="btn btn-primary btn-md">Enviar transaçãoq</button>
-                        </div>
-                        <p style="color: red; text-align: center;"><strong>DEBUG: A funcionalidade de Mint NFT precisa ser consertada.</strong></p>
-
                     </form>
 
                 </div>
