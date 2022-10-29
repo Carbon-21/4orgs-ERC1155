@@ -11,4 +11,3 @@ log.txt
 api-2.0/config/*.json
 artifacts/channel/create-certificate-with-ca/fabric-ca/**/**
 !artifacts/channel/create-certificate-with-ca/fabric-ca/**/*.yaml
-**/bundles/

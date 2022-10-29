@@ -1,6 +1,17 @@
 const elliptic = require('elliptic');
 const { KEYUTIL } = require('jsrsasign');
 
+
+/**
+ * This script is responsible for dealing with offline transactions
+ */
+
+
+/**
+ * Listens for the page loading event, after which it renders the
+ * upload fields for the client's private key and certificate if
+ * the client chose the client-side transaction signing mode at signup.
+ */
 window.addEventListener("load", () => {
   const keyOnServer = localStorage.getItem("keyOnServer");
   const signingFilesElement = document.getElementById("signing-files");
@@ -12,36 +23,11 @@ window.addEventListener("load", () => {
 });
 
 /**
- * Sends Request to the server. Returns the server's response
- * @param {*} method POST or GET
- * @param {*} url URL of the server
- * @param {*} body Body to be sent to the server in case of POST
- * @param {*} token Bearer token for authorization
- * @returns Response of the server
+ * Executes a transaction in client-side signing mode.
+ * @param {*} transaction The dictionary that represents the transaction 
+ * to be executed
+ * @returns The transaction result
  */
-const sendToServer = async (method, url, body, token) => {
-    var headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    if (token != null) headers.append("Authorization", "Bearer " + token);
-  
-    var init = {
-      method: method,
-      headers: headers,
-    };
-  
-    if (method == "POST") init.body = JSON.stringify(body);
-  
-    let response = await fetch(url, init);
-  
-    if (response.ok) {
-      let json = await response.json();
-      return json;
-    } else {
-      console.log("HTTP Error ", response.status);
-      return null;
-    }
-  }
-
 export const offlineTransaction = async (transaction) => {
     
     const privateKey = await readUploadedFile("private-key");
@@ -110,6 +96,37 @@ export const offlineTransaction = async (transaction) => {
 }
 
 /**
+ * Sends Request to the server. Returns the server's response
+ * @param {*} method POST or GET
+ * @param {*} url URL of the server
+ * @param {*} body Body to be sent to the server in case of POST
+ * @param {*} token Bearer token for authorization
+ * @returns Response of the server
+ */
+ const sendToServer = async (method, url, body, token) => {
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  if (token != null) headers.append("Authorization", "Bearer " + token);
+
+  var init = {
+    method: method,
+    headers: headers,
+  };
+
+  if (method == "POST") init.body = JSON.stringify(body);
+
+  let response = await fetch(url, init);
+
+  if (response.ok) {
+    let json = await response.json();
+    return json;
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+}
+
+/**
  * Signs a hashed transaction proposal.
  * @param {*} digest Hash of a transaction proposal
  * @returns The signature of the transaction proposal
@@ -131,6 +148,7 @@ const signTransaction = async function(digest, privateKeyPEM){
   return signature;
 }
 
+// Helper function for signTransaction
 const _preventMalleability = (sig) => {
 	const halfOrder = elliptic.curves.p256.n.shrn(1);
 	if (sig.s.cmp(halfOrder) === 1) {
@@ -140,6 +158,11 @@ const _preventMalleability = (sig) => {
 	return sig;
 }
 
+/**
+ * Reads a uploaded file and return the text within it.
+ * @param {*} fileId The id of the upload field in the DOM.
+ * @returns The file's text as a string.
+ */
 const readUploadedFile = async (fileId) => {
     
   return new Promise((resolve) => {
