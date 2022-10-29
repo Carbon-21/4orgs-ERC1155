@@ -31,7 +31,7 @@ window.walletClientSideSigning = async () => {
 
         let response = await client.offlineTransaction(transaction);
         
-        document.getElementById("signing-files").style.display = "flex";
+        document.getElementById("signing-files").style.display = "block";
         document.getElementById("loader").style.display = "none";
         
         if (response.result == "SUCCESS") {

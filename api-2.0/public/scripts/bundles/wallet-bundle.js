@@ -11291,6 +11291,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var elliptic = require('elliptic');
 var _require = require('jsrsasign'),
   KEYUTIL = _require.KEYUTIL;
+
+/**
+ * This script is responsible for dealing with offline transactions
+ */
+
+/**
+ * Listens for the page loading event, after which it renders the
+ * upload fields for the client's private key and certificate if
+ * the client chose the client-side transaction signing mode at signup.
+ */
 window.addEventListener("load", function () {
   var keyOnServer = localStorage.getItem("keyOnServer");
   var signingFilesElement = document.getElementById("signing-files");
@@ -11301,70 +11311,26 @@ window.addEventListener("load", function () {
 });
 
 /**
- * Sends Request to the server. Returns the server's response
- * @param {*} method POST or GET
- * @param {*} url URL of the server
- * @param {*} body Body to be sent to the server in case of POST
- * @param {*} token Bearer token for authorization
- * @returns Response of the server
+ * Executes a transaction in client-side signing mode.
+ * @param {*} transaction The dictionary that represents the transaction 
+ * to be executed
+ * @returns The transaction result
  */
-var sendToServer = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(method, url, body, token) {
-    var headers, init, response, json;
+var offlineTransaction = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(transaction) {
+    var privateKey, certificate, url, body, token, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            if (token != null) headers.append("Authorization", "Bearer " + token);
-            init = {
-              method: method,
-              headers: headers
-            };
-            if (method == "POST") init.body = JSON.stringify(body);
-            _context.next = 7;
-            return fetch(url, init);
-          case 7:
-            response = _context.sent;
-            if (!response.ok) {
-              _context.next = 15;
-              break;
-            }
-            _context.next = 11;
-            return response.json();
-          case 11:
-            json = _context.sent;
-            return _context.abrupt("return", json);
-          case 15:
-            console.log("HTTP Error ", response.status);
-            return _context.abrupt("return", null);
-          case 17:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return function sendToServer(_x, _x2, _x3, _x4) {
-    return _ref.apply(this, arguments);
-  };
-}();
-var offlineTransaction = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(transaction) {
-    var privateKey, certificate, url, body, token, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
+            _context.next = 2;
             return readUploadedFile("private-key");
           case 2:
-            privateKey = _context2.sent;
-            _context2.next = 5;
+            privateKey = _context.sent;
+            _context.next = 5;
             return readUploadedFile("certificate");
           case 5:
-            certificate = _context2.sent;
+            certificate = _context.sent;
             // 1. Request transaction proposal generation
             url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             body = {
@@ -11374,10 +11340,10 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token");
             console.log("### 1. Request transaction proposal generation");
-            _context2.next = 12;
+            _context.next = 12;
             return sendToServer("POST", url, body, token);
           case 12:
-            proposalResponse = _context2.sent;
+            proposalResponse = _context.sent;
             digest = proposalResponse.result.digest;
             proposalHex = proposalResponse.result.proposal;
             console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
@@ -11385,10 +11351,10 @@ var offlineTransaction = /*#__PURE__*/function () {
 
             // 2. Sign transaction proposal
             console.log("### 2. Sign transaction proposal");
-            _context2.next = 20;
+            _context.next = 20;
             return signTransaction(digest, privateKey);
           case 20:
-            proposalSignature = _context2.sent;
+            proposalSignature = _context.sent;
             proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
             console.log('signature 1 =', proposalSignature);
             console.log('proposalHex =', proposalHex);
@@ -11398,55 +11364,107 @@ var offlineTransaction = /*#__PURE__*/function () {
             }; // 3. Send signed transaction proposal to server
             console.log("### 3. Send signed transaction proposal to server");
             url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-            _context2.next = 29;
+            _context.next = 29;
             return sendToServer("POST", url, signedProposal, token);
           case 29:
-            sendProposalResponse = _context2.sent;
+            sendProposalResponse = _context.sent;
             transactionDigest = sendProposalResponse.result.transactionDigest;
             transactionHex = sendProposalResponse.result.transaction;
             proposalResponseStatus = sendProposalResponse.result.status;
             payload = sendProposalResponse.result.payload;
             if (!(proposalResponseStatus == 200)) {
-              _context2.next = 48;
+              _context.next = 48;
               break;
             }
             // 4. Sign transaction
             console.log("### 4. Sign transaction");
-            _context2.next = 38;
+            _context.next = 38;
             return signTransaction(transactionDigest, privateKey);
           case 38:
-            transactionSignature = _context2.sent;
+            transactionSignature = _context.sent;
             transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
             signedTransactionProposal = {
               signature: transactionSignatureHex,
               transaction: transactionHex
             }; // 5. Send signed transaction to server
             url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-            _context2.next = 44;
+            _context.next = 44;
             return sendToServer("POST", url, signedTransactionProposal, token);
           case 44:
-            commitTransactionResponse = _context2.sent;
+            commitTransactionResponse = _context.sent;
             commitResult = commitTransactionResponse.result;
             if (!(commitResult == "SUCCESS")) {
-              _context2.next = 48;
+              _context.next = 48;
               break;
             }
-            return _context2.abrupt("return", {
+            return _context.abrupt("return", {
               result: "SUCCESS",
               payload: payload
             });
           case 48:
-            return _context2.abrupt("return", {
+            return _context.abrupt("return", {
               result: "FAILURE"
             });
           case 49:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return function offlineTransaction(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+/**
+ * Sends Request to the server. Returns the server's response
+ * @param {*} method POST or GET
+ * @param {*} url URL of the server
+ * @param {*} body Body to be sent to the server in case of POST
+ * @param {*} token Bearer token for authorization
+ * @returns Response of the server
+ */
+exports.offlineTransaction = offlineTransaction;
+var sendToServer = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(method, url, body, token) {
+    var headers, init, response, json;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            if (token != null) headers.append("Authorization", "Bearer " + token);
+            init = {
+              method: method,
+              headers: headers
+            };
+            if (method == "POST") init.body = JSON.stringify(body);
+            _context2.next = 7;
+            return fetch(url, init);
+          case 7:
+            response = _context2.sent;
+            if (!response.ok) {
+              _context2.next = 15;
+              break;
+            }
+            _context2.next = 11;
+            return response.json();
+          case 11:
+            json = _context2.sent;
+            return _context2.abrupt("return", json);
+          case 15:
+            console.log("HTTP Error ", response.status);
+            return _context2.abrupt("return", null);
+          case 17:
           case "end":
             return _context2.stop();
         }
       }
     }, _callee2);
   }));
-  return function offlineTransaction(_x5) {
+  return function sendToServer(_x2, _x3, _x4, _x5) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -11456,7 +11474,6 @@ var offlineTransaction = /*#__PURE__*/function () {
  * @param {*} digest Hash of a transaction proposal
  * @returns The signature of the transaction proposal
  */
-exports.offlineTransaction = offlineTransaction;
 var signTransaction = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(digest, privateKeyPEM) {
     var _KEYUTIL$getKey, prvKeyHex, EC, ecdsaCurve, ecdsa, signKey, sig, signature;
@@ -11495,6 +11512,8 @@ var signTransaction = /*#__PURE__*/function () {
     return _ref3.apply(this, arguments);
   };
 }();
+
+// Helper function for signTransaction
 var _preventMalleability = function _preventMalleability(sig) {
   var halfOrder = elliptic.curves.p256.n.shrn(1);
   if (sig.s.cmp(halfOrder) === 1) {
@@ -11503,6 +11522,12 @@ var _preventMalleability = function _preventMalleability(sig) {
   }
   return sig;
 };
+
+/**
+ * Reads a uploaded file and return the text within it.
+ * @param {*} fileId The id of the upload field in the DOM.
+ * @returns The file's text as a string.
+ */
 var readUploadedFile = /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(fileId) {
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
@@ -11565,7 +11590,7 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
           return client.offlineTransaction(transaction);
         case 9:
           response = _context.sent;
-          document.getElementById("signing-files").style.display = "flex";
+          document.getElementById("signing-files").style.display = "block";
           document.getElementById("loader").style.display = "none";
           if (response.result == "SUCCESS") {
             balanceHeader.innerText = response.payload + " Sylvas";
