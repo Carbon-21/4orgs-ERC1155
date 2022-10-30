@@ -27127,7 +27127,7 @@ var crypto = require("./crypto-generator");
 var username;
 var token;
 window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var email, password, cpf, name, salt, saveKeyOnServer, cryptoMaterials, headers, url, init, body, response, element;
+  var email, password, cpf, name, salt, saveKeyOnServer, cryptoMaterials, hashedPassword, headers, url, init, body, response, _element;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -27149,9 +27149,18 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           cryptoMaterials = _context.sent;
         case 11:
           _context.next = 13;
-          return hashPassword(password, salt);
+          return argon2.hash({
+            pass: password,
+            salt: salt,
+            hashLen: 32,
+            type: argon2.ArgonType.Argon2id,
+            time: 3,
+            mem: 16384,
+            parallelism: 1
+          });
         case 13:
-          password = _context.sent;
+          hashedPassword = _context.sent;
+          hashedPassword = hashedPassword.hashHex;
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           url = "http://localhost:4000/signup";
@@ -27160,7 +27169,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
             headers: headers
           };
           body = {
-            password: password,
+            password: hashedPassword,
             cpf: cpf,
             email: email,
             name: name,
@@ -27168,20 +27177,20 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           };
           if (!saveKeyOnServer) body.csr = cryptoMaterials.csr;
           init.body = JSON.stringify(body);
-          _context.next = 23;
+          _context.next = 24;
           return fetch(url, init);
-        case 23:
+        case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 46;
+            _context.next = 47;
             break;
           }
-          _context.next = 27;
+          _context.next = 28;
           return response.json();
-        case 27:
+        case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 42;
+            _context.next = 43;
             break;
           }
           localStorage.setItem("token", response.token);
@@ -27189,32 +27198,32 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           localStorage.setItem("keyOnServer", saveKeyOnServer);
           console.log('response', response);
           if (!response.certificate) {
-            _context.next = 39;
+            _context.next = 40;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 37;
+            _context.next = 38;
             break;
           }
-          _context.next = 37;
+          _context.next = 38;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 37:
-          _context.next = 39;
+        case 38:
+          _context.next = 40;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 39:
+        case 40:
           window.location.href = '/';
-          _context.next = 44;
+          _context.next = 45;
           break;
-        case 42:
+        case 43:
+          _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+          document.getElementById("flash").innerHTML = _element;
+        case 45:
+          _context.next = 49;
+          break;
+        case 47:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 44:
-          _context.next = 48;
-          break;
-        case 46:
-          console.log("HTTP Error ", response.status);
-          return _context.abrupt("return", null);
-        case 48:
+        case 49:
         case "end":
           return _context.stop();
       }
@@ -27222,42 +27231,51 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
   }, _callee);
 }));
 window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var password, email, salt, headers, url, init, body, response, element;
+  var url, password, email, salt, hashedPassword, headers, init, body, response, _element2;
   return _regeneratorRuntime().wrap(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           event.preventDefault();
+          url = "http://localhost:4000/login";
           password = document.getElementById("password").value;
-          email = document.getElementById("email").value;
+          email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;
           salt = document.getElementById("salt").value;
-          _context2.next = 6;
-          return hashPassword(password, salt);
-        case 6:
-          password = _context2.sent;
+          _context2.next = 7;
+          return argon2.hash({
+            pass: password,
+            salt: salt,
+            hashLen: 32,
+            type: argon2.ArgonType.Argon2id,
+            time: 3,
+            mem: 16384,
+            parallelism: 1
+          });
+        case 7:
+          hashedPassword = _context2.sent;
+          hashedPassword = hashedPassword.hashHex;
           headers = new Headers();
           headers.append("Content-Type", "application/json");
-          url = "http://localhost:4000/login";
           init = {
             method: "POST",
             headers: headers
           };
           body = {
             email: email,
-            password: password
+            password: hashedPassword
           };
           init.body = JSON.stringify(body);
-          _context2.next = 15;
+          _context2.next = 16;
           return fetch(url, init);
-        case 15:
+        case 16:
           response = _context2.sent;
           if (!response.ok) {
-            _context2.next = 23;
+            _context2.next = 22;
             break;
           }
-          _context2.next = 19;
+          _context2.next = 20;
           return response.json();
-        case 19:
+        case 20:
           response = _context2.sent;
           if (response.success) {
             localStorage.setItem("token", response.token);
@@ -27265,15 +27283,10 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             localStorage.setItem("keyOnServer", response.keyOnServer);
             window.location.href = '/';
           } else {
-            element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-            document.getElementById("flash").innerHTML = element;
+            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            document.getElementById("flash").innerHTML = _element2;
           }
-          _context2.next = 25;
-          break;
-        case 23:
-          console.log("HTTP Error ", response.status);
-          return _context2.abrupt("return", null);
-        case 25:
+        case 22:
         case "end":
           return _context2.stop();
       }
