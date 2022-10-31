@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 
@@ -217,10 +218,9 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
 		if returnedTokenID != tokenid {
 		
-			// Obtem os metadados do nft 
-			// ?
-			
-			// amount = uint64(10)
+			// Logica para quantos sylvas a serem adicionados para aquele NFT
+			var SylvasAdd int 
+			SylvasAdd = 10   // Adiciona 10 sylvas por nft
 			
 			// Funcao que checa se tem no Slice'array' temporario o receptor do NFT
 			// Se encontrar retorna o indice para concatenar o id do nft encontrado e somar a qtd de sylvas
@@ -234,13 +234,13 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 				NFTSumList[containInSliceIndex][0] = string(NFTSumList[containInSliceIndex][0]) + "," + string(returnedTokenID)
 				
 				// Soma o valor ao total de sylvas
-				fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
+				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
 				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
 				fmt.Print(err)
-				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + 10) 		
+				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd) 		
 			}else{
 				//fmt.Print("Adicionando Elemento", returnedTokenID, accountNFT)
-				element := []string{string(returnedTokenID),accountNFT,"10"}
+				element := []string{string(returnedTokenID),accountNFT,strconv.Itoa(SylvasAdd)}
 				NFTSumList = append(NFTSumList, element)		
 			}
 			
@@ -269,7 +269,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 
 func containInSlice(NFTSumList [][]string, account string) int {
-	// Verifica que se possui um receptor para sylvas e se sim retorna o indice os ids dos nfts caso nao retorna 0
+	// Verifica se possui um receptor para sylvas e se sim retorna o indice os ids dos nfts caso nao retorna 0
 	// Verifica na lista se ja possui algum destino com o mesmo codigo
 	for i:= range NFTSumList{
 		// Se possuir concatena o id do NFT na primeira e realiza a soma do valor de sylvas a serem adicionads
@@ -670,25 +670,23 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) (string, error) {
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([]string) {
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		return "0", fmt.Errorf("failed to get client id: %v", err)
+		return []string{"failed to get client id"}
+		//return "0", fmt.Errorf("failed to get client id: %v", err)
 	}
 
-	return idNFTHelper(ctx, clientID)
+
+	idNFTs, _ := idNFTHelper(ctx, clientID)
+	return idNFTs
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) (string, error) {
-	// Get ID of submitting client identity
-	//clientID, err := ctx.GetClientIdentity().GetID()
-	//if err != nil {
-	//	return "0", fmt.Errorf("failed to get client id: %v", err)
-	//}
-
-	return idNFTHelper(ctx, account)
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([]string) {
+	idNFTs, _ := idNFTHelper(ctx,account)
+	return idNFTs
 }
 
 // ClientAccountID returns the id of the requesting client's account
@@ -1033,30 +1031,29 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 }
 
 // balanceOfHelper returns the balance of the given account
-func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (string, error) {
+func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([]string, error) {
 
 	if account == "0x0" {
-		return "0", fmt.Errorf("balance query for the zero address")
+		return nil, fmt.Errorf("balance query for the zero address")
 	}
 
 	
 	// -------- Obtem todos NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	var nftlist string
+	nftlist := make([]string,0)	
+	var result string
 	
-	nftlist = ""
-	
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
 	if err != nil {
-		return "0", fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+		return nil, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 	}
 	defer balanceIterator.Close()
 
 	for balanceIterator.HasNext() {
 		queryResponse, err := balanceIterator.Next()
 		if err != nil {
-			return "0", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
 
 		fmt.Print(queryResponse)
@@ -1065,7 +1062,7 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (s
 	_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
 		
 	  if err != nil {
-	      return "0", fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+	      return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
 	   }
      		   
 	  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
@@ -1076,9 +1073,13 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) (s
 	
 	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
 	if ((returnedTokenID != tokenid) && (accountNFT == account)){
-		nftlist = nftlist + string(returnedTokenID)
+		nftlist = append(nftlist,returnedTokenID)
+		
 	}
-}
+	
+	result = strings.Join(nftlist, "*")
+	fmt.Print("Resultado" + result)
+	}
 	return nftlist, nil
 }
 

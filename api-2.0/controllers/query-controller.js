@@ -101,9 +101,12 @@ exports.selfBalanceNFT = async (req, res, next) => {
     const errMessage = regexp.exec(err.message);
     console.log(err.message);    
     //return next(new HttpError(500, errMessage[1]));
-    return next(new HttpError(500, "Erro"));
+    return next(new HttpError(500, err.message));
   }
 };
+
+
+
 
 //return the nfts of the requesting client's account ---- Ver
 exports.balanceNFT = async (req, res, next) => {
@@ -113,13 +116,18 @@ exports.balanceNFT = async (req, res, next) => {
   const username = req.jwt.username;
   const org = req.jwt.org;
 
+    logger.info(`${tokenOwner} Owner `);
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
+  //get owner id
+  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
+  if (!ownerAccountId) return;
+  
   //get balance
   try {
-    let result = await chaincode.evaluateTransaction("SmartContract:balanceNFT", tokenOwners);
+    let result = await chaincode.evaluateTransaction("SmartContract:balanceNFT", ownerAccountId);
     result = JSON.parse(result.toString());
 
     //close communication channel
@@ -133,7 +141,9 @@ exports.balanceNFT = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, errMessage[1]));
+    console.log("aqqui", err.message);
+    return next(new HttpError(500, err.message));
+    //return next(new HttpError(500, errMessage[1]));
   }
 };
 
