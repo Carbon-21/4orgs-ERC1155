@@ -3,6 +3,7 @@
 ## Instalação
 
 Para clonar o repositório:
+
 ```
 git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
@@ -17,18 +18,21 @@ chmod +x ./dependencies_install
 ./dependencies_install
 ```
 
-Reinicie a máquina para garantir que o usuário foi adicionado ao grupo docker. 
+Reinicie a máquina para garantir que o usuário foi adicionado ao grupo docker.
 <br>
 <br>
 Em seguida, para instalar o fabric:
+
 ```
 chmod +x ./install
 ./install
 ```
+
 Por fim, configure o banco de dados de usuários, conforme a seção "instalação" do ./database/README
 <br><br>
 
 ## Como Usar
+
 ### Rede
 
 Para subir a rede:
@@ -54,7 +58,7 @@ _Nota: o script init também roda o kill, e ambos matam qualquer conatiner docke
 Para subir a api:
 
 ```
-cd api-2.0
+cd api
 npm install
 sudo npm install -g nodemon
 nodemon
@@ -62,6 +66,13 @@ nodemon
 
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 
+<br>
+
+### Usuário Admin
+
+Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado assim que o primeiro usuário é registrado na plataforma (rota de signup). Login e senha são:
+`admin@admin.com admin`
+<br>
 <br>
 
 ### Git
@@ -87,7 +98,7 @@ Para dar push direto para o branch em que se encontra:
 Para executar o blockchain explorer:
 
 ```
-cd Explorer
+cd explorer
 ./run.sh
 ```
 
@@ -103,6 +114,9 @@ Para compilar o CC e ver se ele não tem nenhum bug antes de dar deploy:
 ./cc-build
 ```
 
+_Nota: Lembre de rodar o script init após alterar o CC, para fazer o deploy da nova versão na blockchain._
+<br>
+<br>
 Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados no CC:
 
 ```

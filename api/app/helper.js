@@ -284,7 +284,6 @@ const getOrgMSP = (org) => {
 };
 
 const enrollAdmin = async (org, ccp) => {
-  console.log("calling enroll Admin method");
   try {
     const caInfo = await getCaInfo(org, ccp); //ccp.certificateAuthorities['ca.carbon.example.com'];
     const caTLSCACerts = caInfo.tlsCACerts.pem;
@@ -302,8 +301,8 @@ const enrollAdmin = async (org, ccp) => {
     }
 
     // Enroll the admin user, and import the new identity into the wallet.
-    const enrollment = await ca.enroll({ enrollmentID: "admin", enrollmentSecret: "adminpw" });
-    // console.log("Enrollment object is : ", enrollment);
+    const enrollment = await ca.enroll({ enrollmentID: process.env.ADMIN_ENROLLMENT_ID, enrollmentSecret: process.env.ADMIN_ENROLLMENT_SECRET });
+
     let x509Identity = {
       credentials: {
         certificate: enrollment.certificate,

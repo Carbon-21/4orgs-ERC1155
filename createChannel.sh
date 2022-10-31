@@ -52,8 +52,8 @@ createChannel(){
 removeOldCrypto(){
     rm -rf ./api-1.4/crypto/*
     rm -rf ./api-1.4/fabric-client-kv-carbon/*
-    rm -rf ./api-2.0/carbon-wallet/*
-    rm -rf ./api-2.0/users-wallet/*
+    rm -rf ./api/carbon-wallet/*
+    rm -rf ./api/users-wallet/*
 }
 
 

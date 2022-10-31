@@ -120,7 +120,7 @@ func GetRole(clientAccountID string) string {
 	// fmt.Printf("Decoded text: \n%s\n\n", clientAccountIDPlain)
 
 	//get OU from clientAccountID
-	re := regexp.MustCompile("^x509::CN=.*?,OU=(admin|client|admin|peer).*$")
+	re := regexp.MustCompile("^x509::CN=.*?,OU=(admin|client|peer).*$")
 	match := re.FindStringSubmatch(string(clientAccountIDPlain))
 
 	// fmt.Println(match[1])
@@ -647,15 +647,25 @@ func (s *SmartContract) BroadcastTokenExistance(ctx contractapi.TransactionConte
 
 // Helper Functions
 
-// authorizationHelper checks minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+// authorizationHelper checks minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens. Also, the operator must be admin.
 func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 
+	// Get org of submitting client identity and check if it is minterMSPID
 	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("failed to get MSPID: %v", err)
 	}
 	if clientMSPID != minterMSPID {
-		return fmt.Errorf("client is not authorized to mint new tokens")
+		return fmt.Errorf("Não autorizado a emitir tokens")
+	}
+
+	// Get ID of submitting client identity and check if role is admin
+	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("Erro ao obter ID: %v", err)
+	}
+	if GetRole(operator) != "admin" {
+		return fmt.Errorf("Não autorizado a emitir tokens")
 	}
 
 	return nil

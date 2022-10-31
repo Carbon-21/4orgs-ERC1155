@@ -1,5 +1,3 @@
-<!-- Navbar -->
-
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
@@ -14,12 +12,13 @@
       aria-controls="navbarNavDropdown"
       aria-expanded="false"
       aria-label="Toggle navigation"
+      onload="alert('oi')"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav ms-auto">
-        <% if(title==="Home"){ %>
+        <% if(title==="Home" && !currentUser){ %>
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="#top">Início</a>
         </li>
@@ -48,8 +47,7 @@
             <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
           </ul>
         </li>
-        <% if (currentUser) { %>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" id="adminDropdown" hidden="true" >
           <a
             class="nav-link dropdown-toggle"
             href="#"
@@ -58,14 +56,14 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Carbon
+            Aréa do Administrador
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <ul class="dropdown-menu"  aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/ft/mint">Emissão de FT</a></li>
             <li><a class="dropdown-item" href="/nft/mint">Emissão de NFT</a></li>
           </ul>
         </li>
-        <% } %> <% } %> <% if (!currentUser) { %>
+         <% } %> <% if (!currentUser) { %>
         <li class="nav-item">
           <a class="nav-link" href="/prelogin"
             ><button type="button" class="btn btn-outline-success btn-sm">Entrar</button></a
@@ -89,5 +87,20 @@
   <div id="flash" class="flash">
     <%- include("../partials/flash") %>
   </div>
-  
 </nav>
+
+<!-- Display admin functionalities if user is admin-->
+<script>
+  //get role from jwt
+  const role = JSON.parse(atob(localStorage.token.split('.')[1])).role
+
+  //TODO isso deveria ser feito usando ejs!
+  //show admin functionalities
+  console.log(role)
+  if (role === "admin")
+  {
+    if(typeof adminDropdown !== 'undefined')
+      adminDropdown.hidden=false;
+  }
+</script>
+

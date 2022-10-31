@@ -1,8 +1,8 @@
 {
-  "name": "api-2.0",
+  "name": "carbon21",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,21 +11,22 @@
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.8.0",
-    "axios": "^0.24.0",
+    "argon2-browser": "^1.18.0",
+    "axios": "^0.27.2",
     "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
     "express": "^4.17.1",
-    "express-bearer-token": "^2.4.0",
-    "express-jwt": "^5.3.0",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
     "fabric-ca-client": "^2.1.0",
-    "fabric-client": "^1.4.8",
-    "fabric-common": "2.2.3",
+    "fabric-common": "^2.2.3",
     "fabric-network": "^2.2.2",
-    "http": "0.0.1-security",
-    "js-yaml": "^3.13.1",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.5.2",
-    "npm": "^6.14.6",
-    "save": "^2.4.0"
+    "mysql2": "^2.3.3",
+    "path": "^0.12.7",
+    "sequelize": "^6.21.4"
   }
 }

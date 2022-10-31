@@ -10,9 +10,9 @@ async function signup() {
   const password = document.getElementById("password").value;
   const cpf = document.getElementById("cpf").value;
   const name = document.getElementById("name").value;
-  const salt = document.getElementById("salt").value;
+  const salt = document.getElementById("salt").value.slice(0, -1);
 
-  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 16384, parallelism: 1 });
+  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 15625, parallelism: 1 });
   hashedPassword = hashedPassword.hashHex;
 
   let headers = new Headers();
@@ -30,7 +30,6 @@ async function signup() {
     name: name,
   };
   init.body = JSON.stringify(body);
-  console.log(init.body);
 
   let response = await fetch(url, init);
 
@@ -61,9 +60,10 @@ async function login() {
 
   const password = document.getElementById("password").value;
   const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;
-  const salt = document.getElementById("salt").value;
+  const salt = document.getElementById("salt").value.slice(0, -1);
 
-  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 16384, parallelism: 1 });
+  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 15625, parallelism: 1 });
+
   hashedPassword = hashedPassword.hashHex;
 
   let headers = new Headers();

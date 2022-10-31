@@ -45,7 +45,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 const sessionConfig = {
-  secret: "thisshouldbeabettersecret!",
+  secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: true,
   cookie: {

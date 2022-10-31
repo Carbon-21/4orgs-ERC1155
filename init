@@ -24,12 +24,15 @@ chmod +x cc-build
 
 ###### KILL ######
 #kill other dockers 
-cd ./Explorer
+cd ./explorer
 kill-hlf
 cd ../artifacts
 kill-hlf
 cd channel/create-certificate-with-ca
 kill-hlf
+
+#remove couch-db instance, so identities get properly deleted
+rm fabric-ca/carbon/fabric-ca-server.db
 
 ###### RUN ######
 #run mysql
@@ -67,7 +70,7 @@ chmod +x deployChaincode.sh
 ./deployChaincode.sh
 
 #create connection profiles if they don't exist already
-cd api-2.0
+cd api
 cd ./config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
 
