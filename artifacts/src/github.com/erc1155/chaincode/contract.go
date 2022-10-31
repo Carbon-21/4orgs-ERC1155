@@ -160,16 +160,14 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-//func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) (uint64,error) {
 func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
 
-	// -------- Obtem todos NFTs --------
+	// -------- Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	//var balance uint64
-	//var amount uint64
+
 	
-	// Armazena uma lista com todos os NFTs de um mesmo usuario (receiver)
+	// Stores a list of all NFTs of the same user (account))
 	NFTSumList := make([][]string,0)
 
 	if tokenid == "" {
@@ -218,22 +216,22 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
 		if returnedTokenID != tokenid {
 		
-			// Logica para quantos sylvas a serem adicionados para aquele NFT
+			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int 
-			SylvasAdd = 10   // Adiciona 10 sylvas por nft
+			SylvasAdd = 10   // add 10 sylvas per nft
 			
-			// Funcao que checa se tem no Slice'array' temporario o receptor do NFT
-			// Se encontrar retorna o indice para concatenar o id do nft encontrado e somar a qtd de sylvas
-			// Caso contrario adiciona nesse slice o conjunto do id do token, o receptor e 10 sylvas
+			// Function that checks if the NFT receiver is in the temporary Slice Array
+			// If found, it returns the index to concatenate the id of the nft found and add the qty of sylvas
+			// Otherwise, add to this slice the set of the token id, the receiver and some sylvas
 			containInSliceIndex := containInSlice(NFTSumList,accountNFT)
 			
-			//  Encontrou  a conta na lista
+			//  Found the account in the list
 			if (containInSliceIndex != -1){
-				// Concatena o id do outro nft
+				// Concatenates the id of the other nft
 				//fmt.Print("ID nfts", NFTSumList[containInSliceIndex][0])
 				NFTSumList[containInSliceIndex][0] = string(NFTSumList[containInSliceIndex][0]) + "," + string(returnedTokenID)
 				
-				// Soma o valor ao total de sylvas
+				// Add the value to the total number of silvas
 				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
 				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
 				fmt.Print(err)
@@ -244,13 +242,13 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 				NFTSumList = append(NFTSumList, element)		
 			}
 			
-			
-			// NFTSumList [0] - Lista de ids de NFTS de cada usuario 
-			// NFTSumList [1]  - Conta possuidora dos nfts
-			// NFTSumList [2] - Total de sylvas associados a serem adicionados aquela conta
+						
+			// NFTSumList [0] - List of NFTS ids for each user
+			// NFTSumList [1] - Account that owns the nfts
+			// NFTSumList [2] - Total sylvas associated to be added to that account
 									
 			for i:= range NFTSumList{
-				// Mintando os tokens da lista temporaria		
+				// 'Minting' the tokens from the temporary list		
 				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
 				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt))
 				if err != nil {
@@ -269,10 +267,11 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 
 func containInSlice(NFTSumList [][]string, account string) int {
-	// Verifica se possui um receptor para sylvas e se sim retorna o indice os ids dos nfts caso nao retorna 0
-	// Verifica na lista se ja possui algum destino com o mesmo codigo
+	// Checks if it has a receiver for sylvas and if yes, returns the index and the ids of the nfts, if not, it returns 0
+	// Check the list if there is already a destination with the same code
+
 	for i:= range NFTSumList{
-		// Se possuir concatena o id do NFT na primeira e realiza a soma do valor de sylvas a serem adicionads
+		// If it has, concatenate the id of the NFT in the first and perform the sum of the value of sylvas to be added
 		if(NFTSumList[i][1] == account){
 			//fmt.Print("Elemento encontrado, indice:", i)
 			return i
@@ -1038,7 +1037,7 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	}
 
 	
-	// -------- Obtem todos NFTs --------
+	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
 	nftlist := make([]string,0)	
