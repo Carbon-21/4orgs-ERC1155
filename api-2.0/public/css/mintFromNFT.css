@@ -1,31 +1,31 @@
-body{
-  font-family: 'Poppins', sans-serif;
+body {
+  font-family: "Poppins", sans-serif;
   background-image: url("../images/mintFromNFT-bg.webp");
   background-repeat: no-repeat;
-  background-size:cover;
+  background-size: cover;
   padding: 10% 30% 5% 30%;
   min-height: 100vh;
 }
 
-p{
-  padding: 0 100px 0 100px
+p {
+  padding: 0 100px 0 100px;
 }
 
 #mintFromNFT {
   margin-top: 40px;
 }
 
-.card-header{
+.card-header {
   font-size: 40px;
   font-weight: 700;
   color: #379237;
 }
 
-.card-title{
+.card-title {
   color: #379237;
 }
 
-.carbon-image{
-  width: 15% ;
+.carbon-image {
+  width: 15%;
   border-radius: 25%;
 }
