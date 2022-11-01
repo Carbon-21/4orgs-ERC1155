@@ -223,6 +223,8 @@ exports.getWallet = async (req, res, next) => {
 exports.getCollection = async (req, res, next) => {
   if (req.session.token) {
     let token = req.session.token;
+    // NOTE: para testes e exemplificando recuperacao de metadados por tokenIds
+    let tokenId = "a";
 
     // Set url and headers
 
@@ -262,6 +264,20 @@ exports.getCollection = async (req, res, next) => {
         req.flash("error", err.response.data.message);
         res.redirect("/");
       });
+
+    axios
+      .post("http://localhost:4000/meta/getMetadata", JSON.stringify({ tokenId: tokenId, token }), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then(function (response) {
+        let metadata = response.data.result;
+        console.log("Metadados recuperados: \n" + JSON.stringify(metadata));
+      })
+      .catch(function (err) {});
   }
 };
 

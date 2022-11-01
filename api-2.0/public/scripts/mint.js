@@ -20,7 +20,7 @@ async function mintFT(){
         headers: headers,
     };
 
-      body = {
+    body = {
         tokenId: "$ylvas",
         tokenAmount: qty,
         tokenReceiver: username,
@@ -91,7 +91,7 @@ async function mintNFT(){
         headers: headers,
     };
 
-      body = {
+     body = {
         tokenId: nftId,
         tokenAmount: qty,
         tokenReceiver: username,
@@ -101,7 +101,21 @@ async function mintNFT(){
 
     let response = await fetch(url, init);
 
-    if (response.ok) {
+    // Post metadata through ipfs node
+    let postMetadataURL = "http://localhost:4000/meta/postMetadata";
+    init.body = JSON.stringify({ // TODO: match schema with forms
+      metadata: {
+        id: nftId,
+        phyto,
+        geolocation: location,
+        custom_notes: `qty: ${qty}`,
+      },
+      tokenId: nftId,
+      token,
+    });
+    let metadataResponse = await fetch(postMetadataURL, init)
+ 
+    if (response.ok && metadataResponse.ok) {
         response = await response.json();
         if (response.result==null) {
           document.getElementById("submitButton").style.display = "flex";

@@ -32,7 +32,7 @@ exports.mint = async (req, res, next) => {
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
   }
-
+  
   //send OK response
   return res.json({
     result: "success",
