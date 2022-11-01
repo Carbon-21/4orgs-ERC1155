@@ -102,7 +102,7 @@ exports.signup = async (req, res, next) => {
   if (!response) return;
 
   //enroll user in the CA and save it in the wallet
-  let enrollResponse = await enrollUserInCA(user);
+  let enrollResponse = await enrollUserInCA(user, next);
   if (!enrollResponse.success) return;
   response.certificate = enrollResponse.certificate;
 
@@ -256,7 +256,7 @@ const saveUserToDatabase = async (user, next) => {
 };
 
 //register the user in the CA, enroll the user in the CA, and save the new identity into the wallet. Returns true if things went as expected.
-const enrollUserInCA = async (user) => {
+const enrollUserInCA = async (user, next) => {
   //get org CCP (its configs, such as CA path and tlsCACerts)
   let ccp = await helper.getCCP(user.org);
 
@@ -277,7 +277,7 @@ const enrollUserInCA = async (user) => {
   if (userIdentity) {
     logger.error(`An identity for the user ${user.email} already exists in the wallet`);
 
-    return {success:false, err: "Usuário já cadastrado"};
+    return {success: false};
   }
 
   //enroll an admin user if it doesn't exist yet
@@ -358,7 +358,7 @@ const enrollUserInCA = async (user) => {
 
     //issue error
     logger.debug(err);
-    return {success: false, err: err.message}
+    return next(new HttpError(500));
   }
 };
 
