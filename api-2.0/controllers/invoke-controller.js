@@ -8,12 +8,17 @@ var client = null;
 var channel = null;
 var transactionBuffer = [];
 
+/**
+ * Loads Client and Channel objects from network config file. These objects are necessary to 
+ * send the transaction proposal to the network.
+ */
 const setupClient = async () => {
   client = FabricClient.loadFromConfig('../network_org1.yaml');
   await client.initCredentialStores();
   channel = client.getChannel('mychannel');
 }
 
+// client and channel objects are initialized together with the server.
 setupClient();
 
 //mint given token for a user
@@ -129,6 +134,12 @@ exports.setURI = async (req, res, next) => {
 
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
+/**
+ * Generates the transaction proposal for the client. The 1st route
+ * in the client-side transaction signing flux.
+ * @param {*} req Contains the transaction dictionary to be transformed in the transaction proposal by the server and the client's certificate.
+ * @param {*} res The transaction proposal's digest (which will bi signed by the client) and the proposal itself in hex.
+ */
 exports.generateTransactionProposal = async (req, res, next) => {
 
   const clientCertificate = req.body.certificate;
@@ -162,6 +173,12 @@ exports.generateTransactionProposal = async (req, res, next) => {
   }
 }
 
+/**
+ * Receives the signed transaction proposal from the client and sends it to the network. The 2nd route
+ * in the client-side transaction signing flux.
+ * @param {*} req Contains the transaction proposal and its signature, which will be sent to the network.
+ * @param {*} res The transaction in hex; the transaction digest; payload: the result of the transaction; the status of the transaction; the response message.
+ */
 exports.sendSignedTransactionProposal = async (req, res, next) => {
   try {
     let signatureHex = req.body.signature;
@@ -171,12 +188,6 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
     let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
     let proposalBytes = Buffer.from(proposalHex, 'hex');
 
-    // let signatureBuffer = Buffer.from(signatureHex, 'hex');
-    // console.log('signatureBuffer =',signatureBuffer);
-
-    console.log('signature 2', signature);
-    console.log('proposal 2', proposalBytes);
-  
     signedProposal = {
       signature,
       proposal_bytes: proposalBytes
@@ -242,6 +253,13 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
   }
 }
 
+
+/**
+ * Receives the signed transaction from the client and commits it to the network. The 3rd and last route
+ * in the client-side transaction signing flux.
+ * @param {*} req Contains the transaction and its signature, which will be sent to the network.
+ * @param {*} res The commit response status and message.
+ */
 exports.commitSignedTransaction = async (req, res, next) => {
   try {
     let signatureHex = req.body.signature;
