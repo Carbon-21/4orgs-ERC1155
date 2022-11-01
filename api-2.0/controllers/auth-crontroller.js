@@ -309,7 +309,7 @@ const enrollUserInCA = async (user, next) => {
       adminUser
     );
 
-    let pkey;
+    let privateKey;
 
     if (!user.saveKeyOnServer) {
       logger.debug(`--- Client-side Private Key and CSR Generation Mode ---`);
@@ -330,12 +330,12 @@ const enrollUserInCA = async (user, next) => {
         enrollmentID: user.email,
         enrollmentSecret: secret,
       });
-      pkey = enrollment.key.toBytes();
+      privateKey = enrollment.key.toBytes();
       certificate = enrollment.certificate
     }
 
-    //save cert and pkey to wallet
-    //TODO sepa a pkey tem que ser salva só quando CSR não é usado
+    //save cert and privateKey to wallet
+    //TODO sepa a privateKey tem que ser salva só quando CSR não é usado
     let orgMSPId = helper.getOrgMSP(user.org);
     const x509Identity = {
       credentials: {
@@ -346,7 +346,7 @@ const enrollUserInCA = async (user, next) => {
     };
 
     // If user.saveKeyOnServer is true, saves user's server-side generated private key
-    if (user.saveKeyOnServer) x509Identity.credentials.privateKey = pkey;
+    if (user.saveKeyOnServer) x509Identity.credentials.privateKey = privateKey;
 
     await wallet.put(user.email, x509Identity);
 
