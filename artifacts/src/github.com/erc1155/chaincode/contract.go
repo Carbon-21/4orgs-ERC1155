@@ -13,7 +13,6 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 
@@ -1041,7 +1040,6 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
 	nftlist := make([]string,0)	
-	var result string
 	
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
 	if err != nil {
@@ -1068,7 +1066,7 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	returnedTokenID := compositeKeyParts[1]
 	
 	// Contains the account of the user who have the nft
-	accountNFT := compositeKeyParts[2]
+	accountNFT := compositeKeyParts[0]
 	
 	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
 	if ((returnedTokenID != tokenid) && (accountNFT == account)){
@@ -1076,8 +1074,6 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		
 	}
 	
-	result = strings.Join(nftlist, "*")
-	fmt.Print("Resultado" + result)
 	}
 	return nftlist, nil
 }
