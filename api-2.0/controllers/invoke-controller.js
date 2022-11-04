@@ -198,10 +198,10 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
     var targets3 = client.getPeersForOrg('IbamaMSP');
     var targets4 = client.getPeersForOrg('CetesbMSP');
 
-    // console.log('########targets1',targets1)
-    // console.log('########targets2',targets1)
-    // console.log('########targets3',targets1)
-    // console.log('########targets4',targets1)
+    // logger.debug('########targets1',targets1)
+    // logger.debug('########targets2',targets1)
+    // logger.debug('########targets3',targets1)
+    // logger.debug('########targets4',targets1)
   
     var proposal_request = {
       signedProposal: signedProposal,
@@ -246,7 +246,7 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
       result: {result: "success", transaction: transactionHex, transactionDigest: transactionDigest, payload: payload, status: status, message: message}
     });
   } catch (err) {
-    console.log(err);
+    logger.debug(err);
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily
@@ -282,18 +282,18 @@ exports.commitSignedTransaction = async (req, res, next) => {
       request: transaction_request,
     }
 
-    console.log('Transaction request sent to the orderer:');
-    console.log(util.inspect(signedTransaction));
+    logger.info('Transaction request sent to the orderer.');
+    logger.debug(util.inspect(signedTransaction));
 
     // 7. Commit the signed transaction
     let commitTransactionResponse = await channel.sendSignedTransaction(signedTransaction);
-    console.log('Successfully sent transaction');
-    console.log('Return code: '+commitTransactionResponse.status);
-    console.log('Response message:', commitTransactionResponse)
+    logger.info('Successfully sent transaction');
+    console.info('Return code: '+commitTransactionResponse.status);
+    console.info('Response message:', commitTransactionResponse)
     return res.json({result: commitTransactionResponse.status, message: commitTransactionResponse.info});
 
   } catch (err) {
-    console.log(err);
+    logger.debug(err);
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily));
