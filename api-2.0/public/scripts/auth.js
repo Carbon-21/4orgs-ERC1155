@@ -12,7 +12,7 @@ window.signup = async function () {
   let cpf = document.getElementById("cpf").value;
   let name = document.getElementById("name").value;
   let salt = document.getElementById("salt").value;
-  let saveKeyOnServer = document.getElementById("saveKeyOnServer").checked;
+  let saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
   
   let cryptoMaterials;
   // Generation of user's private key and CSR in Client-Side Mode
@@ -40,7 +40,8 @@ window.signup = async function () {
   };
 
   if (!saveKeyOnServer)
-      body.csr = cryptoMaterials.csr;
+    // If the user chose not to save his private key on the server, the browser generated a CSR that will be sent to the server.
+    body.csr = cryptoMaterials.csr;
 
   init.body = JSON.stringify(body);
 

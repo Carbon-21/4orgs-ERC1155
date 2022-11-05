@@ -38,6 +38,7 @@ const mintFTClientSideSigning = async () => {
   if (localStorage.getItem("keyOnServer") == "false") {
       // Hides the file upload fields and displays loading image while the transaction is processing.
       document.getElementById("signing-files").style.display = "none";
+      document.getElementById("submitButton").style.display = "none";
       document.getElementById("loader").style.display = "flex";
       document.getElementById("flash-button")?.click();
       event.preventDefault();
@@ -64,6 +65,7 @@ const mintFTClientSideSigning = async () => {
 
         // Hides the loading image and displays the file upload fields again
         document.getElementById("signing-files").style.display = "block";
+        document.getElementById("submitButton").style.display = "block";
         document.getElementById("loader").style.display = "none";
         
         // Displays Flash Messages
@@ -158,6 +160,7 @@ const mintNFTClientSideSigning = async () => {
   if (localStorage.getItem("keyOnServer") == "false") {
     // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
+    document.getElementById("submitButton").style.display = "none";
     document.getElementById("loader").style.display = "flex";
     document.getElementById("flash-button")?.click();
 
@@ -188,6 +191,7 @@ const mintNFTClientSideSigning = async () => {
 
       // Hides the loading image and displays the file upload fields again
       document.getElementById("signing-files").style.display = "block";
+      document.getElementById("submitButton").style.display = "block";
       document.getElementById("loader").style.display = "none";
       
       // Displays Flash Messages

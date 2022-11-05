@@ -188,7 +188,7 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
       message: `Welcome!`,
       token,
-      keyOnServer: user.keyOnServer
+      keyOnServer: user.keyOnServer // Boolean that informs whether the user's key is stored on the server or not.
     });
   } catch (err) {
     logger.error(err);
@@ -212,7 +212,7 @@ const generateSeed = () => {
 //caled on signup
 const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
-  user.keyOnServer = user.saveKeyOnServer;
+  user.keyOnServer = user.saveKeyOnServer; // Boolean that informs whether the user's key is stored on the server or not.
   let obj;
   try {
     obj = await models.users.findOne({

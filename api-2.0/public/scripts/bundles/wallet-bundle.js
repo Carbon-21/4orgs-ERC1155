@@ -11318,7 +11318,7 @@ window.addEventListener("load", function () {
  */
 var offlineTransaction = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(transaction) {
-    var privateKey, certificate, url, body, token, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
+    var privateKey, certificate, body, token, url, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -11332,7 +11332,6 @@ var offlineTransaction = /*#__PURE__*/function () {
           case 5:
             certificate = _context.sent;
             // 1. Request transaction proposal generation
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             body = {
               username: localStorage.getItem("username"),
               transaction: transaction,
@@ -11340,14 +11339,19 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token");
             console.log("### 1. Request transaction proposal generation");
+            // Sends transaction proposal generation request to server
+            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 12;
             return sendToServer("POST", url, body, token);
           case 12:
             proposalResponse = _context.sent;
+            // The transaction proposal hash
             digest = proposalResponse.result.digest;
+            console.log('Transaction proposal hash =', digest);
+
+            // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal;
             console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-            console.log('digest =', digest);
 
             // 2. Sign transaction proposal
             console.log("### 2. Sign transaction proposal");
@@ -11563,8 +11567,14 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 var client = require("./transaction-handler");
+
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
 var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Consulta realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
 var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na consulta" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+
+/**
+ * Executes "SelfBalance" transaction in Client-Side Signing Mode.
+ */
 window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
   var _document$getElementB, transaction, response;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -11575,6 +11585,7 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
             _context.next = 13;
             break;
           }
+          // Hides the file upload fields and displays loading image while the transaction is processing.
           document.getElementById("signing-files").style.display = "none";
           document.getElementById("loader").style.display = "flex";
           (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
@@ -11585,13 +11596,16 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
             channelId: 'mychannel',
             fcn: "SelfBalance",
             args: ["$ylvas"]
-          };
+          }; // Executes the transaction in Client-Side Signing Mode
           _context.next = 9;
           return client.offlineTransaction(transaction);
         case 9:
           response = _context.sent;
+          // Hides the loading image and displays the file upload fields again
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("loader").style.display = "none";
+
+          // Displays Flash Messages
           if (response.result == "SUCCESS") {
             balanceHeader.innerText = response.payload + " Sylvas";
             document.getElementById("flash").innerHTML = successFlashMessage;
@@ -11605,6 +11619,10 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
     }
   }, _callee);
 }));
+
+/**
+ * Executes "SelfBalance" transaction in Server-Side Signing Mode.
+ */
 window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
   var _document$getElementB2, username, token, headers, url, init, response;
   return _regeneratorRuntime().wrap(function _callee2$(_context2) {
@@ -11612,7 +11630,7 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
       switch (_context2.prev = _context2.next) {
         case 0:
           if (!(localStorage.getItem("keyOnServer") == "true")) {
-            _context2.next = 24;
+            _context2.next = 23;
             break;
           }
           document.getElementById("loader").style.display = "flex";
@@ -11644,13 +11662,12 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
             document.getElementById("flash").innerHTML = successFlashMessage;
             balanceHeader.innerText = response.result + " Sylvas";
           }
-          _context2.next = 24;
+          _context2.next = 23;
           break;
         case 21:
           document.getElementById("flash").innerHTML = failureFlashMessage;
           console.log("HTTP Error ", response.status);
-          return _context2.abrupt("return", null);
-        case 24:
+        case 23:
         case "end":
           return _context2.stop();
       }

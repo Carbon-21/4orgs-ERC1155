@@ -11284,8 +11284,15 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 var client = require("./transaction-handler");
+
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
 var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Transa\xE7\xE3o realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
 var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na execu\xE7\xE3o da transa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+
+/**
+ * Calls Server or Client-Side Signing Mint functions depending on where the user chose
+ * to store his Private Key (on his computer or on the server).
+ */
 window.mintFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
   var keyOnServer;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -11316,6 +11323,10 @@ window.mintNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntim
     }
   }, _callee2);
 }));
+
+/**
+ * Executes "Mint" transaction in Client-Side Signing Mode.
+ */
 var mintFTClientSideSigning = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
     var _document$getElementB, username, qty, clientAccountId, transaction, response;
@@ -11324,16 +11335,18 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context3.next = 23;
+              _context3.next = 25;
               break;
             }
+            // Hides the file upload fields and displays loading image while the transaction is processing.
             document.getElementById("signing-files").style.display = "none";
+            document.getElementById("submitButton").style.display = "none";
             document.getElementById("loader").style.display = "flex";
             (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
             event.preventDefault();
             username = document.getElementById("username").value;
             qty = document.getElementById("qty").value; // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
               chaincodeId: 'erc1155',
@@ -11341,36 +11354,44 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
               fcn: "Mint",
               args: [clientAccountId, "$ylvas", qty]
             };
-            _context3.prev = 10;
-            _context3.next = 13;
+            _context3.prev = 11;
+            _context3.next = 14;
             return client.offlineTransaction(transaction);
-          case 13:
+          case 14:
             response = _context3.sent;
+            // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
+            document.getElementById("submitButton").style.display = "block";
             document.getElementById("loader").style.display = "none";
+
+            // Displays Flash Messages
             if (response.result == "SUCCESS") {
               document.getElementById("flash").innerHTML = successFlashMessage;
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context3.next = 23;
+            _context3.next = 25;
             break;
-          case 19:
-            _context3.prev = 19;
-            _context3.t0 = _context3["catch"](10);
+          case 21:
+            _context3.prev = 21;
+            _context3.t0 = _context3["catch"](11);
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("Error:", _context3.t0.message);
-          case 23:
+          case 25:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[10, 19]]);
+    }, _callee3, null, [[11, 21]]);
   }));
   return function mintFTClientSideSigning() {
     return _ref3.apply(this, arguments);
   };
 }();
+
+/**
+ * Executes "Mint" transaction in Server-Side Signing Mode.
+ */
 var mintFTServerSideSigning = /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var username, qty, token, headers, url, init, body, response, element, _element, _element2;
@@ -11441,6 +11462,10 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
     return _ref4.apply(this, arguments);
   };
 }();
+
+/**
+ * Executes "Mint" transaction in Client-Side Signing Mode.
+ */
 var mintNFTClientSideSigning = /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
     var _document$getElementB2, username, nftId, qty, clientAccountId, transaction, response;
@@ -11449,10 +11474,12 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context5.next = 24;
+              _context5.next = 26;
               break;
             }
+            // Hides the file upload fields and displays loading image while the transaction is processing.
             document.getElementById("signing-files").style.display = "none";
+            document.getElementById("submitButton").style.display = "none";
             document.getElementById("loader").style.display = "flex";
             (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
             event.preventDefault();
@@ -11461,7 +11488,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             qty = document.getElementById("amount").value; //let phyto = document.getElementById("phyto").value;
             //let location = document.getElementById("location").value;
             // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
               chaincodeId: 'erc1155',
@@ -11469,39 +11496,47 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
               fcn: "Mint",
               args: [clientAccountId, nftId, qty]
             };
-            _context5.prev = 11;
-            _context5.next = 14;
+            _context5.prev = 12;
+            _context5.next = 15;
             return client.offlineTransaction(transaction);
-          case 14:
+          case 15:
             response = _context5.sent;
+            // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
+            document.getElementById("submitButton").style.display = "block";
             document.getElementById("loader").style.display = "none";
+
+            // Displays Flash Messages
             if (response.result == "SUCCESS") {
               document.getElementById("flash").innerHTML = successFlashMessage;
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 24;
+            _context5.next = 26;
             break;
-          case 20:
-            _context5.prev = 20;
-            _context5.t0 = _context5["catch"](11);
+          case 22:
+            _context5.prev = 22;
+            _context5.t0 = _context5["catch"](12);
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("Error:", _context5.t0.message);
-          case 24:
+          case 26:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[11, 20]]);
+    }, _callee5, null, [[12, 22]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);
   };
 }();
+
+/**
+ * Executes "Mint" transaction in Server-Side Signing Mode.
+ */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, element, _element3, _element4;
+    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11533,13 +11568,30 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             return fetch(url, init);
           case 18:
             response = _context6.sent;
-            if (!response.ok) {
-              _context6.next = 26;
+            // Post metadata through ipfs node
+            postMetadataURL = "http://localhost:4000/meta/postMetadata";
+            init.body = JSON.stringify({
+              // TODO: match schema with forms
+              metadata: {
+                id: nftId,
+                phyto: phyto,
+                geolocation: location,
+                custom_notes: "qty: ".concat(qty)
+              },
+              tokenId: nftId,
+              token: token
+            });
+            _context6.next = 23;
+            return fetch(postMetadataURL, init);
+          case 23:
+            metadataResponse = _context6.sent;
+            if (!(response.ok && metadataResponse.ok)) {
+              _context6.next = 31;
               break;
             }
-            _context6.next = 22;
+            _context6.next = 27;
             return response.json();
-          case 22:
+          case 27:
             response = _context6.sent;
             if (response.result == null) {
               document.getElementById("submitButton").style.display = "flex";
@@ -11552,16 +11604,16 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = _element3;
             }
-            _context6.next = 32;
+            _context6.next = 37;
             break;
-          case 26:
+          case 31:
             console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
             _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element4;
             return _context6.abrupt("return", null);
-          case 32:
+          case 37:
           case "end":
             return _context6.stop();
         }
@@ -11615,7 +11667,7 @@ window.addEventListener("load", function () {
  */
 var offlineTransaction = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(transaction) {
-    var privateKey, certificate, url, body, token, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
+    var privateKey, certificate, body, token, url, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -11629,7 +11681,6 @@ var offlineTransaction = /*#__PURE__*/function () {
           case 5:
             certificate = _context.sent;
             // 1. Request transaction proposal generation
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             body = {
               username: localStorage.getItem("username"),
               transaction: transaction,
@@ -11637,14 +11688,19 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token");
             console.log("### 1. Request transaction proposal generation");
+            // Sends transaction proposal generation request to server
+            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 12;
             return sendToServer("POST", url, body, token);
           case 12:
             proposalResponse = _context.sent;
+            // The transaction proposal hash
             digest = proposalResponse.result.digest;
+            console.log('Transaction proposal hash =', digest);
+
+            // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal;
             console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-            console.log('digest =', digest);
 
             // 2. Sign transaction proposal
             console.log("### 2. Sign transaction proposal");
