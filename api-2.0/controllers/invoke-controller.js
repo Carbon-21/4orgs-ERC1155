@@ -138,6 +138,11 @@ exports.setURI = async (req, res, next) => {
 
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
+/** 
+ * Para melhor entender as rotas abaixo, sugiro ler primeiramente o método offlineTransaction no script transaction-handler.js. Esse método é a 
+ * "main" que executa todo o procedimento de geração da proposta de transação, assinatura e envio às rotas abaixo.
+*/
+
 /**
  * Generates the transaction proposal for the client. The 1st route
  * in the client-side transaction signing flux.
