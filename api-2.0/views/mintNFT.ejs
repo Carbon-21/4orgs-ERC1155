@@ -5,32 +5,7 @@
 
   <%- include("partials/head") %>
   
-  <!--<script type="text/javascript" src="../scripts/test.js"></script>-->
-
-  <!--<script type="text/javascript">
-    function teste() {
-        //Wait for page to finish loading
-        window.addEventListener("load",function(){
-            //Run function when you submit form
-            document.getElementById("form").addEventListener("submit",function(e){
-                //Stop the form from submitting:
-                e.preventDefault();
-
-                //Get your input value
-                var username = document.getElementById("username").value;
-
-                //Log it to your console
-                console.log(username)
-                alert("username")
-            });
-        });
-    }
-
-
-  </script>-->
-
-  <!-- <body onload="document.getElementById('token').value = localStorage.getItem('token');
-                document.getElementById('username').value = localStorage.getItem('username')"> -->
+    <script src="/scripts/bundles/mint-bundle.js"></script>
     <body>
 
     <!-- Navbar -->
@@ -74,8 +49,7 @@
                         <div class="d-flex flex-column align-items-start">
                             <div class="mint-data">
                                 <i class="fa-solid fa-coins"></i>
-                                <input type="number" required name="amount" id="amount" min="0" value="0" step=".01">
-                                <!--<input type="text" name="amount" id="amount" class="form-control" required/>-->
+                                <input type="number" required name="amount" id="amount" min="0" value="0" step="1">
                             </div>
                             <label class="form-label" for="amount">Insira o valor a ser adicionado no NFT</label>
                         </div>
@@ -99,21 +73,16 @@
                             </div>
                             <label class="form-label" for="location">Insira localização da área</label>
                         </div>
-                        
-                        <!-- <script type="text/javascript">
-                            function buttonPressed() {
-                            // Request
-                            sendRequest("MintNFT");
-                            // Alterna visibilidade de botao e gif de carregamento
-                            document.getElementById("loader").style.display = "flex";
-                            document.getElementById("submitButton").style.display = "none";
-                            }
-                        </script> -->
-                        <div class="mint-button mb-5">
-                            <img id="loader" class="loading-icon" src="../images/loader.gif" />
-                            <button id="submitButton" type="submit" class="btn btn-primary btn-md">Emitir</button>
+                        <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
+                        <div hidden id="signing-files" style="text-align: center;">
+                            <p><strong>Faça o upload da sua chave privada</strong></p>
+                            <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+                            <p><strong>Faça o upload do seu certificado</strong></p>
+                            <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
                         </div>
-
+                        <div class="mint-button">
+                            <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+                        </div>
                     </form>
 
                 </div>
@@ -124,7 +93,7 @@
 
     </section>
 
-    <script src="/scripts/mint.js"></script>
+    
 
   </body>
 

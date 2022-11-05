@@ -56,6 +56,12 @@ module.exports = function(sequelize, DataTypes) {
     status: {
       type: DataTypes.STRING(12),
       allowNull: true
+    },
+    keyOnServer: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'key_on_server'
     }
   }, {
     sequelize,

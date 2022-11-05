@@ -102,7 +102,9 @@ exports.signup = async (req, res, next) => {
   if (!response) return;
 
   //enroll user in the CA and save it in the wallet
-  if (!enrollUserInCA(user, next)) return;
+  let enrollResponse = await enrollUserInCA(user, next);
+  if (!enrollResponse.success) return;
+  response.certificate = enrollResponse.certificate;
 
   //create JWT, add to reponse
   response.token = auth.createJWT(user.email, user.org);
@@ -186,6 +188,7 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
       message: `Welcome!`,
       token,
+      keyOnServer: user.keyOnServer // Boolean that informs whether the user's key is stored on the server or not.
     });
   } catch (err) {
     logger.error(err);
@@ -209,6 +212,7 @@ const generateSeed = () => {
 //caled on signup
 const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
+  user.keyOnServer = user.saveKeyOnServer; // Boolean that informs whether the user's key is stored on the server or not.
   let obj;
   try {
     obj = await models.users.findOne({
@@ -273,7 +277,7 @@ const enrollUserInCA = async (user, next) => {
   if (userIdentity) {
     logger.error(`An identity for the user ${user.email} already exists in the wallet`);
 
-    return true;
+    return {success: false};
   }
 
   //enroll an admin user if it doesn't exist yet
@@ -293,6 +297,8 @@ const enrollUserInCA = async (user, next) => {
 
   let secret;
   try {
+    var certificate;
+
     //register user, using admin account
     secret = await ca.register(
       {
@@ -303,50 +309,49 @@ const enrollUserInCA = async (user, next) => {
       adminUser
     );
 
-    //CSR
-    if (user.useCSR) {
-      logger.debug(`Using CSR mode`);
+    let privateKey;
 
-      //generate private key
-      // TODO: tirar isso quando a geração no front estiver ok
-      var command = "./generateCSR.sh " + user.email + " " + user.org;
-      await helper.execWrapper(command);
-
-      const csr = fs.readFileSync("./certreq.csr", "utf8");
-      var pkey = fs.readFileSync("./pkey.pem", "utf8");
-      logger.debug(`certreq:  ${csr}`);
+    if (!user.saveKeyOnServer) {
+      logger.debug(`--- Client-side Private Key and CSR Generation Mode ---`);
 
       //enroll user in the CA
       var enrollment = await ca.enroll({
         enrollmentID: user.email,
         enrollmentSecret: secret,
-        csr: csr,
+        csr: user.csr,
       });
+      certificate = enrollment.certificate;
     }
 
-    //Not CSR: just enroll user in the CA
     else {
-      logger.debug(`NOT using CSR mode`);
+      logger.debug(`--- Server-side Private Key and CSR Generation Mode ---`);
 
       var enrollment = await ca.enroll({
         enrollmentID: user.email,
         enrollmentSecret: secret,
       });
-      pkey = enrollment.key.toBytes();
+      privateKey = enrollment.key.toBytes();
+      certificate = enrollment.certificate
     }
 
-    //save cert and pkey to wallet
-    //TODO sepa a pkey tem que ser salva só quando CSR não é usado
+    //save cert and privateKey to wallet
+    //TODO sepa a privateKey tem que ser salva só quando CSR não é usado
     let orgMSPId = helper.getOrgMSP(user.org);
     const x509Identity = {
       credentials: {
         certificate: enrollment.certificate,
-        privateKey: pkey,
       },
       mspId: orgMSPId,
       type: "X.509",
     };
+
+    // If user.saveKeyOnServer is true, saves user's server-side generated private key
+    if (user.saveKeyOnServer) x509Identity.credentials.privateKey = privateKey;
+
     await wallet.put(user.email, x509Identity);
+
+    //OK
+    return {success: true, certificate: certificate};
   } catch (err) {
     //change user status in DB, so they can try to sign up again
     await models.users.update({ status: "registering" }, { where: { email: user.email } });
@@ -355,9 +360,6 @@ const enrollUserInCA = async (user, next) => {
     logger.debug(err);
     return next(new HttpError(500));
   }
-
-  //OK
-  return true;
 };
 
 //transform 128-bit salt to bcrypt standard salt
