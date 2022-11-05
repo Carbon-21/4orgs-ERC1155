@@ -1,4 +1,4 @@
-const ecdsa = require('./ecdsacsr.js');
+const ecdsa = require('./bundles/ecdsacsr-bundle.js');
 const elliptic = require('elliptic');
 const { KEYUTIL } = require('jsrsasign');
 
@@ -21,19 +21,21 @@ export const generateCryptoMaterial = async function (username) {
 
 } 
 
+/**
+ * Decodes Base-64 Strings.
+ * @param {*} buf Buffer
+ * @returns 
+ */
 const ab2str = async function (buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
-const str2ab = async function (str) {
-  const buf = new ArrayBuffer(str.length);
-  const bufView = new Uint8Array(buf);
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
-  }
-  return buf;
-}
-
+/**
+ * Exports a CryptoKey object into a PEM-encoded key string.
+ * @param {*} keyType If the key is private or public.
+ * @param {*} key The CryptoKey object that represents the user's key.
+ * @returns The PEM-encoded key string.
+ */
 const exportCryptoKey = async function (keyType, key) {
   try {
     let exported, exportedAsString, exportedAsBase64, pemExported;
@@ -62,6 +64,10 @@ const exportCryptoKey = async function (keyType, key) {
   }
 }
 
+/**
+ * Generates a pair of public and private ECDSA keys.
+ * @returns The ECDSA key pair.
+ */
 const generateKeyPair = async function () {
   try {
   let keyPair = await window.crypto.subtle.generateKey(
@@ -84,6 +90,12 @@ const generateKeyPair = async function () {
   }
 }
 
+/**
+ * Executes the download of the user's private key and certificate by the browser.
+ * @param {*} name The username.
+ * @param {*} material The string that will be downloaded.
+ * @param {*} materialType "privateKey" if the string is a private key; "certificate" if the string is a certificate.
+ */
 export const downloadCrypto = async function (name, material, materialType) {
   let filename;
   if (materialType == "privateKey") filename = `pk_${name}.pem`;

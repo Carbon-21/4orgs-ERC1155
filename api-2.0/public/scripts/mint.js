@@ -1,5 +1,6 @@
 const client = require("./transaction-handler");
 
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
 const successFlashMessage =     
     `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
         `Transação realizada com sucesso`+
@@ -12,6 +13,11 @@ const failureFlashMessage =
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
     `</div>`
 
+
+/**
+ * Calls Server or Client-Side Signing Mint functions depending on where the user chose
+ * to store his Private Key (on his computer or on the server).
+ */
 window.mintFT = async () => {
   const keyOnServer = localStorage.getItem("keyOnServer");
   if (keyOnServer == "true") mintFTServerSideSigning();
@@ -24,8 +30,13 @@ window.mintNFT = async () => {
   else mintNFTClientSideSigning();
 }
 
+
+/**
+ * Executes "Mint" transaction in Client-Side Signing Mode.
+ */
 const mintFTClientSideSigning = async () => {
   if (localStorage.getItem("keyOnServer") == "false") {
+      // Hides the file upload fields and displays loading image while the transaction is processing.
       document.getElementById("signing-files").style.display = "none";
       document.getElementById("loader").style.display = "flex";
       document.getElementById("flash-button")?.click();
@@ -36,7 +47,8 @@ const mintFTClientSideSigning = async () => {
 
       // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
       let clientAccountId = `x509::CN=${username},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
-
+      
+      // Base-64 encoding of clientAccountId
       clientAccountId = window.btoa(clientAccountId);
 
       const transaction = {
@@ -47,11 +59,14 @@ const mintFTClientSideSigning = async () => {
       };
 
       try {
+        // Executes the transaction in Client-Side Signing Mode
         let response = await client.offlineTransaction(transaction);
 
+        // Hides the loading image and displays the file upload fields again
         document.getElementById("signing-files").style.display = "block";
         document.getElementById("loader").style.display = "none";
         
+        // Displays Flash Messages
         if (response.result == "SUCCESS") {
             document.getElementById("flash").innerHTML = successFlashMessage;
         } else {
@@ -65,6 +80,9 @@ const mintFTClientSideSigning = async () => {
   }
 }
 
+/**
+ * Executes "Mint" transaction in Server-Side Signing Mode.
+ */
 const mintFTServerSideSigning = async () => {
 
   event.preventDefault();
@@ -133,11 +151,16 @@ const mintFTServerSideSigning = async () => {
 
 }
 
+/**
+ * Executes "Mint" transaction in Client-Side Signing Mode.
+ */
 const mintNFTClientSideSigning = async () => {
   if (localStorage.getItem("keyOnServer") == "false") {
+    // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
     document.getElementById("loader").style.display = "flex";
     document.getElementById("flash-button")?.click();
+
     event.preventDefault();
 
     let username = document.getElementById("username").value;
@@ -149,6 +172,7 @@ const mintNFTClientSideSigning = async () => {
     // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
     let clientAccountId = `x509::CN=${username},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
 
+    // Base-64 encoding of clientAccountId
     clientAccountId = window.btoa(clientAccountId);
 
     const transaction = {
@@ -159,11 +183,14 @@ const mintNFTClientSideSigning = async () => {
     };
 
     try {
+      // Executes the transaction in Client-Side Signing Mode
       let response = await client.offlineTransaction(transaction);
 
+      // Hides the loading image and displays the file upload fields again
       document.getElementById("signing-files").style.display = "block";
       document.getElementById("loader").style.display = "none";
       
+      // Displays Flash Messages
       if (response.result == "SUCCESS") {
           document.getElementById("flash").innerHTML = successFlashMessage;
       } else {
@@ -177,6 +204,9 @@ const mintNFTClientSideSigning = async () => {
 }
 }
 
+/**
+ * Executes "Mint" transaction in Server-Side Signing Mode.
+ */
 const mintNFTServerSideSigning = async () => {
 
   event.preventDefault();

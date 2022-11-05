@@ -34,19 +34,24 @@ export const offlineTransaction = async (transaction) => {
     const certificate = await readUploadedFile("certificate");
 
     // 1. Request transaction proposal generation
-    var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
     const body = {
-        username: localStorage.getItem("username"),
-        transaction: transaction,
-        certificate: certificate
+      username: localStorage.getItem("username"),
+      transaction: transaction,
+      certificate: certificate
     };
     const token = localStorage.getItem("token");
     console.log("### 1. Request transaction proposal generation");
+    // Sends transaction proposal generation request to server
+    var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
     const proposalResponse = await sendToServer("POST", url, body, token);
+
+    // The transaction proposal hash
     const digest = proposalResponse.result.digest;
+    console.log('Transaction proposal hash =', digest);
+
+    // The transaction proposal in Hex
     const proposalHex = proposalResponse.result.proposal;
     console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-    console.log('digest =', digest);
 
     // 2. Sign transaction proposal
     console.log("### 2. Sign transaction proposal");

@@ -4,8 +4,11 @@ const helper = require("../app/helper");
 const FabricClient = require('fabric-client')
 var util = require('util');
 
+
+// Global objects that are used to establish connection to the Fabric network in the client-side signing mode
 var client = null;
 var channel = null;
+// Stores info of a transaction that has been initiated (for client-side mode)
 var transactionBuffer = [];
 
 /**
@@ -13,6 +16,7 @@ var transactionBuffer = [];
  * send the transaction proposal to the network.
  */
 const setupClient = async () => {
+  // Loads network config from file
   client = FabricClient.loadFromConfig('../network_org1.yaml');
   await client.initCredentialStores();
   channel = client.getChannel('mychannel');
@@ -142,24 +146,31 @@ exports.setURI = async (req, res, next) => {
  */
 exports.generateTransactionProposal = async (req, res, next) => {
 
+  // Client's certificate emitted by Fabric's CA
   const clientCertificate = req.body.certificate;
+
+  // The transaction proposal that was chosen by the client on the website
   const transactionProposal = req.body.transaction;
   const org = "CarbonMSP" // Hardcoded
   await client.initCredentialStores();
 
   try {
+    // Generates unsidneg transaction proposal, which will be returned to the client for signing
     var { proposal, tx_id } = channel.generateUnsignedProposal(transactionProposal, org, clientCertificate);
+
+    // Stores transaction proposal in buffer to be fetched again at commitSignedTransaction route.
     transactionBuffer = [];
     transactionBuffer.push({proposal: proposal});
 
+    // To Bytes
     var proposalBytes = proposal.toBuffer();
-    logger.debug('typeof proposalBytes =', typeof proposalBytes)
     logger.debug('proposal Bytes =', proposalBytes);
 
-    //Hash the transaction proposal
+    // Hash the transaction proposal
     var digest = client.getCryptoSuite().hash(proposalBytes);
     logger.debug('Proposal Digest = ', digest)
 
+    // Transaction proposal in hex
     let proposalHex = Buffer.from(proposalBytes).toString('hex');
     logger.debug('proposal Hex =', proposalHex);
 
@@ -169,7 +180,7 @@ exports.generateTransactionProposal = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, err.message)); // switched errMessage[1] to err.message temporarily
+    return next(new HttpError(500, err.message));
   }
 }
 
@@ -181,28 +192,29 @@ exports.generateTransactionProposal = async (req, res, next) => {
  */
 exports.sendSignedTransactionProposal = async (req, res, next) => {
   try {
+    // Transaction Proposal's Signature in Hex 
     let signatureHex = req.body.signature;
+    
+    // Transaction Proposal in Hex
     let proposalHex = req.body.proposal;
 
-    //Hex to bytes
+    // Converting Hex to Bytes
     let signature = Uint8Array.from(Buffer.from(signatureHex, 'hex'));
     let proposalBytes = Buffer.from(proposalHex, 'hex');
 
+    // Signed Proposal
     signedProposal = {
       signature,
       proposal_bytes: proposalBytes
     }
   
+    // Get the networks's Peers for each Org
     var targets1 = client.getPeersForOrg('CarbonMSP');
     var targets2 = client.getPeersForOrg('UsersMSP');
     var targets3 = client.getPeersForOrg('IbamaMSP');
     var targets4 = client.getPeersForOrg('CetesbMSP');
-
-    // logger.debug('########targets1',targets1)
-    // logger.debug('########targets2',targets1)
-    // logger.debug('########targets3',targets1)
-    // logger.debug('########targets4',targets1)
   
+    // Request to send transaction proposal to the peers
     var proposal_request = {
       signedProposal: signedProposal,
       // Ele está enviando para todos, porém ao receber a primeira resposta já encaminha para o orderer.
@@ -211,12 +223,14 @@ exports.sendSignedTransactionProposal = async (req, res, next) => {
       targets: targets1, targets2, targets3, targets4
     }
   
+    // Sends Signed Proposal to the Peers
     let proposalResponses = await channel.sendSignedProposal(proposal_request);
     logger.debug('Send Proposal Response:', proposalResponses[0]);
 
     if (proposalResponses[0] instanceof Error)
       return res.json({result: "failure"});
     
+    // The result of the execution of the transaction proposal by the peers
     let payload = proposalResponses[0].response.payload.toString();
     let status = proposalResponses[0].response.status;
     let message = proposalResponses[0].response.message;

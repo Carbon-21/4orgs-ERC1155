@@ -1,6 +1,6 @@
 const client = require("./transaction-handler");
 
-
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
 const successFlashMessage =     
     `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
         `Consulta realizada com sucesso`+
@@ -13,8 +13,13 @@ const failureFlashMessage =
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
     `</div>`
 
+/**
+ * Executes "SelfBalance" transaction in Client-Side Signing Mode.
+ */
 window.walletClientSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "false") {
+
+        // Hides the file upload fields and displays loading image while the transaction is processing.
         document.getElementById("signing-files").style.display = "none";
         document.getElementById("loader").style.display = "flex";
         document.getElementById("flash-button")?.click();
@@ -29,11 +34,14 @@ window.walletClientSideSigning = async () => {
             args: ["$ylvas"]
         };
 
+        // Executes the transaction in Client-Side Signing Mode
         let response = await client.offlineTransaction(transaction);
-        
+
+        // Hides the loading image and displays the file upload fields again
         document.getElementById("signing-files").style.display = "block";
         document.getElementById("loader").style.display = "none";
         
+        // Displays Flash Messages
         if (response.result == "SUCCESS") {
             balanceHeader.innerText = response.payload + " Sylvas";
             document.getElementById("flash").innerHTML = successFlashMessage;
@@ -44,6 +52,9 @@ window.walletClientSideSigning = async () => {
     }
 }
 
+/**
+ * Executes "SelfBalance" transaction in Server-Side Signing Mode.
+ */
 window.walletServerSideSigning = async () => {
     if (localStorage.getItem("keyOnServer") == "true") {
         document.getElementById("loader").style.display = "flex";
@@ -76,7 +87,6 @@ window.walletServerSideSigning = async () => {
         } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("HTTP Error ", response.status);
-            return null;
         }
     }
 }
