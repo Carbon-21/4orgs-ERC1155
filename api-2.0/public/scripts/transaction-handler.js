@@ -24,6 +24,7 @@ window.addEventListener("load", () => {
 
 /**
  * Executes a transaction in client-side signing mode.
+ * Important reference: https://hyperledger-fabric.readthedocs.io/en/latest/txflow.html
  * @param {*} transaction The dictionary that represents the transaction 
  * to be executed
  * @returns The transaction result
