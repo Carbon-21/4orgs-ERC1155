@@ -11499,13 +11499,13 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTClientSideSigning = /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-    var _document$getElementB2, username, nftId, qty, clientAccountId, transaction, response;
+    var _document$getElementB2, username, nftId, qty, clientAccountId, transaction, response, metadata, metadataResponse;
     return _regeneratorRuntime().wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context5.next = 26;
+              _context5.next = 31;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11532,6 +11532,22 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             return client.offlineTransaction(transaction);
           case 15:
             response = _context5.sent;
+            if (!(response.result == "SUCCESS")) {
+              _context5.next = 21;
+              break;
+            }
+            // IPFS Metadata
+            metadata = {
+              id: nftId,
+              phyto: phyto,
+              geolocation: location,
+              custom_notes: "qty: ".concat(qty)
+            }; // Send NFT Metadata to IPFS
+            _context5.next = 20;
+            return publishMetadataOnIPFS(nftId, metadata);
+          case 20:
+            metadataResponse = _context5.sent;
+          case 21:
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
             document.getElementById("submitButton").style.display = "block";
@@ -11543,19 +11559,19 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 26;
+            _context5.next = 31;
             break;
-          case 22:
-            _context5.prev = 22;
+          case 27:
+            _context5.prev = 27;
             _context5.t0 = _context5["catch"](12);
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("Error:", _context5.t0.message);
-          case 26:
+          case 31:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[12, 22]]);
+    }, _callee5, null, [[12, 27]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);
@@ -11607,7 +11623,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               custom_notes: "qty: ".concat(qty)
             }; // Send NFT Metadata to IPFS
             _context6.next = 22;
-            return publishMetadataOnIPFS(init, nftId, metadata);
+            return publishMetadataOnIPFS(nftId, metadata);
           case 22:
             metadataResponse = _context6.sent;
             if (!(response.ok && metadataResponse.ok)) {
@@ -11650,8 +11666,8 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
   };
 }();
 var publishMetadataOnIPFS = /*#__PURE__*/function () {
-  var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(init, nftId, metadata) {
-    var postMetadataURL, token, headers, metadataResponse;
+  var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(nftId, metadata) {
+    var postMetadataURL, token, headers, init, metadataResponse;
     return _regeneratorRuntime().wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
@@ -11686,7 +11702,7 @@ var publishMetadataOnIPFS = /*#__PURE__*/function () {
       }
     }, _callee7);
   }));
-  return function publishMetadataOnIPFS(_x, _x2, _x3) {
+  return function publishMetadataOnIPFS(_x, _x2) {
     return _ref7.apply(this, arguments);
   };
 }();

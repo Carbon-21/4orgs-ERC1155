@@ -189,6 +189,19 @@ const mintNFTClientSideSigning = async () => {
       // Executes the transaction in Client-Side Signing Mode
       let response = await client.offlineTransaction(transaction);
 
+      if (response.result == "SUCCESS") {
+        // IPFS Metadata
+        let metadata =  {
+          id: nftId,
+          phyto,
+          geolocation: location,
+          custom_notes: `qty: ${qty}`,
+        };
+        
+        // Send NFT Metadata to IPFS
+        let metadataResponse = await publishMetadataOnIPFS(nftId, metadata);
+      }
+
       // Hides the loading image and displays the file upload fields again
       document.getElementById("signing-files").style.display = "block";
       document.getElementById("submitButton").style.display = "block";
@@ -255,7 +268,7 @@ const mintNFTServerSideSigning = async () => {
   };
   
   // Send NFT Metadata to IPFS
-  let metadataResponse = await publishMetadataOnIPFS(init, nftId, metadata);
+  let metadataResponse = await publishMetadataOnIPFS(nftId, metadata);
 
 
   if (response.ok && metadataResponse.ok) {
@@ -295,7 +308,7 @@ const mintNFTServerSideSigning = async () => {
 
 }
 
-const publishMetadataOnIPFS = async (init, nftId, metadata) => {
+const publishMetadataOnIPFS = async (nftId, metadata) => {
   let postMetadataURL = "http://localhost:4000/meta/postMetadata";
   let token = localStorage.getItem("token");
   

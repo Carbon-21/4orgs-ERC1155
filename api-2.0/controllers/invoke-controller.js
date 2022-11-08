@@ -114,7 +114,7 @@ exports.setURI = async (req, res, next) => {
   const org = req.jwt.org;
 
   //connect to the channel and get the chaincode
-  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, 'admin', next);
   if (!chaincode) return;
 
   //set URI
