@@ -9433,36 +9433,51 @@ utils.intFromLE = intFromLE;
 
 },{"bn.js":5,"minimalistic-assert":38,"minimalistic-crypto-utils":39}],22:[function(require,module,exports){
 module.exports={
-  "name": "elliptic",
-  "version": "6.5.4",
-  "description": "EC cryptography",
-  "main": "lib/elliptic.js",
-  "files": [
-    "lib"
+  "_args": [
+    [
+      "elliptic@6.5.4",
+      "/home/matheus/Documents/TCC/Codes/4orgs-ERC1155/api-2.0"
+    ]
   ],
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "test": "npm run lint && npm run unit",
-    "version": "grunt dist && git add dist/"
+  "_from": "elliptic@6.5.4",
+  "_id": "elliptic@6.5.4",
+  "_inBundle": false,
+  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
+  "_location": "/elliptic",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "elliptic@6.5.4",
+    "name": "elliptic",
+    "escapedName": "elliptic",
+    "rawSpec": "6.5.4",
+    "saveSpec": null,
+    "fetchSpec": "6.5.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:indutny/elliptic"
-  },
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
+  "_requiredBy": [
+    "/fabric-common"
   ],
-  "author": "Fedor Indutny <fedor@indutny.com>",
-  "license": "MIT",
+  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
+  "_spec": "6.5.4",
+  "_where": "/home/matheus/Documents/TCC/Codes/4orgs-ERC1155/api-2.0",
+  "author": {
+    "name": "Fedor Indutny",
+    "email": "fedor@indutny.com"
+  },
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "homepage": "https://github.com/indutny/elliptic",
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  },
+  "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^2.0.2",
     "coveralls": "^3.1.0",
@@ -9478,15 +9493,31 @@ module.exports={
     "istanbul": "^0.4.5",
     "mocha": "^8.0.1"
   },
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  }
+  "files": [
+    "lib"
+  ],
+  "homepage": "https://github.com/indutny/elliptic",
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "license": "MIT",
+  "main": "lib/elliptic.js",
+  "name": "elliptic",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/indutny/elliptic.git"
+  },
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run lint && npm run unit",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "version": "grunt dist && git add dist/"
+  },
+  "version": "6.5.4"
 }
 
 },{}],23:[function(require,module,exports){
@@ -11536,7 +11567,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
+    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, metadata, metadataResponse, element, _element3, _element4;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11568,30 +11599,24 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             return fetch(url, init);
           case 18:
             response = _context6.sent;
-            // Post metadata through ipfs node
-            postMetadataURL = "http://localhost:4000/meta/postMetadata";
-            init.body = JSON.stringify({
-              // TODO: match schema with forms
-              metadata: {
-                id: nftId,
-                phyto: phyto,
-                geolocation: location,
-                custom_notes: "qty: ".concat(qty)
-              },
-              tokenId: nftId,
-              token: token
-            });
-            _context6.next = 23;
-            return fetch(postMetadataURL, init);
-          case 23:
+            // IPFS Metadata
+            metadata = {
+              id: nftId,
+              phyto: phyto,
+              geolocation: location,
+              custom_notes: "qty: ".concat(qty)
+            }; // Send NFT Metadata to IPFS
+            _context6.next = 22;
+            return publishMetadataOnIPFS(init, nftId, metadata);
+          case 22:
             metadataResponse = _context6.sent;
             if (!(response.ok && metadataResponse.ok)) {
-              _context6.next = 31;
+              _context6.next = 30;
               break;
             }
-            _context6.next = 27;
+            _context6.next = 26;
             return response.json();
-          case 27:
+          case 26:
             response = _context6.sent;
             if (response.result == null) {
               document.getElementById("submitButton").style.display = "flex";
@@ -11604,16 +11629,16 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = _element3;
             }
-            _context6.next = 37;
+            _context6.next = 36;
             break;
-          case 31:
+          case 30:
             console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
             _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element4;
             return _context6.abrupt("return", null);
-          case 37:
+          case 36:
           case "end":
             return _context6.stop();
         }
@@ -11622,6 +11647,47 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
   }));
   return function mintNFTServerSideSigning() {
     return _ref6.apply(this, arguments);
+  };
+}();
+var publishMetadataOnIPFS = /*#__PURE__*/function () {
+  var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(init, nftId, metadata) {
+    var postMetadataURL, token, headers, metadataResponse;
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            postMetadataURL = "http://localhost:4000/meta/postMetadata";
+            token = localStorage.getItem("token");
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+
+            // Post metadata through ipfs node
+            //TODO: ver por que o token está no body em vez de no header. Ver também se tem autenticação sendo feita na rota acionada.
+            init = {
+              method: "POST",
+              headers: headers
+            };
+            init.body = JSON.stringify({
+              // TODO: match schema with forms
+              metadata: metadata,
+              tokenId: nftId,
+              token: token
+            });
+            _context7.next = 9;
+            return fetch(postMetadataURL, init);
+          case 9:
+            metadataResponse = _context7.sent;
+            return _context7.abrupt("return", metadataResponse);
+          case 11:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+  return function publishMetadataOnIPFS(_x, _x2, _x3) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -11661,6 +11727,7 @@ window.addEventListener("load", function () {
 
 /**
  * Executes a transaction in client-side signing mode.
+ * Important reference: https://hyperledger-fabric.readthedocs.io/en/latest/txflow.html
  * @param {*} transaction The dictionary that represents the transaction 
  * to be executed
  * @returns The transaction result

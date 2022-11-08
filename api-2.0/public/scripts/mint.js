@@ -246,19 +246,17 @@ const mintNFTServerSideSigning = async () => {
 
   let response = await fetch(url, init);
 
-  // Post metadata through ipfs node
-  let postMetadataURL = "http://localhost:4000/meta/postMetadata";
-  init.body = JSON.stringify({ // TODO: match schema with forms
-    metadata: {
-      id: nftId,
-      phyto,
-      geolocation: location,
-      custom_notes: `qty: ${qty}`,
-    },
-    tokenId: nftId,
-    token,
-  });
-  let metadataResponse = await fetch(postMetadataURL, init)
+  // IPFS Metadata
+  let metadata =  {
+    id: nftId,
+    phyto,
+    geolocation: location,
+    custom_notes: `qty: ${qty}`,
+  };
+  
+  // Send NFT Metadata to IPFS
+  let metadataResponse = await publishMetadataOnIPFS(init, nftId, metadata);
+
 
   if (response.ok && metadataResponse.ok) {
       response = await response.json();
@@ -296,3 +294,28 @@ const mintNFTServerSideSigning = async () => {
   }
 
 }
+
+const publishMetadataOnIPFS = async (init, nftId, metadata) => {
+  let postMetadataURL = "http://localhost:4000/meta/postMetadata";
+  let token = localStorage.getItem("token");
+  
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  // Post metadata through ipfs node
+  //TODO: ver por que o token está no body em vez de no header. Ver também se tem autenticação sendo feita na rota acionada.
+  var init = {
+    method: "POST",
+    headers: headers,
+  };
+
+  init.body = JSON.stringify({ // TODO: match schema with forms
+    metadata: metadata,
+    tokenId: nftId,
+    token,
+  });
+  let metadataResponse = await fetch(postMetadataURL, init);
+  return metadataResponse;
+}
+
