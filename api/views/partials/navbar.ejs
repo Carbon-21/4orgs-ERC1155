@@ -30,16 +30,7 @@
         </li>
         <% } %> <% if (currentUser) { %>
         <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="navbarDropdownMenuLink"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Minha Conta
-          </a>
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Minha Conta </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/wallet">Carteira</a></li>
             <li><a class="dropdown-item" href="/collection">Coleção</a></li>
@@ -47,60 +38,40 @@
             <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
           </ul>
         </li>
-        <li class="nav-item dropdown" id="adminDropdown" hidden="true" >
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="navbarDropdownMenuLink"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Aréa do Administrador
-          </a>
-          <ul class="dropdown-menu"  aria-labelledby="navbarDropdownMenuLink">
+        <li class="nav-item dropdown" id="adminDropdown" hidden="true">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Aréa do Administrador </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/ft/mint">Emissão de FT</a></li>
             <li><a class="dropdown-item" href="/nft/mint">Emissão de NFT</a></li>
           </ul>
         </li>
-         <% } %> <% if (!currentUser) { %>
+        <% } %> <% if (!currentUser) { %>
         <li class="nav-item">
-          <a class="nav-link" href="/prelogin"
-            ><button type="button" class="btn btn-outline-success btn-sm">Entrar</button></a
-          >
+          <a class="nav-link" href="/prelogin"><button type="button" class="btn btn-outline-success btn-sm">Entrar</button></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/presignup"
-            ><button type="button" class="btn btn-outline-success btn-sm">Registrar</button></a
-          >
+          <a class="nav-link" href="/presignup"><button type="button" class="btn btn-outline-success btn-sm">Registrar</button></a>
         </li>
         <% } %> <% if (currentUser) { %>
         <li class="nav-item">
-          <a class="nav-link" href="/logout"
-            ><button class="btn btn-outline-success btn-sm">Sair</button></a
-          >
+          <a class="nav-link" href="/logout"><button class="btn btn-outline-success btn-sm">Sair</button></a>
         </li>
         <% } %>
       </ul>
     </div>
   </div>
-  <div id="flash" class="flash">
-    <%- include("../partials/flash") %>
-  </div>
+  <div id="flash" class="flash"><%- include("../partials/flash") %></div>
 </nav>
 
 <!-- Display admin functionalities if user is admin-->
 <script>
   //get role from jwt
-  const role = JSON.parse(atob(localStorage.token.split('.')[1])).role
+  const role = JSON.parse(atob(localStorage.token.split(".")[1])).role;
 
   //TODO isso deveria ser feito usando ejs!
   //show admin functionalities
-  console.log(role)
-  if (role === "admin")
-  {
-    if(typeof adminDropdown !== 'undefined')
-      adminDropdown.hidden=false;
+  console.log("role", role);
+  if (role === "admin") {
+    if (typeof adminDropdown !== "undefined") adminDropdown.hidden = false;
   }
 </script>
-
