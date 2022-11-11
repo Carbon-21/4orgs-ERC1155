@@ -668,11 +668,13 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([]string) {
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([][]string) {
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		return []string{"failed to get client id"}
+		ret := make([][]string,0)
+		ret = append(ret,[]string{"failed to get client id"})
+		return ret
 		//return "0", fmt.Errorf("failed to get client id: %v", err)
 	}
 
@@ -682,7 +684,7 @@ func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterfa
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([]string) {
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([][]string) {
 	idNFTs, _ := idNFTHelper(ctx,account)
 	return idNFTs
 }
@@ -1029,7 +1031,7 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 }
 
 // balanceOfHelper returns the balance of the given account
-func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([]string, error) {
+func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([][]string, error) {
 
 	if account == "0x0" {
 		return nil, fmt.Errorf("balance query for the zero address")
@@ -1039,7 +1041,7 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	nftlist := make([]string,0)	
+	nftlist := make([][]string,0)	
 	
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
 	if err != nil {
@@ -1070,7 +1072,9 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	
 	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
 	if ((returnedTokenID != tokenid) && (accountNFT == account)){
-		nftlist = append(nftlist,returnedTokenID)
+		// Merge ID and Value of the NFTs
+		element := []string{returnedTokenID, string(queryResponse.Value)}
+		nftlist = append(nftlist,element)
 		
 	}
 	
