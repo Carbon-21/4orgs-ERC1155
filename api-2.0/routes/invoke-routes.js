@@ -18,6 +18,12 @@ router.post(
   invokeController.mint
 );
 
+
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/ftfromnft",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
+  invokeController.ftfromnft
+);
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [
@@ -31,6 +37,8 @@ router.post(
   ],
   invokeController.transfer
 );
+
+
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/setURI",

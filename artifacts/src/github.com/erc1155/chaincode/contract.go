@@ -16,7 +16,6 @@ import (
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 
-
 )
 
 // const uriKey = "uri"
@@ -155,6 +154,129 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	// Emit TransferSingle event
 	transferSingleEvent := TransferSingle{operator, "0x0", account, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
+}
+
+
+// Mint creates amount tokens of token type id and assigns them to account.
+// This function emits a TransferSingle event.
+func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
+
+	// -------- Get all NFTs --------
+	// tokenid is the id of the FTs how will be generated from the NFTs
+	var tokenid = "$ylvas"
+
+	
+	// Stores a list of all NFTs of the same user (account))
+	NFTSumList := make([][]string,0)
+
+	if tokenid == "" {
+		return 0, fmt.Errorf("Please inform tokenid!")
+	}
+
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return 0,err
+	}
+
+	// Get ID of submitting client identity
+	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return 0,fmt.Errorf("failed to get client id: %v", err)
+	}
+	
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return 0, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		fmt.Print(queryResponse)
+		// Split Key to search for specific tokenid 
+		// The compositekey (account -  tokenid - senderer)
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		
+      		  if err != nil {
+      		      return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+     		   }
+     		   
+     		  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+		returnedTokenID := compositeKeyParts[1]
+		
+		// Contains the account of the user who have the nft
+		accountNFT := compositeKeyParts[0]
+
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
+		if returnedTokenID != tokenid {
+		
+			// Part to insert the logic of how many sylvas to add for that NFT
+			var SylvasAdd int 
+			SylvasAdd = 10   // add 10 sylvas per nft
+			
+			// Function that checks if the NFT receiver is in the temporary Slice Array
+			// If found, it returns the index to concatenate the id of the nft found and add the qty of sylvas
+			// Otherwise, add to this slice the set of the token id, the receiver and some sylvas
+			containInSliceIndex := containInSlice(NFTSumList,accountNFT)
+			
+			//  Found the account in the list
+			if (containInSliceIndex != -1){
+				// Concatenates the id of the other nft
+				//fmt.Print("ID nfts", NFTSumList[containInSliceIndex][0])
+				NFTSumList[containInSliceIndex][0] = string(NFTSumList[containInSliceIndex][0]) + "," + string(returnedTokenID)
+				
+				// Add the value to the total number of silvas
+				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
+				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
+				fmt.Print(err)
+				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd) 		
+			}else{
+				//fmt.Print("Adicionando Elemento", returnedTokenID, accountNFT)
+				element := []string{string(returnedTokenID),accountNFT,strconv.Itoa(SylvasAdd)}
+				NFTSumList = append(NFTSumList, element)		
+			}
+			
+						
+			// NFTSumList [0] - List of NFTS ids for each user
+			// NFTSumList [1] - Account that owns the nfts
+			// NFTSumList [2] - Total sylvas associated to be added to that account
+									
+			for i:= range NFTSumList{
+				// 'Minting' the tokens from the temporary list		
+				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
+				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt))
+				if err != nil {
+					return 0,err
+				}
+				fmt.Print("AQUI:", string(NFTSumList[i][0]), "-", string(NFTSumList[i][1]), "-", string(NFTSumList[i][2]))
+			}		
+		}
+
+	}
+	
+
+	return uint64(0), nil
+}
+
+
+
+func containInSlice(NFTSumList [][]string, account string) int {
+	// Checks if it has a receiver for sylvas and if yes, returns the index and the ids of the nfts, if not, it returns 0
+	// Check the list if there is already a destination with the same code
+
+	for i:= range NFTSumList{
+		// If it has, concatenate the id of the NFT in the first and perform the sum of the value of sylvas to be added
+		if(NFTSumList[i][1] == account){
+			//fmt.Print("Elemento encontrado, indice:", i)
+			return i
+		}	
+	} 	
+	return -1	
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
@@ -545,6 +667,28 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 	return balanceOfHelper(ctx, clientID, id)
 }
 
+// SelfBalance returns the balance of the requesting client's account
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([][]string) {
+	// Get ID of submitting client identity
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		ret := make([][]string,0)
+		ret = append(ret,[]string{"failed to get client id"})
+		return ret
+		//return "0", fmt.Errorf("failed to get client id: %v", err)
+	}
+
+
+	idNFTs, _ := idNFTHelper(ctx, clientID)
+	return idNFTs
+}
+
+// SelfBalance returns the balance of the requesting client's account
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([][]string) {
+	idNFTs, _ := idNFTHelper(ctx,account)
+	return idNFTs
+}
+
 // ClientAccountID returns the id of the requesting client's account
 // In this implementation, the client account ID is the clientId itself
 // Users can use this function to get their own account id, which they can then give to others as the payment address
@@ -884,6 +1028,58 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	}
 
 	return balance, nil
+}
+
+// balanceOfHelper returns the balance of the given account
+func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([][]string, error) {
+
+	if account == "0x0" {
+		return nil, fmt.Errorf("balance query for the zero address")
+	}
+
+	
+	// --------Get all NFTs --------
+	// tokenid is the id of the FTs how will be generated from the NFTs
+	var tokenid = "$ylvas"
+	nftlist := make([][]string,0)	
+	
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		fmt.Print(queryResponse)
+		// Split Key to search for specific tokenid 
+		// The compositekey (account -  tokenid - senderer)
+	_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		
+	  if err != nil {
+	      return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+	   }
+     		   
+	  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+	returnedTokenID := compositeKeyParts[1]
+	
+	// Contains the account of the user who have the nft
+	accountNFT := compositeKeyParts[0]
+	
+	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+	if ((returnedTokenID != tokenid) && (accountNFT == account)){
+		// Merge ID and Value of the NFTs
+		element := []string{returnedTokenID, string(queryResponse.Value)}
+		nftlist = append(nftlist,element)
+		
+	}
+	
+	}
+	return nftlist, nil
 }
 
 // Returns the sorted slice ([]string) copied from the keys of map[string]uint64
