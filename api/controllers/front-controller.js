@@ -24,7 +24,7 @@ exports.postPreSignup = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = "http://localhost:4000/auth/getSalt";
+  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -79,7 +79,7 @@ exports.postSignup = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set request url and headers
-  const url = "http://localhost:4000/auth/signup";
+  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/signup`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -125,7 +125,7 @@ exports.postPreLogin = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = "http://localhost:4000/auth/getSalt";
+  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -176,7 +176,7 @@ exports.postLogin = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = "http://localhost:4000/auth/login";
+  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/login`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -226,7 +226,7 @@ exports.getCollection = async (req, res, next) => {
 
     // Set url and headers
 
-    const url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
+    const url = `http://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=\$ylvas`;
     // const url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
 
     const options = {

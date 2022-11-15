@@ -5,7 +5,7 @@ async function wallet(){
 
     let headers = new Headers();
     headers.append("Authorization", "Bearer " + token)
-    let url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`
+    let url = `http://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=\$ylvas`
 
     var init = {
         method: "GET",

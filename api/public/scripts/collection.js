@@ -5,7 +5,7 @@ async function collection(){
 
     let headers = new Headers();
     headers.append("Authorization", "Bearer " + token)
-    let url = `http://localhost:4000/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
+    let url = `http://${process.env.HOST}:${process.env.PORT}/chaincode/channels/mychannel/chaincodes/erc1155?fcn=ClientAccountTotalBalance&args=[""]`;
 
     var init = {
         method: "GET",

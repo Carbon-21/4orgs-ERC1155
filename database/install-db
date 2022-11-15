@@ -10,6 +10,8 @@ sudo systemctl start mysql
 #create carbon user with low password policy and all permissions
 sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
 sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY '12345678'"
+sudo mysql --execute "CREATE USER carbon@192.168.18.23 IDENTIFIED BY '12345678'"
+sudo mysql --execute "GRANT ALL ON *.* TO carbon@192.168.18.23 WITH GRANT OPTION"
 sudo mysql --execute "GRANT ALL ON *.* TO carbon@localhost WITH GRANT OPTION"
 
 #create carbon db

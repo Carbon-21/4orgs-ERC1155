@@ -23,7 +23,7 @@ mysql -u carbon -p12345678 --execute "source carbon.sql"
 #recreate sequelize models
 cd sequelize-auto
 npm install
-node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h localhost -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
+node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h 192.168.18.23 -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
 
 rm -rf ../../api/models
 mv models ../../api

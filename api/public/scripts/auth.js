@@ -1,10 +1,15 @@
 let username;
 let token;
 
+function seturl() {
+   return url = `http://192.168.18.23:4000`;
+}
+
 async function signup() {
   event.preventDefault();
-
-  const url = "http://localhost:4000/signup";
+  let tmpurl = seturl();
+  url = `${tmpurl}/signup`;
+  // console.log(url)
 
   const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;
   const password = document.getElementById("password").value;
@@ -55,8 +60,8 @@ async function signup() {
 
 async function login() {
   event.preventDefault();
-
-  const url = "http://localhost:4000/login";
+  let tmpurl = seturl();
+  url = `${tmpurl}/login`;
 
   const password = document.getElementById("password").value;
   const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;

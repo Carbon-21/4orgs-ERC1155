@@ -1,8 +1,12 @@
+
 async function transfer() {
   event.preventDefault();
 
   document.getElementById("loader").style.display = "flex";
   document.getElementById("submitButton").style.display = "none";
+
+  let host = document.getElementById("host").value
+  let port = document.getElementById("port").value
 
   let usernameDest = document.getElementById("usernameDest").value;
   let tokenId = document.getElementById("tokenId").value;
@@ -14,7 +18,7 @@ async function transfer() {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
-  let url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
+  let url = `http://${host}:${port}/invoke/channels/mychannel/chaincodes/erc1155/transfer`;
 
   var init = {
     method: "POST",

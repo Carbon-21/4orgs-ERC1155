@@ -72,7 +72,7 @@ chmod +x deployChaincode.sh
 #create connection profiles if they don't exist already
 cd api
 cd ./config/
-[ -f ./connection-carbon.json ] || ./generate-ccp.sh
+./generate-ccp.sh
 
 cd ..
 npm install

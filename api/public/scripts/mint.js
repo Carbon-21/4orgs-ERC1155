@@ -8,12 +8,15 @@ async function mintFT(){
     let username = document.getElementById("username").value;
     let qty = document.getElementById("qty").value;
 
+    let host = document.getElementById("host").value
+    let port = document.getElementById("port").value
+
     let token = localStorage.getItem("token");
 
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token)
-    let url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+    let url = `http://${host}:${port}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
 
     var init = {
         method: "POST",
@@ -79,12 +82,15 @@ async function mintNFT(){
     let location = document.getElementById("location").value
     let qty = document.getElementById("amount").value
 
+    let host = document.getElementById("host").value
+    let port = document.getElementById("port").value
+
     let token = localStorage.getItem("token");
 
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token)
-    let url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+    let url = `http://${host}:${port}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
 
     var init = {
         method: "POST",

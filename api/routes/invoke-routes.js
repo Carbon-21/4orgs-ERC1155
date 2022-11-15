@@ -7,6 +7,10 @@ const invokeController = require("../controllers/invoke-controller.js");
 
 const router = Router();
 
+//network
+const host = process.env.HOST;
+const port = process.env.PORT;
+
 //// UNAUTHENTICATED ROUTES ////
 
 ///// AUTHENTICATED ROUTES /////
