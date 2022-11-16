@@ -1,7 +1,6 @@
 #!/bin/bash
 
-HOST=$1
-PORT=$2
+source ../../.env
 
 function update() {
     sed -e "s/\${HOST}/$2/" \
