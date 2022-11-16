@@ -13,7 +13,7 @@ async function mintFT(){
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token)
-    let url = `http://192.168.18.23:4000/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+    let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
 
     var init = {
         method: "POST",
@@ -84,7 +84,7 @@ async function mintNFT(){
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token)
-    let url = `http://192.168.18.23:4000/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+    let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
 
     var init = {
         method: "POST",

@@ -3,7 +3,7 @@ let token;
 
 async function signup() {
   event.preventDefault();
-  url = `http://192.168.18.23:4000/signup`;
+  url = `http://${HOST}:${PORT}/signup`;
 
   const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;
   const password = document.getElementById("password").value;
@@ -54,7 +54,7 @@ async function signup() {
 
 async function login() {
   event.preventDefault();
-  url = `http://192.168.18.23:4000/login`;
+  url = `http://${HOST}:${PORT}/login`;
 
   const password = document.getElementById("password").value;
   const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;

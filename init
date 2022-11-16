@@ -1,4 +1,8 @@
 #!/bin/bash
+
+HOST=192.168.18.23
+PORT=4000
+
 kill-hlf () {
 	docker-compose down 
 	containers=$(docker ps -q) && docker kill $containers
@@ -74,6 +78,10 @@ cd api
 cd ./config/
 ./generate-ccp.sh
 
-cd ..
+# Update public/scripts with HOST/PORT 
+cd ../public/scripts/
+./updatefiles.sh ${HOST} ${PORT}
+
+cd ../../
 npm install
 nodemon
