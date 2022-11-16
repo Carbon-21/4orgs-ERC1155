@@ -74,6 +74,15 @@ cd api
 cd ./config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
 
-cd ..
+#create public scripts
+cd ../public/scripts/src
+chmod +x genscripts.sh
+./genscripts.sh
+
+#generate bundle
+cd ../../..
+chmod +x get-bundles
+./get-bundles
+
 npm install
 nodemon

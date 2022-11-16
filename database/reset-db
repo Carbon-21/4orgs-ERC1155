@@ -1,6 +1,8 @@
 #!/bin/bash
 #regenerate sequelize models using sequelize-auto and recreate carbon DB
 
+source ../api/.env
+
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
 start-mysql() {
   if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
@@ -23,7 +25,7 @@ mysql -u carbon -p12345678 --execute "source carbon.sql"
 #recreate sequelize models
 cd sequelize-auto
 npm install
-node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h localhost -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
+node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h $HOST -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
 
 rm -rf ../../api/models
 mv models ../../api
