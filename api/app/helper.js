@@ -377,6 +377,24 @@ async function execWrapper(cmd) {
   }
 }
 
+/**
+ * Generates the client account id used in the chaincode methods. The current function helper.getAccountIdFromChaincode 
+ * requires the caller's private key to be executed properly, therefore not being possible to sign transactions on the client side.
+ * This present function is a temporary way to make Offline Transaction Signing Mode work while there is not another funcion in the chaincode that
+ * doesn't require the user's private key.
+ * @param {*} username The user's email.
+ * @param {*} role The user's role (client or admin).
+ * @param {*} org The user's organization.
+ * @returns The user's client account id.
+ */
+function mountClientAccountId(username, role, org) {
+  let clientAccountId = `x509::CN=${username},OU=${role.toLowerCase()}+OU=${org.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+  
+  // Base-64 encoding of clientAccountId
+  clientAccountId = btoa(clientAccountId);
+  return clientAccountId;
+}
+
 module.exports = {
   getCaUrl,
   getAffiliation,
@@ -393,4 +411,5 @@ module.exports = {
   getOrgMSP,
   getChaincode,
   getAccountIdFromChaincode,
+  mountClientAccountId,
 };

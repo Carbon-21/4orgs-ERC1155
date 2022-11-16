@@ -34,3 +34,7 @@ browserify ./public/scripts/wallet.js > ./public/scripts/bundles/wallet-bundle.j
 #create mint-bundle.js
 echo "Creating mint-bundle.js"
 browserify ./public/scripts/mint.js > ./public/scripts/bundles/mint-bundle.js -t babelify
+
+#create transfer-bundle.js
+echo "Creating transfer-bundle.js"
+browserify ./public/scripts/transfer.js > ./public/scripts/bundles/transfer-bundle.js -t babelify

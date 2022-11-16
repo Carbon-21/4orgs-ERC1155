@@ -39,10 +39,9 @@ exports.mint = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //get receiver id
-  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
-  if (!receiverAccountId) return;
+  let receiverAccountId = helper.mountClientAccountId(tokenReceiver, 'client', org);
 
+  
   //mint
   try {
     await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount);
@@ -81,9 +80,7 @@ exports.transfer = async (req, res, next) => {
   const senderAccountId = await helper.getAccountId(channel, chaincodeName, tokenSender, org, next);
   if (!senderAccountId) return;
 
-  //get receiver id
-  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
-  if (!receiverAccountId) return;
+  let receiverAccountId = helper.mountClientAccountId(tokenReceiver, 'client', org);
 
   //transfer
   try {

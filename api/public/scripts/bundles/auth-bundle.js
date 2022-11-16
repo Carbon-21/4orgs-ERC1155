@@ -27138,22 +27138,17 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           cpf = document.getElementById("cpf").value.split("/")[0];
           name = document.getElementById("name").value.split("/")[0];
           salt = document.getElementById("salt").value.split("/")[0];
-          console.log('debug login ', {
-            salt: salt,
-            password: password,
-            email: email
-          });
           saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
           if (saveKeyOnServer) {
-            _context.next = 12;
+            _context.next = 11;
             break;
           }
-          _context.next = 11;
+          _context.next = 10;
           return crypto.generateCryptoMaterial(email);
-        case 11:
+        case 10:
           cryptoMaterials = _context.sent;
-        case 12:
-          _context.next = 14;
+        case 11:
+          _context.next = 13;
           return argon2.hash({
             pass: password,
             salt: salt,
@@ -27163,10 +27158,9 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
             mem: 15625,
             parallelism: 1
           });
-        case 14:
+        case 13:
           hashedPassword = _context.sent;
           hashedPassword = hashedPassword.hashHex;
-          console.log('login hashesPassword hex =', hashedPassword);
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           url = "http://localhost:4000/signup";
@@ -27185,20 +27179,20 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
             // If the user chose not to save his private key on the server, the browser generated a CSR that will be sent to the server.
             body.csr = cryptoMaterials.csr;
           init.body = JSON.stringify(body);
-          _context.next = 26;
+          _context.next = 24;
           return fetch(url, init);
-        case 26:
+        case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 49;
+            _context.next = 47;
             break;
           }
-          _context.next = 30;
+          _context.next = 28;
           return response.json();
-        case 30:
+        case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 45;
+            _context.next = 43;
             break;
           }
           localStorage.setItem("token", response.token);
@@ -27206,32 +27200,32 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           localStorage.setItem("keyOnServer", saveKeyOnServer);
           console.log('response', response);
           if (!response.certificate) {
-            _context.next = 42;
-            break;
-          }
-          if (saveKeyOnServer) {
             _context.next = 40;
             break;
           }
-          _context.next = 40;
+          if (saveKeyOnServer) {
+            _context.next = 38;
+            break;
+          }
+          _context.next = 38;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 40:
-          _context.next = 42;
+        case 38:
+          _context.next = 40;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 42:
+        case 40:
           window.location.href = '/';
-          _context.next = 47;
+          _context.next = 45;
           break;
-        case 45:
+        case 43:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 47:
-          _context.next = 51;
+        case 45:
+          _context.next = 49;
           break;
-        case 49:
+        case 47:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 51:
+        case 49:
         case "end":
           return _context.stop();
       }
@@ -27249,12 +27243,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
           password = document.getElementById("password").value.toString().split("/")[0];
           email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
           salt = document.getElementById("salt").value.split("/")[0];
-          console.log('debug login ', {
-            salt: salt,
-            password: password,
-            email: email
-          });
-          _context2.next = 8;
+          _context2.next = 7;
           return argon2.hash({
             pass: password,
             salt: salt,
@@ -27264,10 +27253,9 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             mem: 15625,
             parallelism: 1
           });
-        case 8:
+        case 7:
           hashedPassword = _context2.sent;
           hashedPassword = hashedPassword.hashHex;
-          console.log('login hashesPassword hex =', hashedPassword);
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           init = {
@@ -27279,17 +27267,17 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             password: hashedPassword
           };
           init.body = JSON.stringify(body);
-          _context2.next = 18;
+          _context2.next = 16;
           return fetch(url, init);
-        case 18:
+        case 16:
           response = _context2.sent;
           if (!response.ok) {
-            _context2.next = 24;
+            _context2.next = 22;
             break;
           }
-          _context2.next = 22;
+          _context2.next = 20;
           return response.json();
-        case 22:
+        case 20:
           response = _context2.sent;
           if (response.success) {
             localStorage.setItem("token", response.token);
@@ -27300,7 +27288,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;
           }
-        case 24:
+        case 22:
         case "end":
           return _context2.stop();
       }
