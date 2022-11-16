@@ -11408,7 +11408,7 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
-            url = "http://192.168.18.23:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
             init = {
               method: "POST",
               headers: headers
@@ -11553,7 +11553,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
-            url = "http://192.168.18.23:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
             init = {
               method: "POST",
               headers: headers
@@ -11569,7 +11569,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
           case 18:
             response = _context6.sent;
             // Post metadata through ipfs node
-            postMetadataURL = "http://192.168.18.23:4000/meta/postMetadata";
+            postMetadataURL = "http://localhost:4000/meta/postMetadata";
             init.body = JSON.stringify({
               // TODO: match schema with forms
               metadata: {
