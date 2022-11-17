@@ -34,7 +34,7 @@ create table users_activity(
     org varchar(30),
     avatar varchar(255),
     status varchar(12),
-    key_on_server boolean default false not null
+    key_on_server boolean default false
 );
 
 create table authentication_log(
@@ -70,7 +70,7 @@ BEGIN
         -- if (OLD.weeded_salt != NEW.weeded_salt,NEW.weeded_salt,null),
         if (OLD.org != NEW.org, NEW.org, null),
         if ((OLD.avatar is null and NEW.avatar is not null) or (OLD.avatar != NEW.avatar),NEW.avatar,null),
-        if (OLD.status != NEW.status,NEW.status,null));
+        if (OLD.status != NEW.status,NEW.status,null),
         if (OLD.key_on_server != NEW.key_on_server,NEW.key_on_server,null));
 END$$
 
