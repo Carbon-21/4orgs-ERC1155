@@ -58,7 +58,7 @@ _Nota: o script init também roda o kill, e ambos matam qualquer conatiner docke
 Para subir a api:
 
 ```
-cd api
+cd api-2.0
 npm install
 sudo npm install -g nodemon
 nodemon

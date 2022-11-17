@@ -8,6 +8,6 @@ artifacts/channel/crypto-config/**
 **/*.pem
 **/*.crt
 log.txt
-api/config/connection-*.json
+api-2.0/config/connection-*.json
 artifacts/channel/create-certificate-with-ca/fabric-ca/**/**
 !artifacts/channel/create-certificate-with-ca/fabric-ca/**/*.yaml
