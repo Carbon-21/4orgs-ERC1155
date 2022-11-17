@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../api/.env
+source ../api-2.0/.env
 
 #install mysql
 sudo apt install default-mysql-server
