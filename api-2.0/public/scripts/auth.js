@@ -8,10 +8,10 @@ window.signup = async function () {
   event.preventDefault();
   
   let email = document.getElementById("email").value.split("/")[0];
-  let password = document.getElementById("password").value;
-  let cpf = document.getElementById("cpf").value;
-  let name = document.getElementById("name").value;
-  let salt = document.getElementById("salt").value;
+  let password = document.getElementById("password").value.split("/")[0];
+  let cpf = document.getElementById("cpf").value.split("/")[0];
+  let name = document.getElementById("name").value.split("/")[0];
+  let salt = document.getElementById("salt").value.split("/")[0];
   let saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
   
   let cryptoMaterials;
@@ -19,7 +19,7 @@ window.signup = async function () {
   if (!saveKeyOnServer)
       cryptoMaterials = await crypto.generateCryptoMaterial(email);
 
-  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 16384, parallelism: 1 });
+  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 15625, parallelism: 1 });
   hashedPassword = hashedPassword.hashHex;
 
   let headers = new Headers();
@@ -85,11 +85,12 @@ window.login = async function () {
 
   const url = "http://localhost:4000/login";
 
-  const password = document.getElementById("password").value;
-  const email = document.getElementById("email").value.slice(0, -1); //removes additional / in the end;
-  const salt = document.getElementById("salt").value;
+  const password = document.getElementById("password").value.toString().split("/")[0];
+  const email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
+  const salt = document.getElementById("salt").value.split("/")[0];
 
-  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 16384, parallelism: 1 });
+  let hashedPassword = await argon2.hash({ pass: password, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 15625, parallelism: 1 });
+
   hashedPassword = hashedPassword.hashHex;
 
   let headers = new Headers();

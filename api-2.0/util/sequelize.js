@@ -4,8 +4,7 @@
 const Sequelize = require("sequelize");
 const initModels = require("../models/init-models");
 
-//.env
-const sequelize = new Sequelize("carbon", "carbon", "12345678", {
+const sequelize = new Sequelize("carbon", "carbon", process.env.MYSQL_PASSWORD, {
   dialect: "mysql",
   host: "localhost",
 });

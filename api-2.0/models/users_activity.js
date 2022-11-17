@@ -59,7 +59,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     keyOnServer: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       field: 'key_on_server'
     }

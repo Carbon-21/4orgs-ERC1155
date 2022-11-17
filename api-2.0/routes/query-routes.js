@@ -14,13 +14,19 @@ router.use(checkAuth);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/balance",
-  [param("channel").isString(), param("chaincode").isString(), query("tokenId").isString(), query("tokenOwner").isEmail(), validateAll],
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("tokenId").trim().not().isEmpty().isString(),
+    query("tokenOwner").trim().not().isEmpty().isEmail(),
+    validateAll,
+  ],
   queryController.balance
 );
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/selfBalance",
-  [param("channel").isString(), param("chaincode").isString(), query("tokenId").isString(), validateAll],
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],
   queryController.selfBalance
 );
 
@@ -38,13 +44,13 @@ router.get(
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/totalSupply",
-  [param("channel").isString(), param("chaincode").isString(), query("tokenId").isString(), validateAll],
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],
   queryController.totalSupply
 );
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/getURI",
-  [param("channel").isString(), param("chaincode").isString(), query("tokenId").isString(), validateAll],
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],
   queryController.getURI
 );
 

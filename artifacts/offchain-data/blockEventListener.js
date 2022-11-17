@@ -174,13 +174,7 @@ async function processPendingBlocks(ProcessingMap) {
       }
 
       try {
-        await blockProcessing.processBlockEvent(
-          channelid,
-          processBlock,
-          use_couchdb,
-          nano,
-          mongodb
-        );
+        await blockProcessing.processBlockEvent(channelid, processBlock, use_couchdb, nano, mongodb);
       } catch (error) {
         console.error(`Failed to process block: ${error}`);
       }

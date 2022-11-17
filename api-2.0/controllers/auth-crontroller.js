@@ -7,10 +7,9 @@ const crypto = require("crypto");
 const fs = require("fs");
 var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
+const argon2 = require("argon2-browser");
 
 //////////////CONSTANTS//////////////
-const WEED = "0118a6dd0c8c93fbc4c49e4ad3a7ce57fe3d29e07ed7b249a55da6dd578d18e1"; //.env
-const DOMAIN = "carbon21.com";
 const SALT_BYTES_LENGTH = 32;
 // const BCRYPT_ALGORITHM = "$2a";
 // const BCRYPT_ROUNDS = "$11$";
@@ -80,7 +79,8 @@ exports.getSalt = async (req, res, next) => {
         salt,
       });
     } else {
-      const weededSalt = hkdf(email, WEED);
+      const weededSalt = hkdf(email, process.env.WEED);
+
       logger.info(`Unknown email, weeded salt returned`);
       return res.status(200).json({
         salt: weededSalt,
@@ -95,7 +95,6 @@ exports.signup = async (req, res, next) => {
   const user = req.body;
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
-  logger.debug("Password:", user.password);
 
   //update user on DB
   let response = await saveUserToDatabase(user, next);
@@ -121,7 +120,6 @@ exports.login = async (req, res, next) => {
 
   logger.debug("Email: " + email);
   logger.debug("Password: " + password);
-  logger.debug("Org: " + org);
 
   //look for user with given email
   let user;
@@ -175,7 +173,7 @@ exports.login = async (req, res, next) => {
   let token;
   try {
     //create jwt
-    token = auth.createJWT(email, org);
+    token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
 
     //log succesful login
     await models.authenticationLog.create({
@@ -199,7 +197,7 @@ exports.login = async (req, res, next) => {
 //////////HELPER CALLS//////////
 //derive 128-bit key. The derived key (email,seed) is used as salt to perform PHS, on the client side. This functions is then used again on (PHS,seed) and the derivation is saved as the password (user table in the DB).
 const hkdf = (ikm, salt) => {
-  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, DOMAIN, SALT_BYTES_LENGTH);
+  const derivedKey = crypto.hkdfSync("sha256", ikm, salt, process.env.HKDF_INFO, SALT_BYTES_LENGTH);
   return Buffer.from(derivedKey).toString("hex");
 };
 
@@ -209,10 +207,45 @@ const generateSeed = () => {
   return seed;
 };
 
+//create admin@admin.com in the blockchain ans in the DB
+createAdmin = async (next) => {
+  logger.trace("Entered createAdmin controller");
+  const org = "Carbon";
+  const seed = generateSeed();
+
+  //instantiate admin user in the DB
+  let admin = { email: process.env.ADMIN_LOGIN, seed, org };
+  try {
+    await models.users.create(admin);
+  } catch (err) {
+    return next(new HttpError(500));
+  }
+
+  //PHS
+  try {
+    const salt = hkdf(process.env.ADMIN_LOGIN, seed);
+    let password = await argon2.hash({ pass: process.env.ADMIN_PASSWORD, salt, hashLen: 32, type: argon2.ArgonType.Argon2id, time: 3, mem: 15625, parallelism: 1 });
+    password = password.hashHex;
+    admin.password = password;
+  } catch (err) {
+    return next(new HttpError(500));
+  }
+
+  //update user on DB
+  let response = await saveUserToDatabase(admin, next);
+  if (!response) return;
+
+  //enroll user in the CA and save it in the wallet
+  if (!(await enrollUserInCA(admin, next, "admin"))) return;
+
+  return true;
+};
+
 //caled on signup
 const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
   user.keyOnServer = user.saveKeyOnServer; // Boolean that informs whether the user's key is stored on the server or not.
+  if (typeof user.keyOnServer !== "boolean") user.keyOnServer = true;
   let obj;
   try {
     obj = await models.users.findOne({
@@ -256,21 +289,18 @@ const saveUserToDatabase = async (user, next) => {
 };
 
 //register the user in the CA, enroll the user in the CA, and save the new identity into the wallet. Returns true if things went as expected.
-const enrollUserInCA = async (user, next) => {
+const enrollUserInCA = async (user, next, role = "client") => {
+  if (typeof user.saveKeyOnServer !== "boolean") user.saveKeyOnServer = true;
   //get org CCP (its configs, such as CA path and tlsCACerts)
   let ccp = await helper.getCCP(user.org);
 
   //create CA object
   const caURL = await helper.getCaUrl(user.org, ccp);
   const ca = new FabricCAServices(caURL);
-  // logger.debug("ca name " + ca.getCaName());
-  // logger.debug("ca: ", ca);
 
   //get wallets' path for the given org and create wallet object
   const walletPath = await helper.getWalletPath(user.org);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
-  // logger.debug(`Wallet path: ${walletPath}`);
-  // logger.debug("wallet: ", wallet);
 
   //check if a wallet for the given user already exists
   const userIdentity = await wallet.get(user.email);
@@ -280,13 +310,23 @@ const enrollUserInCA = async (user, next) => {
     return {success: false};
   }
 
-  //enroll an admin user if it doesn't exist yet
+  //enroll an admin users if they doesn't exist yet
   let adminIdentity = await wallet.get("admin");
   if (!adminIdentity) {
     logger.info('An identity for the admin user "admin" does not exist in the wallet');
 
-    await helper.enrollAdmin(user.org, ccp);
-    adminIdentity = await wallet.get("admin");
+    try {
+      //add admin user to the blockchain
+      await helper.enrollAdmin(user.org, ccp);
+      adminIdentity = await wallet.get("admin");
+    } catch (err) {
+      logger.debug(err);
+      return next(new HttpError(500));
+    }
+
+    //create a second admin identity, admin@admin.com, both in the blockchain and in the DB
+    let response = createAdmin(next);
+    if (!response) return;
 
     logger.info("Admin Enrolled Successfully");
   }
@@ -304,7 +344,7 @@ const enrollUserInCA = async (user, next) => {
       {
         affiliation: await helper.getAffiliation(user.org),
         enrollmentID: user.email,
-        role: "client",
+        role,
       },
       adminUser
     );

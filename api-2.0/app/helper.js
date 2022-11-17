@@ -79,14 +79,15 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
     const walletPath = await getWalletPath(org_name);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
 
-    //TODO após estudar wallets, temos que olhar se isso aqui será mantido
+    //if account doesn't exist => error
     let identity = await wallet.get(username);
     if (!identity) {
-      console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
-      await getRegisteredUser(username, org_name, true);
-      identity = await wallet.get(username);
-      console.log("Run the registerUser.js application before retrying");
-      return;
+      return next(new HttpError(422));
+      // console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
+      // await getRegisteredUser(username, org_name, true);
+      // identity = await wallet.get(username);
+      // console.log("Run the registerUser.js application before retrying");
+      // return;
     }
 
     const connectOptions = {
@@ -283,7 +284,6 @@ const getOrgMSP = (org) => {
 };
 
 const enrollAdmin = async (org, ccp) => {
-  console.log("calling enroll Admin method");
   try {
     const caInfo = await getCaInfo(org, ccp); //ccp.certificateAuthorities['ca.carbon.example.com'];
     const caTLSCACerts = caInfo.tlsCACerts.pem;
@@ -301,8 +301,8 @@ const enrollAdmin = async (org, ccp) => {
     }
 
     // Enroll the admin user, and import the new identity into the wallet.
-    const enrollment = await ca.enroll({ enrollmentID: "admin", enrollmentSecret: "adminpw" });
-    // console.log("Enrollment object is : ", enrollment);
+    const enrollment = await ca.enroll({ enrollmentID: process.env.ADMIN_ENROLLMENT_ID, enrollmentSecret: process.env.ADMIN_ENROLLMENT_SECRET });
+
     let x509Identity = {
       credentials: {
         certificate: enrollment.certificate,

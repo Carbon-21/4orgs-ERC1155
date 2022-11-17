@@ -14,7 +14,14 @@ router.use(checkAuth);
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/mint",
-  [param("channel").isString(), param("chaincode").isString(), body("tokenId").isString(), body("tokenAmount").isInt(), body("tokenReceiver").isEmail(), validateAll],
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("tokenAmount").trim().not().isEmpty().isInt({ min: 1 }),
+    body("tokenReceiver").trim().not().isEmpty().isEmail(),
+    validateAll,
+  ],
   invokeController.mint
 );
 
@@ -27,12 +34,12 @@ router.post(
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [
-    param("channel").isString(),
-    param("chaincode").isString(),
-    body("tokenId").isString(),
-    body("tokenAmount").isInt(),
-    body("tokenSender").isEmail(),
-    body("tokenReceiver").isEmail(),
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("tokenAmount").trim().not().isEmpty().isInt({ min: 1 }),
+    body("tokenSender").trim().not().isEmpty().isEmail(),
+    body("tokenReceiver").trim().not().isEmpty().isEmail(),
     validateAll,
   ],
   invokeController.transfer
@@ -42,7 +49,13 @@ router.post(
 
 router.post(
   "/channels/:channel/chaincodes/:chaincode/setURI",
-  [param("channel").isString(), param("chaincode").isString(), body("tokenId").isString(), body("URI").isURL(), validateAll],
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("URI").trim().not().isEmpty().isURL(),
+    validateAll,
+  ],
   invokeController.setURI
 );
 

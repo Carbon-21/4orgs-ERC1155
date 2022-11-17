@@ -2,6 +2,7 @@
 
 ///// REQUIRES /////
 //npm packages
+require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
@@ -12,7 +13,6 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 //local packages
-const constants = require("./config/constants.json");
 const logger = require("./util/logger");
 const cors = require("./middleware/cors");
 const error = require("./middleware/error");
@@ -37,8 +37,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //network
-const host = process.env.HOST || constants.host;
-const port = process.env.PORT || constants.port;
+const host = process.env.HOST;
+const port = process.env.PORT;
 
 //front
 app.set("view engine", "ejs");
@@ -46,7 +46,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 const sessionConfig = {
-  secret: "thisshouldbeabettersecret!",
+  secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -81,7 +81,7 @@ app.use("/", frontRoutes);
 app.use("/meta", metadataRoutes);
 
 ///// SERVER INIT /////
-app.listen(port);
+app.listen(port, host);
 logger.info("****************** SERVER STARTED ************************");
 logger.info("***************  http://%s:%s  ******************", host, port);
 
