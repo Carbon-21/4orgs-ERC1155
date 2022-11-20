@@ -3,6 +3,7 @@ const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
 const frontController = require("../controllers/front-controller.js");
 const isLoggedIn = require("../middleware/is-logged-in");
+const isAdmin = require("../middleware/is-admin");
 const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
@@ -39,11 +40,11 @@ router.get("/collection", isLoggedIn, frontController.getCollection);
 
 ///// $ILVAS MINT ROUTES /////
 
-router.get("/ft/mint", isLoggedIn, frontController.getMintFT);
+router.get("/ft/mint", isLoggedIn, isAdmin, frontController.getMintFT);
 
 ///// NFT MINT ROUTES /////
 
-router.get("/nft/mint", isLoggedIn, frontController.getMintNFT);
+router.get("/nft/mint", isLoggedIn, isAdmin, frontController.getMintNFT);
 
 ///// TRANSFER ROUTES /////
 
