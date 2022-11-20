@@ -296,6 +296,14 @@ exports.getMintFT = (req, res, next) => {
   });
 };
 
+exports.getMintFromNFT = (req, res, next) => {
+  res.render("mintFromNFT", {
+    title: "Mint From NFT",
+    cssPath: "../css/mintFromNFT.css",
+  });
+};
+
+
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
