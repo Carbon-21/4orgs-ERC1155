@@ -77,10 +77,10 @@ async function renderMetadata(tokenId, metadata) {
   return (
     `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
-    `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+    // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
     `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
-    `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` +
+    // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
     "<p>" +
     "</div>"
   );
