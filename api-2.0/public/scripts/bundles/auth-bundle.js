@@ -21179,49 +21179,36 @@ utils.intFromLE = intFromLE;
 arguments[4][15][0].apply(exports,arguments)
 },{"buffer":19,"dup":15}],99:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@^6.5.3",
-  "_id": "elliptic@6.5.4",
-  "_inBundle": false,
-  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
-  "_location": "/browserify/elliptic",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "elliptic@^6.5.3",
-    "name": "elliptic",
-    "escapedName": "elliptic",
-    "rawSpec": "^6.5.3",
-    "saveSpec": null,
-    "fetchSpec": "^6.5.3"
-  },
-  "_requiredBy": [
-    "/browserify/browserify-sign",
-    "/browserify/create-ecdh"
+  "name": "elliptic",
+  "version": "6.5.4",
+  "description": "EC cryptography",
+  "main": "lib/elliptic.js",
+  "files": [
+    "lib"
   ],
-  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
-  "_shasum": "da37cebd31e79a1367e941b592ed1fbebd58abbb",
-  "_spec": "elliptic@^6.5.3",
-  "_where": "/home/matheus/.npm-global/lib/node_modules/browserify/node_modules/browserify-sign",
-  "author": {
-    "name": "Fedor Indutny",
-    "email": "fedor@indutny.com"
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "test": "npm run lint && npm run unit",
+    "version": "grunt dist && git add dist/"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:indutny/elliptic"
+  },
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  },
-  "deprecated": false,
-  "description": "EC cryptography",
+  "homepage": "https://github.com/indutny/elliptic",
   "devDependencies": {
     "brfs": "^2.0.2",
     "coveralls": "^3.1.0",
@@ -21237,31 +21224,15 @@ module.exports={
     "istanbul": "^0.4.5",
     "mocha": "^8.0.1"
   },
-  "files": [
-    "lib"
-  ],
-  "homepage": "https://github.com/indutny/elliptic",
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
-  ],
-  "license": "MIT",
-  "main": "lib/elliptic.js",
-  "name": "elliptic",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/indutny/elliptic.git"
-  },
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "npm run lint && npm run unit",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "version": "grunt dist && git add dist/"
-  },
-  "version": "6.5.4"
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  }
 }
 
 },{}],100:[function(require,module,exports){
@@ -26689,64 +26660,8 @@ arguments[4][96][0].apply(exports,arguments)
 },{"dup":96}],203:[function(require,module,exports){
 arguments[4][97][0].apply(exports,arguments)
 },{"bn.js":187,"dup":97,"minimalistic-assert":220,"minimalistic-crypto-utils":221}],204:[function(require,module,exports){
-module.exports={
-  "name": "elliptic",
-  "version": "6.5.4",
-  "description": "EC cryptography",
-  "main": "lib/elliptic.js",
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "test": "npm run lint && npm run unit",
-    "version": "grunt dist && git add dist/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:indutny/elliptic"
-  },
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
-  ],
-  "author": "Fedor Indutny <fedor@indutny.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/indutny/elliptic/issues"
-  },
-  "homepage": "https://github.com/indutny/elliptic",
-  "devDependencies": {
-    "brfs": "^2.0.2",
-    "coveralls": "^3.1.0",
-    "eslint": "^7.6.0",
-    "grunt": "^1.2.1",
-    "grunt-browserify": "^5.3.0",
-    "grunt-cli": "^1.3.2",
-    "grunt-contrib-connect": "^3.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^5.0.0",
-    "grunt-mocha-istanbul": "^5.0.2",
-    "grunt-saucelabs": "^9.0.1",
-    "istanbul": "^0.4.5",
-    "mocha": "^8.0.1"
-  },
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  }
-}
-
-},{}],205:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"dup":99}],205:[function(require,module,exports){
 arguments[4][118][0].apply(exports,arguments)
 },{"./hash/common":206,"./hash/hmac":207,"./hash/ripemd":208,"./hash/sha":209,"./hash/utils":216,"dup":118}],206:[function(require,module,exports){
 arguments[4][119][0].apply(exports,arguments)
@@ -27138,22 +27053,17 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           cpf = document.getElementById("cpf").value.split("/")[0];
           name = document.getElementById("name").value.split("/")[0];
           salt = document.getElementById("salt").value.split("/")[0];
-          console.log('debug login ', {
-            salt: salt,
-            password: password,
-            email: email
-          });
           saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
           if (saveKeyOnServer) {
-            _context.next = 12;
+            _context.next = 11;
             break;
           }
-          _context.next = 11;
+          _context.next = 10;
           return crypto.generateCryptoMaterial(email);
-        case 11:
+        case 10:
           cryptoMaterials = _context.sent;
-        case 12:
-          _context.next = 14;
+        case 11:
+          _context.next = 13;
           return argon2.hash({
             pass: password,
             salt: salt,
@@ -27163,10 +27073,9 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
             mem: 15625,
             parallelism: 1
           });
-        case 14:
+        case 13:
           hashedPassword = _context.sent;
           hashedPassword = hashedPassword.hashHex;
-          console.log('login hashesPassword hex =', hashedPassword);
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           url = "http://localhost:4000/signup";
@@ -27185,20 +27094,20 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
             // If the user chose not to save his private key on the server, the browser generated a CSR that will be sent to the server.
             body.csr = cryptoMaterials.csr;
           init.body = JSON.stringify(body);
-          _context.next = 26;
+          _context.next = 24;
           return fetch(url, init);
-        case 26:
+        case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 49;
+            _context.next = 47;
             break;
           }
-          _context.next = 30;
+          _context.next = 28;
           return response.json();
-        case 30:
+        case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 45;
+            _context.next = 43;
             break;
           }
           localStorage.setItem("token", response.token);
@@ -27206,32 +27115,32 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           localStorage.setItem("keyOnServer", saveKeyOnServer);
           console.log('response', response);
           if (!response.certificate) {
-            _context.next = 42;
-            break;
-          }
-          if (saveKeyOnServer) {
             _context.next = 40;
             break;
           }
-          _context.next = 40;
+          if (saveKeyOnServer) {
+            _context.next = 38;
+            break;
+          }
+          _context.next = 38;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 40:
-          _context.next = 42;
+        case 38:
+          _context.next = 40;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 42:
+        case 40:
           window.location.href = '/';
-          _context.next = 47;
+          _context.next = 45;
           break;
-        case 45:
+        case 43:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 47:
-          _context.next = 51;
+        case 45:
+          _context.next = 49;
           break;
-        case 49:
+        case 47:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 51:
+        case 49:
         case "end":
           return _context.stop();
       }
@@ -27249,12 +27158,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
           password = document.getElementById("password").value.toString().split("/")[0];
           email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
           salt = document.getElementById("salt").value.split("/")[0];
-          console.log('debug login ', {
-            salt: salt,
-            password: password,
-            email: email
-          });
-          _context2.next = 8;
+          _context2.next = 7;
           return argon2.hash({
             pass: password,
             salt: salt,
@@ -27264,10 +27168,9 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             mem: 15625,
             parallelism: 1
           });
-        case 8:
+        case 7:
           hashedPassword = _context2.sent;
           hashedPassword = hashedPassword.hashHex;
-          console.log('login hashesPassword hex =', hashedPassword);
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           init = {
@@ -27279,17 +27182,17 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             password: hashedPassword
           };
           init.body = JSON.stringify(body);
-          _context2.next = 18;
+          _context2.next = 16;
           return fetch(url, init);
-        case 18:
+        case 16:
           response = _context2.sent;
           if (!response.ok) {
-            _context2.next = 24;
+            _context2.next = 22;
             break;
           }
-          _context2.next = 22;
+          _context2.next = 20;
           return response.json();
-        case 22:
+        case 20:
           response = _context2.sent;
           if (response.success) {
             localStorage.setItem("token", response.token);
@@ -27300,7 +27203,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;
           }
-        case 24:
+        case 22:
         case "end":
           return _context2.stop();
       }
