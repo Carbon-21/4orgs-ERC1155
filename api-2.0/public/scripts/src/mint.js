@@ -296,4 +296,3 @@ const mintNFTServerSideSigning = async () => {
   }
 
 }
-

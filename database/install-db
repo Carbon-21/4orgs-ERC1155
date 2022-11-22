@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ../api-2.0/.env
+
 #install mysql
 sudo apt install default-mysql-server
 
@@ -9,8 +11,11 @@ sudo systemctl start mysql
 
 #create carbon user with low password policy and all permissions
 sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
-sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY '12345678'"
+sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY $MYSQL_PASSWORD"
 sudo mysql --execute "GRANT ALL ON *.* TO carbon@localhost WITH GRANT OPTION"
+sudo mysql --execute "CREATE USER carbon@$HOST IDENTIFIED BY $MYSQL_PASSWORD"
+sudo mysql --execute "GRANT ALL ON *.* TO carbon@$HOST WITH GRANT OPTION"
+
 
 #create carbon db
 mysql -u carbon -p --execute "source carbon.sql"
