@@ -60,12 +60,12 @@ async function nftMetadata(tokenId) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  let url = `http://localhost:4000/meta/getMetadata`;
-  let body = { tokenId, token };
+  headers.append("Authorization", "Bearer " + token);
+
+  let url = `http://localhost:4000/meta/getMetadata/${tokenId}`;
   var init = {
-    method: "POST",
+    method: "GET",
     headers: headers,
-    body: JSON.stringify(body),
   };
 
   let response = await fetch(url, init);

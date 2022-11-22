@@ -5,10 +5,10 @@ const HttpError = require("../util/http-error");
 const ipfs = require("../util/ipfs");
 
 exports.getMetadata = async (req, res, next) => {
-  // NOTE: NFT token Id
-  let tokenId = req.body.tokenId;
-  let token = req.body.token || req.session.token;
+  let tokenId = req.params.tokenId;
+  let token = req.headers["authorization"].split(" ")[1];
   let URI;
+
   // Hash por meio de query no chaincode (GetURI)
   axios
     .get(`http://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
@@ -54,7 +54,7 @@ async function getMetadataFromURI(URI) {
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
     // logger.debug("Metadata: " + JSON.stringify(metadata));
   } catch (error) {
-    // Como tratar timeouts?
+    // TODO: Como tratar timeouts?
     logger.error(error);
   }
   return metadata;
@@ -63,7 +63,7 @@ async function getMetadataFromURI(URI) {
 exports.postMetadata = async (req, res, next) => {
   // NOTE: Metadata to be put in IPFS
   let metadata;
-  let token = req.body.token || req.session.token;
+  let token = req.headers["authorization"].split(" ")[1];
   let tokenId = req.body.tokenId;
   let hash;
 
@@ -121,7 +121,7 @@ function makeMetadata(dto) {
       geolocation: dto.geolocation || "",
       area_classification: dto.area_classification || "",
     },
-    nft_info:{
+    nft_info: {
       status: dto.status || "",
       nft_type: dto.nft_type || "",
       value: dto.value || "",

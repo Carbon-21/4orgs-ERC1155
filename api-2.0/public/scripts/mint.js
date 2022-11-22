@@ -256,7 +256,6 @@ const mintNFTServerSideSigning = async () => {
       custom_notes: `qty: ${qty}`,
     },
     tokenId: nftId,
-    token,
   });
   let metadataResponse = await fetch(postMetadataURL, init)
 
