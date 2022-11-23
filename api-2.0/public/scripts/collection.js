@@ -62,7 +62,7 @@ async function nftMetadata(tokenId) {
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
 
-  let url = `http://localhost:4000/meta/getMetadata/${tokenId}`;
+  let url = `http://localhost:4000/meta/getMetadata?tokenId=${tokenId}`;
   var init = {
     method: "GET",
     headers: headers,
@@ -80,8 +80,22 @@ async function renderMetadata(tokenId, metadata) {
     // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
     `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
+    renderCompensation(metadata?.properties?.compensation_state) +
     // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
     "<p>" +
     "</div>"
   );
+}
+
+async function renderCompensation(compensation_state) {
+  switch (compensation_state) {
+    case "AGUARDANDO":
+      return `<b> Estado de compensação: Aguardando </b> <br />`;
+    case "COMPENSADO":
+      return `<b> Estado de compensação: Compensado </b> <br />`;
+    case "NAO COMPENSADO":
+    default:
+      return `<b> Estado de compensação: Não compensado </b> <br />` +
+        `<div class="compensate-button"> button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Compensar</button></div><br />`;
+  }
 }
