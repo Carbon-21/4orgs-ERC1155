@@ -9,7 +9,7 @@ const mintFTFromNFT = async () => {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token);
-    let url = `http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/ftfromnft`;
+    let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ftfromnft`;
   
     var init = {
       method: "POST",
