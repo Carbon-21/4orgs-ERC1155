@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { body, param } = require("express-validator");
+const { body, query } = require("express-validator");
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
 const metadataController = require("../controllers/metadata-crontroller.js");

@@ -5,7 +5,7 @@ const HttpError = require("../util/http-error");
 const ipfs = require("../util/ipfs");
 
 exports.getMetadata = async (req, res, next) => {
-  let tokenId = req.params.tokenId;
+  let tokenId = req.query.tokenId;
   let token = req.headers["authorization"].split(" ")[1];
   let URI;
 
