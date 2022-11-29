@@ -14,7 +14,8 @@ async function transfer() {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
-  let url = `http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer`;
+
+  let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/transfer`;
 
   var init = {
     method: "POST",

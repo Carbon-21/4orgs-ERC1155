@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
   <%- include("partials/head") %>
   <script src="/scripts/collection.js"></script>
 
   <body onload="collection()">
-
     <!-- Navbar -->
-
     <%- include("partials/navbar") %>
 
-    <section id="wallet" >
-
-        <div class="container-fuid collection-container">
-  
-          <h1 class="collection-header">Minha Coleção</h1>
-
-          <div id="nft-showroom">
-          </div>
- 
-        </div>
-
+    <section id="wallet">
+      <div class="container-fuid collection-container">
+        <h1 class="collection-header">Minha Coleção</h1>
+        <div id="nft-showroom"></div>
+        <img id="loader" class="loading-icon" src="../images/loader.gif" style="display:flex; margin: auto;"/>
+      </div>
     </section>
-
-</body>
+  </body>
 </html>

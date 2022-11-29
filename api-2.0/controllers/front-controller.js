@@ -227,63 +227,12 @@ exports.getWallet = async (req, res, next) => {
 ///// COLLECTION CONTROLLERS /////
 
 exports.getCollection = async (req, res, next) => {
-  if (req.session.token) {
-    let token = req.session.token;
-    // NOTE: para testes e exemplificando recuperacao de metadados por tokenIds
-    let tokenId = "a";
-
-    // Set url and headers
-
-    const url = `http://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=\$ylvas`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    // HTTP GET request
-
-    axios
-      .get(url, options)
-
-      // If successful, return user NFT balance
-
-      .then(function (response) {
-        let balances = response.data.result;
-        res.render("collection", {
-          title: "My Collection",
-          cssPath: "css/collection.css",
-          balances,
-        });
-      })
-
-      // If an error occurs, redirect to the homepage and send error message
-
-      // .catch(function (error) {
-      //   console.log(error);
-      //   req.flash("error", "Ocorreu um erro");
-      //   res.redirect("/");
-      // });
-      .catch(function (err) {
-        req.flash("error", err.response.data.message);
-        res.redirect("/");
-      });
-
-    axios
-      .post("http://localhost:4000/meta/getMetadata", JSON.stringify({ tokenId: tokenId, token }), {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then(function (response) {
-        let metadata = response.data.result;
-        console.log("Metadados recuperados: \n" + JSON.stringify(metadata));
-      })
-      .catch(function (err) {});
-  }
+    res.render("collection", {
+      title: "My Collection",
+      cssPath: "css/collection.css",
+    });
 };
+
 
 ///// $ILVAS MINT CONTROLLERS /////
 

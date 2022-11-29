@@ -39,3 +39,9 @@ body{
     margin: 0 30px 0 20px;
     color: #377D71;
   }
+
+  .compensate-button{
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
