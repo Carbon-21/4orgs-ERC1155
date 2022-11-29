@@ -7,8 +7,10 @@ const mintFTFromNFT = async () => {
     document.getElementById("loader").style.display = "flex";
     document.getElementById("submitButton").style.display = "none";
   
+    // Get user jwt token from the local storage
     let token = localStorage.getItem("token");
-  
+
+    // HTTP Request
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token);
@@ -59,7 +61,7 @@ const mintFTFromNFT = async () => {
       // Hides the loading image and displays the submit button again
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
-      
+
       console.log("HTTP Error ", response.status);
       // Displays error messages
       let element =     
