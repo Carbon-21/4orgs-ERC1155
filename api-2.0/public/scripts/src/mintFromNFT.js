@@ -1,6 +1,9 @@
+// Calls the API for the smart contract function that mints FT for every active NFT
+
 const mintFTFromNFT = async () => {
 
-    // event.preventDefault();
+    // Hides the submit button and displays loading image while the transaction is processing.
+
     document.getElementById("loader").style.display = "flex";
     document.getElementById("submitButton").style.display = "none";
   
@@ -25,8 +28,12 @@ const mintFTFromNFT = async () => {
     if (response.ok) {
       response = await response.json();
       if (response.result!="success") {
+
+        // Hides the loading image and displays the submit button again
         document.getElementById("submitButton").style.display = "flex";
         document.getElementById("loader").style.display = "none";
+
+        // Displays error messages
         let element =     
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
             `Ocorreu um erro na emissao`+
@@ -34,8 +41,12 @@ const mintFTFromNFT = async () => {
         `</div>`
         document.getElementById("flash").innerHTML = element;
       } else {
+
+        // Hides the loading image and displays the submit button again
         document.getElementById("submitButton").style.display = "flex";
         document.getElementById("loader").style.display = "none";
+        
+        // Displays success messages
         let element =     
           `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
               `$ylvas emitidos com sucesso`+
@@ -44,9 +55,13 @@ const mintFTFromNFT = async () => {
         document.getElementById("flash").innerHTML = element;
       }
     } else {
+
+      // Hides the loading image and displays the submit button again
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
+      
       console.log("HTTP Error ", response.status);
+      // Displays error messages
       let element =     
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
           `Ocorreu um erro na emissao`+
