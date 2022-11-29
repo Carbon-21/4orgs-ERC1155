@@ -25,12 +25,8 @@ router.post(
   invokeController.mint
 );
 
+router.post("/channels/:channel/chaincodes/:chaincode/ftfromnft", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], invokeController.ftfromnft);
 
-router.post(
-  "/channels/:channel/chaincodes/:chaincode/ftfromnft",
-  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
-  invokeController.ftfromnft
-);
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [
@@ -45,8 +41,8 @@ router.post(
   invokeController.transfer
 );
 
-
-
+////////// AUXILIARY ROUTES //////////
+//used by postMetadata
 router.post(
   "/channels/:channel/chaincodes/:chaincode/setURI",
   [
@@ -59,8 +55,7 @@ router.post(
   invokeController.setURI
 );
 
-////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
-
+//the three routes below are used  offline transactions
 router.post(
   "/channels/:channel/chaincodes/:chaincode/generate-proposal",
   [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), body("transaction").not().isEmpty(), body("username").not().isEmpty(), validateAll],

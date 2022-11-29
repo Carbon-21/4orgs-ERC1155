@@ -7,16 +7,8 @@ const metadataController = require("../controllers/metadata-crontroller.js");
 const router = Router();
 router.use(checkAuth);
 
-router.get(
-  "/getMetadata",
-  [query("tokenId").not().isEmpty().isString(), validateAll],
-  metadataController.getMetadata
-);
+router.get("/getMetadata", [query("tokenId").trim().not().isEmpty().isString(), validateAll], metadataController.getMetadata);
 
-router.post(
-  "/postMetadata",
-  [body("metadata").not().isEmpty().isObject(), validateAll],
-  metadataController.postMetadata
-);
+router.post("/postMetadata", [body("metadata").trim().not().isEmpty().isObject(), validateAll], metadataController.postMetadata);
 
 module.exports = router;

@@ -744,6 +744,12 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 //  SetURI set a specific URI containing the metadata related to a given tokenID
 func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
 
+	// Check authorization - must be admin from carbon org
+	authErr := authorizationHelper(ctx)
+	if authErr != nil {
+		return authErr
+	}
+	
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
 	if err != nil {
 		return err

@@ -36,11 +36,7 @@ router.get(
   queryController.balanceNFT
 );
 
-router.get(
-  "/channels/:channel/chaincodes/:chaincode/selfBalanceNFT",
-  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
-  queryController.selfBalanceNFT
-);
+router.get("/channels/:channel/chaincodes/:chaincode/selfBalanceNFT", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], queryController.selfBalanceNFT);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/totalSupply",
@@ -48,6 +44,8 @@ router.get(
   queryController.totalSupply
 );
 
+////////// AUXILIARY ROUTES //////////
+//used by getMetadata
 router.get(
   "/channels/:channel/chaincodes/:chaincode/getURI",
   [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],

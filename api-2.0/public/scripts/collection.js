@@ -1,5 +1,7 @@
 async function collection() {
+  // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
+  // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     for (var key in nftTokens) {
@@ -37,6 +39,7 @@ async function collection() {
   }
 }
 
+// Recupera os nfts do usuario logado
 async function getNftTokens() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
@@ -50,12 +53,14 @@ async function getNftTokens() {
   let response = await fetch(url, init);
   let result = (await response.json())?.result;
   let nftArray = [];
+  // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {
     nftArray = nftArray.concat(result[i][0]);
   }
   return nftArray;
 }
 
+// Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
@@ -72,6 +77,7 @@ async function nftMetadata(tokenId) {
   return response.json();
 }
 
+// Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
 async function renderMetadata(tokenId, metadata) {
   if (!metadata.name) return "Metadados não recuperados";
   return (
@@ -87,12 +93,14 @@ async function renderMetadata(tokenId, metadata) {
   );
 }
 
+// Retorna string do metadado de compensação, dependendo do estado
 function renderCompensation(compensation_state) {
   switch (compensation_state) {
     case "AGUARDANDO":
       return `<b> Estado de compensação:</b> Aguardando <br />`;
     case "COMPENSADO":
       return `<b> Estado de compensação:</b> Compensado <br />`;
+    // Inclui botão de compensação quando não compensado
     case "NAO COMPENSADO":
     default:
       return `<b> Estado de compensação:</b> Não compensado <br />` +
