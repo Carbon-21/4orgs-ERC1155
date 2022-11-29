@@ -24,6 +24,7 @@ window.signup = async function () {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
+
   let url = `http://${HOST}:${PORT}/signup`;
 
   var init = {

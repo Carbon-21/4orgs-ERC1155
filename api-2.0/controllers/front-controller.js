@@ -98,6 +98,7 @@ exports.postSignup = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully registered, store user jwt and username info in session
       req.session.username = email;
+      req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
       res.json({success: true, token:response.data.token, certificate: response.data.certificate})
     })
 
@@ -193,6 +194,7 @@ exports.postLogin = async (req, res, next) => {
     .then(function (response) {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.session.username = email;
+      req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
       res.json({success: true, token: response.data.token, keyOnServer: response.data.keyOnServer})
     })
 
@@ -240,6 +242,14 @@ exports.getMintFT = (req, res, next) => {
     cssPath: "../css/mintFT.css",
   });
 };
+
+exports.getMintFromNFT = (req, res, next) => {
+  res.render("mintFromNFT", {
+    title: "Mint From NFT",
+    cssPath: "../css/mintFromNFT.css",
+  });
+};
+
 
 ///// NFT MINT CONTROLLERS /////
 
