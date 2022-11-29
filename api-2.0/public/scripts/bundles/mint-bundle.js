@@ -11578,8 +11578,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
                 geolocation: location,
                 custom_notes: "qty: ".concat(qty)
               },
-              tokenId: nftId,
-              token: token
+              tokenId: nftId
             });
             _context6.next = 23;
             return fetch(postMetadataURL, init);
