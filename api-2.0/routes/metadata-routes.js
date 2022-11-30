@@ -11,4 +11,6 @@ router.get("/getMetadata", [query("tokenId").not().isEmpty().isString(), validat
 
 router.post("/postMetadata", [body("tokenId").not().isEmpty().isString(), body("metadata").not().isEmpty().isObject(), validateAll], metadataController.postMetadata);
 
+router.patch("/patchMetadata", [body("tokenId").not().isEmpty().isString(), body("metadata").not().isEmpty().isObject(), validateAll], metadataController.postMetadata);
+
 module.exports = router;

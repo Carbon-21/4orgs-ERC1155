@@ -130,10 +130,10 @@ async function compensate(tokenId) {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `http://${HOST}:${PORT}/meta/postMetadata`;
+  let url = `http://${HOST}:${PORT}/meta/patchMetadata`;
 
   var init = {
-    method: "POST",
+    method: "PATCH",
     headers: headers,
   };
 

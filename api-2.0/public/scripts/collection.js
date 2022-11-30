@@ -130,10 +130,10 @@ async function compensate(tokenId) {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `http://localhost:4000/meta/postMetadata`;
+  let url = `http://localhost:4000/meta/patchMetadata`;
 
   var init = {
-    method: "POST",
+    method: "PATCH",
     headers: headers,
   };
 
@@ -164,7 +164,6 @@ async function compensate(tokenId) {
   // document.getElementById("flash").innerHTML = element;
 
   if (response.ok) {
-    document.getElementById("submitCompensationButton").style.display = "flex";
     document.getElementById("loader").style.display = "none";
     response = await response.json();
     if (response.result != "success") {
@@ -184,7 +183,6 @@ async function compensate(tokenId) {
     }
     window.location.href = `/collection`;
   } else {
-    document.getElementById("submitCompensationButton").style.display = "flex";
     document.getElementById("loader").style.display = "none";
     console.log("HTTP Error ", response.status);
     let element =
