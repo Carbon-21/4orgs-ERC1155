@@ -213,10 +213,7 @@ const mintNFTServerSideSigning = async () => {
 
   let username = document.getElementById("username").value;
   let nftId = document.getElementById("nftId").value;
-  let phyto = document.getElementById("phyto").value;
-  let location = document.getElementById("location").value;
   let qty = document.getElementById("amount").value;
-
   let token = localStorage.getItem("token");
 
   let headers = new Headers();
@@ -240,15 +237,19 @@ const mintNFTServerSideSigning = async () => {
   let response = await fetch(url, init);
 
   // Post metadata through ipfs node
+  let metadata = {
+    id: nftId,
+    amount: qty,
+    land_owner: document.getElementById("land_owner").value,
+    pyhto: document.getElementById("phyto").value,
+    geolocation: document.getElementById("location").value,
+    compensation_owner: document.getElementById("compensation_owner").value,
+    compensation_state: "Não Compensado",
+  };
+
   let postMetadataURL = `http://${HOST}:${PORT}/meta/postMetadata`;
   init.body = JSON.stringify({
-    // TODO: match schema with forms
-    metadata: {
-      id: nftId,
-      phyto,
-      geolocation: location,
-      custom_notes: `qty: ${qty}`,
-    },
+    metadata,
     tokenId: nftId,
   });
   let metadataResponse = await fetch(postMetadataURL, init);
