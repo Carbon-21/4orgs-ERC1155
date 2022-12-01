@@ -24,8 +24,7 @@ window.signup = async function () {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-
-  let url = `http://${HOST}:${PORT}/signup`;
+  let url = `https://192.168.18.30:4000/signup`;
 
   var init = {
       method: "POST",
@@ -84,7 +83,7 @@ window.login = async function () {
 
   event.preventDefault();
 
-  const url = `http://${HOST}:${PORT}/login`;
+  const url = `https://192.168.18.30:4000/login`;
 
   const password = document.getElementById("password").value.toString().split("/")[0];
   const email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;

@@ -26660,8 +26660,97 @@ arguments[4][96][0].apply(exports,arguments)
 },{"dup":96}],203:[function(require,module,exports){
 arguments[4][97][0].apply(exports,arguments)
 },{"bn.js":187,"dup":97,"minimalistic-assert":220,"minimalistic-crypto-utils":221}],204:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],205:[function(require,module,exports){
+module.exports={
+  "_args": [
+    [
+      "elliptic@6.5.4",
+      "/teste/develop/4orgs-ERC1155/api-2.0"
+    ]
+  ],
+  "_from": "elliptic@6.5.4",
+  "_id": "elliptic@6.5.4",
+  "_inBundle": false,
+  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
+  "_location": "/elliptic",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "elliptic@6.5.4",
+    "name": "elliptic",
+    "escapedName": "elliptic",
+    "rawSpec": "6.5.4",
+    "saveSpec": null,
+    "fetchSpec": "6.5.4"
+  },
+  "_requiredBy": [
+    "/",
+    "/fabric-client",
+    "/fabric-common"
+  ],
+  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
+  "_spec": "6.5.4",
+  "_where": "/teste/develop/4orgs-ERC1155/api-2.0",
+  "author": {
+    "name": "Fedor Indutny",
+    "email": "fedor@indutny.com"
+  },
+  "bugs": {
+    "url": "https://github.com/indutny/elliptic/issues"
+  },
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  },
+  "description": "EC cryptography",
+  "devDependencies": {
+    "brfs": "^2.0.2",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.6.0",
+    "grunt": "^1.2.1",
+    "grunt-browserify": "^5.3.0",
+    "grunt-cli": "^1.3.2",
+    "grunt-contrib-connect": "^3.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^5.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "grunt-saucelabs": "^9.0.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^8.0.1"
+  },
+  "files": [
+    "lib"
+  ],
+  "homepage": "https://github.com/indutny/elliptic",
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "license": "MIT",
+  "main": "lib/elliptic.js",
+  "name": "elliptic",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/indutny/elliptic.git"
+  },
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run lint && npm run unit",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "version": "grunt dist && git add dist/"
+  },
+  "version": "6.5.4"
+}
+
+},{}],205:[function(require,module,exports){
 arguments[4][118][0].apply(exports,arguments)
 },{"./hash/common":206,"./hash/hmac":207,"./hash/ripemd":208,"./hash/sha":209,"./hash/utils":216,"dup":118}],206:[function(require,module,exports){
 arguments[4][119][0].apply(exports,arguments)
@@ -27078,7 +27167,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           hashedPassword = hashedPassword.hashHex;
           headers = new Headers();
           headers.append("Content-Type", "application/json");
-          url = "http://localhost:4000/signup";
+          url = "https://192.168.18.30:4000/signup";
           init = {
             method: "POST",
             headers: headers
@@ -27154,7 +27243,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
       switch (_context2.prev = _context2.next) {
         case 0:
           event.preventDefault();
-          url = "http://localhost:4000/login";
+          url = "https://192.168.18.30:4000/login";
           password = document.getElementById("password").value.toString().split("/")[0];
           email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
           salt = document.getElementById("salt").value.split("/")[0];

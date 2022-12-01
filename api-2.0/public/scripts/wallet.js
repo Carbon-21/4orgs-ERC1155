@@ -66,7 +66,7 @@ window.walletServerSideSigning = async () => {
     
         let headers = new Headers();
         headers.append("Authorization", "Bearer " + token)
-        let url = `http://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`
+        let url = `https://192.168.18.30:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas`
     
         var init = {
             method: "GET",
