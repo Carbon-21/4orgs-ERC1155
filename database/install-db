@@ -10,12 +10,12 @@ sudo systemctl disable mysql
 sudo systemctl start mysql
 
 #create carbon user with low password policy and all permissions
-sudo mysql --execute "SET GLOBAL validate_password.policy=LOW" -p
-sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY $MYSQL_PASSWORD" -p
-sudo mysql --execute "GRANT ALL ON *.* TO carbon@localhost WITH GRANT OPTION" -p
-sudo mysql --execute "CREATE USER carbon@$HOST IDENTIFIED BY $MYSQL_PASSWORD" -p
-sudo mysql --execute "GRANT ALL ON *.* TO carbon@$HOST WITH GRANT OPTION" -p
+sudo mysql --execute "SET GLOBAL validate_password.policy=LOW" -p$MYSQL_PASSWORD
+sudo mysql --execute "CREATE USER 'carbon'@'localhost' IDENTIFIED BY $MYSQL_PASSWORD" -p$MYSQL_PASSWORD
+sudo mysql --execute "GRANT ALL ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION" -p$MYSQL_PASSWORD
+sudo mysql --execute "CREATE USER 'carbon'@'%' IDENTIFIED BY $MYSQL_PASSWORD" -p$MYSQL_PASSWORD
+sudo mysql --execute "GRANT ALL ON *.* TO 'carbon'@'%' WITH GRANT OPTION" -p$MYSQL_PASSWORD
 
 
 #create carbon db
-mysql -u carbon -p --execute "source carbon.sql" -p
+mysql -ucarbon -p$MYSQL_PASSWORD --execute "source carbon.sql"

@@ -19,8 +19,18 @@ cd "$(dirname "$0")"
 #run mysql
 start-mysql
 
+# Check if mysqluser exists. Otherwise, create it
+UEXISTS="$(mysql -uroot -p$MYSQL_PASSWORD -se "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'carbon@$HOST')")"
+if [ "$UEXISTS" = 0 ]; then
+  echo "MySQL user not found. creating..."
+  mysql -uroot -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -uroot -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION"
+  mysql -uroot -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -uroot -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'%' WITH GRANT OPTION"
+  mysql -uroot -p$MYSQL_PASSWORD -se "FLUSH PRIVILEGES"
+fi
 #create carbon db again
-mysql -u carbon -p12345678 --execute "source carbon.sql"
+mysql -uroot -p$MYSQL_PASSWORD -se "source carbon.sql"
 
 #recreate sequelize models
 cd sequelize-auto
