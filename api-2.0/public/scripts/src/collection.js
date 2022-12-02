@@ -1,3 +1,6 @@
+let metadata;
+let metadataArray = [];
+
 async function collection() {
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
@@ -6,7 +9,8 @@ async function collection() {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     for (var key in nftTokens) {
       let tokenId = nftTokens[key];
-      let metadata = (await nftMetadata(tokenId))?.message;
+      metadata = (await nftMetadata(tokenId))?.message;
+      metadataArray.push(metadata);
       element +=
         '<div class="card shadow-lg mt-3">' +
         '<div class="card-body flex-column">' +
@@ -87,23 +91,106 @@ async function renderMetadata(tokenId, metadata) {
     `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
     // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
-    renderCompensation(metadata?.properties?.compensation_state) +
+    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
     "<p>" +
     "</div>"
   );
 }
 
 // Retorna string do metadado de compensação, dependendo do estado
-function renderCompensation(compensation_state) {
+function renderCompensation(tokenId, compensation_state) {
   switch (compensation_state) {
-    case "AGUARDANDO":
+    case "Aguardando":
       return `<b> Estado de compensação:</b> Aguardando <br />`;
-    case "COMPENSADO":
+    case "Compensado":
       return `<b> Estado de compensação:</b> Compensado <br />`;
     // Inclui botão de compensação quando não compensado
-    case "NAO COMPENSADO":
+    case "Não Compensado":
     default:
-      return `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Compensar</button>`;
+      return (
+        `<b> Estado de compensação:</b> Não compensado <br />` +
+        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+      );
+  }
+}
+
+//change token status to "Compensado" in the IPFS
+//OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
+async function compensate(tokenId) {
+  event.preventDefault();
+
+  //set loading
+  document.getElementById("loader").style.display = "flex";
+  document.getElementById("submitCompensationButton").style.display = "none";
+
+  tokenId = tokenId.id;
+
+  let jwt = localStorage.getItem("token");
+
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + jwt);
+  let url = `http://${HOST}:${PORT}/meta/patchMetadata`;
+
+  var init = {
+    method: "PATCH",
+    headers: headers,
+  };
+
+  //get token info
+  let tokenInfo = metadataArray.filter((metadataArray) => metadataArray.name === tokenId);
+  tokenInfo = tokenInfo[0].properties;
+
+  let body = {
+    tokenId,
+    metadata: {
+      id: tokenId,
+      phyto: tokenInfo.land_info.phyto,
+      geolocation: tokenInfo.land_info.geolocation,
+      status: "Ativo",
+      compensation_state: "Compensado",
+    },
+  };
+
+  init.body = JSON.stringify(body);
+
+  //POST to postMetadata
+  let response = await fetch(url, init);
+  // let element =
+  //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+  //   `Compensando...` +
+  //   `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+  //   `</div>`;
+  // document.getElementById("flash").innerHTML = element;
+
+  if (response.ok) {
+    document.getElementById("loader").style.display = "none";
+    response = await response.json();
+    if (response.result != "success") {
+      let element =
+        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Ocorreu um erro na compensação` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    } else {
+      let element =
+        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Compensado com sucesso` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    }
+    window.location.href = `/collection`;
+  } else {
+    document.getElementById("loader").style.display = "none";
+    console.log("HTTP Error ", response.status);
+    let element =
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+      `Ocorreu um erro na compensação` +
+      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+      `</div>`;
+    document.getElementById("flash").innerHTML = element;
+    return null;
   }
 }
