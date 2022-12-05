@@ -213,7 +213,9 @@ const mintNFTServerSideSigning = async () => {
 
   let username = document.getElementById("username").value;
   let nftId = document.getElementById("nftId").value;
+  let landOwner = document.getElementById("landOwner").value;
   let phyto = document.getElementById("phyto").value;
+  let area = document.getElementById("area").value;
   let location = document.getElementById("location").value;
   let qty = document.getElementById("amount").value;
 
@@ -245,8 +247,11 @@ const mintNFTServerSideSigning = async () => {
     // TODO: match schema with forms
     metadata: {
       id: nftId,
+      land_owner: landOwner,
+      land: area,
       phyto,
       geolocation: location,
+      status: `Ativo`,
       custom_notes: `qty: ${qty}`,
     },
     tokenId: nftId,

@@ -87,7 +87,9 @@ async function renderMetadata(tokenId, metadata) {
   return (
     `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
-    // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+    `<b> Status: </b> ${metadata?.properties?.nft_info?.status} <br />` +
+    `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+    `<b> Área (hectares): </b> ${metadata?.properties?.land_info?.land} <br />` +
     `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
     // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
@@ -145,9 +147,11 @@ async function compensate(tokenId) {
     tokenId,
     metadata: {
       id: tokenId,
+      status: tokenInfo.nft_info.status,
+      land_owner: tokenInfo.land_owner,
+      land: tokenInfo.land_info.land,
       phyto: tokenInfo.land_info.phyto,
       geolocation: tokenInfo.land_info.geolocation,
-      status: "Ativo",
       compensation_state: "Compensado",
     },
   };

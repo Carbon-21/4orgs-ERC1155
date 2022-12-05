@@ -11349,8 +11349,8 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, "$ylvas", qty]
             };
@@ -11491,8 +11491,8 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, nftId, qty]
             };
@@ -11536,7 +11536,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
+    var username, nftId, landOwner, phyto, area, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11546,7 +11546,9 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
             nftId = document.getElementById("nftId").value;
+            landOwner = document.getElementById("landOwner").value;
             phyto = document.getElementById("phyto").value;
+            area = document.getElementById("area").value;
             location = document.getElementById("location").value;
             qty = document.getElementById("amount").value;
             token = localStorage.getItem("token");
@@ -11564,9 +11566,9 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               tokenReceiver: username
             };
             init.body = JSON.stringify(body);
-            _context6.next = 18;
+            _context6.next = 20;
             return fetch(url, init);
-          case 18:
+          case 20:
             response = _context6.sent;
             // Post metadata through ipfs node
             postMetadataURL = "http://localhost:4000/meta/postMetadata";
@@ -11574,23 +11576,26 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               // TODO: match schema with forms
               metadata: {
                 id: nftId,
+                land_owner: landOwner,
+                land: area,
                 phyto: phyto,
                 geolocation: location,
+                status: "Ativo",
                 custom_notes: "qty: ".concat(qty)
               },
               tokenId: nftId
             });
-            _context6.next = 23;
+            _context6.next = 25;
             return fetch(postMetadataURL, init);
-          case 23:
+          case 25:
             metadataResponse = _context6.sent;
             if (!(response.ok && metadataResponse.ok)) {
-              _context6.next = 31;
+              _context6.next = 33;
               break;
             }
-            _context6.next = 27;
+            _context6.next = 29;
             return response.json();
-          case 27:
+          case 29:
             response = _context6.sent;
             if (response.result == null) {
               document.getElementById("submitButton").style.display = "flex";
@@ -11603,16 +11608,16 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = _element3;
             }
-            _context6.next = 37;
+            _context6.next = 39;
             break;
-          case 31:
+          case 33:
             console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
             _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element4;
             return _context6.abrupt("return", null);
-          case 37:
+          case 39:
           case "end":
             return _context6.stop();
         }
