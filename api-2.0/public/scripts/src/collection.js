@@ -94,7 +94,9 @@ async function renderMetadata(tokenId, metadata) {
     `<b> Área (hectares): </b> ${metadata?.properties?.land} <br />` +
     `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
-    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
+    renderCompensation(tokenId.replace(/\s/g, ""),
+      metadata?.properties?.compensation_state,
+      metadata?.properties?.compensation_owner) +
     "<p>" +
     "</div>"
   );
@@ -106,8 +108,8 @@ function renderCompensation(tokenId, compensation_state, compensation_owner) {
     case "Aguardando":
       return `<b> Estado de compensação:</b> Aguardando <br />`;
     case "Compensado":
-      return `<b> Estado de compensação:</b> Compensado <br />`; //+
-        // `<b> Dono dos direitos de Compensação: </b> ${compensation_owner} <br />`;
+      return `<b> Estado de compensação:</b> Compensado <br />` +
+        `<b> Dono dos direitos de Compensação: </b> ${compensation_owner} <br />`;
     // Inclui botão de compensação quando não compensado
     case "Não Compensado":
     default:
