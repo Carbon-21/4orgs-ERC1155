@@ -35,12 +35,13 @@ async function collection() {
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
     }
-    //Desabilitar gif do loader
-    document.getElementById("loader").style.display = "none";
   } else {
     console.log("HTTP Error ", response.status);
     return null;
   }
+
+  //Desabilitar gif do loader
+  document.getElementById("loader").style.display = "none";
 }
 
 // Recupera os nfts do usuario logado
@@ -87,10 +88,12 @@ async function renderMetadata(tokenId, metadata) {
   return (
     `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
-    // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
-    `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
-    `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
-    // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
+    `<b> Status: </b> ${metadata?.properties?.status} <br />` +
+    `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
+    `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+    `<b> Área (hectares): </b> ${metadata?.properties?.land} <br />` +
+    `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
+    `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
     renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
     "<p>" +
     "</div>"
@@ -98,12 +101,13 @@ async function renderMetadata(tokenId, metadata) {
 }
 
 // Retorna string do metadado de compensação, dependendo do estado
-function renderCompensation(tokenId, compensation_state) {
+function renderCompensation(tokenId, compensation_state, compensation_owner) {
   switch (compensation_state) {
     case "Aguardando":
       return `<b> Estado de compensação:</b> Aguardando <br />`;
     case "Compensado":
-      return `<b> Estado de compensação:</b> Compensado <br />`;
+      return `<b> Estado de compensação:</b> Compensado <br />`; //+
+        // `<b> Dono dos direitos de Compensação: </b> ${compensation_owner} <br />`;
     // Inclui botão de compensação quando não compensado
     case "Não Compensado":
     default:
@@ -144,10 +148,7 @@ async function compensate(tokenId) {
   let body = {
     tokenId,
     metadata: {
-      id: tokenId,
-      phyto: tokenInfo.land_info.phyto,
-      geolocation: tokenInfo.land_info.geolocation,
-      status: "Ativo",
+      ...tokenInfo,
       compensation_state: "Compensado",
     },
   };

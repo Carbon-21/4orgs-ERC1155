@@ -239,11 +239,13 @@ const mintNFTServerSideSigning = async () => {
   // Post metadata through ipfs node
   let metadata = {
     id: nftId,
+    status: `Ativo`,
     amount: qty,
-    land_owner: document.getElementById("land_owner").value,
+    land_owner: document.getElementById("landOwner").value,
+    land: document.getElementById("area").value,
     pyhto: document.getElementById("phyto").value,
     geolocation: document.getElementById("location").value,
-    compensation_owner: document.getElementById("compensation_owner").value,
+    compensation_owner: username,
     compensation_state: "Não Compensado",
   };
 
