@@ -91,10 +91,12 @@ app.use("/meta", metadataRoutes);
 //executed if any other middleware yields an error
 app.use(error);
 
-///// SERVER INIT /////
+// bypass certificate check (when using self-signed cert)
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+///// SERVER INIT /////
 const httpsServer = https.createServer(options, app);
 httpsServer.listen(port, host, ()=>{
     logger.info("****************** HTTPS SERVER STARTED ************************");
     logger.info("***************  https://%s:%s  *******************", host, port);
-  });
+});

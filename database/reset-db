@@ -1,6 +1,7 @@
 #!/bin/bash
 #regenerate sequelize models using sequelize-auto and recreate carbon DB
 
+# source containing env values
 source ../api-2.0/.env
 
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
@@ -19,18 +20,21 @@ cd "$(dirname "$0")"
 #run mysql
 start-mysql
 
-# Check if mysqluser exists. Otherwise, create it
-UEXISTS="$(mysql -uroot -p$MYSQL_PASSWORD -se "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'carbon@$HOST')")"
+# Check if mysqluser exists to any host. Otherwise, create it
+UEXISTS="$(mysql -ucarbon -p$MYSQL_PASSWORD --execute "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE USER = 'carbon@%')")"
 if [ "$UEXISTS" = 0 ]; then
   echo "MySQL user not found. creating..."
-  mysql -uroot -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'"
-  mysql -uroot -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION"
-  mysql -uroot -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
-  mysql -uroot -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'%' WITH GRANT OPTION"
-  mysql -uroot -p$MYSQL_PASSWORD -se "FLUSH PRIVILEGES"
+  # Double-check that localhost user exists
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION"
+  # create user to any host (allow non-localhost calls)
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'%' WITH GRANT OPTION"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "FLUSH PRIVILEGES"
+else echo "User already exists."
 fi
-#create carbon db again
-mysql -uroot -p$MYSQL_PASSWORD -se "source carbon.sql"
+#recreate carbon db
+mysql -ucarbon -p$MYSQL_PASSWORD -se "source carbon.sql"
 
 #recreate sequelize models
 cd sequelize-auto
