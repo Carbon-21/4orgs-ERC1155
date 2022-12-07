@@ -9,7 +9,7 @@ sudo apt install default-mysql-server
 sudo systemctl disable mysql
 sudo systemctl start mysql
 
-#create carbon user with low password policy and all permissions
+create carbon user with low password policy and all permissions
 sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
 sudo mysql --execute "CREATE USER carbon@localhost IDENTIFIED BY $MYSQL_PASSWORD"
 sudo mysql --execute "GRANT ALL ON *.* TO carbon@localhost WITH GRANT OPTION"
