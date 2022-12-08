@@ -36,6 +36,12 @@ router.get(
   queryController.balanceNFT
 );
 
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/allNFTID",
+  [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll],
+  queryController.allNFTID
+);
+
 router.get("/channels/:channel/chaincodes/:chaincode/selfBalanceNFT", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], queryController.selfBalanceNFT);
 
 router.get(

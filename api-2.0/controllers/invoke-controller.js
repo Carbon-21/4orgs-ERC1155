@@ -327,12 +327,22 @@ exports.ftfromnft = async (req, res, next) => {
   const username = req.jwt.username;
   const org = req.jwt.org;
 
+  // Obtem os Ids de todos os NFTs
+
+
+
+
+//---------------
+
+
+  // -------------
+
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
   //mint
-  try {
+  /*try {
     let result = await chaincode.submitTransaction("SmartContract:FTFromNFT");
     logger.info(`FT Minted From NFT ${result}`);
 
@@ -343,7 +353,7 @@ exports.ftfromnft = async (req, res, next) => {
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
   }
-
+*/
   //send OK response
   return res.json({
     result: "success",

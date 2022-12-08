@@ -155,18 +155,16 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
-
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
+func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64, error) {
 
 	// -------- Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
 
-	
 	// Stores a list of all NFTs of the same user (account))
-	NFTSumList := make([][]string,0)
+	NFTSumList := make([][]string, 0)
 
 	if tokenid == "" {
 		return 0, fmt.Errorf("Please inform tokenid!")
@@ -175,15 +173,15 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
 
 	// Get ID of submitting client identity
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		return 0,fmt.Errorf("failed to get client id: %v", err)
+		return 0, fmt.Errorf("failed to get client id: %v", err)
 	}
-	
+
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
 		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
@@ -197,85 +195,81 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		}
 
 		fmt.Print(queryResponse)
-		// Split Key to search for specific tokenid 
+		// Split Key to search for specific tokenid
 		// The compositekey (account -  tokenid - senderer)
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-		
-      		  if err != nil {
-      		      return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-     		   }
-     		   
-     		  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+
+		if err != nil {
+			return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
+
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
-		
+
 		// Contains the account of the user who have the nft
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
 		if returnedTokenID != tokenid {
-		
+
 			// Part to insert the logic of how many sylvas to add for that NFT
-			var SylvasAdd int 
-			SylvasAdd = 10   // add 10 sylvas per nft
-			
+			var SylvasAdd int
+			SylvasAdd = 10 // add 10 sylvas per nft
+
 			// Function that checks if the NFT receiver is in the temporary Slice Array
 			// If found, it returns the index to concatenate the id of the nft found and add the qty of sylvas
 			// Otherwise, add to this slice the set of the token id, the receiver and some sylvas
-			containInSliceIndex := containInSlice(NFTSumList,accountNFT)
-			
+			containInSliceIndex := containInSlice(NFTSumList, accountNFT)
+
 			//  Found the account in the list
-			if (containInSliceIndex != -1){
+			if containInSliceIndex != -1 {
 				// Concatenates the id of the other nft
 				//fmt.Print("ID nfts", NFTSumList[containInSliceIndex][0])
 				NFTSumList[containInSliceIndex][0] = string(NFTSumList[containInSliceIndex][0]) + "," + string(returnedTokenID)
-				
+
 				// Add the value to the total number of silvas
-				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
-				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
+				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])
+				currentSylv, err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
 				fmt.Print(err)
-				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd) 		
-			}else{
+				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd)
+			} else {
 				//fmt.Print("Adicionando Elemento", returnedTokenID, accountNFT)
-				element := []string{string(returnedTokenID),accountNFT,strconv.Itoa(SylvasAdd)}
-				NFTSumList = append(NFTSumList, element)		
+				element := []string{string(returnedTokenID), accountNFT, strconv.Itoa(SylvasAdd)}
+				NFTSumList = append(NFTSumList, element)
 			}
-			
-						
+
 			// NFTSumList [0] - List of NFTS ids for each user
 			// NFTSumList [1] - Account that owns the nfts
 			// NFTSumList [2] - Total sylvas associated to be added to that account
-									
-			for i:= range NFTSumList{
-				// 'Minting' the tokens from the temporary list		
+
+			for i := range NFTSumList {
+				// 'Minting' the tokens from the temporary list
 				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
 				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt))
 				if err != nil {
-					return 0,err
+					return 0, err
 				}
 				fmt.Print("AQUI:", string(NFTSumList[i][0]), "-", string(NFTSumList[i][1]), "-", string(NFTSumList[i][2]))
-			}		
+			}
 		}
 
 	}
-	
 
 	return uint64(0), nil
 }
-
-
 
 func containInSlice(NFTSumList [][]string, account string) int {
 	// Checks if it has a receiver for sylvas and if yes, returns the index and the ids of the nfts, if not, it returns 0
 	// Check the list if there is already a destination with the same code
 
-	for i:= range NFTSumList{
+	for i := range NFTSumList {
 		// If it has, concatenate the id of the NFT in the first and perform the sum of the value of sylvas to be added
-		if(NFTSumList[i][1] == account){
+		if NFTSumList[i][1] == account {
 			//fmt.Print("Elemento encontrado, indice:", i)
 			return i
-		}	
-	} 	
-	return -1	
+		}
+	}
+	return -1
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
@@ -667,24 +661,29 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([][]string) {
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) [][]string {
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		ret := make([][]string,0)
-		ret = append(ret,[]string{"failed to get client id"})
+		ret := make([][]string, 0)
+		ret = append(ret, []string{"failed to get client id"})
 		return ret
 		//return "0", fmt.Errorf("failed to get client id: %v", err)
 	}
-
 
 	idNFTs, _ := idNFTHelper(ctx, clientID)
 	return idNFTs
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([][]string) {
-	idNFTs, _ := idNFTHelper(ctx,account)
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) [][]string {
+	idNFTs, _ := idNFTHelper(ctx, account)
+	return idNFTs
+}
+
+// AllNFTID returns a list of all the IDs AND our values of the NFTs on the blockchain
+func (s *SmartContract) AllNFTID(ctx contractapi.TransactionContextInterface, msg string) [][]string {
+	idNFTs, _ := idNFTHelper(ctx, msg)
 	return idNFTs
 }
 
@@ -724,9 +723,9 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 		// Split Key to search for specific tokenid
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-        if err != nil {
-            return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-        }
+		if err != nil {
+			return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
 
 		// Add all balances of informed tokenid
 		returnedTokenID := compositeKeyParts[1]
@@ -742,7 +741,7 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 }
 
 //  SetURI set a specific URI containing the metadata related to a given tokenID
-func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
+func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
 
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
 	if err != nil {
@@ -756,7 +755,7 @@ func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tok
 }
 
 //  GetURI return metadata URI related to a given tokenID
-func  (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
+func (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
 
 	uriBytes, err := ctx.GetStub().GetState(tokenID)
 	if err != nil {
@@ -1046,13 +1045,18 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		return nil, fmt.Errorf("balance query for the zero address")
 	}
 
-	
 	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	nftlist := make([][]string,0)	
-	
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	nftlist := make([][]string, 0)
+
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+
+	/*if account != "all" {
+		fmt.Print("Account:" + account)
+		balanceIterator, err = ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	}*/
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 	}
@@ -1065,28 +1069,28 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		}
 
 		fmt.Print(queryResponse)
-		// Split Key to search for specific tokenid 
+		// Split Key to search for specific tokenid
 		// The compositekey (account -  tokenid - senderer)
-	_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-		
-	  if err != nil {
-	      return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-	   }
-     		   
-	  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
-	returnedTokenID := compositeKeyParts[1]
-	
-	// Contains the account of the user who have the nft
-	accountNFT := compositeKeyParts[0]
-	
-	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
-	if ((returnedTokenID != tokenid) && (accountNFT == account)){
-		// Merge ID and Value of the NFTs
-		element := []string{returnedTokenID, string(queryResponse.Value)}
-		nftlist = append(nftlist,element)
-		
-	}
-	
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
+
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+		returnedTokenID := compositeKeyParts[1]
+
+		// Contains the account of the user who have the nft
+		accountNFT := compositeKeyParts[0]
+
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+		if (returnedTokenID != tokenid) && (accountNFT == account) {
+			// Merge ID and Value of the NFTs
+			element := []string{returnedTokenID, string(queryResponse.Value)}
+			nftlist = append(nftlist, element)
+
+		}
+
 	}
 	return nftlist, nil
 }
