@@ -171,8 +171,6 @@ async function nftMetadata(tokenId) {
     };
   
     response = await fetch(url, init);
-    console.log('passou');
-    console.log('response =',response)
 
   } else {
     let transaction = {
@@ -245,17 +243,19 @@ window.compensate = async (tokenId) => {
   event.preventDefault();
 
   //set loading
-  document.getElementById("loader").style.display = "flex";
+  document.getElementById("loader").style.display = "block";
   document.getElementById("submitCompensationButton").style.display = "none";
 
   tokenId = tokenId.id;
 
   let jwt = localStorage.getItem("token");
 
+  // Patch Metadata
+
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `http://localhost:4000/meta/patchMetadata`;
+  let url;
 
   var init = {
     method: "PATCH",
@@ -279,8 +279,26 @@ window.compensate = async (tokenId) => {
 
   init.body = JSON.stringify(body);
 
-  //POST to postMetadata
+  // POST to postMetadata
+  url = `http://localhost:4000/meta/patchMetadata`;
+  let patchMetadataResponse = await fetch(url, init);
+  let metadataHash = (await patchMetadataResponse.json())?.metadataHash
+
+  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  const URI = `http://${metadataHash}.com`;
+  url = `http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+  body = JSON.stringify({
+    URI: URI,
+    tokenId: tokenId
+  });
+  init = {
+    method: "POST",
+    headers: headers,
+    body: body
+  };
+
   let response = await fetch(url, init);
+
   // let element =
   //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
   //   `Compensando...` +

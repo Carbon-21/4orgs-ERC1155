@@ -11553,7 +11553,7 @@ function _nftMetadata() {
         switch (_context6.prev = _context6.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context6.next = 14;
+              _context6.next = 12;
               break;
             }
             token = localStorage.getItem("token");
@@ -11569,20 +11569,18 @@ function _nftMetadata() {
             return fetch(url, init);
           case 9:
             response = _context6.sent;
-            console.log('passou');
-            console.log('response =', response);
-            _context6.next = 29;
+            _context6.next = 27;
             break;
-          case 14:
+          case 12:
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "GetURI",
               args: [tokenId]
             }; // GetURI Transaction
-            _context6.next = 17;
+            _context6.next = 15;
             return client.offlineTransaction(transaction);
-          case 17:
+          case 15:
             response = _context6.sent;
             URI = response.payload; // GetMetadata
             _token = localStorage.getItem("token");
@@ -11598,13 +11596,13 @@ function _nftMetadata() {
               headers: _headers,
               body: body
             };
-            _context6.next = 28;
+            _context6.next = 26;
             return fetch(_url, init);
-          case 28:
+          case 26:
             response = _context6.sent;
-          case 29:
+          case 27:
             return _context6.abrupt("return", response.json());
-          case 30:
+          case 28:
           case "end":
             return _context6.stop();
         }
@@ -11659,7 +11657,8 @@ function renderCompensation(tokenId, compensation_state) {
 //OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
 window.compensate = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(tokenId) {
-    var jwt, headers, url, init, tokenInfo, body, response, element, _element, _element2;
+    var _yield$patchMetadataR;
+    var jwt, headers, url, init, tokenInfo, body, patchMetadataResponse, metadataHash, URI, response, element, _element, _element2;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -11667,14 +11666,13 @@ window.compensate = /*#__PURE__*/function () {
             event.preventDefault();
 
             //set loading
-            document.getElementById("loader").style.display = "flex";
+            document.getElementById("loader").style.display = "block";
             document.getElementById("submitCompensationButton").style.display = "none";
             tokenId = tokenId.id;
-            jwt = localStorage.getItem("token");
+            jwt = localStorage.getItem("token"); // Patch Metadata
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + jwt);
-            url = "http://localhost:4000/meta/patchMetadata";
             init = {
               method: "PATCH",
               headers: headers
@@ -11695,19 +11693,58 @@ window.compensate = /*#__PURE__*/function () {
             };
             init.body = JSON.stringify(body);
 
-            //POST to postMetadata
+            // POST to postMetadata
+            url = "http://localhost:4000/meta/patchMetadata";
             _context3.next = 16;
             return fetch(url, init);
           case 16:
+            patchMetadataResponse = _context3.sent;
+            _context3.next = 19;
+            return patchMetadataResponse.json();
+          case 19:
+            _context3.t1 = _yield$patchMetadataR = _context3.sent;
+            _context3.t0 = _context3.t1 === null;
+            if (_context3.t0) {
+              _context3.next = 23;
+              break;
+            }
+            _context3.t0 = _yield$patchMetadataR === void 0;
+          case 23:
+            if (!_context3.t0) {
+              _context3.next = 27;
+              break;
+            }
+            _context3.t2 = void 0;
+            _context3.next = 28;
+            break;
+          case 27:
+            _context3.t2 = _yield$patchMetadataR.metadataHash;
+          case 28:
+            metadataHash = _context3.t2;
+            // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+            URI = "http://".concat(metadataHash, ".com");
+            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
+            body = JSON.stringify({
+              URI: URI,
+              tokenId: tokenId
+            });
+            init = {
+              method: "POST",
+              headers: headers,
+              body: body
+            };
+            _context3.next = 35;
+            return fetch(url, init);
+          case 35:
             response = _context3.sent;
             if (!response.ok) {
-              _context3.next = 26;
+              _context3.next = 45;
               break;
             }
             document.getElementById("loader").style.display = "none";
-            _context3.next = 21;
+            _context3.next = 40;
             return response.json();
-          case 21:
+          case 40:
             response = _context3.sent;
             if (response.result != "success") {
               element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
@@ -11717,15 +11754,15 @@ window.compensate = /*#__PURE__*/function () {
               document.getElementById("flash").innerHTML = _element;
             }
             window.location.href = "/collection";
-            _context3.next = 31;
+            _context3.next = 50;
             break;
-          case 26:
+          case 45:
             document.getElementById("loader").style.display = "none";
             console.log("HTTP Error ", response.status);
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;
             return _context3.abrupt("return", null);
-          case 31:
+          case 50:
           case "end":
             return _context3.stop();
         }
@@ -11799,54 +11836,43 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token");
-            console.log("### 1. Request transaction proposal generation");
+            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
             url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
-            _context.next = 12;
+            _context.next = 11;
             return sendToServer("POST", url, body, token);
-          case 12:
+          case 11:
             proposalResponse = _context.sent;
             // The transaction proposal hash
-            digest = proposalResponse.result.digest;
-            console.log('Transaction proposal hash =', digest);
-
-            // The transaction proposal in Hex
-            proposalHex = proposalResponse.result.proposal;
-            console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-
-            // 2. Sign transaction proposal
-            console.log("### 2. Sign transaction proposal");
-            _context.next = 20;
+            digest = proposalResponse.result.digest; // The transaction proposal in Hex
+            proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
+            // console.log("### 2. Sign transaction proposal");
+            _context.next = 16;
             return signTransaction(digest, privateKey);
-          case 20:
+          case 16:
             proposalSignature = _context.sent;
             proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
-            console.log('signature 1 =', proposalSignature);
-            console.log('proposalHex =', proposalHex);
             signedProposal = {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            console.log("### 3. Send signed transaction proposal to server");
+            // console.log("### 3. Send signed transaction proposal to server");
             url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-            _context.next = 29;
+            _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
-          case 29:
+          case 22:
             sendProposalResponse = _context.sent;
             transactionDigest = sendProposalResponse.result.transactionDigest;
             transactionHex = sendProposalResponse.result.transaction;
             proposalResponseStatus = sendProposalResponse.result.status;
             payload = sendProposalResponse.result.payload;
             if (!(proposalResponseStatus == 200)) {
-              _context.next = 48;
+              _context.next = 40;
               break;
             }
-            // 4. Sign transaction
-            console.log("### 4. Sign transaction");
-            _context.next = 38;
+            _context.next = 30;
             return signTransaction(transactionDigest, privateKey);
-          case 38:
+          case 30:
             transactionSignature = _context.sent;
             transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
             signedTransactionProposal = {
@@ -11854,24 +11880,24 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transactionHex
             }; // 5. Send signed transaction to server
             url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-            _context.next = 44;
+            _context.next = 36;
             return sendToServer("POST", url, signedTransactionProposal, token);
-          case 44:
+          case 36:
             commitTransactionResponse = _context.sent;
             commitResult = commitTransactionResponse.result;
             if (!(commitResult == "SUCCESS")) {
-              _context.next = 48;
+              _context.next = 40;
               break;
             }
             return _context.abrupt("return", {
               result: "SUCCESS",
               payload: payload
             });
-          case 48:
+          case 40:
             return _context.abrupt("return", {
               result: "FAILURE"
             });
-          case 49:
+          case 41:
           case "end":
             return _context.stop();
         }
@@ -11947,27 +11973,25 @@ var signTransaction = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log('entrou signtransaction');
-
             //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
             _KEYUTIL$getKey = KEYUTIL.getKey(privateKeyPEM), prvKeyHex = _KEYUTIL$getKey.prvKeyHex;
             EC = elliptic.ec;
             ecdsaCurve = elliptic.curves['p256'];
             ecdsa = new EC(ecdsaCurve);
-            _context3.next = 7;
+            _context3.next = 6;
             return ecdsa.keyFromPrivate(prvKeyHex, 'hex');
-          case 7:
+          case 6:
             signKey = _context3.sent;
-            _context3.next = 10;
+            _context3.next = 9;
             return ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
-          case 10:
+          case 9:
             sig = _context3.sent;
             sig = _preventMalleability(sig);
 
             // now we have the signature, next we should send the signed transaction proposal to the peer
             signature = Buffer.from(sig.toDER());
             return _context3.abrupt("return", signature);
-          case 14:
+          case 13:
           case "end":
             return _context3.stop();
         }

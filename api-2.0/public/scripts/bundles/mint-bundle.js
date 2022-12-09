@@ -11536,7 +11536,8 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
+    var _yield$metadataRespon;
+    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, metadataHash, URI, setUriURL, setURIResponse, element, _element3, _element4;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11584,13 +11585,51 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             return fetch(postMetadataURL, init);
           case 23:
             metadataResponse = _context6.sent;
-            if (!(response.ok && metadataResponse.ok)) {
-              _context6.next = 31;
+            _context6.next = 26;
+            return metadataResponse.json();
+          case 26:
+            _context6.t1 = _yield$metadataRespon = _context6.sent;
+            _context6.t0 = _context6.t1 === null;
+            if (_context6.t0) {
+              _context6.next = 30;
               break;
             }
-            _context6.next = 27;
+            _context6.t0 = _yield$metadataRespon === void 0;
+          case 30:
+            if (!_context6.t0) {
+              _context6.next = 34;
+              break;
+            }
+            _context6.t2 = void 0;
+            _context6.next = 35;
+            break;
+          case 34:
+            _context6.t2 = _yield$metadataRespon.metadataHash;
+          case 35:
+            metadataHash = _context6.t2;
+            // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+            URI = "http://".concat(metadataHash, ".com");
+            setUriURL = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
+            body = JSON.stringify({
+              URI: URI,
+              tokenId: nftId
+            });
+            init = {
+              method: "POST",
+              headers: headers,
+              body: body
+            };
+            _context6.next = 42;
+            return fetch(setUriURL, init);
+          case 42:
+            setURIResponse = _context6.sent;
+            if (!(response.ok && metadataResponse.ok && setURIResponse.ok)) {
+              _context6.next = 50;
+              break;
+            }
+            _context6.next = 46;
             return response.json();
-          case 27:
+          case 46:
             response = _context6.sent;
             if (response.result == null) {
               document.getElementById("submitButton").style.display = "flex";
@@ -11603,16 +11642,16 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = _element3;
             }
-            _context6.next = 37;
+            _context6.next = 56;
             break;
-          case 31:
+          case 50:
             console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
             _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element4;
             return _context6.abrupt("return", null);
-          case 37:
+          case 56:
           case "end":
             return _context6.stop();
         }
@@ -11686,54 +11725,43 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token");
-            console.log("### 1. Request transaction proposal generation");
+            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
             url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
-            _context.next = 12;
+            _context.next = 11;
             return sendToServer("POST", url, body, token);
-          case 12:
+          case 11:
             proposalResponse = _context.sent;
             // The transaction proposal hash
-            digest = proposalResponse.result.digest;
-            console.log('Transaction proposal hash =', digest);
-
-            // The transaction proposal in Hex
-            proposalHex = proposalResponse.result.proposal;
-            console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-
-            // 2. Sign transaction proposal
-            console.log("### 2. Sign transaction proposal");
-            _context.next = 20;
+            digest = proposalResponse.result.digest; // The transaction proposal in Hex
+            proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
+            // console.log("### 2. Sign transaction proposal");
+            _context.next = 16;
             return signTransaction(digest, privateKey);
-          case 20:
+          case 16:
             proposalSignature = _context.sent;
             proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
-            console.log('signature 1 =', proposalSignature);
-            console.log('proposalHex =', proposalHex);
             signedProposal = {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            console.log("### 3. Send signed transaction proposal to server");
+            // console.log("### 3. Send signed transaction proposal to server");
             url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-            _context.next = 29;
+            _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
-          case 29:
+          case 22:
             sendProposalResponse = _context.sent;
             transactionDigest = sendProposalResponse.result.transactionDigest;
             transactionHex = sendProposalResponse.result.transaction;
             proposalResponseStatus = sendProposalResponse.result.status;
             payload = sendProposalResponse.result.payload;
             if (!(proposalResponseStatus == 200)) {
-              _context.next = 48;
+              _context.next = 40;
               break;
             }
-            // 4. Sign transaction
-            console.log("### 4. Sign transaction");
-            _context.next = 38;
+            _context.next = 30;
             return signTransaction(transactionDigest, privateKey);
-          case 38:
+          case 30:
             transactionSignature = _context.sent;
             transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
             signedTransactionProposal = {
@@ -11741,24 +11769,24 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transactionHex
             }; // 5. Send signed transaction to server
             url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-            _context.next = 44;
+            _context.next = 36;
             return sendToServer("POST", url, signedTransactionProposal, token);
-          case 44:
+          case 36:
             commitTransactionResponse = _context.sent;
             commitResult = commitTransactionResponse.result;
             if (!(commitResult == "SUCCESS")) {
-              _context.next = 48;
+              _context.next = 40;
               break;
             }
             return _context.abrupt("return", {
               result: "SUCCESS",
               payload: payload
             });
-          case 48:
+          case 40:
             return _context.abrupt("return", {
               result: "FAILURE"
             });
-          case 49:
+          case 41:
           case "end":
             return _context.stop();
         }
@@ -11834,27 +11862,25 @@ var signTransaction = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log('entrou signtransaction');
-
             //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
             _KEYUTIL$getKey = KEYUTIL.getKey(privateKeyPEM), prvKeyHex = _KEYUTIL$getKey.prvKeyHex;
             EC = elliptic.ec;
             ecdsaCurve = elliptic.curves['p256'];
             ecdsa = new EC(ecdsaCurve);
-            _context3.next = 7;
+            _context3.next = 6;
             return ecdsa.keyFromPrivate(prvKeyHex, 'hex');
-          case 7:
+          case 6:
             signKey = _context3.sent;
-            _context3.next = 10;
+            _context3.next = 9;
             return ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
-          case 10:
+          case 9:
             sig = _context3.sent;
             sig = _preventMalleability(sig);
 
             // now we have the signature, next we should send the signed transaction proposal to the peer
             signature = Buffer.from(sig.toDER());
             return _context3.abrupt("return", signature);
-          case 14:
+          case 13:
           case "end":
             return _context3.stop();
         }

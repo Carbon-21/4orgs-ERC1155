@@ -53,7 +53,6 @@ window.signup = async function () {
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.slice(0, -1));
           localStorage.setItem("keyOnServer", saveKeyOnServer);
-          console.log('response',response);
           if (response.certificate) {
               if (!saveKeyOnServer)
                   await crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');

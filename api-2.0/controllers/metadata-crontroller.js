@@ -18,7 +18,9 @@ exports.getMetadata = async (req, res, next) => {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
       URI = response.data.result;
-      console.log('retrieved URI:', URI)
+      console.log('retrieved URI:', URI);
+      console.log('response data =', response);
+      console.log('tokenId', tokenId)
     }
   
     let metadata = await getMetadataFromURI(URI);
@@ -74,6 +76,7 @@ exports.postMetadata = async (req, res, next) => {
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
     logger.debug("Hash of uploaded Metadata: " + hash);
+    return res.status(200).json({ metadataHash: hash, message: "Metadados publicados." });
   } catch (error) {
     logger.error(error);
     return res.status(500).json({
@@ -82,8 +85,8 @@ exports.postMetadata = async (req, res, next) => {
     });
   }
 
-  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-  const URI = `ipfs://${hash}`;
+    // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+    const URI = `ipfs://${hash}`;
   axios
     .post(
       `http://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,

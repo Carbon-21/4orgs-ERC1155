@@ -27184,7 +27184,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 47;
+            _context.next = 46;
             break;
           }
           _context.next = 28;
@@ -27192,40 +27192,39 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 43;
+            _context.next = 42;
             break;
           }
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.slice(0, -1));
           localStorage.setItem("keyOnServer", saveKeyOnServer);
-          console.log('response', response);
           if (!response.certificate) {
-            _context.next = 40;
+            _context.next = 39;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 38;
+            _context.next = 37;
             break;
           }
-          _context.next = 38;
+          _context.next = 37;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 38:
-          _context.next = 40;
+        case 37:
+          _context.next = 39;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 40:
+        case 39:
           window.location.href = '/';
-          _context.next = 45;
+          _context.next = 44;
           break;
-        case 43:
+        case 42:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 45:
-          _context.next = 49;
+        case 44:
+          _context.next = 48;
           break;
-        case 47:
+        case 46:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 49:
+        case 48:
         case "end":
           return _context.stop();
       }
@@ -27803,22 +27802,21 @@ var generateCryptoMaterial = /*#__PURE__*/function () {
             });
           case 11:
             csr = _context.sent;
-            console.log('CSR\n', csr);
             return _context.abrupt("return", {
               csr: csr,
               privateKey: privateKey,
               cryptoPK: cryptoPK
             });
-          case 16:
-            _context.prev = 16;
+          case 15:
+            _context.prev = 15;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0.message);
-          case 19:
+          case 18:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 16]]);
+    }, _callee, null, [[0, 15]]);
   }));
   return function generateCryptoMaterial(_x) {
     return _ref.apply(this, arguments);
@@ -27930,23 +27928,21 @@ var generateKeyPair = /*#__PURE__*/function () {
             return exportCryptoKey('private', keyPair.privateKey);
           case 6:
             privateKey = _context4.sent;
-            console.log(privateKey);
-            _context4.next = 10;
+            _context4.next = 9;
             return exportCryptoKey('public', keyPair.publicKey);
-          case 10:
+          case 9:
             publicKey = _context4.sent;
-            console.log(publicKey);
             return _context4.abrupt("return", [publicKey, privateKey, keyPair.privateKey]);
-          case 15:
-            _context4.prev = 15;
+          case 13:
+            _context4.prev = 13;
             _context4.t0 = _context4["catch"](0);
             return _context4.abrupt("return", _context4.t0.message);
-          case 18:
+          case 16:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[0, 15]]);
+    }, _callee4, null, [[0, 13]]);
   }));
   return function generateKeyPair() {
     return _ref4.apply(this, arguments);
