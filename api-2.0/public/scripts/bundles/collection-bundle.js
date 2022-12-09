@@ -11284,6 +11284,8 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 var client = require("./transaction-handler");
+var metadata;
+var metadataArray = [];
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
 var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Transa\xE7\xE3o realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
@@ -11344,7 +11346,7 @@ window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
       switch (_context2.prev = _context2.next) {
         case 0:
           if (!(localStorage.getItem("keyOnServer") == "true")) {
-            _context2.next = 19;
+            _context2.next = 20;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11361,16 +11363,17 @@ window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
           return renderCollection(nftTokens);
         case 11:
           document.getElementById("flash").innerHTML = successFlashMessage;
-          _context2.next = 17;
+          _context2.next = 18;
           break;
         case 14:
           _context2.prev = 14;
           _context2.t0 = _context2["catch"](5);
           document.getElementById("flash").innerHTML = failureFlashMessage;
-        case 17:
+          console.log("Error: ", _context2.t0.message);
+        case 18:
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("loader").style.display = "none";
-        case 19:
+        case 20:
         case "end":
           return _context2.stop();
       }
@@ -11383,14 +11386,14 @@ function getNftTokens() {
   return _getNftTokens.apply(this, arguments);
 }
 function _getNftTokens() {
-  _getNftTokens = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  _getNftTokens = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var result, _yield$_response$json, token, headers, url, init, _response, transaction, _response2, nftArray, i;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context3.next = 25;
+              _context4.next = 23;
               break;
             }
             token = localStorage.getItem("token");
@@ -11401,37 +11404,35 @@ function _getNftTokens() {
               method: "GET",
               headers: headers
             };
-            _context3.next = 8;
+            _context4.next = 8;
             return fetch(url, init);
           case 8:
-            _response = _context3.sent;
-            console.log('response =', _response);
-            _context3.next = 12;
+            _response = _context4.sent;
+            _context4.next = 11;
             return _response.json();
-          case 12:
-            _context3.t1 = _yield$_response$json = _context3.sent;
-            _context3.t0 = _context3.t1 === null;
-            if (_context3.t0) {
-              _context3.next = 16;
+          case 11:
+            _context4.t1 = _yield$_response$json = _context4.sent;
+            _context4.t0 = _context4.t1 === null;
+            if (_context4.t0) {
+              _context4.next = 15;
               break;
             }
-            _context3.t0 = _yield$_response$json === void 0;
-          case 16:
-            if (!_context3.t0) {
-              _context3.next = 20;
+            _context4.t0 = _yield$_response$json === void 0;
+          case 15:
+            if (!_context4.t0) {
+              _context4.next = 19;
               break;
             }
-            _context3.t2 = void 0;
-            _context3.next = 21;
+            _context4.t2 = void 0;
+            _context4.next = 20;
             break;
+          case 19:
+            _context4.t2 = _yield$_response$json.result;
           case 20:
-            _context3.t2 = _yield$_response$json.result;
-          case 21:
-            result = _context3.t2;
-            console.log('result =', result);
-            _context3.next = 34;
+            result = _context4.t2;
+            _context4.next = 30;
             break;
-          case 25:
+          case 23:
             // gets NFT tokens in Client-side signing mode
             transaction = {
               chaincodeId: 'erc1155',
@@ -11439,28 +11440,26 @@ function _getNftTokens() {
               fcn: "SelfBalanceNFT",
               args: []
             };
-            _context3.next = 28;
+            _context4.next = 26;
             return client.offlineTransaction(transaction);
-          case 28:
-            _response2 = _context3.sent;
-            console.log('response =', _response2);
-            _context3.next = 32;
+          case 26:
+            _response2 = _context4.sent;
+            _context4.next = 29;
             return JSON.parse(_response2.payload);
-          case 32:
-            result = _context3.sent;
-            console.log('resut =', result);
-          case 34:
+          case 29:
+            result = _context4.sent;
+          case 30:
             nftArray = []; // Retornar array contendo somente a lista de ids dos nfts
             for (i in result) {
               nftArray = nftArray.concat(result[i][0]);
             }
-            return _context3.abrupt("return", nftArray);
-          case 37:
+            return _context4.abrupt("return", nftArray);
+          case 33:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3);
+    }, _callee4);
   }));
   return _getNftTokens.apply(this, arguments);
 }
@@ -11469,76 +11468,77 @@ function renderCollection(_x) {
 } //TODO: consertar getURI para modo offline
 // Recuperar json dos metadados do nft (dado tokenId)
 function _renderCollection() {
-  _renderCollection = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(nftTokens) {
-    var element, key, _yield$nftMetadata, tokenId, metadata;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+  _renderCollection = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(nftTokens) {
+    var element, key, _yield$nftMetadata, tokenId;
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             if (!nftTokens) {
-              _context4.next = 35;
+              _context5.next = 36;
               break;
             }
             element = '<div class="d-flex flex-column justify-content-between p-md-1">';
-            _context4.t0 = _regeneratorRuntime().keys(nftTokens);
+            _context5.t0 = _regeneratorRuntime().keys(nftTokens);
           case 3:
-            if ((_context4.t1 = _context4.t0()).done) {
-              _context4.next = 33;
+            if ((_context5.t1 = _context5.t0()).done) {
+              _context5.next = 34;
               break;
             }
-            key = _context4.t1.value;
+            key = _context5.t1.value;
             tokenId = nftTokens[key];
-            _context4.next = 8;
+            _context5.next = 8;
             return nftMetadata(tokenId);
           case 8:
-            _context4.t3 = _yield$nftMetadata = _context4.sent;
-            _context4.t2 = _context4.t3 === null;
-            if (_context4.t2) {
-              _context4.next = 12;
+            _context5.t3 = _yield$nftMetadata = _context5.sent;
+            _context5.t2 = _context5.t3 === null;
+            if (_context5.t2) {
+              _context5.next = 12;
               break;
             }
-            _context4.t2 = _yield$nftMetadata === void 0;
+            _context5.t2 = _yield$nftMetadata === void 0;
           case 12:
-            if (!_context4.t2) {
-              _context4.next = 16;
+            if (!_context5.t2) {
+              _context5.next = 16;
               break;
             }
-            _context4.t4 = void 0;
-            _context4.next = 17;
+            _context5.t4 = void 0;
+            _context5.next = 17;
             break;
           case 16:
-            _context4.t4 = _yield$nftMetadata.message;
+            _context5.t4 = _yield$nftMetadata.message;
           case 17:
-            metadata = _context4.t4;
-            _context4.t5 = element;
-            _context4.t6 = '<div class="card shadow-lg mt-3">' + '<div class="card-body flex-column">' + '<div class="d-flex justify-content-between p-md-1">' + '<div class="d-flex flex-row">' + '<div class="align-self-center">' + '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' + "</div>" + "<div>" + "<button class=\"accordion-button\" type=\"button\" data-bs-toggle=\"collapse\" aria-expanded=\"true\" data-bs-target=\"#".concat(tokenId.replace(/\s/g, ""), "\" aria-controls=\"").concat(tokenId, "\"> <h3> ").concat(tokenId, "  </h3> </button>");
-            _context4.next = 22;
+            metadata = _context5.t4;
+            metadataArray.push(metadata);
+            _context5.t5 = element;
+            _context5.t6 = '<div class="card shadow-lg mt-3">' + '<div class="card-body flex-column">' + '<div class="d-flex justify-content-between p-md-1">' + '<div class="d-flex flex-row">' + '<div class="align-self-center">' + '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' + "</div>" + "<div>" + "<button class=\"accordion-button\" type=\"button\" data-bs-toggle=\"collapse\" aria-expanded=\"true\" data-bs-target=\"#".concat(tokenId.replace(/\s/g, ""), "\" aria-controls=\"").concat(tokenId, "\"> <h3> ").concat(tokenId, "  </h3> </button>");
+            _context5.next = 23;
             return renderMetadata(tokenId, metadata);
-          case 22:
-            _context4.t7 = _context4.sent;
-            _context4.t8 = _context4.t6 + _context4.t7;
-            _context4.t9 = _context4.t8 + "</div>";
-            _context4.t10 = _context4.t9 + "</div>";
-            _context4.t11 = _context4.t10 + "</div>";
-            _context4.t12 = _context4.t11 + "</div>";
-            _context4.t13 = _context4.t12 + "</div>";
-            element = _context4.t5 += _context4.t13 + "</div>";
+          case 23:
+            _context5.t7 = _context5.sent;
+            _context5.t8 = _context5.t6 + _context5.t7;
+            _context5.t9 = _context5.t8 + "</div>";
+            _context5.t10 = _context5.t9 + "</div>";
+            _context5.t11 = _context5.t10 + "</div>";
+            _context5.t12 = _context5.t11 + "</div>";
+            _context5.t13 = _context5.t12 + "</div>";
+            element = _context5.t5 += _context5.t13 + "</div>";
             // Renderizar a cada nft carregado
             document.getElementById("nft-showroom").innerHTML = element;
-            _context4.next = 3;
+            _context5.next = 3;
             break;
-          case 33:
-            _context4.next = 37;
+          case 34:
+            _context5.next = 38;
             break;
-          case 35:
+          case 36:
             console.log("HTTP Error ", response.status);
-            return _context4.abrupt("return", null);
-          case 37:
+            return _context5.abrupt("return", null);
+          case 38:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4);
+    }, _callee5);
   }));
   return _renderCollection.apply(this, arguments);
 }
@@ -11546,14 +11546,14 @@ function nftMetadata(_x2) {
   return _nftMetadata.apply(this, arguments);
 } // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
 function _nftMetadata() {
-  _nftMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(tokenId) {
+  _nftMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(tokenId) {
     var response, token, headers, url, init, transaction, URI, _token, _headers, body, _url;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context5.next = 12;
+              _context6.next = 14;
               break;
             }
             token = localStorage.getItem("token");
@@ -11565,23 +11565,25 @@ function _nftMetadata() {
               method: "POST",
               headers: headers
             };
-            _context5.next = 9;
+            _context6.next = 9;
             return fetch(url, init);
           case 9:
-            response = _context5.sent;
-            _context5.next = 27;
+            response = _context6.sent;
+            console.log('passou');
+            console.log('response =', response);
+            _context6.next = 29;
             break;
-          case 12:
+          case 14:
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "GetURI",
               args: [tokenId]
             }; // GetURI Transaction
-            _context5.next = 15;
+            _context6.next = 17;
             return client.offlineTransaction(transaction);
-          case 15:
-            response = _context5.sent;
+          case 17:
+            response = _context6.sent;
             URI = response.payload; // GetMetadata
             _token = localStorage.getItem("token");
             _headers = new Headers();
@@ -11596,18 +11598,18 @@ function _nftMetadata() {
               headers: _headers,
               body: body
             };
-            _context5.next = 26;
+            _context6.next = 28;
             return fetch(_url, init);
-          case 26:
-            response = _context5.sent;
-          case 27:
-            return _context5.abrupt("return", response.json());
           case 28:
+            response = _context6.sent;
+          case 29:
+            return _context6.abrupt("return", response.json());
+          case 30:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5);
+    }, _callee6);
   }));
   return _nftMetadata.apply(this, arguments);
 }
@@ -11615,43 +11617,125 @@ function renderMetadata(_x3, _x4) {
   return _renderMetadata.apply(this, arguments);
 } // Retorna string do metadado de compensação, dependendo do estado
 function _renderMetadata() {
-  _renderMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(tokenId, metadata) {
+  _renderMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(tokenId, metadata) {
     var _metadata$properties, _metadata$properties$, _metadata$properties2, _metadata$properties3, _metadata$properties4;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             if (metadata.name) {
-              _context6.next = 2;
+              _context7.next = 2;
               break;
             }
-            return _context6.abrupt("return", "Metadados não recuperados");
+            return _context7.abrupt("return", "Metadados não recuperados");
           case 2:
-            return _context6.abrupt("return", "<div id=\"".concat(tokenId.replace(/\s/g, ""), "\" class=\"accordion-collapse collapse show\" aria-labelledby=\"headingOne\" data-bs-parent=\"#accordionExample\"> <div class=\"accordion-body\">") + "<p>" + // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+            return _context7.abrupt("return", "<div id=\"".concat(tokenId.replace(/\s/g, ""), "\" class=\"accordion-collapse collapse show\" aria-labelledby=\"headingOne\" data-bs-parent=\"#accordionExample\"> <div class=\"accordion-body\">") + "<p>" + // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
             "<b> Fitofisiologia: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties = metadata.properties) === null || _metadata$properties === void 0 ? void 0 : (_metadata$properties$ = _metadata$properties.land_info) === null || _metadata$properties$ === void 0 ? void 0 : _metadata$properties$.phyto, " <br />") + "<b> Geolocaliza\xE7\xE3o: </b> ".concat(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties2 = metadata.properties) === null || _metadata$properties2 === void 0 ? void 0 : (_metadata$properties3 = _metadata$properties2.land_info) === null || _metadata$properties3 === void 0 ? void 0 : _metadata$properties3.geolocation, " <br />") +
             // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
-            renderCompensation(metadata === null || metadata === void 0 ? void 0 : (_metadata$properties4 = metadata.properties) === null || _metadata$properties4 === void 0 ? void 0 : _metadata$properties4.compensation_state) + "<p>" + "</div>");
+            renderCompensation(tokenId.replace(/\s/g, ""), metadata === null || metadata === void 0 ? void 0 : (_metadata$properties4 = metadata.properties) === null || _metadata$properties4 === void 0 ? void 0 : _metadata$properties4.compensation_state) + "<p>" + "</div>");
           case 3:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6);
+    }, _callee7);
   }));
   return _renderMetadata.apply(this, arguments);
 }
-function renderCompensation(compensation_state) {
+function renderCompensation(tokenId, compensation_state) {
   switch (compensation_state) {
-    case "AGUARDANDO":
+    case "Aguardando":
       return "<b> Estado de compensa\xE7\xE3o:</b> Aguardando <br />";
-    case "COMPENSADO":
+    case "Compensado":
       return "<b> Estado de compensa\xE7\xE3o:</b> Compensado <br />";
     // Inclui botão de compensação quando não compensado
-    case "NAO COMPENSADO":
+    case "Não Compensado":
     default:
-      return "<b> Estado de compensa\xE7\xE3o:</b> N\xE3o compensado <br />" + "<button id=\"submitCompensationButton\" type=\"submit\" style=\"display: flex\" class=\"btn btn-primary btn-md\">Compensar</button>";
+      return "<b> Estado de compensa\xE7\xE3o:</b> N\xE3o compensado <br />" + "<button id=\"submitCompensationButton\" type=\"submit\" style=\"display: flex\" class=\"btn btn-primary btn-md mt-3\" onclick=\"window.compensate(".concat(tokenId, ")\">Compensar</button>");
   }
 }
+
+//change token status to "Compensado" in the IPFS
+//OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
+window.compensate = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(tokenId) {
+    var jwt, headers, url, init, tokenInfo, body, response, element, _element, _element2;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            event.preventDefault();
+
+            //set loading
+            document.getElementById("loader").style.display = "flex";
+            document.getElementById("submitCompensationButton").style.display = "none";
+            tokenId = tokenId.id;
+            jwt = localStorage.getItem("token");
+            headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + jwt);
+            url = "http://localhost:4000/meta/patchMetadata";
+            init = {
+              method: "PATCH",
+              headers: headers
+            }; //get token info
+            tokenInfo = metadataArray.filter(function (metadataArray) {
+              return metadataArray.name === tokenId;
+            });
+            tokenInfo = tokenInfo[0].properties;
+            body = {
+              tokenId: tokenId,
+              metadata: {
+                id: tokenId,
+                phyto: tokenInfo.land_info.phyto,
+                geolocation: tokenInfo.land_info.geolocation,
+                status: "Ativo",
+                compensation_state: "Compensado"
+              }
+            };
+            init.body = JSON.stringify(body);
+
+            //POST to postMetadata
+            _context3.next = 16;
+            return fetch(url, init);
+          case 16:
+            response = _context3.sent;
+            if (!response.ok) {
+              _context3.next = 26;
+              break;
+            }
+            document.getElementById("loader").style.display = "none";
+            _context3.next = 21;
+            return response.json();
+          case 21:
+            response = _context3.sent;
+            if (response.result != "success") {
+              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              document.getElementById("flash").innerHTML = element;
+            } else {
+              _element = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Compensado com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              document.getElementById("flash").innerHTML = _element;
+            }
+            window.location.href = "/collection";
+            _context3.next = 31;
+            break;
+          case 26:
+            document.getElementById("loader").style.display = "none";
+            console.log("HTTP Error ", response.status);
+            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            document.getElementById("flash").innerHTML = _element2;
+            return _context3.abrupt("return", null);
+          case 31:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return function (_x5) {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 },{"./transaction-handler":41}],41:[function(require,module,exports){
 (function (Buffer){(function (){

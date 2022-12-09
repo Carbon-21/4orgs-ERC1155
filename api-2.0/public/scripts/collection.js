@@ -1,7 +1,7 @@
+const client = require("./transaction-handler");
+
 let metadata;
 let metadataArray = [];
-
-const client = require("./transaction-handler");
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
 const successFlashMessage =     
@@ -67,6 +67,7 @@ window.collectionServerSideSigning = async () => {
       document.getElementById("flash").innerHTML = successFlashMessage;
     } catch (e) {
       document.getElementById("flash").innerHTML = failureFlashMessage;
+      console.log("Error: ", e.message);
     }
     document.getElementById("signing-files").style.display = "block";
     document.getElementById("loader").style.display = "none";      
@@ -89,9 +90,7 @@ async function getNftTokens() {
     };
   
     let response = await fetch(url, init);
-    console.log('response =', response);
     result = (await response.json())?.result;
-    console.log('result =', result);
   } else {
     // gets NFT tokens in Client-side signing mode
     const transaction = {
@@ -101,9 +100,7 @@ async function getNftTokens() {
       args: []
     };
     let response = await client.offlineTransaction(transaction);
-    console.log('response =', response);
     result = await JSON.parse(response.payload);
-    console.log('resut =', result);
   }
   let nftArray = [];
   // Retornar array contendo somente a lista de ids dos nfts
@@ -156,30 +153,11 @@ async function renderCollection(nftTokens) {
   }
 }
 
-// Recupera os nfts do usuario logado
-async function getNftTokens() {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
-
-  let response = await fetch(url, init);
-  let result = (await response.json())?.result;
-  let nftArray = [];
-  // Retornar array contendo somente a lista de ids dos nfts
-  for (var i in result) {
-    nftArray = nftArray.concat(result[i][0]);
-  }
-  return nftArray;
-}
+//TODO: consertar getURI para modo offline
 
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
-  let response
+  let response;
   if (localStorage.getItem("keyOnServer") == "true") {
     let token = localStorage.getItem("token");
     let headers = new Headers();
@@ -193,6 +171,8 @@ async function nftMetadata(tokenId) {
     };
   
     response = await fetch(url, init);
+    console.log('passou');
+    console.log('response =',response)
 
   } else {
     let transaction = {
@@ -254,14 +234,14 @@ function renderCompensation(tokenId, compensation_state) {
     default:
       return (
         `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="window.compensate(${tokenId})">Compensar</button>`
       );
   }
 }
 
 //change token status to "Compensado" in the IPFS
 //OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
-async function compensate(tokenId) {
+window.compensate = async (tokenId) => {
   event.preventDefault();
 
   //set loading

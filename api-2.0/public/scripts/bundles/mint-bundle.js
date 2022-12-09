@@ -11349,8 +11349,8 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, "$ylvas", qty]
             };
@@ -11491,8 +11491,8 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, nftId, qty]
             };
