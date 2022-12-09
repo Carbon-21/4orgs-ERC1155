@@ -11288,8 +11288,10 @@ var metadata;
 var metadataArray = [];
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
-var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Transa\xE7\xE3o realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na execu\xE7\xE3o da transa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var successCollectionFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Cole\xE7\xE3o obtida com sucesso." + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var failureCollectionFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro ao obter a cole\xE7\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var successCompensationFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Compensado com sucesso." + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+var failureCompensationFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
 
 /**
  * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
@@ -11317,13 +11319,13 @@ window.collectionClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
           _context.next = 11;
           return renderCollection(nftTokens);
         case 11:
-          document.getElementById("flash").innerHTML = successFlashMessage;
+          document.getElementById("flash").innerHTML = successCollectionFlashMessage;
           _context.next = 18;
           break;
         case 14:
           _context.prev = 14;
           _context.t0 = _context["catch"](5);
-          document.getElementById("flash").innerHTML = failureFlashMessage;
+          document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
           console.log("Erro: ", _context.t0.message);
         case 18:
           document.getElementById("signing-files").style.display = "block";
@@ -11362,13 +11364,13 @@ window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
           _context2.next = 11;
           return renderCollection(nftTokens);
         case 11:
-          document.getElementById("flash").innerHTML = successFlashMessage;
+          document.getElementById("flash").innerHTML = successCollectionFlashMessage;
           _context2.next = 18;
           break;
         case 14:
           _context2.prev = 14;
           _context2.t0 = _context2["catch"](5);
-          document.getElementById("flash").innerHTML = failureFlashMessage;
+          document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
           console.log("Error: ", _context2.t0.message);
         case 18:
           document.getElementById("signing-files").style.display = "block";
@@ -11658,7 +11660,7 @@ function renderCompensation(tokenId, compensation_state) {
 window.compensate = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(tokenId) {
     var _yield$patchMetadataR;
-    var jwt, headers, url, init, tokenInfo, body, patchMetadataResponse, metadataHash, URI, response, element, _element, _element2;
+    var jwt, headers, url, init, tokenInfo, body, patchMetadataResponse, metadataHash, URI, response, transaction, element, _element, _element2;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -11669,7 +11671,7 @@ window.compensate = /*#__PURE__*/function () {
             document.getElementById("loader").style.display = "block";
             document.getElementById("submitCompensationButton").style.display = "none";
             tokenId = tokenId.id;
-            jwt = localStorage.getItem("token"); // Patch Metadata
+            jwt = localStorage.getItem("token"); // 1. Patch Metadata
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + jwt);
@@ -11695,34 +11697,42 @@ window.compensate = /*#__PURE__*/function () {
 
             // POST to postMetadata
             url = "http://localhost:4000/meta/patchMetadata";
-            _context3.next = 16;
+            console.log('flag 3');
+            _context3.next = 17;
             return fetch(url, init);
-          case 16:
+          case 17:
             patchMetadataResponse = _context3.sent;
-            _context3.next = 19;
+            _context3.next = 20;
             return patchMetadataResponse.json();
-          case 19:
+          case 20:
             _context3.t1 = _yield$patchMetadataR = _context3.sent;
             _context3.t0 = _context3.t1 === null;
             if (_context3.t0) {
-              _context3.next = 23;
+              _context3.next = 24;
               break;
             }
             _context3.t0 = _yield$patchMetadataR === void 0;
-          case 23:
+          case 24:
             if (!_context3.t0) {
-              _context3.next = 27;
+              _context3.next = 28;
               break;
             }
             _context3.t2 = void 0;
-            _context3.next = 28;
+            _context3.next = 29;
             break;
-          case 27:
-            _context3.t2 = _yield$patchMetadataR.metadataHash;
           case 28:
+            _context3.t2 = _yield$patchMetadataR.metadataHash;
+          case 29:
             metadataHash = _context3.t2;
-            // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
             URI = "http://".concat(metadataHash, ".com");
+            console.log('flag0 metadataHash', metadataHash);
+
+            // 2. Set URI Metadata in World State
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context3.next = 41;
+              break;
+            }
+            // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
             url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
             body = JSON.stringify({
               URI: URI,
@@ -11733,36 +11743,60 @@ window.compensate = /*#__PURE__*/function () {
               headers: headers,
               body: body
             };
-            _context3.next = 35;
+            _context3.next = 38;
             return fetch(url, init);
-          case 35:
+          case 38:
             response = _context3.sent;
-            if (!response.ok) {
-              _context3.next = 45;
+            _context3.next = 47;
+            break;
+          case 41:
+            console.log('flag1');
+            transaction = {
+              chaincodeId: 'erc1155',
+              channelId: 'mychannel',
+              fcn: "SetURI",
+              args: [tokenId, URI]
+            };
+            _context3.next = 45;
+            return client.offlineTransaction(transaction);
+          case 45:
+            response = _context3.sent;
+            console.log('flag4');
+          case 47:
+            if (!(response.ok || !!response.result)) {
+              _context3.next = 57;
               break;
             }
             document.getElementById("loader").style.display = "none";
-            _context3.next = 40;
+            if (!(localStorage.getItem("keyOnServer") == "true")) {
+              _context3.next = 53;
+              break;
+            }
+            _context3.next = 52;
             return response.json();
-          case 40:
+          case 52:
             response = _context3.sent;
-            if (response.result != "success") {
-              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+          case 53:
+            if (response.result.toLowerCase() != "success") {
+              element = failureCompensationFlashMessage;
               document.getElementById("flash").innerHTML = element;
+              console.log('flag5');
             } else {
-              _element = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Compensado com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              _element = successCompensationFlashMessage;
               document.getElementById("flash").innerHTML = _element;
+              console.log('flag6');
             }
             window.location.href = "/collection";
-            _context3.next = 50;
+            _context3.next = 63;
             break;
-          case 45:
+          case 57:
             document.getElementById("loader").style.display = "none";
             console.log("HTTP Error ", response.status);
-            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na compensa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            _element2 = failureCompensationFlashMessage;
             document.getElementById("flash").innerHTML = _element2;
+            console.log('flag7');
             return _context3.abrupt("return", null);
-          case 50:
+          case 63:
           case "end":
             return _context3.stop();
         }

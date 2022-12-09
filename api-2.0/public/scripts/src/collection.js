@@ -4,17 +4,29 @@ let metadata;
 let metadataArray = [];
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
-const successFlashMessage =     
+const successCollectionFlashMessage =     
     `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
-        `Transação realizada com sucesso`+
+        `Coleção obtida com sucesso.`+
         `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
     `</div>`;
 
-const failureFlashMessage =     
+const failureCollectionFlashMessage =     
     `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
-        `Ocorreu um erro na execução da transação`+
+        `Ocorreu um erro ao obter a coleção.`+
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
     `</div>`
+
+const successCompensationFlashMessage =     
+`<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+    `Compensado com sucesso.`+
+    `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+`</div>`;
+
+const failureCompensationFlashMessage =     
+`<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+    `Ocorreu um erro na compensação.`+
+    `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+`</div>`
 
 /**
  * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
@@ -35,9 +47,9 @@ const failureFlashMessage =
   
         // Renderiza a tela de coleção
         await renderCollection(nftTokens);
-        document.getElementById("flash").innerHTML = successFlashMessage;
+        document.getElementById("flash").innerHTML = successCollectionFlashMessage;
       } catch (e) {
-        document.getElementById("flash").innerHTML = failureFlashMessage;
+        document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
         console.log("Erro: ", e.message);
       }
       document.getElementById("signing-files").style.display = "block";
@@ -64,9 +76,9 @@ window.collectionServerSideSigning = async () => {
 
       // Renderiza a tela de coleção
       await renderCollection(nftTokens);
-      document.getElementById("flash").innerHTML = successFlashMessage;
+      document.getElementById("flash").innerHTML = successCollectionFlashMessage;
     } catch (e) {
-      document.getElementById("flash").innerHTML = failureFlashMessage;
+      document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
       console.log("Error: ", e.message);
     }
     document.getElementById("signing-files").style.display = "block";
@@ -250,7 +262,7 @@ window.compensate = async (tokenId) => {
 
   let jwt = localStorage.getItem("token");
 
-  // Patch Metadata
+  // 1. Patch Metadata
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
@@ -283,21 +295,35 @@ window.compensate = async (tokenId) => {
   url = `http://${HOST}:${PORT}/meta/patchMetadata`;
   let patchMetadataResponse = await fetch(url, init);
   let metadataHash = (await patchMetadataResponse.json())?.metadataHash
-
-  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
   const URI = `http://${metadataHash}.com`;
-  url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
-  body = JSON.stringify({
-    URI: URI,
-    tokenId: tokenId
-  });
-  init = {
-    method: "POST",
-    headers: headers,
-    body: body
-  };
 
-  let response = await fetch(url, init);
+  // 2. Set URI Metadata in World State
+  let response;
+  if (localStorage.getItem("keyOnServer") == "true") {
+    // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+    url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+    body = JSON.stringify({
+      URI: URI,
+      tokenId: tokenId
+    });
+    init = {
+      method: "POST",
+      headers: headers,
+      body: body
+    };
+  
+    response = await fetch(url, init);
+  } else {
+    const transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "SetURI",
+      args: [tokenId, URI]
+    };
+
+    response = await client.offlineTransaction(transaction);
+  }
+
 
   // let element =
   //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
@@ -306,33 +332,21 @@ window.compensate = async (tokenId) => {
   //   `</div>`;
   // document.getElementById("flash").innerHTML = element;
 
-  if (response.ok) {
+  if (response.ok || !!response.result) {
     document.getElementById("loader").style.display = "none";
-    response = await response.json();
-    if (response.result != "success") {
-      let element =
-        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na compensação` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
+    if (localStorage.getItem("keyOnServer") == "true") response = await response.json();
+    if (response.result.toLowerCase() != "success") {
+      let element = failureCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
     } else {
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Compensado com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
+      let element = successCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
     }
     window.location.href = `/collection`;
   } else {
     document.getElementById("loader").style.display = "none";
     console.log("HTTP Error ", response.status);
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na compensação` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
+    let element = failureCompensationFlashMessage
     document.getElementById("flash").innerHTML = element;
     return null;
   }
