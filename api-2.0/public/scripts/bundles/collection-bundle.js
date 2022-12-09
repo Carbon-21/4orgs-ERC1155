@@ -11697,39 +11697,35 @@ window.compensate = /*#__PURE__*/function () {
 
             // POST to postMetadata
             url = "http://localhost:4000/meta/patchMetadata";
-            console.log('flag 3');
-            _context3.next = 17;
+            _context3.next = 16;
             return fetch(url, init);
-          case 17:
+          case 16:
             patchMetadataResponse = _context3.sent;
-            _context3.next = 20;
+            _context3.next = 19;
             return patchMetadataResponse.json();
-          case 20:
+          case 19:
             _context3.t1 = _yield$patchMetadataR = _context3.sent;
             _context3.t0 = _context3.t1 === null;
             if (_context3.t0) {
-              _context3.next = 24;
+              _context3.next = 23;
               break;
             }
             _context3.t0 = _yield$patchMetadataR === void 0;
-          case 24:
+          case 23:
             if (!_context3.t0) {
-              _context3.next = 28;
+              _context3.next = 27;
               break;
             }
             _context3.t2 = void 0;
-            _context3.next = 29;
+            _context3.next = 28;
             break;
-          case 28:
+          case 27:
             _context3.t2 = _yield$patchMetadataR.metadataHash;
-          case 29:
+          case 28:
             metadataHash = _context3.t2;
-            URI = "http://".concat(metadataHash, ".com");
-            console.log('flag0 metadataHash', metadataHash);
-
-            // 2. Set URI Metadata in World State
+            URI = "http://".concat(metadataHash, ".com"); // 2. Set URI Metadata in World State
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context3.next = 41;
+              _context3.next = 39;
               break;
             }
             // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
@@ -11743,60 +11739,55 @@ window.compensate = /*#__PURE__*/function () {
               headers: headers,
               body: body
             };
-            _context3.next = 38;
+            _context3.next = 36;
             return fetch(url, init);
-          case 38:
+          case 36:
             response = _context3.sent;
-            _context3.next = 47;
+            _context3.next = 43;
             break;
-          case 41:
-            console.log('flag1');
+          case 39:
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "SetURI",
               args: [tokenId, URI]
             };
-            _context3.next = 45;
+            _context3.next = 42;
             return client.offlineTransaction(transaction);
-          case 45:
+          case 42:
             response = _context3.sent;
-            console.log('flag4');
-          case 47:
+          case 43:
             if (!(response.ok || !!response.result)) {
-              _context3.next = 57;
+              _context3.next = 53;
               break;
             }
             document.getElementById("loader").style.display = "none";
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context3.next = 53;
+              _context3.next = 49;
               break;
             }
-            _context3.next = 52;
+            _context3.next = 48;
             return response.json();
-          case 52:
+          case 48:
             response = _context3.sent;
-          case 53:
+          case 49:
             if (response.result.toLowerCase() != "success") {
               element = failureCompensationFlashMessage;
               document.getElementById("flash").innerHTML = element;
-              console.log('flag5');
             } else {
               _element = successCompensationFlashMessage;
               document.getElementById("flash").innerHTML = _element;
-              console.log('flag6');
             }
             window.location.href = "/collection";
-            _context3.next = 63;
+            _context3.next = 58;
             break;
-          case 57:
+          case 53:
             document.getElementById("loader").style.display = "none";
             console.log("HTTP Error ", response.status);
             _element2 = failureCompensationFlashMessage;
             document.getElementById("flash").innerHTML = _element2;
-            console.log('flag7');
             return _context3.abrupt("return", null);
-          case 63:
+          case 58:
           case "end":
             return _context3.stop();
         }

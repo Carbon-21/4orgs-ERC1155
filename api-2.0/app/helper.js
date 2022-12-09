@@ -182,14 +182,10 @@ const getRegisteredUserFromCA = async (username, org) => {
   const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
   const adminUser = await provider.getUserContext(adminIdentity, "admin");
 
-  try {
-    const query = await identityService.getOne(username, adminUser);
-    //console.log(query['result'])
-    return query["result"];
-  } catch (error) {
-    logger.error(`Getting error: ${error}`);
-    return error.message;
-  }
+  
+  const query = await identityService.getOne(username, adminUser);
+  return query["result"];
+
 };
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -387,7 +383,15 @@ async function execWrapper(cmd) {
  * @param {*} org The user's organization.
  * @returns The user's client account id.
  */
-function mountClientAccountId(username, role, org) {
+async function mountClientAccountId(username, role, org) {
+  try
+  {
+    const user = await getRegisteredUserFromCA(username, org);
+  } catch (err) {
+    err.message = "O usuário fornecido não está registrado.";
+    throw err;
+  }
+  
   let clientAccountId = `x509::CN=${username},OU=${role.toLowerCase()}+OU=${org.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
   
   // Base-64 encoding of clientAccountId

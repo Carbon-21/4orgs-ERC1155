@@ -120,7 +120,7 @@ const mintFTServerSideSigning = async () => {
       document.getElementById("loader").style.display = "none";
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na emissao` +
+        `Ocorreu um erro na emissão` +
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
         `</div>`;
       document.getElementById("flash").innerHTML = element;
@@ -140,7 +140,7 @@ const mintFTServerSideSigning = async () => {
     document.getElementById("loader").style.display = "none";
     let element =
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na emissao` +
+      `Ocorreu um erro na emissão` +
       `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
       `</div>`;
     document.getElementById("flash").innerHTML = element;
@@ -237,46 +237,48 @@ const mintNFTServerSideSigning = async () => {
 
   init.body = JSON.stringify(body);
 
-  let response = await fetch(url, init);
+  try {
+    let response = await fetch(url, init);
+    if (!response.ok) throw Error('');
+  
+    // Post metadata through ipfs node
+    let postMetadataURL = `http://${HOST}:${PORT}/meta/postMetadata`;
+    init.body = JSON.stringify({
+      // TODO: match schema with forms
+      metadata: {
+        id: nftId,
+        phyto,
+        geolocation: location,
+        custom_notes: `qty: ${qty}`,
+      },
+      tokenId: nftId,
+    });
+    let metadataResponse = await fetch(postMetadataURL, init);
+    if (!metadataResponse.ok) throw Error('');
+    let metadataHash = (await metadataResponse.json())?.metadataHash;
+    // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+    const URI = `http://${metadataHash}.com`;
+    let setUriURL = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+    body = JSON.stringify({
+      URI: URI,
+      tokenId: nftId
+    });
+    init = {
+      method: "POST",
+      headers: headers,
+      body: body
+    };
+  
+    let setURIResponse = await fetch(setUriURL, init);
+    if (!setURIResponse.ok) throw Error('');
 
-  // Post metadata through ipfs node
-  let postMetadataURL = `http://${HOST}:${PORT}/meta/postMetadata`;
-  init.body = JSON.stringify({
-    // TODO: match schema with forms
-    metadata: {
-      id: nftId,
-      phyto,
-      geolocation: location,
-      custom_notes: `qty: ${qty}`,
-    },
-    tokenId: nftId,
-  });
-  let metadataResponse = await fetch(postMetadataURL, init);
-  let metadataHash = (await metadataResponse.json())?.metadataHash;
-  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-  const URI = `http://${metadataHash}.com`;
-  let setUriURL = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
-  body = JSON.stringify({
-    URI: URI,
-    tokenId: nftId
-  });
-  init = {
-    method: "POST",
-    headers: headers,
-    body: body
-  };
-
-  let setURIResponse = await fetch(setUriURL, init);
-
-
-  if (response.ok && metadataResponse.ok && setURIResponse.ok) {
     response = await response.json();
     if (response.result == null) {
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na emissao` +
+        `Ocorreu um erro na emissão.` +
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
         `</div>`;
       document.getElementById("flash").innerHTML = element;
@@ -285,21 +287,20 @@ const mintNFTServerSideSigning = async () => {
       document.getElementById("loader").style.display = "none";
       let element =
         `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `NFT emitido com sucesso` +
+        `NFT emitido com sucesso.` +
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
         `</div>`;
       document.getElementById("flash").innerHTML = element;
     }
-  } else {
-    console.log("HTTP Error ", response.status);
+    return null;
+  } catch (e) {
     document.getElementById("submitButton").style.display = "flex";
     document.getElementById("loader").style.display = "none";
     let element =
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na emissao` +
+      `Ocorreu um erro na emissão.` +
       `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
       `</div>`;
     document.getElementById("flash").innerHTML = element;
-    return null;
   }
 };

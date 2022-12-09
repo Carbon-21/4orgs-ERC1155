@@ -293,11 +293,9 @@ window.compensate = async (tokenId) => {
 
   // POST to postMetadata
   url = `http://localhost:4000/meta/patchMetadata`;
-  console.log('flag 3');
   let patchMetadataResponse = await fetch(url, init);
   let metadataHash = (await patchMetadataResponse.json())?.metadataHash
   const URI = `http://${metadataHash}.com`;
-  console.log('flag0 metadataHash',metadataHash);
 
   // 2. Set URI Metadata in World State
   let response;
@@ -316,7 +314,6 @@ window.compensate = async (tokenId) => {
   
     response = await fetch(url, init);
   } else {
-    console.log('flag1');
     const transaction = {
       chaincodeId: 'erc1155',
       channelId: 'mychannel',
@@ -325,7 +322,6 @@ window.compensate = async (tokenId) => {
     };
 
     response = await client.offlineTransaction(transaction);
-    console.log('flag4');
   }
 
 
@@ -342,11 +338,9 @@ window.compensate = async (tokenId) => {
     if (response.result.toLowerCase() != "success") {
       let element = failureCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
-      console.log('flag5');
     } else {
       let element = successCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
-      console.log('flag6');
     }
     window.location.href = `/collection`;
   } else {
@@ -354,7 +348,6 @@ window.compensate = async (tokenId) => {
     console.log("HTTP Error ", response.status);
     let element = failureCompensationFlashMessage
     document.getElementById("flash").innerHTML = element;
-    console.log('flag7');
     return null;
   }
 }

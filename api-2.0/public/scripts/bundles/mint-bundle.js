@@ -11434,7 +11434,7 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             if (response.result != "success") {
               document.getElementById("submitButton").style.display = "flex";
               document.getElementById("loader").style.display = "none";
-              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emiss\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = element;
             } else {
               document.getElementById("submitButton").style.display = "flex";
@@ -11448,7 +11448,7 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
-            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emiss\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;
             return _context4.abrupt("return", null);
           case 29:
@@ -11536,8 +11536,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var _yield$metadataRespon;
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, metadataHash, URI, setUriURL, setURIResponse, element, _element3, _element4;
+    var username, nftId, phyto, location, qty, token, headers, url, init, body, _yield$metadataRespon, response, postMetadataURL, metadataResponse, metadataHash, URI, setUriURL, setURIResponse, element, _element3, _element4;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11565,10 +11564,17 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               tokenReceiver: username
             };
             init.body = JSON.stringify(body);
-            _context6.next = 18;
+            _context6.prev = 16;
+            _context6.next = 19;
             return fetch(url, init);
-          case 18:
+          case 19:
             response = _context6.sent;
+            if (response.ok) {
+              _context6.next = 22;
+              break;
+            }
+            throw Error('');
+          case 22:
             // Post metadata through ipfs node
             postMetadataURL = "http://localhost:4000/meta/postMetadata";
             init.body = JSON.stringify({
@@ -11581,31 +11587,37 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               },
               tokenId: nftId
             });
-            _context6.next = 23;
-            return fetch(postMetadataURL, init);
-          case 23:
-            metadataResponse = _context6.sent;
             _context6.next = 26;
-            return metadataResponse.json();
+            return fetch(postMetadataURL, init);
           case 26:
+            metadataResponse = _context6.sent;
+            if (metadataResponse.ok) {
+              _context6.next = 29;
+              break;
+            }
+            throw Error('');
+          case 29:
+            _context6.next = 31;
+            return metadataResponse.json();
+          case 31:
             _context6.t1 = _yield$metadataRespon = _context6.sent;
             _context6.t0 = _context6.t1 === null;
             if (_context6.t0) {
-              _context6.next = 30;
+              _context6.next = 35;
               break;
             }
             _context6.t0 = _yield$metadataRespon === void 0;
-          case 30:
+          case 35:
             if (!_context6.t0) {
-              _context6.next = 34;
+              _context6.next = 39;
               break;
             }
             _context6.t2 = void 0;
-            _context6.next = 35;
+            _context6.next = 40;
             break;
-          case 34:
+          case 39:
             _context6.t2 = _yield$metadataRespon.metadataHash;
-          case 35:
+          case 40:
             metadataHash = _context6.t2;
             // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
             URI = "http://".concat(metadataHash, ".com");
@@ -11619,44 +11631,45 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               headers: headers,
               body: body
             };
-            _context6.next = 42;
+            _context6.next = 47;
             return fetch(setUriURL, init);
-          case 42:
+          case 47:
             setURIResponse = _context6.sent;
-            if (!(response.ok && metadataResponse.ok && setURIResponse.ok)) {
+            if (setURIResponse.ok) {
               _context6.next = 50;
               break;
             }
-            _context6.next = 46;
+            throw Error('');
+          case 50:
+            _context6.next = 52;
             return response.json();
-          case 46:
+          case 52:
             response = _context6.sent;
             if (response.result == null) {
               document.getElementById("submitButton").style.display = "flex";
               document.getElementById("loader").style.display = "none";
-              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emiss\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = element;
             } else {
               document.getElementById("submitButton").style.display = "flex";
               document.getElementById("loader").style.display = "none";
-              _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+              _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
               document.getElementById("flash").innerHTML = _element3;
             }
-            _context6.next = 56;
-            break;
-          case 50:
-            console.log("HTTP Error ", response.status);
+            return _context6.abrupt("return", null);
+          case 57:
+            _context6.prev = 57;
+            _context6.t3 = _context6["catch"](16);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
-            _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emiss\xE3o." + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element4;
-            return _context6.abrupt("return", null);
-          case 56:
+          case 63:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6);
+    }, _callee6, null, [[16, 57]]);
   }));
   return function mintNFTServerSideSigning() {
     return _ref6.apply(this, arguments);
