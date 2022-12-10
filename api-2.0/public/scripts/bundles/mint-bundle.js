@@ -11403,7 +11403,7 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             document.getElementById("loader").style.display = "flex";
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
-            qty = document.getElementById("qty").value;
+            qty = 1;
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -11538,7 +11538,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
             nftId = document.getElementById("nftId").value;
-            qty = document.getElementById("amount").value;
+            qty = 1;
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
