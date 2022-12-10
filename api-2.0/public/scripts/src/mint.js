@@ -245,7 +245,7 @@ const mintNFTServerSideSigning = async () => {
     land: document.getElementById("area").value,
     phyto: document.getElementById("phyto").value,
     geolocation: document.getElementById("location").value,
-    compensation_owner: username,
+    compensation_owner: document.getElementById("compensationOwner").value,
     compensation_state: "Não Compensado",
   };
 

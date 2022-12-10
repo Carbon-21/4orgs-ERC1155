@@ -11573,9 +11573,9 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               amount: qty,
               land_owner: document.getElementById("landOwner").value,
               land: document.getElementById("area").value,
-              pyhto: document.getElementById("phyto").value,
+              phyto: document.getElementById("phyto").value,
               geolocation: document.getElementById("location").value,
-              compensation_owner: username,
+              compensation_owner: document.getElementById("compensationOwner").value,
               compensation_state: "Não Compensado"
             };
             postMetadataURL = "http://localhost:4000/meta/postMetadata";

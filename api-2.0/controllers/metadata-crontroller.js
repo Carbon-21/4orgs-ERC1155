@@ -68,7 +68,6 @@ exports.postMetadata = async (req, res, next) => {
 
   try {
     metadata = makeMetadata(req.body.metadata);
-    // metadata = makeMetadata(reqMetadata);
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
     logger.debug("Hash of uploaded Metadata: " + hash);
