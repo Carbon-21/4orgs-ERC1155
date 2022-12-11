@@ -146,36 +146,40 @@ exports.balanceNFT = async (req, res, next) => {
 
 //return the nfts 
 exports.allNFTID = async (req, res, next) => {
+
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const username = req.jwt.username;
   const org = req.jwt.org;
+  try{   
+    //connect to the channel and get the chaincode
+    const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+    if (!chaincode) return;
 
-  //connect to the channel and get the chaincode
-  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
-  if (!chaincode) return;
+    //get receiver id
+    const IDsNFT = await helper.getALLNFTIDs(org, channel, chaincodeName, username, next);
+    if (!IDsNFT) return;
 
-  //get balance
-  try {
-    const msg = "all"
-    let result = await chaincode.evaluateTransaction("SmartContract:AllNFTID", msg);
-    result = JSON.parse(result.toString());
+    result = JSON.parse(IDsNFT.toString());
 
     //close communication channel
     await gateway.disconnect();
 
     //send OK response
+
     //logger.info(`${tokenId} balance retrieved successfully: ${result} `);
     return res.json({
       result,
     });
-  } catch (err) {
+
+    console.log("AQUI", IDsNFT) 
+  }catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     console.log("aqqui", err.message);
     return next(new HttpError(500, err.message));
-    //return next(new HttpError(500, errMessage[1]));
-  }
+
+}
 };
 
 

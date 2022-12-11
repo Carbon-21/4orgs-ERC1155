@@ -58,6 +58,50 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
   }
 };
 
+const getALLNFTIDs = async (org_name, channelName, chaincodeName, username, next) => {
+try{
+  const ccp = await getCCP(org_name);
+
+  const walletPath = await getWalletPath(org_name);
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+  //if account doesn't exist => error
+  let identity = await wallet.get(username);
+  if (!identity) {
+    return next(new HttpError(422));
+    // console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
+    // await getRegisteredUser(username, org_name, true);
+    // identity = await wallet.get(username);
+    // console.log("Run the registerUser.js application before retrying");
+    // return;
+  }
+  const connectOptions = {
+    wallet,
+    identity: username,
+    discovery: { enabled: true, asLocalhost: true },
+    // eventHandlerOptions: EventStrategies.NONE
+  };
+
+  const gateway = new Gateway();
+  await gateway.connect(ccp, connectOptions);
+
+  const network = await gateway.getNetwork(channelName);
+  const contract = network.getContract(chaincodeName);
+
+  let result = await contract.submitTransaction("SmartContract:AllNFTID");
+  result = result.toString();
+
+  // logger.debug("ClientAccountID retrieved: " + result);
+
+  await gateway.disconnect();
+
+  return result;
+} catch (err) {
+  logger.error(err);
+  return next(new HttpError(500));
+}
+};
+
 const getAccountIdFromChaincode = async (chaincode, next) => {
   try {
     let result = await chaincode.submitTransaction("SmartContract:ClientAccountID");
@@ -393,4 +437,5 @@ module.exports = {
   getOrgMSP,
   getChaincode,
   getAccountIdFromChaincode,
+  getALLNFTIDs,
 };

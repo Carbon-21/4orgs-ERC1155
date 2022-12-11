@@ -4,6 +4,7 @@ const helper = require("../app/helper");
 const FabricClient = require('fabric-client')
 var util = require('util');
 
+const axios = require("axios").default;
 
 // Global objects that are used to establish connection to the Fabric network in the client-side signing mode
 var client = null;
@@ -328,19 +329,50 @@ exports.ftfromnft = async (req, res, next) => {
   const org = req.jwt.org;
 
   // Obtem os Ids de todos os NFTs
+    const IDsNFT = await helper.getALLNFTIDs(org, channel, chaincodeName, username, next);
+    if (!IDsNFT) return;
+
+    console.log(IDsNFT)
 
 
+  // Obtem os metadados desses NFTS
+    //let tokenId = req.query.tokenId;
+    let tokenId = 'ID_105';
+    let token = req.headers["authorization"].split(" ")[1];
+    let metadata;
+  
+    axios
+      .get(`http://${process.env.HOST}:${process.env.PORT}/meta/getMetadata?tokenId=${tokenId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      })
+      .then(async function (response) {
+        // Get hash (URI) from response
+        metadata = response.data;
+        if (Object.keys(metadata).length != 0) {
+          return res.status(200).json({
+            message: metadata,
+            success: true,
+          });
+        } else {
+          return res.status(404).json({ success: false });
+        }
+      })
+      .catch(function (error) {
+        logger.error(error);
+        return res.status(500).json({
+          message: "TokenID do NFT inválido",
+          success: false,
+        });
+      });
 
-
-//---------------
-
-
-  // -------------
+  
+  // Passa os metadados para o chaincode para realizar os calculos
 
   //connect to the channel and get the chaincode
-  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+ /* const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
-
+*/
   //mint
   /*try {
     let result = await chaincode.submitTransaction("SmartContract:FTFromNFT");
@@ -355,8 +387,8 @@ exports.ftfromnft = async (req, res, next) => {
   }
 */
   //send OK response
-  return res.json({
-    result: "success",
-  });
+  //return res.json({
+  //  result: "success",
+  //});
 };
 

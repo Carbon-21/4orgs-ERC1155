@@ -681,9 +681,9 @@ func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, 
 	return idNFTs
 }
 
-// AllNFTID returns a list of all the IDs AND our values of the NFTs on the blockchain
-func (s *SmartContract) AllNFTID(ctx contractapi.TransactionContextInterface, msg string) [][]string {
-	idNFTs, _ := idNFTHelper(ctx, msg)
+// SelfBalance returns the balance of all the NFTs
+func (s *SmartContract) AllNFTID(ctx contractapi.TransactionContextInterface) [][]string {
+	idNFTs, _ := idNFTHelper(ctx, "")
 	return idNFTs
 }
 
@@ -700,7 +700,7 @@ func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterf
 	return clientAccountID, nil
 }
 
-//  TotalSupply return the total supply of given tokenID
+// TotalSupply return the total supply of given tokenID
 func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface, tokenid string) (uint64, error) {
 
 	var balance uint64
@@ -740,7 +740,7 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 }
 
-//  SetURI set a specific URI containing the metadata related to a given tokenID
+// SetURI set a specific URI containing the metadata related to a given tokenID
 func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
 
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
@@ -754,7 +754,7 @@ func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, toke
 
 }
 
-//  GetURI return metadata URI related to a given tokenID
+// GetURI return metadata URI related to a given tokenID
 func (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
 
 	uriBytes, err := ctx.GetStub().GetState(tokenID)
@@ -1083,14 +1083,21 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		// Contains the account of the user who have the nft
 		accountNFT := compositeKeyParts[0]
 
-		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
-		if (returnedTokenID != tokenid) && (accountNFT == account) {
-			// Merge ID and Value of the NFTs
-			element := []string{returnedTokenID, string(queryResponse.Value)}
-			nftlist = append(nftlist, element)
-
+		if account == "" {
+			// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+			if returnedTokenID != tokenid {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenID, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
+			}
+		} else {
+			// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+			if (returnedTokenID != tokenid) && (accountNFT == account) {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenID, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
+			}
 		}
-
 	}
 	return nftlist, nil
 }
