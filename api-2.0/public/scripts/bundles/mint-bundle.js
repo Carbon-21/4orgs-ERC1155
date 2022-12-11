@@ -11403,7 +11403,7 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             document.getElementById("loader").style.display = "flex";
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
-            qty = 1;
+            qty = document.getElementById("qty").value;
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -11477,7 +11477,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             event.preventDefault();
             username = document.getElementById("username").value;
             nftId = document.getElementById("nftId").value;
-            qty = document.getElementById("amount").value; //let phyto = document.getElementById("phyto").value;
+            qty = 1; //let phyto = document.getElementById("phyto").value;
             //let location = document.getElementById("location").value;
             // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
