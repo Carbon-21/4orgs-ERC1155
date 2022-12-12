@@ -171,8 +171,6 @@ exports.allNFTID = async (req, res, next) => {
     return res.json({
       result,
     });
-
-    console.log("AQUI", IDsNFT) 
   }catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
