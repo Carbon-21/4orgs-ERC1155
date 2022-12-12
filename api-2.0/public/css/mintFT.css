@@ -1,63 +1,63 @@
-body{
-  font-family: 'Poppins', sans-serif;
+body {
+  font-family: "Poppins", sans-serif;
 }
 
 /* Mint Section */
 
-.image-container{
+.image-container {
   background-image: url("../images/mintNFT-bg.webp");
   background-repeat: no-repeat;
-  background-size:cover;
+  background-size: cover;
   opacity: 0.94;
   min-height: 100vh;
 }
 
-.form-container{
-  background-color: #ADCF9F;
+.form-container {
+  background-color: #adcf9f;
   padding-top: 100px;
   padding-left: 5%;
   padding-right: 5%;
 }
 
-.mint-header{
+.mint-header {
   margin: 30px auto 60px auto;
   font-weight: 700;
   display: flex;
   justify-content: center;
 }
 
-hr{    
+hr {
   border: 0;
   height: 3px;
   background-image: linear-gradient(to right, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 255));
 }
 
-.mint-data{
+.mint-data {
   display: flex;
   margin-top: 30px;
 }
 
-i{
+i {
   margin: auto 20px auto 0;
 }
 
-label{
+label {
   margin-left: 40px;
   font-weight: 500;
 }
 
-input{
-  margin:auto;
+input {
+  margin: auto;
   opacity: 0.5;
 }
 
-.mint-button{
+.mint-button {
   margin-top: 40px;
   display: flex;
   justify-content: center;
 }
 
-.loading-icon{
+.loading-icon {
   width: 20%;
   display: none;
 }

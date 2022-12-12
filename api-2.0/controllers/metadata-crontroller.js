@@ -54,8 +54,7 @@ async function getMetadataFromURI(URI) {
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
     // logger.debug("Metadata: " + JSON.stringify(metadata));
   } catch (error) {
-    // TODO: Como tratar timeouts?
-    logger.error(error);
+    return next(new HttpError(500));
   }
   return metadata;
 }

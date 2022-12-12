@@ -1,63 +1,63 @@
-body{
-    font-family: 'Poppins', sans-serif;
-    background-image: url("/images/transfer-bg.webp");
-    background-repeat: no-repeat;
-    background-size:cover;
-    min-height: 100vh;
-  }
+body {
+  font-family: "Poppins", sans-serif;
+  background-image: url("/images/transfer-bg.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+}
 
 /* Transfer section */
 
-.transfer-header{
-    margin-top: 120px;
-    margin-bottom: 30px;
-    text-align: center;
-    font-weight: 600;
+.transfer-header {
+  margin-top: 120px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
 }
 
-.transfer-container{
-    display: flex;
-    justify-content: center;
+.transfer-container {
+  display: flex;
+  justify-content: center;
 }
 
-.card{
-    width: 40%;
-    border-radius: 20px;
-    background-color: #ADCF9F;
+.card {
+  width: 40%;
+  border-radius: 20px;
+  background-color: #adcf9f;
 }
 
-hr{    
-    border: 0;
-    height: 3px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 255));
+hr {
+  border: 0;
+  height: 3px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 255), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 255));
 }
 
-.transfer-data{
-    display: flex;
-    margin-top: 30px;
+.transfer-data {
+  display: flex;
+  margin-top: 30px;
 }
 
-i{
-    margin: auto 20px auto 0;
+i {
+  margin: auto 20px auto 0;
 }
 
-label{
-    margin-left: 40px;
-    font-weight: 500;
+label {
+  margin-left: 40px;
+  font-weight: 500;
 }
 
-input{
-    margin:auto;
-    opacity: 0.5;
+input {
+  margin: auto;
+  opacity: 0.5;
 }
 
-.transfer-button{
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
+.transfer-button {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
 }
 
-.loading-icon{
-    width: 20%;
-    display: none;
-  }
+.loading-icon {
+  width: 20%;
+  display: none;
+}
