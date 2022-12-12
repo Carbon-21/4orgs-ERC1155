@@ -95,8 +95,10 @@ const mintFTServerSideSigning = async () => {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
+  headers.append("Authorization", "Bearer " + token)
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
 
   var init = {
     method: "POST",
@@ -221,8 +223,9 @@ const mintNFTServerSideSigning = async () => {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+  headers.append("Authorization", "Bearer " + token)
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
 
   var init = {
     method: "POST",
@@ -240,9 +243,9 @@ const mintNFTServerSideSigning = async () => {
   let response = await fetch(url, init);
 
   // Post metadata through ipfs node
-  let postMetadataURL = `http://${HOST}:${PORT}/meta/postMetadata`;
-  init.body = JSON.stringify({
-    // TODO: match schema with forms
+  let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
+  init.body = JSON.stringify({ // TODO: match schema with forms
+
     metadata: {
       id: nftId,
       phyto,

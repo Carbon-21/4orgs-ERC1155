@@ -1,4 +1,6 @@
 #!/bin/bash
+source ./api-2.0/.env
+
 kill-hlf () {
 	docker-compose down 
 	containers=$(docker ps -q) && docker kill $containers

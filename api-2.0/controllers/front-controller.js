@@ -2,6 +2,7 @@ const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
 
+
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
   res.render("presignup", {
@@ -24,7 +25,7 @@ exports.postPreSignup = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
+  const url = `https://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +84,7 @@ exports.postSignup = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set request url and headers
-  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/signup`;
+  const url = `https://${process.env.HOST}:${process.env.PORT}/auth/signup`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -130,7 +131,7 @@ exports.postPreLogin = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
+  const url = `https://${process.env.HOST}:${process.env.PORT}/auth/getSalt`;
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -181,7 +182,7 @@ exports.postLogin = async (req, res, next) => {
   const jsonData = JSON.stringify(data);
 
   // Set url and headers
-  const url = `http://${process.env.HOST}:${process.env.PORT}/auth/login`;
+  const url = `https://${process.env.HOST}:${process.env.PORT}/auth/login`;
   const options = {
     headers: {
       "Content-Type": "application/json",
