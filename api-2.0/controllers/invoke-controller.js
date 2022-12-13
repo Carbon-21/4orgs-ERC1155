@@ -333,9 +333,11 @@ exports.ftfromnft = async (req, res, next) => {
     if (!strIDsNFT) return;
 
     const IDsNFT = JSON.parse(strIDsNFT)
+    //console.log("Qtd OBJ", IDsNFT.length);
+
     //console.log(IDsNFT[0][0])
 
-    let metadataObj = [];
+    let metadataObj = {};
 
     IDsNFT.forEach(el => {
         // Obtem os metadados desses NFTS
@@ -353,8 +355,9 @@ exports.ftfromnft = async (req, res, next) => {
             metadata = response.data;
             if (Object.keys(metadata).length != 0) {
               //metadataObj.push(metadata)
-              console.log("metadados recebidos")
-              console.log(metadata.message)
+              //console.log("metadados recebidos")
+              //console.log(metadata.message)
+              addElementsToList(metadataObj,metadata);
             } else {
               console.log("Erro")
               //return res.status(404).json({ success: false });
@@ -370,8 +373,22 @@ exports.ftfromnft = async (req, res, next) => {
           });  
         }
       );
-        console.log("a");
-      metadataObj.forEach(el => { console.log(el)});
+
+      function addElementsToList(metadataObj, item){
+
+        //console.log("Item:", item);
+        console.log("Adicionando Objeto")
+        metadataObj = Object.assign(item);
+        console.log("OBJ:", metadataObj)
+        console.log("Qtd OBJ", IDsNFT.length);        
+
+        console.log("Tamanho Metadados", metadataObj.length)
+        if (IDsNFT.length == metadataObj.length){
+          console.log("FOI");
+        }        
+        //metadataObj.forEach(el => { console.log(el)});
+      }
+
   
   // Passa os metadados para o chaincode para realizar os calculos
 
