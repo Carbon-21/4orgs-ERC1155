@@ -47,7 +47,13 @@ router.post(
     param("channel").trim().not().isEmpty().isString(),
     param("chaincode").trim().not().isEmpty().isString(),
     body("tokenId").trim().not().isEmpty().isString(),
-    body("URI").trim().not().isEmpty().isURL(),
+    body("URI")
+      .trim()
+      .not()
+      .isEmpty()
+      .custom((uri) => {
+        return String(uri).includes("ipfs://");
+      }),
     validateAll,
   ],
   invokeController.setURI

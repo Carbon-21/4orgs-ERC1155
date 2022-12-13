@@ -39,9 +39,8 @@ exports.getMetadata = async (req, res, next) => {
 };
 
 async function getMetadataFromURI(URI) {
-  const hashRegEx = /(?<=ipfs:\/\/).+/; // NOTE: correto, para quando a validacao de URI estiver corrigida
+  const hashRegEx = /(?<=ipfs:\/\/).+/;
   let hash = hashRegEx.exec(URI);
-  hash = hash || URI.slice(7, URI.length - 4); // temporario para remover o http:// e .com
   if (!hash) {
     logger.error("Não conseguimos recuperar o hash do URI fornecido");
     return null;
@@ -88,7 +87,7 @@ exports.postMetadata = async (req, res, next) => {
       `http://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
       JSON.stringify({
         tokenId: tokenId,
-        URI: `http://${hash}.com`, // TODO: Deve se deixar no padrao, que eh somente o URI, mas a validacao impede nesse momento
+        URI,
       }),
       {
         method: "POST",
