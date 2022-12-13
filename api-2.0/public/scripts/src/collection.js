@@ -35,12 +35,13 @@ async function collection() {
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
     }
-    //Desabilitar gif do loader
-    document.getElementById("loader").style.display = "none";
   } else {
     console.log("HTTP Error ", response.status);
     return null;
   }
+
+  //Desabilitar gif do loader
+  document.getElementById("loader").style.display = "none";
 }
 
 // Recupera os nfts do usuario logado
@@ -85,13 +86,18 @@ async function nftMetadata(tokenId) {
 async function renderMetadata(tokenId, metadata) {
   if (!metadata.name) return "Metadados não recuperados";
   return (
-    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
-    // `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
-    `<b> Fitofisiologia: </b> ${metadata?.properties?.land_info?.phyto} <br />` +
-    `<b> Geolocalização: </b> ${metadata?.properties?.land_info?.geolocation} <br />` +
-    // `<b> Custom Notes: </b> ${metadata?.properties?.custom_notes} <br />` + //TODO: adicionar campo especifico para qty nos metadados (informacao da pagina de mintNFT)
-    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
+    `<b> Status: </b> ${metadata?.properties?.status} <br />` +
+    // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
+    `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
+    `<b> Área (hectares): </b> ${metadata?.properties?.land} <br />` +
+    `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
+    `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
+    `<b> Dono dos direitos de Compensação: </b> ${metadata?.properties?.compensation_owner} <br />` +
+    renderCompensation(tokenId.replace(/\s/g, ""),
+      metadata?.properties?.compensation_state
+    ) +
     "<p>" +
     "</div>"
   );
@@ -130,7 +136,7 @@ async function compensate(tokenId) {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `http://${HOST}:${PORT}/meta/patchMetadata`;
+  let url = `https://${HOST}:${PORT}/meta/patchMetadata`;
 
   var init = {
     method: "PATCH",
@@ -144,10 +150,7 @@ async function compensate(tokenId) {
   let body = {
     tokenId,
     metadata: {
-      id: tokenId,
-      phyto: tokenInfo.land_info.phyto,
-      geolocation: tokenInfo.land_info.geolocation,
-      status: "Ativo",
+      ...tokenInfo,
       compensation_state: "Compensado",
     },
   };

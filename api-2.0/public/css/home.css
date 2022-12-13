@@ -4,6 +4,11 @@ body{
   font-family: 'Poppins', sans-serif;
 }
 
+.img-credit{
+  font-size: 1rem;
+  opacity: 50%;
+}
+
 /* Intro Section */
 
 /* Hero */
@@ -11,13 +16,13 @@ body{
 .hero{
   background-image: url("../images/hero-image.webp");
   background-repeat: no-repeat;
-  background-position: top;
+  background-position: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
   background-size: cover;
-  height: 550px;
+  height: 600px;
 
 }
 
@@ -77,10 +82,11 @@ body{
 }
 
 .feature-image{
-
-  width: 40%;
+  width: 16rem;
+  height: 16rem;
   border-radius: 100%;
 }
+
 
 /* Reforestation Section */
 
@@ -131,7 +137,7 @@ body{
 
 #footer{
   background-color: #ADCF9F;;
-  padding:3% 14%;
+  padding:1% 14% 2% 14%;
   text-align: center;
 }
 

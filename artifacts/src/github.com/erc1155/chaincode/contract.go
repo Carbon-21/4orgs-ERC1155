@@ -945,7 +945,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				}
 			}
 
-		} else {
+		} else if selfRecipientKeyNeedsToBeRemoved{
 			// Delete self recipient key
 			err = ctx.GetStub().DelState(selfRecipientKey)
 			if err != nil {

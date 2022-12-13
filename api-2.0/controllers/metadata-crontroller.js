@@ -68,7 +68,6 @@ exports.postMetadata = async (req, res, next) => {
 
   try {
     metadata = makeMetadata(req.body.metadata);
-    // metadata = makeMetadata(reqMetadata);
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
     logger.debug("Hash of uploaded Metadata: " + hash);
@@ -114,20 +113,21 @@ function makeMetadata(dto) {
     verifier: dto.verifier || "",
     private_verifier: dto.private_verifier || "",
     land_owner: dto.land_owner || "",
-    land_info: {
+    // land_info: {
       phyto: dto.phyto || "",
       land: dto.land || "",
       geolocation: dto.geolocation || "",
       area_classification: dto.area_classification || "",
-    },
-    nft_info: {
+    // },
+    // nft_info: {
+      amount: dto.amount || "",
       status: dto.status || "",
       nft_type: dto.nft_type || "",
       value: dto.value || "",
       can_mint_sylvas: dto.can_mint_sylvas || "",
       sylvas_minted: dto.sylvas_minted || "",
       bonus_ft: dto.bonus_ft || "",
-    },
+    // },
     compensation_owner: dto.compensation_owner || "",
     compensation_state: dto.compensation_state || "",
     certificate: dto.certificate || "",

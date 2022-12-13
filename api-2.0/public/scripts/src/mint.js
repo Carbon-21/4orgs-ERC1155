@@ -115,37 +115,18 @@ const mintFTServerSideSigning = async () => {
 
   let response = await fetch(url, init);
 
+  document.getElementById("submitButton").style.display = "flex";
+  document.getElementById("loader").style.display = "none";
+
   if (response.ok) {
     response = await response.json();
     if (response.result != "success") {
-      document.getElementById("submitButton").style.display = "flex";
-      document.getElementById("loader").style.display = "none";
-      let element =
-        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na emissao` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
+      document.getElementById("flash").innerHTML = failureFlashMessage;
     } else {
-      document.getElementById("submitButton").style.display = "flex";
-      document.getElementById("loader").style.display = "none";
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `$ylvas emitidos com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
+      document.getElementById("flash").innerHTML = successFlashMessage;
     }
   } else {
-    console.log("HTTP Error ", response.status);
-    document.getElementById("submitButton").style.display = "flex";
-    document.getElementById("loader").style.display = "none";
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na emissao` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
-    document.getElementById("flash").innerHTML = element;
+    document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
   }
 };
@@ -165,7 +146,7 @@ const mintNFTClientSideSigning = async () => {
 
     let username = document.getElementById("username").value;
     let nftId = document.getElementById("nftId").value;
-    let qty = document.getElementById("amount").value;
+    let qty = 1;
     //let phyto = document.getElementById("phyto").value;
     //let location = document.getElementById("location").value;
 
@@ -215,10 +196,7 @@ const mintNFTServerSideSigning = async () => {
 
   let username = document.getElementById("username").value;
   let nftId = document.getElementById("nftId").value;
-  let phyto = document.getElementById("phyto").value;
-  let location = document.getElementById("location").value;
-  let qty = document.getElementById("amount").value;
-
+  let qty = 1;
   let token = localStorage.getItem("token");
 
   let headers = new Headers();
@@ -241,52 +219,42 @@ const mintNFTServerSideSigning = async () => {
   init.body = JSON.stringify(body);
 
   let response = await fetch(url, init);
+  let responseJson = await response.json();
+  if (!response.ok || responseJson.result == null) {
+    document.getElementById("submitButton").style.display = "flex";
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    return null;
+  }
 
   // Post metadata through ipfs node
-  let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
-  init.body = JSON.stringify({ // TODO: match schema with forms
+  let metadata = {
+    id: nftId,
+    status: `Ativo`,
+    amount: qty,
+    land_owner: document.getElementById("landOwner").value,
+    land: document.getElementById("area").value,
+    phyto: document.getElementById("phyto").value,
+    geolocation: document.getElementById("location").value,
+    compensation_owner: document.getElementById("compensationOwner").value,
+    compensation_state: "Não Compensado",
+  };
 
-    metadata: {
-      id: nftId,
-      phyto,
-      geolocation: location,
-      custom_notes: `qty: ${qty}`,
-    },
+  let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
+  init.body = JSON.stringify({
+    metadata,
     tokenId: nftId,
   });
   let metadataResponse = await fetch(postMetadataURL, init);
+  let metadataResponseJson = await metadataResponse.json();
 
-  if (response.ok && metadataResponse.ok) {
-    response = await response.json();
-    if (response.result == null) {
-      document.getElementById("submitButton").style.display = "flex";
-      document.getElementById("loader").style.display = "none";
-      let element =
-        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na emissao` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
-    } else {
-      document.getElementById("submitButton").style.display = "flex";
-      document.getElementById("loader").style.display = "none";
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `NFT emitido com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
-    }
-  } else {
-    console.log("HTTP Error ", response.status);
-    document.getElementById("submitButton").style.display = "flex";
-    document.getElementById("loader").style.display = "none";
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na emissao` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
-    document.getElementById("flash").innerHTML = element;
+  document.getElementById("submitButton").style.display = "flex";
+  document.getElementById("loader").style.display = "none";
+
+  if (!metadataResponse.ok || metadataResponseJson.result == null) {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
   }
+
+  document.getElementById("flash").innerHTML = successFlashMessage;
 };

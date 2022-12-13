@@ -43,15 +43,37 @@
                                 <i class="fas fa-tree fa-lg"></i>
                                 <input type="text" name="nftId" id="nftId" class="form-control" required/>
                             </div>
-                            <label class="form-label" for="nftId">Insira o Id do NFT</label>
+                            <label class="form-label" for="nftId">Insira o Id do NFT (único)</label>
                         </div>
+
+                        <!-- <hr>
 
                         <div class="d-flex flex-column align-items-start">
                             <div class="mint-data">
                                 <i class="fa-solid fa-coins"></i>
-                                <input type="number" required name="amount" id="amount" min="0" value="0" step="1">
+                                <input type="number" required name="amount" id="amount" min="1" value="1" step="1">
                             </div>
                             <label class="form-label" for="amount">Insira o valor a ser adicionado no NFT</label>
+                        </div> -->
+
+                        <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-user fa-lg"></i>
+                                <input type="text" name="landOwner" id="landOwner" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="landOwner">Insira o nome do proprietário da terra</label>
+                        </div>
+
+                        <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-user fa-lg"></i>
+                                <input type="text" name="compensationOwner" id="compensationOwner" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="compensationOwner">Insira o nome do proprietário dos direitos de compensação</label>
                         </div>
 
                         <hr>
@@ -68,11 +90,22 @@
 
                         <div class="flex-fill">
                             <div class="mint-data">
+                                <i class="fa-solid fa-chart-area fa-lg"></i>
+                                <input type="text" name="area" id="area" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="area">Insira o tamanho da área (hectares)</label>
+                        </div>
+
+                        <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
                                 <i class="fas fa-location-dot fa-lg"></i>
                                 <input type="text" name="location" id="location" class="form-control" required/>
                             </div>
                             <label class="form-label" for="location">Insira localização da área</label>
                         </div>
+
                         <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
                         <div hidden id="signing-files" style="text-align: center;">
                             <p><strong>Faça o upload da sua chave privada</strong></p>
@@ -80,7 +113,7 @@
                             <p><strong>Faça o upload do seu certificado</strong></p>
                             <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
                         </div>
-                        <div class="mint-button">
+                        <div class="mint-button pb-5">
                             <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
                         </div>
                     </form>

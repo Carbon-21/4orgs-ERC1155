@@ -9433,53 +9433,36 @@ utils.intFromLE = intFromLE;
 
 },{"bn.js":5,"minimalistic-assert":38,"minimalistic-crypto-utils":39}],22:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "elliptic@6.5.4",
-      "/teste/develop/4orgs-ERC1155/api-2.0"
-    ]
+  "name": "elliptic",
+  "version": "6.5.4",
+  "description": "EC cryptography",
+  "main": "lib/elliptic.js",
+  "files": [
+    "lib"
   ],
-  "_from": "elliptic@6.5.4",
-  "_id": "elliptic@6.5.4",
-  "_inBundle": false,
-  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
-  "_location": "/elliptic",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "elliptic@6.5.4",
-    "name": "elliptic",
-    "escapedName": "elliptic",
-    "rawSpec": "6.5.4",
-    "saveSpec": null,
-    "fetchSpec": "6.5.4"
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "test": "npm run lint && npm run unit",
+    "version": "grunt dist && git add dist/"
   },
-  "_requiredBy": [
-    "/",
-    "/fabric-client",
-    "/fabric-common"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:indutny/elliptic"
+  },
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
   ],
-  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
-  "_spec": "6.5.4",
-  "_where": "/teste/develop/4orgs-ERC1155/api-2.0",
-  "author": {
-    "name": "Fedor Indutny",
-    "email": "fedor@indutny.com"
-  },
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  },
-  "description": "EC cryptography",
+  "homepage": "https://github.com/indutny/elliptic",
   "devDependencies": {
     "brfs": "^2.0.2",
     "coveralls": "^3.1.0",
@@ -9495,31 +9478,15 @@ module.exports={
     "istanbul": "^0.4.5",
     "mocha": "^8.0.1"
   },
-  "files": [
-    "lib"
-  ],
-  "homepage": "https://github.com/indutny/elliptic",
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
-  ],
-  "license": "MIT",
-  "main": "lib/elliptic.js",
-  "name": "elliptic",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/indutny/elliptic.git"
-  },
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "npm run lint && npm run unit",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "version": "grunt dist && git add dist/"
-  },
-  "version": "6.5.4"
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  }
 }
 
 },{}],23:[function(require,module,exports){
@@ -11382,8 +11349,8 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, "$ylvas", qty]
             };
@@ -11427,7 +11394,7 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintFTServerSideSigning = /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-    var username, qty, token, headers, url, init, body, response, element, _element, _element2;
+    var username, qty, token, headers, url, init, body, response;
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -11456,35 +11423,27 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             return fetch(url, init);
           case 15:
             response = _context4.sent;
-            if (!response.ok) {
-              _context4.next = 23;
-              break;
-            }
-            _context4.next = 19;
-            return response.json();
-          case 19:
-            response = _context4.sent;
-            if (response.result != "success") {
-              document.getElementById("submitButton").style.display = "flex";
-              document.getElementById("loader").style.display = "none";
-              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-              document.getElementById("flash").innerHTML = element;
-            } else {
-              document.getElementById("submitButton").style.display = "flex";
-              document.getElementById("loader").style.display = "none";
-              _element = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "$ylvas emitidos com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-              document.getElementById("flash").innerHTML = _element;
-            }
-            _context4.next = 29;
-            break;
-          case 23:
-            console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
-            _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-            document.getElementById("flash").innerHTML = _element2;
+            if (!response.ok) {
+              _context4.next = 25;
+              break;
+            }
+            _context4.next = 21;
+            return response.json();
+          case 21:
+            response = _context4.sent;
+            if (response.result != "success") {
+              document.getElementById("flash").innerHTML = failureFlashMessage;
+            } else {
+              document.getElementById("flash").innerHTML = successFlashMessage;
+            }
+            _context4.next = 27;
+            break;
+          case 25:
+            document.getElementById("flash").innerHTML = failureFlashMessage;
             return _context4.abrupt("return", null);
-          case 29:
+          case 27:
           case "end":
             return _context4.stop();
         }
@@ -11518,14 +11477,14 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             event.preventDefault();
             username = document.getElementById("username").value;
             nftId = document.getElementById("nftId").value;
-            qty = document.getElementById("amount").value; //let phyto = document.getElementById("phyto").value;
+            qty = 1; //let phyto = document.getElementById("phyto").value;
             //let location = document.getElementById("location").value;
             // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
             clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
-              chaincodeId: 'erc1155',
-              channelId: 'mychannel',
+              chaincodeId: "erc1155",
+              channelId: "mychannel",
               fcn: "Mint",
               args: [clientAccountId, nftId, qty]
             };
@@ -11569,7 +11528,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, nftId, phyto, location, qty, token, headers, url, init, body, response, postMetadataURL, metadataResponse, element, _element3, _element4;
+    var username, nftId, qty, token, headers, url, init, body, response, responseJson, metadata, postMetadataURL, metadataResponse, metadataResponseJson;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -11579,9 +11538,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
             nftId = document.getElementById("nftId").value;
-            phyto = document.getElementById("phyto").value;
-            location = document.getElementById("location").value;
-            qty = document.getElementById("amount").value;
+            qty = 1;
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -11597,55 +11554,59 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               tokenReceiver: username
             };
             init.body = JSON.stringify(body);
-            _context6.next = 18;
+            _context6.next = 16;
             return fetch(url, init);
-          case 18:
+          case 16:
             response = _context6.sent;
-            // Post metadata through ipfs node
-            postMetadataURL = "https://localhost:4000/meta/postMetadata";
-            init.body = JSON.stringify({
-              // TODO: match schema with forms
-              metadata: {
-                id: nftId,
-                phyto: phyto,
-                geolocation: location,
-                custom_notes: "qty: ".concat(qty)
-              },
-              tokenId: nftId
-            });
-            _context6.next = 23;
-            return fetch(postMetadataURL, init);
-          case 23:
-            metadataResponse = _context6.sent;
-            if (!(response.ok && metadataResponse.ok)) {
-              _context6.next = 31;
+            _context6.next = 19;
+            return response.json();
+          case 19:
+            responseJson = _context6.sent;
+            if (!(!response.ok || responseJson.result == null)) {
+              _context6.next = 25;
               break;
             }
-            _context6.next = 27;
-            return response.json();
-          case 27:
-            response = _context6.sent;
-            if (response.result == null) {
-              document.getElementById("submitButton").style.display = "flex";
-              document.getElementById("loader").style.display = "none";
-              element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-              document.getElementById("flash").innerHTML = element;
-            } else {
-              document.getElementById("submitButton").style.display = "flex";
-              document.getElementById("loader").style.display = "none";
-              _element3 = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "NFT emitido com sucesso" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-              document.getElementById("flash").innerHTML = _element3;
-            }
-            _context6.next = 37;
-            break;
-          case 31:
-            console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
-            _element4 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na emissao" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-            document.getElementById("flash").innerHTML = _element4;
+            document.getElementById("flash").innerHTML = failureFlashMessage;
             return _context6.abrupt("return", null);
-          case 37:
+          case 25:
+            // Post metadata through ipfs node
+            metadata = {
+              id: nftId,
+              status: "Ativo",
+              amount: qty,
+              land_owner: document.getElementById("landOwner").value,
+              land: document.getElementById("area").value,
+              phyto: document.getElementById("phyto").value,
+              geolocation: document.getElementById("location").value,
+              compensation_owner: document.getElementById("compensationOwner").value,
+              compensation_state: "Não Compensado"
+            };
+            postMetadataURL = "https://localhost:4000/meta/postMetadata";
+            init.body = JSON.stringify({
+              metadata: metadata,
+              tokenId: nftId
+            });
+            _context6.next = 30;
+            return fetch(postMetadataURL, init);
+          case 30:
+            metadataResponse = _context6.sent;
+            _context6.next = 33;
+            return metadataResponse.json();
+          case 33:
+            metadataResponseJson = _context6.sent;
+            document.getElementById("submitButton").style.display = "flex";
+            document.getElementById("loader").style.display = "none";
+            if (!(!metadataResponse.ok || metadataResponseJson.result == null)) {
+              _context6.next = 39;
+              break;
+            }
+            document.getElementById("flash").innerHTML = failureFlashMessage;
+            return _context6.abrupt("return", null);
+          case 39:
+            document.getElementById("flash").innerHTML = successFlashMessage;
+          case 40:
           case "end":
             return _context6.stop();
         }
