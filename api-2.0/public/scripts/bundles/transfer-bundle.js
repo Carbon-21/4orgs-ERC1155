@@ -11340,7 +11340,7 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
           case 11:
@@ -11359,7 +11359,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
             // console.log("### 3. Send signed transaction proposal to server");
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
           case 22:
@@ -11381,7 +11381,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: transactionSignatureHex,
               transaction: transactionHex
             }; // 5. Send signed transaction to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
             _context.next = 36;
             return sendToServer("POST", url, signedTransactionProposal, token);
           case 36:
@@ -11619,7 +11619,7 @@ var transferClientSideSigning = /*#__PURE__*/function () {
             // Verify if the user is registered
             headers = new Headers();
             headers.append("Authorization", "Bearer " + token);
-            url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/isUserRegistered?username=".concat(usernameDest, "&org=Carbon");
+            url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/isUserRegistered?username=".concat(usernameDest, "&org=Carbon");
             init = {
               method: "GET",
               headers: headers
@@ -11715,7 +11715,7 @@ var transferServerSideSigning = /*#__PURE__*/function () {
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
-            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/transfer";
             init = {
               method: "POST",
               headers: headers

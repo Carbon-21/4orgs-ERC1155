@@ -11404,7 +11404,7 @@ function _getNftTokens() {
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Authorization", "Bearer " + token);
-            url = "http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT";
+            url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT";
             init = {
               method: "GET",
               headers: headers
@@ -11470,8 +11470,7 @@ function _getNftTokens() {
 }
 function renderCollection(_x) {
   return _renderCollection.apply(this, arguments);
-} //TODO: consertar getURI para modo offline
-// Recuperar json dos metadados do nft (dado tokenId)
+} // Recuperar json dos metadados do nft (dado tokenId)
 function _renderCollection() {
   _renderCollection = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(nftTokens) {
     var element, key, _yield$nftMetadata, tokenId;
@@ -11561,36 +11560,34 @@ function _nftMetadata() {
         switch (_context6.prev = _context6.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") == "true")) {
-              _context6.next = 13;
+              _context6.next = 12;
               break;
             }
             token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
-            url = "http://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
+            url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
             init = {
               method: "POST",
               headers: headers
             };
-            console.log('keyOnServer true', 'getURI tokenId =', tokenId);
-            _context6.next = 10;
+            _context6.next = 9;
             return fetch(url, init);
-          case 10:
+          case 9:
             response = _context6.sent;
-            _context6.next = 29;
+            _context6.next = 27;
             break;
-          case 13:
+          case 12:
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "GetURI",
               args: [tokenId]
             }; // GetURI Transaction
-            console.log('keyOnServer false getURI tokenId =', tokenId);
-            _context6.next = 17;
+            _context6.next = 15;
             return client.offlineTransaction(transaction);
-          case 17:
+          case 15:
             response = _context6.sent;
             URI = response.payload; // GetMetadata
             _token = localStorage.getItem("token");
@@ -11600,19 +11597,19 @@ function _nftMetadata() {
             body = JSON.stringify({
               URI: URI
             });
-            _url = "http://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
+            _url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
             init = {
               method: "POST",
               headers: _headers,
               body: body
             };
-            _context6.next = 28;
+            _context6.next = 26;
             return fetch(_url, init);
-          case 28:
+          case 26:
             response = _context6.sent;
-          case 29:
+          case 27:
             return _context6.abrupt("return", response.json());
-          case 30:
+          case 28:
           case "end":
             return _context6.stop();
         }
@@ -11698,7 +11695,7 @@ window.compensate = /*#__PURE__*/function () {
             init.body = JSON.stringify(body);
 
             // POST to postMetadata
-            url = "http://localhost:4000/meta/patchMetadata";
+            url = "https://localhost:4000/meta/patchMetadata";
             _context3.next = 16;
             return fetch(url, init);
           case 16:
@@ -11731,7 +11728,7 @@ window.compensate = /*#__PURE__*/function () {
               break;
             }
             // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-            url = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
             body = JSON.stringify({
               URI: URI,
               tokenId: tokenId
@@ -11865,7 +11862,7 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
           case 11:
@@ -11884,7 +11881,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
             // console.log("### 3. Send signed transaction proposal to server");
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
           case 22:
@@ -11906,7 +11903,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: transactionSignatureHex,
               transaction: transactionHex
             }; // 5. Send signed transaction to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
             _context.next = 36;
             return sendToServer("POST", url, signedTransactionProposal, token);
           case 36:

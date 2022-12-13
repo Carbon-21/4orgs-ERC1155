@@ -61,7 +61,7 @@ const failureFlashMessage =
       // Verify if the user is registered
       let headers = new Headers();
       headers.append("Authorization", "Bearer " + token);
-      let url = `http://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/isUserRegistered?username=${usernameDest}&org=Carbon`;
+      let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/isUserRegistered?username=${usernameDest}&org=Carbon`;
     
       var init = {
         method: "GET",

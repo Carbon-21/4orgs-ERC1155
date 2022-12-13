@@ -43,7 +43,7 @@ export const offlineTransaction = async (transaction) => {
     const token = localStorage.getItem("token");
     // console.log("### 1. Request transaction proposal generation");
     // Sends transaction proposal generation request to server
-    var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+    var url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal`;
     const proposalResponse = await sendToServer("POST", url, body, token);
 
     // The transaction proposal hash
@@ -63,7 +63,7 @@ export const offlineTransaction = async (transaction) => {
 
     // 3. Send signed transaction proposal to server
     // console.log("### 3. Send signed transaction proposal to server");
-    url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+    url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/send-proposal`;
     const sendProposalResponse = await sendToServer("POST", url, 
       signedProposal, token);
     const transactionDigest = sendProposalResponse.result.transactionDigest;
@@ -82,7 +82,7 @@ export const offlineTransaction = async (transaction) => {
       };
 
       // 5. Send signed transaction to server
-      url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+      url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction`;
       let commitTransactionResponse = await sendToServer("POST", url,
         signedTransactionProposal, token);
 

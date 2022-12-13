@@ -11607,7 +11607,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
           case 39:
             metadataHash = metadataResponseJson.metadataHash; // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
             URI = "http://".concat(metadataHash, ".com");
-            setUriURL = "http://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
+            setUriURL = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
             body = JSON.stringify({
               URI: URI,
               tokenId: nftId
@@ -11707,7 +11707,7 @@ var offlineTransaction = /*#__PURE__*/function () {
             };
             token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
           case 11:
@@ -11726,7 +11726,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
             // console.log("### 3. Send signed transaction proposal to server");
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
           case 22:
@@ -11748,7 +11748,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: transactionSignatureHex,
               transaction: transactionHex
             }; // 5. Send signed transaction to server
-            url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
             _context.next = 36;
             return sendToServer("POST", url, signedTransactionProposal, token);
           case 36:

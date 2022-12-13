@@ -258,7 +258,7 @@ const mintNFTServerSideSigning = async () => {
   let metadataHash = metadataResponseJson.metadataHash;
   // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
   const URI = `http://${metadataHash}.com`;
-  let setUriURL = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+  let setUriURL = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
   body = JSON.stringify({
     URI: URI,
     tokenId: nftId

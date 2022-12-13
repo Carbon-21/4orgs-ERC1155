@@ -95,7 +95,7 @@ async function getNftTokens() {
     let token = localStorage.getItem("token");
     let headers = new Headers();
     headers.append("Authorization", "Bearer " + token);
-    let url = `http://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
+    let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
     var init = {
       method: "GET",
       headers: headers,
@@ -164,27 +164,6 @@ async function renderCollection(nftTokens) {
   document.getElementById("loader").style.display = "none";
 }
 
-// Recupera os nfts do usuario logado
-async function getNftTokens() {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
-
-  let response = await fetch(url, init);
-  let result = (await response.json())?.result;
-  let nftArray = [];
-  // Retornar array contendo somente a lista de ids dos nfts
-  for (var i in result) {
-    nftArray = nftArray.concat(result[i][0]);
-  }
-  return nftArray;
-}
-
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
   let response;
@@ -220,7 +199,7 @@ async function nftMetadata(tokenId) {
     let body = JSON.stringify({
       URI: URI
     });
-    let url = `http://localhost:4000/meta/getMetadata?tokenId=${tokenId}`;
+    let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
     var init = {
       method: "POST",
       headers: headers,
