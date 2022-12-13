@@ -138,7 +138,6 @@ exports.balanceNFT = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    console.log("aqqui", err.message);
     return next(new HttpError(500, err.message));
     //return next(new HttpError(500, errMessage[1]));
   }
@@ -201,6 +200,22 @@ exports.getURI = async (req, res, next) => {
     return res.json({
       result,
     });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
+
+//get the URI for a given token
+exports.isUserRegistered = async (req, res, next) => {
+  const username = req.query.username;
+  const org = req.query.org;
+
+  try {
+    let isUserRegistered = await helper.isUserRegisteredInCA(username, org);
+    return res.json({result: isUserRegistered})
   } catch (err) {
     console.log(err);
     const regexp = new RegExp(/message=(.*)$/g);

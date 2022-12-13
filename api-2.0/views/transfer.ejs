@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
 
+  <script src="/scripts/bundles/transfer-bundle.js"></script>
   <body>
     <!-- Navbar -->
 
@@ -47,19 +48,15 @@
                   </div>
                   <label class="form-label" for="qty">Insira a quantidade a ser transferida</label>
                 </div>
-
-                <!-- <script type="text/javascript">
-                  function buttonPressed() {
-                  // Request
-                  sendRequest("TransferFrom");
-                  // Alterna visibilidade de botao e gif de carregamento
-                  document.getElementById("loader").style.display = "flex";
-                  document.getElementById("submitButton").style.display = "none";
-                  }
-                </script> -->
-
+                <br>
+                <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
+                <div hidden id="signing-files" style="text-align: center;">
+                    <p><strong>Faça o upload da sua chave privada</strong></p>
+                    <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+                    <p><strong>Faça o upload do seu certificado</strong></p>
+                    <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+                </div>
                 <div class="transfer-button">
-                    <img id="loader" class="loading-icon" src="../images/loader.gif" />
                     <button id="submitButton" type="submit" class="btn btn-primary btn-md">Transferir</button>
                 </div>
               </form>
@@ -68,8 +65,6 @@
         </div>
       </div>
     </section>
-    
-    <script src="/scripts/transfer.js"></script>
 
   </body>
 

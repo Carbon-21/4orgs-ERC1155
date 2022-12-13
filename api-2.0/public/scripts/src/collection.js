@@ -1,9 +1,129 @@
+const client = require("./transaction-handler");
+
 let metadata;
 let metadataArray = [];
 
-async function collection() {
-  // Recuperar todos os nfts do usuario
-  let nftTokens = await getNftTokens();
+// Flash messages that are displayed to the user in case of success or failure of the transaction execution
+const successCollectionFlashMessage =     
+    `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Coleção obtida com sucesso.`+
+        `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`;
+
+const failureCollectionFlashMessage =     
+    `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+        `Ocorreu um erro ao obter a coleção.`+
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+    `</div>`
+
+const successCompensationFlashMessage =     
+`<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
+    `Compensado com sucesso.`+
+    `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+`</div>`;
+
+const failureCompensationFlashMessage =     
+`<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+    `Ocorreu um erro na compensação.`+
+    `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+`</div>`
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
+ */
+ window.collectionClientSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "false") {
+    
+      // Hides the file upload fields and displays loading image while the transaction is processing.
+      document.getElementById("signing-files").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("flash-button")?.click();
+
+      event.preventDefault();
+     
+      try {
+        // Executes the transaction in Client-Side Signing Mode
+        let nftTokens = await getNftTokens();
+  
+        // Renderiza a tela de coleção
+        await renderCollection(nftTokens);
+        document.getElementById("flash").innerHTML = successCollectionFlashMessage;
+      } catch (e) {
+        document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
+        console.log("Erro: ", e.message);
+      }
+      document.getElementById("signing-files").style.display = "block";
+      document.getElementById("loader").style.display = "none";      
+  }
+}
+
+/**
+ * Executes "SelfBalanceNFT" transaction in Server-Side Signing Mode.
+ */
+window.collectionServerSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "true") {
+    
+    // Hides the file upload fields and displays loading image while the transaction is processing.
+    document.getElementById("signing-files").style.display = "none";
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("flash-button")?.click();
+
+    event.preventDefault();
+   
+    try {
+      // Executes the transaction in Client-Side Signing Mode
+      let nftTokens = await getNftTokens();
+
+      // Renderiza a tela de coleção
+      await renderCollection(nftTokens);
+      document.getElementById("flash").innerHTML = successCollectionFlashMessage;
+    } catch (e) {
+      document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
+      console.log("Error: ", e.message);
+    }
+    document.getElementById("signing-files").style.display = "block";
+    document.getElementById("loader").style.display = "none";      
+  }
+}
+
+// Recupera os nfts do usuario logado
+async function getNftTokens() {
+  let result;
+
+  // gets NFT tokens in Server-side signing mode
+  if (localStorage.getItem("keyOnServer") == "true") {
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Authorization", "Bearer " + token);
+    let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
+    var init = {
+      method: "GET",
+      headers: headers,
+    };
+  
+    let response = await fetch(url, init);
+    result = (await response.json())?.result;
+  } else {
+    // gets NFT tokens in Client-side signing mode
+    const transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "SelfBalanceNFT",
+      args: []
+    };
+    let response = await client.offlineTransaction(transaction);
+    result = await JSON.parse(response.payload);
+  }
+  let nftArray = [];
+  // Retornar array contendo somente a lista de ids dos nfts
+  for (var i in result) {
+    nftArray = nftArray.concat(result[i][0]);
+  }
+  return nftArray;
+}
+
+
+async function renderCollection(nftTokens) {
   // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
@@ -44,41 +164,51 @@ async function collection() {
   document.getElementById("loader").style.display = "none";
 }
 
-// Recupera os nfts do usuario logado
-async function getNftTokens() {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
-
-  let response = await fetch(url, init);
-  let result = (await response.json())?.result;
-  let nftArray = [];
-  // Retornar array contendo somente a lista de ids dos nfts
-  for (var i in result) {
-    nftArray = nftArray.concat(result[i][0]);
-  }
-  return nftArray;
-}
-
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
+  let response;
+  if (localStorage.getItem("keyOnServer") == "true") {
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + token);
+  
+    let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
+    var init = {
+      method: "POST",
+      headers: headers,
+    };
+    response = await fetch(url, init);
 
-  let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
+  } else {
+    let transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "GetURI",
+      args: [tokenId]
+    };
+    // GetURI Transaction
+    response = await client.offlineTransaction(transaction);
+    let URI = response.payload;
 
-  let response = await fetch(url, init);
+    // GetMetadata
+    let token = localStorage.getItem("token");
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + token);
+    let body = JSON.stringify({
+      URI: URI
+    });
+    let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
+    var init = {
+      method: "POST",
+      headers: headers,
+      body: body
+    };
+  
+    response = await fetch(url, init);
+
+  }
   return response.json();
 }
 
@@ -115,28 +245,30 @@ function renderCompensation(tokenId, compensation_state) {
     default:
       return (
         `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="window.compensate(${tokenId})">Compensar</button>`
       );
   }
 }
 
 //change token status to "Compensado" in the IPFS
 //OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
-async function compensate(tokenId) {
+window.compensate = async (tokenId) => {
   event.preventDefault();
 
   //set loading
-  document.getElementById("loader").style.display = "flex";
+  document.getElementById("loader").style.display = "block";
   document.getElementById("submitCompensationButton").style.display = "none";
 
   tokenId = tokenId.id;
 
   let jwt = localStorage.getItem("token");
 
+  // 1. Patch Metadata
+
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `https://${HOST}:${PORT}/meta/patchMetadata`;
+  let url;
 
   var init = {
     method: "PATCH",
@@ -157,8 +289,40 @@ async function compensate(tokenId) {
 
   init.body = JSON.stringify(body);
 
-  //POST to postMetadata
-  let response = await fetch(url, init);
+  // POST to postMetadata
+  url = `https://${HOST}:${PORT}/meta/patchMetadata`;
+  let patchMetadataResponse = await fetch(url, init);
+  let metadataHash = (await patchMetadataResponse.json())?.metadataHash
+  const URI = `http://${metadataHash}.com`;
+
+  // 2. Set URI Metadata in World State
+  let response;
+  if (localStorage.getItem("keyOnServer") == "true") {
+    // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+    url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
+    body = JSON.stringify({
+      URI: URI,
+      tokenId: tokenId
+    });
+    init = {
+      method: "POST",
+      headers: headers,
+      body: body
+    };
+  
+    response = await fetch(url, init);
+  } else {
+    const transaction = {
+      chaincodeId: 'erc1155',
+      channelId: 'mychannel',
+      fcn: "SetURI",
+      args: [tokenId, URI]
+    };
+
+    response = await client.offlineTransaction(transaction);
+  }
+
+
   // let element =
   //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
   //   `Compensando...` +
@@ -166,33 +330,21 @@ async function compensate(tokenId) {
   //   `</div>`;
   // document.getElementById("flash").innerHTML = element;
 
-  if (response.ok) {
+  if (response.ok || !!response.result) {
     document.getElementById("loader").style.display = "none";
-    response = await response.json();
-    if (response.result != "success") {
-      let element =
-        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na compensação` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
+    if (localStorage.getItem("keyOnServer") == "true") response = await response.json();
+    if (response.result.toLowerCase() != "success") {
+      let element = failureCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
     } else {
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Compensado com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
+      let element = successCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
     }
     window.location.href = `/collection`;
   } else {
     document.getElementById("loader").style.display = "none";
     console.log("HTTP Error ", response.status);
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na compensação` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
+    let element = failureCompensationFlashMessage
     document.getElementById("flash").innerHTML = element;
     return null;
   }

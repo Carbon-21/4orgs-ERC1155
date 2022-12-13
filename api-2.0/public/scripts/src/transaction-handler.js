@@ -41,33 +41,29 @@ export const offlineTransaction = async (transaction) => {
       certificate: certificate
     };
     const token = localStorage.getItem("token");
-    console.log("### 1. Request transaction proposal generation");
+    // console.log("### 1. Request transaction proposal generation");
     // Sends transaction proposal generation request to server
-    var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+    var url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal`;
     const proposalResponse = await sendToServer("POST", url, body, token);
 
     // The transaction proposal hash
     const digest = proposalResponse.result.digest;
-    console.log('Transaction proposal hash =', digest);
 
     // The transaction proposal in Hex
     const proposalHex = proposalResponse.result.proposal;
-    console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
 
     // 2. Sign transaction proposal
-    console.log("### 2. Sign transaction proposal");
+    // console.log("### 2. Sign transaction proposal");
     const proposalSignature = await signTransaction(digest, privateKey);
     let proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
-    console.log('signature 1 =', proposalSignature);
-    console.log('proposalHex =',proposalHex);
     let signedProposal = {
       signature: proposalSignatureHex, 
       proposal: proposalHex
     };
 
     // 3. Send signed transaction proposal to server
-    console.log("### 3. Send signed transaction proposal to server");
-    url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+    // console.log("### 3. Send signed transaction proposal to server");
+    url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/send-proposal`;
     const sendProposalResponse = await sendToServer("POST", url, 
       signedProposal, token);
     const transactionDigest = sendProposalResponse.result.transactionDigest;
@@ -77,7 +73,7 @@ export const offlineTransaction = async (transaction) => {
 
     if (proposalResponseStatus == 200) {
       // 4. Sign transaction
-      console.log("### 4. Sign transaction");
+      // console.log("### 4. Sign transaction");
       let transactionSignature = await signTransaction(transactionDigest, privateKey);
       let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
       var signedTransactionProposal = {
@@ -86,7 +82,7 @@ export const offlineTransaction = async (transaction) => {
       };
 
       // 5. Send signed transaction to server
-      url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+      url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction`;
       let commitTransactionResponse = await sendToServer("POST", url,
         signedTransactionProposal, token);
 
@@ -138,7 +134,6 @@ export const offlineTransaction = async (transaction) => {
  * @returns The signature of the transaction proposal
  */
 const signTransaction = async function(digest, privateKeyPEM){
-  console.log('entrou signtransaction')
 
   //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
   var { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM); 

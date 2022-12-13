@@ -182,14 +182,10 @@ const getRegisteredUserFromCA = async (username, org) => {
   const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
   const adminUser = await provider.getUserContext(adminIdentity, "admin");
 
-  try {
-    const query = await identityService.getOne(username, adminUser);
-    //console.log(query['result'])
-    return query["result"];
-  } catch (error) {
-    logger.error(`Getting error: ${error}`);
-    return error.message;
-  }
+  
+  const query = await identityService.getOne(username, adminUser);
+  return query["result"];
+
 };
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -263,6 +259,15 @@ const isUserRegistered = async (username, userOrg) => {
     return true;
   }
   return false;
+};
+
+const isUserRegisteredInCA = async (username, userOrg) => {
+  try {
+    let user = await getRegisteredUserFromCA(username, userOrg);
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 const getCaInfo = async (org, ccp) => {
@@ -377,6 +382,32 @@ async function execWrapper(cmd) {
   }
 }
 
+/**
+ * Generates the client account id used in the chaincode methods. The current function helper.getAccountIdFromChaincode 
+ * requires the caller's private key to be executed properly, therefore not being possible to sign transactions on the client side.
+ * This present function is a temporary way to make Offline Transaction Signing Mode work while there is not another funcion in the chaincode that
+ * doesn't require the user's private key.
+ * @param {*} username The user's email.
+ * @param {*} role The user's role (client or admin).
+ * @param {*} org The user's organization.
+ * @returns The user's client account id.
+ */
+async function mountClientAccountId(username, role, org) {
+  try
+  {
+    const user = await getRegisteredUserFromCA(username, org);
+  } catch (err) {
+    err.message = "O usuário fornecido não está registrado.";
+    throw err;
+  }
+  
+  let clientAccountId = `x509::CN=${username},OU=${role.toLowerCase()}+OU=${org.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+  
+  // Base-64 encoding of clientAccountId
+  clientAccountId = btoa(clientAccountId);
+  return clientAccountId;
+}
+
 module.exports = {
   getCaUrl,
   getAffiliation,
@@ -393,4 +424,6 @@ module.exports = {
   getOrgMSP,
   getChaincode,
   getAccountIdFromChaincode,
+  mountClientAccountId,
+  isUserRegisteredInCA,
 };
