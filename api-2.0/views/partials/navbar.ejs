@@ -34,7 +34,6 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/wallet">Carteira</a></li>
             <li><a class="dropdown-item" href="/collection">Coleção</a></li>
-            <li><a class="dropdown-item" href="/config">Configurações</a></li>
             <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
           </ul>
         </li>
@@ -54,6 +53,7 @@
           <a class="nav-link" href="/presignup"><button type="button" class="btn btn-outline-success btn-sm">Registrar</button></a>
         </li>
         <% } %> <% if (currentUser) { %>
+        <p class="mt-2 ms-3 me-1 username"><%= currentUser.split('@')[0] %></p>
         <li class="nav-item">
           <a class="nav-link" href="/logout"><button class="btn btn-outline-success btn-sm">Sair</button></a>
         </li>

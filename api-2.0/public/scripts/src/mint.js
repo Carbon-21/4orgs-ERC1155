@@ -144,7 +144,7 @@ const mintNFTClientSideSigning = async () => {
 
     let username = document.getElementById("username").value;
     let nftId = document.getElementById("nftId").value;
-    let qty = document.getElementById("amount").value;
+    let qty = 1;
     //let phyto = document.getElementById("phyto").value;
     //let location = document.getElementById("location").value;
 
@@ -194,7 +194,7 @@ const mintNFTServerSideSigning = async () => {
 
   let username = document.getElementById("username").value;
   let nftId = document.getElementById("nftId").value;
-  let qty = document.getElementById("amount").value;
+  let qty = 1;
   let token = localStorage.getItem("token");
 
   let headers = new Headers();

@@ -86,10 +86,10 @@ async function nftMetadata(tokenId) {
 async function renderMetadata(tokenId, metadata) {
   if (!metadata.name) return "Metadados não recuperados";
   return (
-    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
     `<b> Status: </b> ${metadata?.properties?.status} <br />` +
-    `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
+    // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
     `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
     `<b> Área (hectares): </b> ${metadata?.properties?.land} <br />` +
     `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
