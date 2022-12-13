@@ -7,6 +7,8 @@ const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
 const axios = require("axios").default;
+const https = require('https');
+const fs = require('fs');
 
 //native packages
 const bodyParser = require("body-parser");
@@ -26,6 +28,13 @@ const frontRoutes = require("./routes/front-routes");
 const metadataRoutes = require("./routes/metadata-routes");
 
 ///// CONFIGS /////
+// TLS configs
+const options = {
+  key: fs.readFileSync(path.join(__dirname, "keys/key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "keys/cert.pem")),
+  passphrase: 'secret'
+};
+
 //express
 const app = express();
 
@@ -78,11 +87,16 @@ app.use("/query", queryRoutes);
 app.use("/", frontRoutes);
 app.use("/meta", metadataRoutes);
 
-///// SERVER INIT /////
-app.listen(port, host);
-logger.info("****************** SERVER STARTED ************************");
-logger.info("***************  http://%s:%s  ******************", host, port);
-
 ///// ERROR MIDDLEWARE /////
 //executed if any other middleware yields an error
 app.use(error);
+
+// bypass certificate check (when using self-signed cert)
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+///// SERVER INIT /////
+const httpsServer = https.createServer(options, app);
+httpsServer.listen(port, host, ()=>{
+    logger.info("****************** HTTPS SERVER STARTED ************************");
+    logger.info("***************  https://%s:%s  *******************", host, port);
+});

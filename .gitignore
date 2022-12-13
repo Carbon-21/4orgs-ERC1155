@@ -6,6 +6,7 @@ channel-artifacts/*.block
 artifacts/channel/crypto-config/**
 *.tar.gz
 **/*.pem
+!api-2.0/keys/**/*
 **/*.crt
 log.txt
 api-2.0/config/connection-*.json

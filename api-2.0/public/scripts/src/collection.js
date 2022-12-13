@@ -49,7 +49,7 @@ async function getNftTokens() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
   var init = {
     method: "GET",
     headers: headers,
@@ -72,7 +72,7 @@ async function nftMetadata(tokenId) {
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
 
-  let url = `http://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
+  let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
   var init = {
     method: "GET",
     headers: headers,

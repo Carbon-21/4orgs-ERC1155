@@ -11,7 +11,7 @@ exports.getMetadata = async (req, res, next) => {
 
   // Hash por meio de query no chaincode (GetURI)
   axios
-    .get(`http://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
+    .get(`https://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     })
@@ -83,7 +83,7 @@ exports.postMetadata = async (req, res, next) => {
   const URI = `ipfs://${hash}`;
   axios
     .post(
-      `http://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
+      `https://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
       JSON.stringify({
         tokenId: tokenId,
         URI: `http://${hash}.com`, // TODO: Deve se deixar no padrao, que eh somente o URI, mas a validacao impede nesse momento

@@ -95,8 +95,10 @@ const mintFTServerSideSigning = async () => {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
+  headers.append("Authorization", "Bearer " + token)
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
 
   var init = {
     method: "POST",
@@ -199,8 +201,9 @@ const mintNFTServerSideSigning = async () => {
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
-  let url = `http://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+  headers.append("Authorization", "Bearer " + token)
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+
 
   var init = {
     method: "POST",
@@ -237,7 +240,7 @@ const mintNFTServerSideSigning = async () => {
     compensation_state: "Não Compensado",
   };
 
-  let postMetadataURL = `http://${HOST}:${PORT}/meta/postMetadata`;
+  let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
   init.body = JSON.stringify({
     metadata,
     tokenId: nftId,
