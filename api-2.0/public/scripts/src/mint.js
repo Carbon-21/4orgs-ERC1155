@@ -33,7 +33,7 @@ window.mintNFT = async () => {
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
 const mintFTClientSideSigning = async () => {
-  if (localStorage.getItem("keyOnServer") == "false") {
+  if (localStorage.getItem("keyOnServer") === "false") {
     // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
     document.getElementById("submitButton").style.display = "none";
@@ -74,7 +74,6 @@ const mintFTClientSideSigning = async () => {
       }
     } catch (e) {
       document.getElementById("flash").innerHTML = failureFlashMessage;
-      console.log("Error:", e.message);
     }
   }
 };
@@ -135,7 +134,7 @@ const mintFTServerSideSigning = async () => {
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
 const mintNFTClientSideSigning = async () => {
-  if (localStorage.getItem("keyOnServer") == "false") {
+  if (localStorage.getItem("keyOnServer") === "false") {
     // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
     document.getElementById("submitButton").style.display = "none";
@@ -180,7 +179,6 @@ const mintNFTClientSideSigning = async () => {
       }
     } catch (e) {
       document.getElementById("flash").innerHTML = failureFlashMessage;
-      console.log("Error:", e.message);
     }
   }
 };

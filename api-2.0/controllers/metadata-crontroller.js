@@ -80,32 +80,6 @@ exports.postMetadata = async (req, res, next) => {
       result: "success",
     });
   }
-
-  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-  const URI = `ipfs://${hash}`;
-  axios
-    .post(
-      `http://${process.env.HOST}:${process.env.PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`,
-      JSON.stringify({
-        tokenId: tokenId,
-        URI: `http://${hash}.com`, // TODO: Deve se deixar no padrao, que eh somente o URI, mas a validacao impede nesse momento
-      }),
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      }
-    )
-    .then(function (response) {
-      logger.debug("Publicado Metadados - " + response.statusText);
-      return res.status(200).json({ ...response.data, message: "Publicado Metadados e URI setada" });
-    })
-    .catch(function (error) {
-      logger.error(error);
-      return res.status(500).json({
-        message: "Falha na publicação dos metadados no chaincode, URI: " + URI,
-        success: false,
-      });
-    });
 };
 
 // Metadata Schema v0.2

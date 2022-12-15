@@ -11338,8 +11338,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
-            // Sends transaction proposal generation request to server
+            token = localStorage.getItem("token"); // Sends transaction proposal generation request to server
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
@@ -11348,7 +11347,6 @@ var offlineTransaction = /*#__PURE__*/function () {
             // The transaction proposal hash
             digest = proposalResponse.result.digest; // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
-            // console.log("### 2. Sign transaction proposal");
             _context.next = 16;
             return signTransaction(digest, privateKey);
           case 16:
@@ -11358,7 +11356,6 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            // console.log("### 3. Send signed transaction proposal to server");
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
@@ -11449,9 +11446,8 @@ var sendToServer = /*#__PURE__*/function () {
             json = _context2.sent;
             return _context2.abrupt("return", json);
           case 15:
-            console.log("HTTP Error ", response.status);
             return _context2.abrupt("return", null);
-          case 17:
+          case 16:
           case "end":
             return _context2.stop();
         }
@@ -11590,8 +11586,8 @@ var transferClientSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context2.next = 55;
+            if (!(localStorage.getItem("keyOnServer") === "false")) {
+              _context2.next = 54;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11675,14 +11671,13 @@ var transferClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context2.next = 55;
+            _context2.next = 54;
             break;
           case 51:
             _context2.prev = 51;
             _context2.t3 = _context2["catch"](16);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-            console.log("Error:", _context2.t3.message);
-          case 55:
+          case 54:
           case "end":
             return _context2.stop();
         }
@@ -11750,16 +11745,15 @@ var transferServerSideSigning = /*#__PURE__*/function () {
               element = successFlashMessage;
               document.getElementById("flash").innerHTML = element;
             }
-            _context3.next = 31;
+            _context3.next = 30;
             break;
           case 25:
-            console.log("HTTP Error ", response.status);
             document.getElementById("submitButton").style.display = "flex";
             document.getElementById("loader").style.display = "none";
             element = failureFlashMessage;
             document.getElementById("flash").innerHTML = element;
             return _context3.abrupt("return", null);
-          case 31:
+          case 30:
           case "end":
             return _context3.stop();
         }

@@ -11338,8 +11338,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
-            // Sends transaction proposal generation request to server
+            token = localStorage.getItem("token"); // Sends transaction proposal generation request to server
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
@@ -11348,7 +11347,6 @@ var offlineTransaction = /*#__PURE__*/function () {
             // The transaction proposal hash
             digest = proposalResponse.result.digest; // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
-            // console.log("### 2. Sign transaction proposal");
             _context.next = 16;
             return signTransaction(digest, privateKey);
           case 16:
@@ -11358,7 +11356,6 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            // console.log("### 3. Send signed transaction proposal to server");
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
@@ -11449,9 +11446,8 @@ var sendToServer = /*#__PURE__*/function () {
             json = _context2.sent;
             return _context2.abrupt("return", json);
           case 15:
-            console.log("HTTP Error ", response.status);
             return _context2.abrupt("return", null);
-          case 17:
+          case 16:
           case "end":
             return _context2.stop();
         }
@@ -11569,7 +11565,7 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
+          if (!(localStorage.getItem("keyOnServer") === "false")) {
             _context.next = 13;
             break;
           }
@@ -11617,8 +11613,8 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          if (!(localStorage.getItem("keyOnServer") == "true")) {
-            _context2.next = 23;
+          if (!(localStorage.getItem("keyOnServer") === "true")) {
+            _context2.next = 22;
             break;
           }
           document.getElementById("loader").style.display = "flex";
@@ -11650,12 +11646,11 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
             document.getElementById("flash").innerHTML = successFlashMessage;
             balanceHeader.innerText = response.result + " Sylvas";
           }
-          _context2.next = 23;
+          _context2.next = 22;
           break;
         case 21:
           document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("HTTP Error ", response.status);
-        case 23:
+        case 22:
         case "end":
           return _context2.stop();
       }

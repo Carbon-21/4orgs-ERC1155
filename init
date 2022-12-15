@@ -76,14 +76,7 @@ cd api-2.0
 cd ./config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
 
-#create public scripts
-cd ../public/scripts/src
-chmod +x genscripts.sh
-./genscripts.sh
-
-#generate bundle
-cd ../../..
-chmod +x get-bundles
+#generate bundles
 ./get-bundles
 
 npm install

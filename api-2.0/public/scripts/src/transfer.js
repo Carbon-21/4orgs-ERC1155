@@ -27,7 +27,7 @@ const failureFlashMessage =
  * Executes "Transfer" transaction in Client-Side Signing Mode.
  */
  const transferClientSideSigning = async () => {
-  if (localStorage.getItem("keyOnServer") == "false") {
+  if (localStorage.getItem("keyOnServer") === "false") {
     // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
     document.getElementById("submitButton").style.display = "none";
@@ -95,7 +95,6 @@ const failureFlashMessage =
         }
       } catch (e) {
         document.getElementById("flash").innerHTML = failureFlashMessage;
-        console.log("Error:", e.message)
       }
 
   }
@@ -154,7 +153,6 @@ const transferServerSideSigning = async () => {
     document.getElementById("flash").innerHTML = element;
     }
   } else {
-    console.log("HTTP Error ", response.status);
     document.getElementById("submitButton").style.display = "flex";
     document.getElementById("loader").style.display = "none";
     element = failureFlashMessage;

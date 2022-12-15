@@ -32,7 +32,7 @@ const failureCompensationFlashMessage =
  * Executes "SelfBalanceNFT" transaction in Client-Side Signing Mode.
  */
  window.collectionClientSideSigning = async () => {
-  if (localStorage.getItem("keyOnServer") == "false") {
+  if (localStorage.getItem("keyOnServer") === "false") {
     
       // Hides the file upload fields and displays loading image while the transaction is processing.
       document.getElementById("signing-files").style.display = "none";
@@ -50,7 +50,6 @@ const failureCompensationFlashMessage =
         document.getElementById("flash").innerHTML = successCollectionFlashMessage;
       } catch (e) {
         document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
-        console.log("Erro: ", e.message);
       }
       document.getElementById("signing-files").style.display = "block";
       document.getElementById("loader").style.display = "none";      
@@ -61,7 +60,7 @@ const failureCompensationFlashMessage =
  * Executes "SelfBalanceNFT" transaction in Server-Side Signing Mode.
  */
 window.collectionServerSideSigning = async () => {
-  if (localStorage.getItem("keyOnServer") == "true") {
+  if (localStorage.getItem("keyOnServer") === "true") {
     
     // Hides the file upload fields and displays loading image while the transaction is processing.
     document.getElementById("signing-files").style.display = "none";
@@ -79,7 +78,6 @@ window.collectionServerSideSigning = async () => {
       document.getElementById("flash").innerHTML = successCollectionFlashMessage;
     } catch (e) {
       document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
-      console.log("Error: ", e.message);
     }
     document.getElementById("signing-files").style.display = "block";
     document.getElementById("loader").style.display = "none";      
@@ -91,7 +89,7 @@ async function getNftTokens() {
   let result;
 
   // gets NFT tokens in Server-side signing mode
-  if (localStorage.getItem("keyOnServer") == "true") {
+  if (localStorage.getItem("keyOnServer") === "true") {
     let token = localStorage.getItem("token");
     let headers = new Headers();
     headers.append("Authorization", "Bearer " + token);
@@ -156,7 +154,6 @@ async function renderCollection(nftTokens) {
       document.getElementById("nft-showroom").innerHTML = element;
     }
   } else {
-    console.log("HTTP Error ", response.status);
     return null;
   }
 
@@ -167,7 +164,7 @@ async function renderCollection(nftTokens) {
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
   let response;
-  if (localStorage.getItem("keyOnServer") == "true") {
+  if (localStorage.getItem("keyOnServer") === "true") {
     let token = localStorage.getItem("token");
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
@@ -297,7 +294,7 @@ window.compensate = async (tokenId) => {
 
   // 2. Set URI Metadata in World State
   let response;
-  if (localStorage.getItem("keyOnServer") == "true") {
+  if (localStorage.getItem("keyOnServer") === "true") {
     // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
     url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`
     body = JSON.stringify({
@@ -332,7 +329,7 @@ window.compensate = async (tokenId) => {
 
   if (response.ok || !!response.result) {
     document.getElementById("loader").style.display = "none";
-    if (localStorage.getItem("keyOnServer") == "true") response = await response.json();
+    if (localStorage.getItem("keyOnServer") === "true") response = await response.json();
     if (response.result.toLowerCase() != "success") {
       let element = failureCompensationFlashMessage;
       document.getElementById("flash").innerHTML = element;
@@ -343,7 +340,6 @@ window.compensate = async (tokenId) => {
     window.location.href = `/collection`;
   } else {
     document.getElementById("loader").style.display = "none";
-    console.log("HTTP Error ", response.status);
     let element = failureCompensationFlashMessage
     document.getElementById("flash").innerHTML = element;
     return null;

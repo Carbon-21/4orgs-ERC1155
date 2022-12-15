@@ -27810,8 +27810,7 @@ var generateCryptoMaterial = /*#__PURE__*/function () {
           case 15:
             _context.prev = 15;
             _context.t0 = _context["catch"](0);
-            console.log(_context.t0.message);
-          case 18:
+          case 17:
           case "end":
             return _context.stop();
         }
@@ -27887,13 +27886,12 @@ var exportCryptoKey = /*#__PURE__*/function () {
             pemExported = "-----BEGIN PUBLIC KEY-----\n".concat(exportedAsBase64, "\n-----END PUBLIC KEY-----");
             return _context3.abrupt("return", pemExported);
           case 20:
-            _context3.next = 25;
+            _context3.next = 24;
             break;
           case 22:
             _context3.prev = 22;
             _context3.t1 = _context3["catch"](0);
-            console.log(_context3.t1.message);
-          case 25:
+          case 24:
           case "end":
             return _context3.stop();
         }

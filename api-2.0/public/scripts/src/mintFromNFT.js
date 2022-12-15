@@ -62,7 +62,6 @@ const mintFTFromNFT = async () => {
       document.getElementById("submitButton").style.display = "flex";
       document.getElementById("loader").style.display = "none";
 
-      console.log("HTTP Error ", response.status);
       // Displays error messages
       let element =     
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+

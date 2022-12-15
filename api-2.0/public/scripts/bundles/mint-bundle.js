@@ -11334,8 +11334,8 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context3.next = 25;
+            if (!(localStorage.getItem("keyOnServer") === "false")) {
+              _context3.next = 24;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11370,14 +11370,13 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context3.next = 25;
+            _context3.next = 24;
             break;
           case 21:
             _context3.prev = 21;
             _context3.t0 = _context3["catch"](11);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-            console.log("Error:", _context3.t0.message);
-          case 25:
+          case 24:
           case "end":
             return _context3.stop();
         }
@@ -11465,8 +11464,8 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context5.next = 26;
+            if (!(localStorage.getItem("keyOnServer") === "false")) {
+              _context5.next = 25;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11504,14 +11503,13 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 26;
+            _context5.next = 25;
             break;
           case 22:
             _context5.prev = 22;
             _context5.t0 = _context5["catch"](12);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-            console.log("Error:", _context5.t0.message);
-          case 26:
+          case 25:
           case "end":
             return _context5.stop();
         }
@@ -11705,8 +11703,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
-            // Sends transaction proposal generation request to server
+            token = localStorage.getItem("token"); // Sends transaction proposal generation request to server
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
@@ -11715,7 +11712,6 @@ var offlineTransaction = /*#__PURE__*/function () {
             // The transaction proposal hash
             digest = proposalResponse.result.digest; // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
-            // console.log("### 2. Sign transaction proposal");
             _context.next = 16;
             return signTransaction(digest, privateKey);
           case 16:
@@ -11725,7 +11721,6 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            // console.log("### 3. Send signed transaction proposal to server");
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
@@ -11816,9 +11811,8 @@ var sendToServer = /*#__PURE__*/function () {
             json = _context2.sent;
             return _context2.abrupt("return", json);
           case 15:
-            console.log("HTTP Error ", response.status);
             return _context2.abrupt("return", null);
-          case 17:
+          case 16:
           case "end":
             return _context2.stop();
         }

@@ -17,7 +17,7 @@ const failureFlashMessage =
  * Executes "SelfBalance" transaction in Client-Side Signing Mode.
  */
 window.walletClientSideSigning = async () => {
-    if (localStorage.getItem("keyOnServer") == "false") {
+    if (localStorage.getItem("keyOnServer") === "false") {
 
         // Hides the file upload fields and displays loading image while the transaction is processing.
         document.getElementById("signing-files").style.display = "none";
@@ -56,7 +56,7 @@ window.walletClientSideSigning = async () => {
  * Executes "SelfBalance" transaction in Server-Side Signing Mode.
  */
 window.walletServerSideSigning = async () => {
-    if (localStorage.getItem("keyOnServer") == "true") {
+    if (localStorage.getItem("keyOnServer") === "true") {
         document.getElementById("loader").style.display = "flex";
         document.getElementById("flash-button")?.click();
         balanceHeader.innerText = "-";
@@ -86,7 +86,6 @@ window.walletServerSideSigning = async () => {
             }
         } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;
-            console.log("HTTP Error ", response.status);
         }
     }
 }

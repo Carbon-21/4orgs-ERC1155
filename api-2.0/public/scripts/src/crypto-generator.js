@@ -15,7 +15,6 @@ export const generateCryptoMaterial = async function (username) {
     return {csr: csr, privateKey: privateKey, cryptoPK: cryptoPK};
 
   } catch (e) {
-    console.log(e.message);
   }
 
 } 
@@ -59,7 +58,6 @@ const exportCryptoKey = async function (keyType, key) {
         return pemExported;
     }
   } catch (e) {
-    console.log(e.message)
   }
 }
 

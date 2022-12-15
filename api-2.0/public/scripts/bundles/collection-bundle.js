@@ -11305,8 +11305,8 @@ window.collectionClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context.next = 20;
+          if (!(localStorage.getItem("keyOnServer") === "false")) {
+            _context.next = 19;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11323,17 +11323,16 @@ window.collectionClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
           return renderCollection(nftTokens);
         case 11:
           document.getElementById("flash").innerHTML = successCollectionFlashMessage;
-          _context.next = 18;
+          _context.next = 17;
           break;
         case 14:
           _context.prev = 14;
           _context.t0 = _context["catch"](5);
           document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
-          console.log("Erro: ", _context.t0.message);
-        case 18:
+        case 17:
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("loader").style.display = "none";
-        case 20:
+        case 19:
         case "end":
           return _context.stop();
       }
@@ -11350,8 +11349,8 @@ window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          if (!(localStorage.getItem("keyOnServer") == "true")) {
-            _context2.next = 20;
+          if (!(localStorage.getItem("keyOnServer") === "true")) {
+            _context2.next = 19;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11368,17 +11367,16 @@ window.collectionServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__
           return renderCollection(nftTokens);
         case 11:
           document.getElementById("flash").innerHTML = successCollectionFlashMessage;
-          _context2.next = 18;
+          _context2.next = 17;
           break;
         case 14:
           _context2.prev = 14;
           _context2.t0 = _context2["catch"](5);
           document.getElementById("flash").innerHTML = failureCollectionFlashMessage;
-          console.log("Error: ", _context2.t0.message);
-        case 18:
+        case 17:
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("loader").style.display = "none";
-        case 20:
+        case 19:
         case "end":
           return _context2.stop();
       }
@@ -11392,12 +11390,12 @@ function getNftTokens() {
 }
 function _getNftTokens() {
   _getNftTokens = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-    var result, _yield$_response$json, token, headers, url, init, _response, transaction, _response2, nftArray, i;
+    var result, _yield$response$json, token, headers, url, init, response, transaction, _response, nftArray, i;
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") == "true")) {
+            if (!(localStorage.getItem("keyOnServer") === "true")) {
               _context4.next = 23;
               break;
             }
@@ -11412,17 +11410,17 @@ function _getNftTokens() {
             _context4.next = 8;
             return fetch(url, init);
           case 8:
-            _response = _context4.sent;
+            response = _context4.sent;
             _context4.next = 11;
-            return _response.json();
+            return response.json();
           case 11:
-            _context4.t1 = _yield$_response$json = _context4.sent;
+            _context4.t1 = _yield$response$json = _context4.sent;
             _context4.t0 = _context4.t1 === null;
             if (_context4.t0) {
               _context4.next = 15;
               break;
             }
-            _context4.t0 = _yield$_response$json === void 0;
+            _context4.t0 = _yield$response$json === void 0;
           case 15:
             if (!_context4.t0) {
               _context4.next = 19;
@@ -11432,7 +11430,7 @@ function _getNftTokens() {
             _context4.next = 20;
             break;
           case 19:
-            _context4.t2 = _yield$_response$json.result;
+            _context4.t2 = _yield$response$json.result;
           case 20:
             result = _context4.t2;
             _context4.next = 30;
@@ -11448,9 +11446,9 @@ function _getNftTokens() {
             _context4.next = 26;
             return client.offlineTransaction(transaction);
           case 26:
-            _response2 = _context4.sent;
+            _response = _context4.sent;
             _context4.next = 29;
-            return JSON.parse(_response2.payload);
+            return JSON.parse(_response.payload);
           case 29:
             result = _context4.sent;
           case 30:
@@ -11532,15 +11530,14 @@ function _renderCollection() {
             _context5.next = 3;
             break;
           case 34:
-            _context5.next = 38;
+            _context5.next = 37;
             break;
           case 36:
-            console.log("HTTP Error ", response.status);
             return _context5.abrupt("return", null);
-          case 38:
+          case 37:
             //Desabilitar gif do loader
             document.getElementById("loader").style.display = "none";
-          case 39:
+          case 38:
           case "end":
             return _context5.stop();
         }
@@ -11559,7 +11556,7 @@ function _nftMetadata() {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") == "true")) {
+            if (!(localStorage.getItem("keyOnServer") === "true")) {
               _context6.next = 12;
               break;
             }
@@ -11723,7 +11720,7 @@ window.compensate = /*#__PURE__*/function () {
           case 28:
             metadataHash = _context3.t2;
             URI = "http://".concat(metadataHash, ".com"); // 2. Set URI Metadata in World State
-            if (!(localStorage.getItem("keyOnServer") == "true")) {
+            if (!(localStorage.getItem("keyOnServer") === "true")) {
               _context3.next = 39;
               break;
             }
@@ -11761,7 +11758,7 @@ window.compensate = /*#__PURE__*/function () {
               break;
             }
             document.getElementById("loader").style.display = "none";
-            if (!(localStorage.getItem("keyOnServer") == "true")) {
+            if (!(localStorage.getItem("keyOnServer") === "true")) {
               _context3.next = 49;
               break;
             }
@@ -11778,15 +11775,14 @@ window.compensate = /*#__PURE__*/function () {
               document.getElementById("flash").innerHTML = _element;
             }
             window.location.href = "/collection";
-            _context3.next = 58;
+            _context3.next = 57;
             break;
           case 53:
             document.getElementById("loader").style.display = "none";
-            console.log("HTTP Error ", response.status);
             _element2 = failureCompensationFlashMessage;
             document.getElementById("flash").innerHTML = _element2;
             return _context3.abrupt("return", null);
-          case 58:
+          case 57:
           case "end":
             return _context3.stop();
         }
@@ -11860,8 +11856,7 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
-            // Sends transaction proposal generation request to server
+            token = localStorage.getItem("token"); // Sends transaction proposal generation request to server
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
             _context.next = 11;
             return sendToServer("POST", url, body, token);
@@ -11870,7 +11865,6 @@ var offlineTransaction = /*#__PURE__*/function () {
             // The transaction proposal hash
             digest = proposalResponse.result.digest; // The transaction proposal in Hex
             proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
-            // console.log("### 2. Sign transaction proposal");
             _context.next = 16;
             return signTransaction(digest, privateKey);
           case 16:
@@ -11880,7 +11874,6 @@ var offlineTransaction = /*#__PURE__*/function () {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            // console.log("### 3. Send signed transaction proposal to server");
             url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
             _context.next = 22;
             return sendToServer("POST", url, signedProposal, token);
@@ -11971,9 +11964,8 @@ var sendToServer = /*#__PURE__*/function () {
             json = _context2.sent;
             return _context2.abrupt("return", json);
           case 15:
-            console.log("HTTP Error ", response.status);
             return _context2.abrupt("return", null);
-          case 17:
+          case 16:
           case "end":
             return _context2.stop();
         }

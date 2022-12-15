@@ -20,6 +20,25 @@ fi
 source ~/.profile
 [ -f ~/.npm-global/bin/browserify ] || npm install -g browserify
 
+
+#create temporary scripts with environment variables substituted by their value defined at .env
+source ./.env
+
+function update() {
+    for file in *.js ; do
+        echo $file
+        sed -e "s/\${HOST}/$1/g" \
+            -e "s/\${PORT}/$2/g"  \
+            $file > ../$file
+
+    done
+}
+
+cd ./public/scripts/src/
+update $HOST $PORT
+cd ../../../
+
+
 #create directory where the bundles will be stored
 mkdir -p ./public/scripts/bundles/
 
@@ -42,3 +61,8 @@ browserify ./public/scripts/transfer.js > ./public/scripts/bundles/transfer-bund
 #create collection-bundle.js
 echo "Creating collection-bundle.js"
 browserify ./public/scripts/collection.js > ./public/scripts/bundles/collection-bundle.js -t babelify
+
+#after bundles were generated, the temporary scripts are removed
+for file in public/scripts/*.js ; do
+        rm -f -- $file
+done

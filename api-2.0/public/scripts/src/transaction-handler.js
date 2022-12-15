@@ -41,7 +41,6 @@ export const offlineTransaction = async (transaction) => {
       certificate: certificate
     };
     const token = localStorage.getItem("token");
-    // console.log("### 1. Request transaction proposal generation");
     // Sends transaction proposal generation request to server
     var url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal`;
     const proposalResponse = await sendToServer("POST", url, body, token);
@@ -53,7 +52,6 @@ export const offlineTransaction = async (transaction) => {
     const proposalHex = proposalResponse.result.proposal;
 
     // 2. Sign transaction proposal
-    // console.log("### 2. Sign transaction proposal");
     const proposalSignature = await signTransaction(digest, privateKey);
     let proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
     let signedProposal = {
@@ -62,7 +60,6 @@ export const offlineTransaction = async (transaction) => {
     };
 
     // 3. Send signed transaction proposal to server
-    // console.log("### 3. Send signed transaction proposal to server");
     url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/send-proposal`;
     const sendProposalResponse = await sendToServer("POST", url, 
       signedProposal, token);
@@ -73,7 +70,6 @@ export const offlineTransaction = async (transaction) => {
 
     if (proposalResponseStatus == 200) {
       // 4. Sign transaction
-      // console.log("### 4. Sign transaction");
       let transactionSignature = await signTransaction(transactionDigest, privateKey);
       let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
       var signedTransactionProposal = {
@@ -123,7 +119,6 @@ export const offlineTransaction = async (transaction) => {
     let json = await response.json();
     return json;
   } else {
-    console.log("HTTP Error ", response.status);
     return null;
   }
 }
