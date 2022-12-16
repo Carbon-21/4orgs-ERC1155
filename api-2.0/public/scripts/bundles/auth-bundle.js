@@ -27184,7 +27184,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 46;
+            _context.next = 48;
             break;
           }
           _context.next = 28;
@@ -27192,39 +27192,41 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 42;
+            _context.next = 44;
             break;
           }
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", saveKeyOnServer);
+          localStorage.setItem("swapRoleOrgOrder", response.swapRoleOrgOrder);
+          console.log('response =', response);
           if (!response.certificate) {
-            _context.next = 39;
+            _context.next = 41;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 37;
+            _context.next = 39;
             break;
           }
-          _context.next = 37;
-          return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 37:
           _context.next = 39;
-          return crypto.downloadCrypto(name, response.certificate, 'certificate');
+          return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
         case 39:
+          _context.next = 41;
+          return crypto.downloadCrypto(name, response.certificate, 'certificate');
+        case 41:
           window.location.href = '/';
-          _context.next = 44;
+          _context.next = 46;
           break;
-        case 42:
+        case 44:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 44:
-          _context.next = 48;
-          break;
         case 46:
+          _context.next = 50;
+          break;
+        case 48:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 48:
+        case 50:
         case "end":
           return _context.stop();
       }
@@ -27282,6 +27284,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.split("/")[0]);
             localStorage.setItem("keyOnServer", response.keyOnServer);
+            localStorage.setItem("swapRoleOrgOrder", response.swapRoleOrgOrder);
             window.location.href = '/';
           } else {
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";

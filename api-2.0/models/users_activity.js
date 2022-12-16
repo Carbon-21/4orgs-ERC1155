@@ -62,6 +62,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: 0,
       field: 'key_on_server'
+    },
+    swapRoleOrgOrder: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: 0,
+      field: 'swap_role_org_order'
     }
   }, {
     sequelize,

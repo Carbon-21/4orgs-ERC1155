@@ -95,18 +95,28 @@ exports.signup = async (req, res, next) => {
   const user = req.body;
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
-
-  //update user on DB
-  let response = await saveUserToDatabase(user, next);
-  if (!response) return;
-
+  
   //enroll user in the CA and save it in the wallet
   let enrollResponse = await enrollUserInCA(user, next);
   if (!enrollResponse.success) return;
-  response.certificate = enrollResponse.certificate;
+  let response = {certificate: enrollResponse.certificate};
+
+  let swapRoleOrgOrder = false;
+  const parsedCertificate = new crypto.X509Certificate(enrollResponse.certificate);
+  let subjects = parsedCertificate.subject.split("OU=")
+  if (subjects[0].startsWith("carbon")) swapRoleOrgOrder = true;
+
+  user.swapRoleOrgOrder = swapRoleOrgOrder;
+
+  
+  //update user on DB
+  let insertResponse = await saveUserToDatabase(user, next);
+  if (!insertResponse) return;
+  response.message = insertResponse.message;
 
   //create JWT, add to reponse
   response.token = auth.createJWT(user.email, user.org);
+  response.swapRoleOrgOrder = swapRoleOrgOrder;
 
   res.json(response);
 };
@@ -186,7 +196,8 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
       message: `Welcome!`,
       token,
-      keyOnServer: user.keyOnServer // Boolean that informs whether the user's key is stored on the server or not.
+      keyOnServer: user.keyOnServer, // Boolean that informs whether the user's key is stored on the server or not.
+      swapRoleOrgOrder: user.swapRoleOrgOrder
     });
   } catch (err) {
     logger.error(err);
@@ -246,6 +257,7 @@ const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
   user.keyOnServer = user.saveKeyOnServer; // Boolean that informs whether the user's key is stored on the server or not.
   if (typeof user.keyOnServer !== "boolean") user.keyOnServer = true;
+  if (typeof user.swapRoleOrgOrder !== "boolean") user.swapRoleOrgOrder = false;
   let obj;
   try {
     obj = await models.users.findOne({

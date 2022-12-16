@@ -53,6 +53,7 @@ window.signup = async function () {
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", saveKeyOnServer);
+          localStorage.setItem("swapRoleOrgOrder", response.swapRoleOrgOrder);
           if (response.certificate) {
               if (!saveKeyOnServer)
                   await crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
@@ -115,6 +116,7 @@ window.login = async function () {
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", response.keyOnServer);
+          localStorage.setItem("swapRoleOrgOrder", response.swapRoleOrgOrder);
           window.location.href = '/';
       } else {
           let element =     

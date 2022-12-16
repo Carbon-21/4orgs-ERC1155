@@ -17,7 +17,8 @@ create table users(
     avatar varchar(255),
     status varchar(12) default 'registering' not null,
     update_user varchar(10) default 'self' not null, -- not ID (self,admin etc)
-    key_on_server boolean default false not null -- whether user's privete key is stored on the server (true or false)
+    key_on_server boolean default false not null, -- whether user's privete key is stored on the server (true or false)
+    swap_role_org_order boolean default false not null -- Chooses the order of appearance of the user's role and org attributes in the client account id
 );
 
 create table users_activity(
@@ -34,7 +35,8 @@ create table users_activity(
     org varchar(30),
     avatar varchar(255),
     status varchar(12),
-    key_on_server boolean default false
+    key_on_server boolean default false,
+    swap_role_org_order boolean default false
 );
 
 create table authentication_log(
@@ -52,14 +54,14 @@ DELIMITER $$
 CREATE TRIGGER insert_users_activity AFTER INSERT ON users
 FOR EACH ROW
 BEGIN
-  INSERT INTO users_activity (action, action_user, user_id, name, cpf, email, password, seed, org, avatar, status, key_on_server)
-  VALUES('INSERT', NEW.update_user, NEW.id, NEW.name, NEW.cpf, NEW.email, NEW.password, NEW.seed, NEW.org, NEW.avatar, NEW.status, NEW.key_on_server);
+  INSERT INTO users_activity (action, action_user, user_id, name, cpf, email, password, seed, org, avatar, status, key_on_server, swap_role_org_order)
+  VALUES('INSERT', NEW.update_user, NEW.id, NEW.name, NEW.cpf, NEW.email, NEW.password, NEW.seed, NEW.org, NEW.avatar, NEW.status, NEW.key_on_server, NEW.swap_role_org_order);
 END$$
 
 CREATE TRIGGER update_users_activity AFTER UPDATE ON users
 FOR EACH ROW
 BEGIN
-  INSERT INTO users_activity (action, action_user, user_id, name, cpf, email,password, seed, org, avatar, status, key_on_server)
+  INSERT INTO users_activity (action, action_user, user_id, name, cpf, email,password, seed, org, avatar, status, key_on_server, swap_role_org_order)
   VALUES('UPDATE', NEW.update_user, NEW.id,
         if (OLD.name != NEW.name,NEW.name,null),
         if (OLD.cpf != NEW.cpf,NEW.cpf,null),
@@ -71,7 +73,8 @@ BEGIN
         if (OLD.org != NEW.org, NEW.org, null),
         if ((OLD.avatar is null and NEW.avatar is not null) or (OLD.avatar != NEW.avatar),NEW.avatar,null),
         if (OLD.status != NEW.status,NEW.status,null),
-        if (OLD.key_on_server != NEW.key_on_server,NEW.key_on_server,null));
+        if (OLD.key_on_server != NEW.key_on_server,NEW.key_on_server,null),
+        if (OLD.swap_role_org_order != NEW.swap_role_org_order,NEW.swap_role_org_order,null));
 END$$
 
 DELIMITER ;
