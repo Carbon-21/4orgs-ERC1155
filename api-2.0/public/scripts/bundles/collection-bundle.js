@@ -11551,62 +11551,49 @@ function nftMetadata(_x2) {
 } // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
 function _nftMetadata() {
   _nftMetadata = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(tokenId) {
-    var response, token, headers, url, init, transaction, URI, _token, _headers, body, _url;
+    var token, headers, init, response, url, transaction, URI, _url;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            if (!(localStorage.getItem("keyOnServer") === "true")) {
-              _context6.next = 12;
-              break;
-            }
             token = localStorage.getItem("token");
             headers = new Headers();
-            headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
-            url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
             init = {
-              method: "POST",
+              method: "GET",
               headers: headers
             };
-            _context6.next = 9;
+            if (!(localStorage.getItem("keyOnServer") === "true")) {
+              _context6.next = 11;
+              break;
+            }
+            url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
+            _context6.next = 8;
             return fetch(url, init);
-          case 9:
+          case 8:
             response = _context6.sent;
-            _context6.next = 27;
+            _context6.next = 20;
             break;
-          case 12:
+          case 11:
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "GetURI",
               args: [tokenId]
             }; // GetURI Transaction
-            _context6.next = 15;
+            _context6.next = 14;
             return client.offlineTransaction(transaction);
-          case 15:
+          case 14:
             response = _context6.sent;
             URI = response.payload; // GetMetadata
-            _token = localStorage.getItem("token");
-            _headers = new Headers();
-            _headers.append("Content-Type", "application/json");
-            _headers.append("Authorization", "Bearer " + _token);
-            body = JSON.stringify({
-              URI: URI
-            });
-            _url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId);
-            init = {
-              method: "POST",
-              headers: _headers,
-              body: body
-            };
-            _context6.next = 26;
+            _url = "https://localhost:4000/meta/getMetadata?tokenId=".concat(tokenId, "&URI=").concat(URI);
+            _context6.next = 19;
             return fetch(_url, init);
-          case 26:
+          case 19:
             response = _context6.sent;
-          case 27:
+          case 20:
             return _context6.abrupt("return", response.json());
-          case 28:
+          case 21:
           case "end":
             return _context6.stop();
         }

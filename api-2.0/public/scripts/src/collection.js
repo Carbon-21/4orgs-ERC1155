@@ -163,18 +163,18 @@ async function renderCollection(nftTokens) {
 
 // Recuperar json dos metadados do nft (dado tokenId)
 async function nftMetadata(tokenId) {
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Authorization", "Bearer " + token);
+  var init = {
+    method: "GET",
+    headers: headers,
+  };
   let response;
+  
   if (localStorage.getItem("keyOnServer") === "true") {
-    let token = localStorage.getItem("token");
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Authorization", "Bearer " + token);
   
     let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
-    var init = {
-      method: "POST",
-      headers: headers,
-    };
     response = await fetch(url, init);
 
   } else {
@@ -189,20 +189,7 @@ async function nftMetadata(tokenId) {
     let URI = response.payload;
 
     // GetMetadata
-    let token = localStorage.getItem("token");
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Authorization", "Bearer " + token);
-    let body = JSON.stringify({
-      URI: URI
-    });
-    let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
-    var init = {
-      method: "POST",
-      headers: headers,
-      body: body
-    };
-  
+    let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}&URI=${URI}`;
     response = await fetch(url, init);
 
   }

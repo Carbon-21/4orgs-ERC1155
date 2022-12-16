@@ -10,7 +10,7 @@ exports.getMetadata = async (req, res, next) => {
   let URI;
 
   try {
-    if (req.body.URI) URI = req.body.URI;
+    if (req.query.URI) URI = req.query.URI;
     else {
       let response = await axios
       .get(`https://${process.env.HOST}:${process.env.PORT}/query/channels/mychannel/chaincodes/erc1155/getURI?tokenId=${tokenId}`, {
