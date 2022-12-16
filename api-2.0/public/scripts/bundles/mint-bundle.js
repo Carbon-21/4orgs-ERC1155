@@ -11348,9 +11348,9 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             qty = document.getElementById("qty").value; // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
             role = localStorage.getItem("username").startsWith("admin") ? "admin" : "client";
             if (localStorage.getItem("swapRoleOrgOrder") === "true") {
-              clientAccountId = "x509::CN=".concat(username, ",OU=").concat(role, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
-            } else {
               clientAccountId = "x509::CN=".concat(username, ",OU=carbon+OU=").concat(role, "+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            } else {
+              clientAccountId = "x509::CN=".concat(username, ",OU=").concat(role, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
             }
 
             // Base-64 encoding of clientAccountId
