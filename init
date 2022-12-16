@@ -75,8 +75,10 @@ chmod +x deployChaincode.sh
 cd api-2.0
 cd ./config/
 [ -f ./connection-carbon.json ] || ./generate-ccp.sh
+cd ..
 
 #generate bundles
+
 ./get-bundles
 
 npm install
