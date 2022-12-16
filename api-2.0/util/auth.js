@@ -8,8 +8,8 @@ const logger = require("./logger");
 
 const { sign } = require("jsonwebtoken");
 
-exports.createJWT = (username, org, role = "client", expiration = process.env.JWT_EXPIRATION) => {
-  const token = sign({ username, org, role }, process.env.JWT_SECRET_KEY, {
+exports.createJWT = (username, org, role = "client", swapRoleOrgOrder = false, expiration = process.env.JWT_EXPIRATION) => {
+  const token = sign({ username, org, role, swapRoleOrgOrder }, process.env.JWT_SECRET_KEY, {
     expiresIn: expiration,
   });
   logger.debug(`JWT: ${token}`);

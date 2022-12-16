@@ -392,7 +392,7 @@ async function execWrapper(cmd) {
  * @param {*} org The user's organization.
  * @returns The user's client account id.
  */
-async function mountClientAccountId(username, role, org) {
+async function mountClientAccountId(username, role, org, swapRoleOrgOrder) {
   try
   {
     const user = await getRegisteredUserFromCA(username, org);
@@ -401,7 +401,13 @@ async function mountClientAccountId(username, role, org) {
     throw err;
   }
   
-  let clientAccountId = `x509::CN=${username},OU=${role.toLowerCase()}+OU=${org.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+  let clientAccountId;
+
+  if (swapRoleOrgOrder) {
+    clientAccountId = `x509::CN=${username},OU=${org.toLowerCase()}+OU=${role.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+  } else {
+    clientAccountId = `x509::CN=${username},OU=${role.toLowerCase()}+OU=${org.toLowerCase()}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+  }
   
   // Base-64 encoding of clientAccountId
   clientAccountId = btoa(clientAccountId);

@@ -115,7 +115,7 @@ exports.signup = async (req, res, next) => {
   response.message = insertResponse.message;
 
   //create JWT, add to reponse
-  response.token = auth.createJWT(user.email, user.org);
+  response.token = auth.createJWT(user.email, user.org, "client", swapRoleOrgOrder);
   response.swapRoleOrgOrder = swapRoleOrgOrder;
 
   res.json(response);
@@ -183,7 +183,7 @@ exports.login = async (req, res, next) => {
   let token;
   try {
     //create jwt
-    token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
+    token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client", user.swapRoleOrgOrder);
 
     //log succesful login
     await models.authenticationLog.create({

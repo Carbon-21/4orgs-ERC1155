@@ -27184,7 +27184,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 48;
+            _context.next = 47;
             break;
           }
           _context.next = 28;
@@ -27192,41 +27192,40 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 44;
+            _context.next = 43;
             break;
           }
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", saveKeyOnServer);
           localStorage.setItem("swapRoleOrgOrder", response.swapRoleOrgOrder);
-          console.log('response =', response);
           if (!response.certificate) {
-            _context.next = 41;
+            _context.next = 40;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 39;
+            _context.next = 38;
             break;
           }
-          _context.next = 39;
+          _context.next = 38;
           return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 39:
-          _context.next = 41;
+        case 38:
+          _context.next = 40;
           return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 41:
+        case 40:
           window.location.href = '/';
-          _context.next = 46;
+          _context.next = 45;
           break;
-        case 44:
+        case 43:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 46:
-          _context.next = 50;
+        case 45:
+          _context.next = 49;
           break;
-        case 48:
+        case 47:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 50:
+        case 49:
         case "end":
           return _context.stop();
       }

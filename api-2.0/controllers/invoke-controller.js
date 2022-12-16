@@ -34,6 +34,7 @@ exports.mint = async (req, res, next) => {
   const tokenReceiver = req.body.tokenReceiver;
   const username = req.jwt.username;
   const org = req.jwt.org;
+  const swapRoleOrgOrder = req.jwt.swapRoleOrgOrder;
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
@@ -41,7 +42,7 @@ exports.mint = async (req, res, next) => {
 
   //mint
   try {
-    let receiverAccountId = await helper.mountClientAccountId(tokenReceiver, 'client', org);
+    let receiverAccountId = await helper.mountClientAccountId(tokenReceiver, 'client', org, swapRoleOrgOrder);
     await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount);
     logger.info("Mint successful");
 
