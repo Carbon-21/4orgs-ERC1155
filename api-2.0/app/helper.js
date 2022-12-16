@@ -392,7 +392,10 @@ async function execWrapper(cmd) {
  * @param {*} org The user's organization.
  * @returns The user's client account id.
  */
-async function mountClientAccountId(username, role, org, swapRoleOrgOrder) {
+async function mountClientAccountId(username, org, swapRoleOrgOrder) {
+  
+  let role = username.startsWith("admin") ? "admin" : "client";
+  
   try
   {
     const user = await getRegisteredUserFromCA(username, org);

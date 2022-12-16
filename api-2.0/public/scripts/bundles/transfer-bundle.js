@@ -11581,13 +11581,13 @@ window.transfer = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRunti
  */
 var transferClientSideSigning = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var _document$getElementB, usernameSource, usernameDest, tokenId, qty, token, receiverAccountId, senderAccountId, transaction, _yield$isUserRegister, headers, url, init, isUserRegisteredResponse, isUserRegistered, transactionResponse;
+    var _document$getElementB, usernameSource, usernameDest, tokenId, qty, token, receiverAccountId, senderAccountId, senderRole, receiverRole, transaction, _yield$isUserRegister, headers, url, init, isUserRegisteredResponse, isUserRegistered, transactionResponse;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") === "false")) {
-              _context2.next = 54;
+              _context2.next = 55;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11601,17 +11601,25 @@ var transferClientSideSigning = /*#__PURE__*/function () {
             tokenId = document.getElementById("tokenId").value;
             qty = document.getElementById("qty").value;
             token = localStorage.getItem("token"); // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-            receiverAccountId = "x509::CN=".concat(usernameDest, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
-            senderAccountId = "x509::CN=".concat(usernameSource, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
-            receiverAccountId = window.btoa(receiverAccountId);
+            senderRole = usernameSource.startsWith("admin") ? "admin" : "client";
+            receiverRole = usernameDest.startsWith("admin") ? "admin" : "client";
+            if (localStorage.getItem("swapRoleOrgOrder") === "true") {
+              senderAccountId = "x509::CN=".concat(usernameSource, ",OU=carbon+OU=").concat(senderRole, "+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+              receiverAccountId = "x509::CN=".concat(usernameDest, ",OU=carbon+OU=").concat(receiverRole, "+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            } else {
+              senderAccountId = "x509::CN=".concat(usernameSource, ",OU=").concat(senderRole, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+              receiverAccountId = "x509::CN=".concat(usernameDest, ",OU=").concat(receiverRole, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            }
+            // Base-64 encoding of clientAccountId
             senderAccountId = window.btoa(senderAccountId);
+            receiverAccountId = window.btoa(receiverAccountId);
             transaction = {
               chaincodeId: 'erc1155',
               channelId: 'mychannel',
               fcn: "TransferFrom",
               args: [senderAccountId, receiverAccountId, tokenId, qty]
             };
-            _context2.prev = 16;
+            _context2.prev = 17;
             // Verify if the user is registered
             headers = new Headers();
             headers.append("Authorization", "Bearer " + token);
@@ -11620,34 +11628,34 @@ var transferClientSideSigning = /*#__PURE__*/function () {
               method: "GET",
               headers: headers
             };
-            _context2.next = 23;
+            _context2.next = 24;
             return fetch(url, init);
-          case 23:
+          case 24:
             isUserRegisteredResponse = _context2.sent;
-            _context2.next = 26;
+            _context2.next = 27;
             return isUserRegisteredResponse.json();
-          case 26:
+          case 27:
             _context2.t1 = _yield$isUserRegister = _context2.sent;
             _context2.t0 = _context2.t1 === null;
             if (_context2.t0) {
-              _context2.next = 30;
+              _context2.next = 31;
               break;
             }
             _context2.t0 = _yield$isUserRegister === void 0;
-          case 30:
+          case 31:
             if (!_context2.t0) {
-              _context2.next = 34;
+              _context2.next = 35;
               break;
             }
             _context2.t2 = void 0;
-            _context2.next = 35;
+            _context2.next = 36;
             break;
-          case 34:
-            _context2.t2 = _yield$isUserRegister.result;
           case 35:
+            _context2.t2 = _yield$isUserRegister.result;
+          case 36:
             isUserRegistered = _context2.t2;
             if (!(!isUserRegisteredResponse.ok || !isUserRegistered)) {
-              _context2.next = 42;
+              _context2.next = 43;
               break;
             }
             document.getElementById("signing-files").style.display = "block";
@@ -11655,10 +11663,10 @@ var transferClientSideSigning = /*#__PURE__*/function () {
             document.getElementById("loader").style.display = "none";
             document.getElementById("flash").innerHTML = failureFlashMessage;
             return _context2.abrupt("return", null);
-          case 42:
-            _context2.next = 44;
+          case 43:
+            _context2.next = 45;
             return client.offlineTransaction(transaction);
-          case 44:
+          case 45:
             transactionResponse = _context2.sent;
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
@@ -11671,18 +11679,18 @@ var transferClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context2.next = 54;
+            _context2.next = 55;
             break;
-          case 51:
-            _context2.prev = 51;
-            _context2.t3 = _context2["catch"](16);
+          case 52:
+            _context2.prev = 52;
+            _context2.t3 = _context2["catch"](17);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-          case 54:
+          case 55:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[16, 51]]);
+    }, _callee2, null, [[17, 52]]);
   }));
   return function transferClientSideSigning() {
     return _ref2.apply(this, arguments);

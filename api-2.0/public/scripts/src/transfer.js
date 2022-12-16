@@ -41,14 +41,23 @@ const failureFlashMessage =
     let tokenId = document.getElementById("tokenId").value;
     let qty = document.getElementById("qty").value;
     let token = localStorage.getItem("token");
-    
+        
     // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-    let receiverAccountId = `x509::CN=${usernameDest},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
-    let senderAccountId = `x509::CN=${usernameSource},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
-    
+    let receiverAccountId;
+    let senderAccountId; 
+    let senderRole = usernameSource.startsWith("admin") ? "admin" : "client";
+    let receiverRole = usernameDest.startsWith("admin") ? "admin" : "client";
+
+    if (localStorage.getItem("swapRoleOrgOrder") === "true") {
+      senderAccountId = `x509::CN=${usernameSource},OU=carbon+OU=${senderRole}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+      receiverAccountId = `x509::CN=${usernameDest},OU=carbon+OU=${receiverRole}+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+    } else {
+      senderAccountId = `x509::CN=${usernameSource},OU=${senderRole}+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+      receiverAccountId = `x509::CN=${usernameDest},OU=${receiverRole}+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+    }
     // Base-64 encoding of clientAccountId
-    receiverAccountId = window.btoa(receiverAccountId);
     senderAccountId = window.btoa(senderAccountId);
+    receiverAccountId = window.btoa(receiverAccountId);
     
     const transaction = {
       chaincodeId: 'erc1155',

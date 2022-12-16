@@ -11329,13 +11329,13 @@ window.mintNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntim
  */
 var mintFTClientSideSigning = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-    var _document$getElementB, username, qty, clientAccountId, transaction, response;
+    var _document$getElementB, username, qty, clientAccountId, role, transaction, response;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") === "false")) {
-              _context3.next = 24;
+              _context3.next = 25;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11346,7 +11346,14 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             event.preventDefault();
             username = document.getElementById("username").value;
             qty = document.getElementById("qty").value; // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
+            role = localStorage.getItem("username").startsWith("admin") ? "admin" : "client";
+            if (localStorage.getItem("swapRoleOrgOrder") === "true") {
+              clientAccountId = "x509::CN=".concat(username, ",OU=").concat(role, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            } else {
+              clientAccountId = "x509::CN=".concat(username, ",OU=carbon+OU=").concat(role, "+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            }
+
+            // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
               chaincodeId: "erc1155",
@@ -11354,10 +11361,10 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
               fcn: "Mint",
               args: [clientAccountId, "$ylvas", qty]
             };
-            _context3.prev = 11;
-            _context3.next = 14;
+            _context3.prev = 12;
+            _context3.next = 15;
             return client.offlineTransaction(transaction);
-          case 14:
+          case 15:
             response = _context3.sent;
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
@@ -11370,18 +11377,18 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context3.next = 24;
+            _context3.next = 25;
             break;
-          case 21:
-            _context3.prev = 21;
-            _context3.t0 = _context3["catch"](11);
+          case 22:
+            _context3.prev = 22;
+            _context3.t0 = _context3["catch"](12);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-          case 24:
+          case 25:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[11, 21]]);
+    }, _callee3, null, [[12, 22]]);
   }));
   return function mintFTClientSideSigning() {
     return _ref3.apply(this, arguments);
@@ -11459,13 +11466,13 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTClientSideSigning = /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-    var _document$getElementB2, username, nftId, qty, clientAccountId, transaction, response;
+    var _document$getElementB2, username, nftId, qty, clientAccountId, role, transaction, response;
     return _regeneratorRuntime().wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
             if (!(localStorage.getItem("keyOnServer") === "false")) {
-              _context5.next = 25;
+              _context5.next = 26;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11479,7 +11486,14 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             qty = 1; //let phyto = document.getElementById("phyto").value;
             //let location = document.getElementById("location").value;
             // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-            clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
+            role = localStorage.getItem("username").startsWith("admin") ? "admin" : "client";
+            if (localStorage.getItem("swapRoleOrgOrder") === "true") {
+              clientAccountId = "x509::CN=".concat(username, ",OU=").concat(role, "+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            } else {
+              clientAccountId = "x509::CN=".concat(username, ",OU=carbon+OU=").concat(role, "+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US");
+            }
+
+            // Base-64 encoding of clientAccountId
             clientAccountId = window.btoa(clientAccountId);
             transaction = {
               chaincodeId: "erc1155",
@@ -11487,10 +11501,10 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
               fcn: "Mint",
               args: [clientAccountId, nftId, qty]
             };
-            _context5.prev = 12;
-            _context5.next = 15;
+            _context5.prev = 13;
+            _context5.next = 16;
             return client.offlineTransaction(transaction);
-          case 15:
+          case 16:
             response = _context5.sent;
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
@@ -11503,18 +11517,18 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 25;
+            _context5.next = 26;
             break;
-          case 22:
-            _context5.prev = 22;
-            _context5.t0 = _context5["catch"](12);
+          case 23:
+            _context5.prev = 23;
+            _context5.t0 = _context5["catch"](13);
             document.getElementById("flash").innerHTML = failureFlashMessage;
-          case 25:
+          case 26:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[12, 22]]);
+    }, _callee5, null, [[13, 23]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);
