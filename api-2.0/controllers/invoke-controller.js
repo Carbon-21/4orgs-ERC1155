@@ -337,7 +337,7 @@ exports.ftfromnft = async (req, res, next) => {
 
     //console.log(IDsNFT[0][0])
 
-    let metadataObj = {};
+    let metadataObj = [];
 
     IDsNFT.forEach(el => {
         // Obtem os metadados desses NFTS
@@ -378,15 +378,19 @@ exports.ftfromnft = async (req, res, next) => {
 
         //console.log("Item:", item);
         console.log("Adicionando Objeto")
-        metadataObj = Object.assign(item);
-        console.log("OBJ:", metadataObj)
-        console.log("Qtd OBJ", IDsNFT.length);        
-
-        console.log("Tamanho Metadados", metadataObj.length)
+        metadataObj.push(item);
+        //console.log("OBJ:", metadataObj)
+        //console.log("Qtd OBJ", IDsNFT.length);        
+        //console.log("Tamanho Metadados", metadataObj.length);
+        
         if (IDsNFT.length == metadataObj.length){
-          console.log("FOI");
+		/*metadataObj.forEach(el => { 
+		  	console.log("Elementos:", el)
+		});          */
+		
+		// Chama chaincode com a lista de itens
+		console.log(JSON.stringify(metadataObj));
         }        
-        //metadataObj.forEach(el => { console.log(el)});
       }
 
   
