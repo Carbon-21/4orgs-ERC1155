@@ -96,9 +96,8 @@ const mintFTServerSideSigning = async () => {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
 
-  headers.append("Authorization", "Bearer " + token)
+  headers.append("Authorization", "Bearer " + token);
   let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
-
 
   var init = {
     method: "POST",
@@ -145,8 +144,8 @@ const mintNFTClientSideSigning = async () => {
     event.preventDefault();
 
     let username = document.getElementById("username").value;
-    let nftId = document.getElementById("nftId").value;
     let qty = 1;
+    // let nftId = document.getElementById("nftId").value;
     //let phyto = document.getElementById("phyto").value;
     //let location = document.getElementById("location").value;
 
@@ -160,7 +159,8 @@ const mintNFTClientSideSigning = async () => {
       chaincodeId: "erc1155",
       channelId: "mychannel",
       fcn: "Mint",
-      args: [clientAccountId, nftId, qty],
+      // args: [clientAccountId, nftId, qty],
+      args: [clientAccountId, "NFT", qty], //AQUI
     };
 
     try {
@@ -195,15 +195,14 @@ const mintNFTServerSideSigning = async () => {
   document.getElementById("submitButton").style.display = "none";
 
   let username = document.getElementById("username").value;
-  let nftId = document.getElementById("nftId").value;
   let qty = 1;
   let token = localStorage.getItem("token");
+  // let nftId = document.getElementById("nftId").value;
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token)
+  headers.append("Authorization", "Bearer " + token);
   let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
-
 
   var init = {
     method: "POST",
@@ -211,7 +210,7 @@ const mintNFTServerSideSigning = async () => {
   };
 
   var body = {
-    tokenId: nftId,
+    tokenId: "NFT", //AQUI
     tokenAmount: qty,
     tokenReceiver: username,
   };
@@ -229,7 +228,7 @@ const mintNFTServerSideSigning = async () => {
 
   // Post metadata through ipfs node
   let metadata = {
-    id: nftId,
+    id: "NFT", //AQUI
     status: `Ativo`,
     amount: qty,
     land_owner: document.getElementById("landOwner").value,
@@ -243,10 +242,33 @@ const mintNFTServerSideSigning = async () => {
   let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
   init.body = JSON.stringify({
     metadata,
-    tokenId: nftId,
+    tokenId: "NFT", //AQUI
   });
   let metadataResponse = await fetch(postMetadataURL, init);
   let metadataResponseJson = await metadataResponse.json();
+
+  if (!metadataResponse.ok || metadataResponseJson.result != "success") {
+    document.getElementById("submitButton").style.display = "flex";
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    return null;
+  }
+
+  let metadataHash = metadataResponseJson.metadataHash;
+  // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  const URI = `http://${metadataHash}.com`;
+  let setUriURL = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`;
+  body = JSON.stringify({
+    URI: URI,
+    tokenId: "NFT", //AQUI
+  });
+  init = {
+    method: "POST",
+    headers: headers,
+    body: body,
+  };
+
+  let setURIResponse = await fetch(setUriURL, init);
 
   document.getElementById("submitButton").style.display = "flex";
   document.getElementById("loader").style.display = "none";

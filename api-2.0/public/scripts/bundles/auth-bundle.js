@@ -27113,12 +27113,18 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
           localStorage.setItem("token", response.token);
           localStorage.setItem("username", email.slice(0, -1));
           localStorage.setItem("keyOnServer", saveKeyOnServer);
+<<<<<<< HEAD
           console.log('response', response);
+=======
+
+          //if saveKeyOnServer => download cert and private key
+>>>>>>> 3115182f (finalizado, porem com os bugs que estão no develop)
           if (!response.certificate) {
             _context.next = 40;
             break;
           }
           if (saveKeyOnServer) {
+<<<<<<< HEAD
             _context.next = 38;
             break;
           }
@@ -27130,6 +27136,19 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 40:
           window.location.href = '/';
           _context.next = 45;
+=======
+            _context.next = 39;
+            break;
+          }
+          _context.next = 37;
+          return crypto.downloadCrypto(name, cryptoMaterials.privateKey, "privateKey");
+        case 37:
+          _context.next = 39;
+          return crypto.downloadCrypto(name, response.certificate, "certificate");
+        case 39:
+          window.location.href = "/";
+          _context.next = 44;
+>>>>>>> 3115182f (finalizado, porem com os bugs que estão no develop)
           break;
         case 43:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
@@ -27198,7 +27217,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.split("/")[0]);
             localStorage.setItem("keyOnServer", response.keyOnServer);
-            window.location.href = '/';
+            window.location.href = "/";
           } else {
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;
