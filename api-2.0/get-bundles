@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #install node modules if they are not installed already
 echo "Installing node modules if they are not installed already"
 if [ -d ./node_modules/babelify ]; then
@@ -19,6 +21,12 @@ else
 fi
 source ~/.profile
 [ -f ~/.npm-global/bin/browserify ] || npm install -g browserify
+
+#create public scripts
+cd public/scripts/src
+chmod +x genscripts.sh
+./genscripts.sh
+cd ../../..
 
 #create directory where the bundles will be stored
 mkdir -p ./public/scripts/bundles/

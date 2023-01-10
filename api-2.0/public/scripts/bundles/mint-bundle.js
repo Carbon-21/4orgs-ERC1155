@@ -11465,8 +11465,9 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
+            console.log("CLIENT");
             if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context5.next = 25;
+              _context5.next = 26;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11489,10 +11490,10 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
               // args: [clientAccountId, nftId, qty],
               args: [clientAccountId, "NFT", qty] //AQUI
             };
-            _context5.prev = 11;
-            _context5.next = 14;
+            _context5.prev = 12;
+            _context5.next = 15;
             return client.offlineTransaction(transaction);
-          case 14:
+          case 15:
             response = _context5.sent;
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
@@ -11500,24 +11501,24 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             document.getElementById("loader").style.display = "none";
 
             // Displays Flash Messages
-            if (response.result == "SUCCESS") {
+            if (response.result == "success") {
               document.getElementById("flash").innerHTML = successFlashMessage;
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 25;
+            _context5.next = 26;
             break;
-          case 21:
-            _context5.prev = 21;
-            _context5.t0 = _context5["catch"](11);
+          case 22:
+            _context5.prev = 22;
+            _context5.t0 = _context5["catch"](12);
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("Error:", _context5.t0.message);
-          case 25:
+          case 26:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[11, 21]]);
+    }, _callee5, null, [[12, 22]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);
@@ -11529,15 +11530,12 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-<<<<<<< HEAD
-    var username, nftId, qty, token, headers, url, init, body, response, responseJson, metadata, postMetadataURL, metadataResponse, metadataResponseJson;
-=======
-    var username, qty, token, headers, url, init, body, response, responseJson, metadata, postMetadataURL, metadataResponse, metadataResponseJson, metadataHash, URI, setUriURL, setURIResponse;
->>>>>>> 3115182f (finalizado, porem com os bugs que estão no develop)
+    var username, qty, token, headers, url, init, body, response, responseJson;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
+            console.log("CLIENT");
             event.preventDefault();
             document.getElementById("loader").style.display = "flex";
             document.getElementById("submitButton").style.display = "none";
@@ -11554,102 +11552,92 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
             };
             body = {
               tokenId: "NFT",
-              //AQUI
               tokenAmount: qty,
-              tokenReceiver: username
+              tokenReceiver: username,
+              metadata: {
+                id: "NFT",
+                status: "Ativo",
+                amount: qty,
+                land_owner: document.getElementById("landOwner").value,
+                land: document.getElementById("area").value,
+                phyto: document.getElementById("phyto").value,
+                geolocation: document.getElementById("location").value,
+                compensation_owner: document.getElementById("compensationOwner").value,
+                compensation_state: "Não Compensado"
+              }
             };
             init.body = JSON.stringify(body);
-            _context6.next = 15;
+            _context6.next = 16;
             return fetch(url, init);
-          case 15:
+          case 16:
             response = _context6.sent;
-            _context6.next = 18;
+            _context6.next = 19;
             return response.json();
-          case 18:
+          case 19:
             responseJson = _context6.sent;
+            document.getElementById("loader").style.display = "none";
             if (!(!response.ok || responseJson.result == null)) {
-              _context6.next = 24;
+              _context6.next = 25;
               break;
             }
             document.getElementById("submitButton").style.display = "flex";
-            document.getElementById("loader").style.display = "none";
             document.getElementById("flash").innerHTML = failureFlashMessage;
             return _context6.abrupt("return", null);
-          case 24:
-            // Post metadata through ipfs node
-            metadata = {
-              id: "NFT",
-              //AQUI
-              status: "Ativo",
-              amount: qty,
-              land_owner: document.getElementById("landOwner").value,
-              land: document.getElementById("area").value,
-              phyto: document.getElementById("phyto").value,
-              geolocation: document.getElementById("location").value,
-              compensation_owner: document.getElementById("compensationOwner").value,
-              compensation_state: "Não Compensado"
-            };
-            postMetadataURL = "https://localhost:4000/meta/postMetadata";
-            init.body = JSON.stringify({
-              metadata: metadata,
-              tokenId: "NFT" //AQUI
-            });
-            _context6.next = 29;
-            return fetch(postMetadataURL, init);
-          case 29:
-            metadataResponse = _context6.sent;
-            _context6.next = 32;
-            return metadataResponse.json();
-          case 32:
-            metadataResponseJson = _context6.sent;
-<<<<<<< HEAD
-            document.getElementById("submitButton").style.display = "flex";
-            document.getElementById("loader").style.display = "none";
-            if (!(!metadataResponse.ok || metadataResponseJson.result == null)) {
-              _context6.next = 39;
-=======
-            if (!(!metadataResponse.ok || metadataResponseJson.result != "success")) {
-              _context6.next = 38;
->>>>>>> 3115182f (finalizado, porem com os bugs que estão no develop)
-              break;
-            }
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-            return _context6.abrupt("return", null);
-<<<<<<< HEAD
-          case 39:
+          case 25:
             document.getElementById("flash").innerHTML = successFlashMessage;
-          case 40:
-=======
-          case 38:
-            metadataHash = metadataResponseJson.metadataHash; // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-            URI = "http://".concat(metadataHash, ".com");
-            setUriURL = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI";
-            body = JSON.stringify({
-              URI: URI,
-              tokenId: "NFT" //AQUI
-            });
 
-            init = {
-              method: "POST",
-              headers: headers,
-              body: body
-            };
-            _context6.next = 45;
-            return fetch(setUriURL, init);
-          case 45:
-            setURIResponse = _context6.sent;
-            document.getElementById("submitButton").style.display = "flex";
-            document.getElementById("loader").style.display = "none";
-            if (setURIResponse.ok) {
-              _context6.next = 51;
-              break;
-            }
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-            return _context6.abrupt("return", null);
-          case 51:
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          case 52:
->>>>>>> 3115182f (finalizado, porem com os bugs que estão no develop)
+            // Post metadata through ipfs node
+            // let metadata = {
+            //   id: "NFT", //AQUI
+            //   status: `Ativo`,
+            //   amount: qty,
+            //   land_owner: document.getElementById("landOwner").value,
+            //   land: document.getElementById("area").value,
+            //   phyto: document.getElementById("phyto").value,
+            //   geolocation: document.getElementById("location").value,
+            //   compensation_owner: document.getElementById("compensationOwner").value,
+            //   compensation_state: "Não Compensado",
+            // };
+
+            // let postMetadataURL = `https://localhost:4000/meta/postMetadata`;
+            // init.body = JSON.stringify({
+            //   metadata,
+            //   tokenId: "NFT", //AQUI
+            // });
+            // let metadataResponse = await fetch(postMetadataURL, init);
+            // let metadataResponseJson = await metadataResponse.json();
+
+            // if (!metadataResponse.ok || metadataResponseJson.result != "success") {
+            //   document.getElementById("submitButton").style.display = "flex";
+            //   document.getElementById("loader").style.display = "none";
+            //   document.getElementById("flash").innerHTML = failureFlashMessage;
+            //   return null;
+            // }
+
+            // let metadataHash = metadataResponseJson.metadataHash;
+            // // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+            // const URI = `http://${metadataHash}.com`;
+            // let setUriURL = `https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI`;
+            // body = JSON.stringify({
+            //   URI: URI,
+            //   tokenId: "NFT", //AQUI
+            // });
+            // init = {
+            //   method: "POST",
+            //   headers: headers,
+            //   body: body,
+            // };
+
+            // let setURIResponse = await fetch(setUriURL, init);
+
+            // document.getElementById("submitButton").style.display = "flex";
+            // document.getElementById("loader").style.display = "none";
+
+            // if (!metadataResponse.ok || metadataResponseJson.result == null) {
+            //   document.getElementById("flash").innerHTML = failureFlashMessage;
+            //   return null;
+            // }
+          case 26:
           case "end":
             return _context6.stop();
         }

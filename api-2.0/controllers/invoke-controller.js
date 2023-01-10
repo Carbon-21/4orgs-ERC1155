@@ -1,6 +1,7 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
+const { postMetadata } = require("../controllers/metadata-crontroller");
 const FabricClient = require("fabric-client");
 var util = require("util");
 var crypto = require("crypto");
@@ -31,7 +32,7 @@ exports.mint = async (req, res, next) => {
 
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
-  const tokenId = req.body.tokenId;
+  let tokenId = req.body.tokenId;
   const tokenAmount = req.body.tokenAmount;
   const tokenReceiver = req.body.tokenReceiver;
   const username = req.jwt.username;
@@ -45,9 +46,12 @@ exports.mint = async (req, res, next) => {
   const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
   if (!receiverAccountId) return;
 
-  //mint. If NFT => generate ID by hashing NFT info
+  //if NFT => generate ID by hashing NFT info
+  if (tokenId !== "$ylvas") tokenId = generateTokenId(req.body);
+
+  //mint.
   try {
-    await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId === "$ylvas" ? tokenId : generateTokenId({ ...req.body, ...req.jwt }), tokenAmount);
+    await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount);
 
     logger.info("Mint successful");
 
@@ -57,6 +61,16 @@ exports.mint = async (req, res, next) => {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
+  }
+
+  //if NFT => add metadata to IPFS
+  if (tokenId !== "$ylvas") {
+    try {
+      await postMetadata(req, res, next);
+    } catch (error) {
+      console.log(error);
+      return next(new HttpError(500, "Falha ao criar metadados no IPFS"));
+    }
   }
 
   //send OK response
