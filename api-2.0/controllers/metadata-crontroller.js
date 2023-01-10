@@ -70,6 +70,7 @@ exports.postMetadata = async (req, res, next) => {
     metadata = makeMetadata(req.body.metadata);
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
+    logger.debug("TokenId: " + tokenId);
     logger.debug("Hash of uploaded Metadata: " + hash);
   } catch (error) {
     return next(new HttpError(500), "Falha na aquisição dos metadados");

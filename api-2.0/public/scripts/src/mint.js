@@ -230,13 +230,13 @@ const mintNFTServerSideSigning = async () => {
   let response = await fetch(url, init);
   let responseJson = await response.json();
   document.getElementById("loader").style.display = "none";
+  document.getElementById("submitButton").style.display = "flex";
   if (!response.ok || responseJson.result == null) {
-    document.getElementById("submitButton").style.display = "flex";
     document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
+  } else {
+    document.getElementById("flash").innerHTML = successFlashMessage;
   }
-
-  document.getElementById("flash").innerHTML = successFlashMessage;
 
   // Post metadata through ipfs node
   // let metadata = {

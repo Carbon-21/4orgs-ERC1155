@@ -47,7 +47,10 @@ exports.mint = async (req, res, next) => {
   if (!receiverAccountId) return;
 
   //if NFT => generate ID by hashing NFT info
-  if (tokenId !== "$ylvas") tokenId = generateTokenId(req.body);
+  if (tokenId !== "$ylvas") {
+    tokenId = generateTokenId(req.body);
+    req.body.tokenId = tokenId;
+  }
 
   //mint.
   try {

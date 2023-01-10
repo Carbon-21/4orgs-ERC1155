@@ -11465,9 +11465,8 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            console.log("CLIENT");
             if (!(localStorage.getItem("keyOnServer") == "false")) {
-              _context5.next = 26;
+              _context5.next = 25;
               break;
             }
             // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11488,12 +11487,12 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
               channelId: "mychannel",
               fcn: "Mint",
               // args: [clientAccountId, nftId, qty],
-              args: [clientAccountId, "NFT", qty] //AQUI
+              args: [clientAccountId, "NFT", qty]
             };
-            _context5.prev = 12;
-            _context5.next = 15;
+            _context5.prev = 11;
+            _context5.next = 14;
             return client.offlineTransaction(transaction);
-          case 15:
+          case 14:
             response = _context5.sent;
             // Hides the loading image and displays the file upload fields again
             document.getElementById("signing-files").style.display = "block";
@@ -11506,19 +11505,19 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             } else {
               document.getElementById("flash").innerHTML = failureFlashMessage;
             }
-            _context5.next = 26;
+            _context5.next = 25;
             break;
-          case 22:
-            _context5.prev = 22;
-            _context5.t0 = _context5["catch"](12);
+          case 21:
+            _context5.prev = 21;
+            _context5.t0 = _context5["catch"](11);
             document.getElementById("flash").innerHTML = failureFlashMessage;
             console.log("Error:", _context5.t0.message);
-          case 26:
+          case 25:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[12, 22]]);
+    }, _callee5, null, [[11, 21]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref5.apply(this, arguments);
@@ -11535,13 +11534,12 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            console.log("CLIENT");
             event.preventDefault();
             document.getElementById("loader").style.display = "flex";
             document.getElementById("submitButton").style.display = "none";
             username = document.getElementById("username").value;
             qty = 1;
-            token = localStorage.getItem("token"); // let nftId = document.getElementById("nftId").value;
+            token = localStorage.getItem("token");
             headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", "Bearer " + token);
@@ -11567,77 +11565,25 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               }
             };
             init.body = JSON.stringify(body);
-            _context6.next = 16;
+            _context6.next = 15;
             return fetch(url, init);
-          case 16:
+          case 15:
             response = _context6.sent;
-            _context6.next = 19;
+            _context6.next = 18;
             return response.json();
-          case 19:
+          case 18:
             responseJson = _context6.sent;
             document.getElementById("loader").style.display = "none";
+            document.getElementById("submitButton").style.display = "flex";
             if (!(!response.ok || responseJson.result == null)) {
-              _context6.next = 25;
+              _context6.next = 26;
               break;
             }
-            document.getElementById("submitButton").style.display = "flex";
             document.getElementById("flash").innerHTML = failureFlashMessage;
             return _context6.abrupt("return", null);
-          case 25:
-            document.getElementById("flash").innerHTML = successFlashMessage;
-
-            // Post metadata through ipfs node
-            // let metadata = {
-            //   id: "NFT", //AQUI
-            //   status: `Ativo`,
-            //   amount: qty,
-            //   land_owner: document.getElementById("landOwner").value,
-            //   land: document.getElementById("area").value,
-            //   phyto: document.getElementById("phyto").value,
-            //   geolocation: document.getElementById("location").value,
-            //   compensation_owner: document.getElementById("compensationOwner").value,
-            //   compensation_state: "Não Compensado",
-            // };
-
-            // let postMetadataURL = `https://localhost:4000/meta/postMetadata`;
-            // init.body = JSON.stringify({
-            //   metadata,
-            //   tokenId: "NFT", //AQUI
-            // });
-            // let metadataResponse = await fetch(postMetadataURL, init);
-            // let metadataResponseJson = await metadataResponse.json();
-
-            // if (!metadataResponse.ok || metadataResponseJson.result != "success") {
-            //   document.getElementById("submitButton").style.display = "flex";
-            //   document.getElementById("loader").style.display = "none";
-            //   document.getElementById("flash").innerHTML = failureFlashMessage;
-            //   return null;
-            // }
-
-            // let metadataHash = metadataResponseJson.metadataHash;
-            // // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
-            // const URI = `http://${metadataHash}.com`;
-            // let setUriURL = `https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI`;
-            // body = JSON.stringify({
-            //   URI: URI,
-            //   tokenId: "NFT", //AQUI
-            // });
-            // init = {
-            //   method: "POST",
-            //   headers: headers,
-            //   body: body,
-            // };
-
-            // let setURIResponse = await fetch(setUriURL, init);
-
-            // document.getElementById("submitButton").style.display = "flex";
-            // document.getElementById("loader").style.display = "none";
-
-            // if (!metadataResponse.ok || metadataResponseJson.result == null) {
-            //   document.getElementById("flash").innerHTML = failureFlashMessage;
-            //   return null;
-            // }
           case 26:
+            document.getElementById("flash").innerHTML = successFlashMessage;
+          case 27:
           case "end":
             return _context6.stop();
         }
