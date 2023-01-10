@@ -11338,68 +11338,79 @@ var offlineTransaction = /*#__PURE__*/function () {
               transaction: transaction,
               certificate: certificate
             };
-            token = localStorage.getItem("token"); // console.log("### 1. Request transaction proposal generation");
+            token = localStorage.getItem("token");
+            console.log("### 1. Request transaction proposal generation");
             // Sends transaction proposal generation request to server
-            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
-            _context.next = 11;
+            url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+            _context.next = 12;
             return sendToServer("POST", url, body, token);
-          case 11:
+          case 12:
             proposalResponse = _context.sent;
             // The transaction proposal hash
-            digest = proposalResponse.result.digest; // The transaction proposal in Hex
-            proposalHex = proposalResponse.result.proposal; // 2. Sign transaction proposal
-            // console.log("### 2. Sign transaction proposal");
-            _context.next = 16;
+            digest = proposalResponse.result.digest;
+            console.log('Transaction proposal hash =', digest);
+
+            // The transaction proposal in Hex
+            proposalHex = proposalResponse.result.proposal;
+            console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
+
+            // 2. Sign transaction proposal
+            console.log("### 2. Sign transaction proposal");
+            _context.next = 20;
             return signTransaction(digest, privateKey);
-          case 16:
+          case 20:
             proposalSignature = _context.sent;
             proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
+            console.log('signature 1 =', proposalSignature);
+            console.log('proposalHex =', proposalHex);
             signedProposal = {
               signature: proposalSignatureHex,
               proposal: proposalHex
             }; // 3. Send signed transaction proposal to server
-            // console.log("### 3. Send signed transaction proposal to server");
-            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-            _context.next = 22;
+            console.log("### 3. Send signed transaction proposal to server");
+            url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+            _context.next = 29;
             return sendToServer("POST", url, signedProposal, token);
-          case 22:
+          case 29:
             sendProposalResponse = _context.sent;
             transactionDigest = sendProposalResponse.result.transactionDigest;
             transactionHex = sendProposalResponse.result.transaction;
             proposalResponseStatus = sendProposalResponse.result.status;
             payload = sendProposalResponse.result.payload;
             if (!(proposalResponseStatus == 200)) {
-              _context.next = 40;
+              _context.next = 48;
               break;
             }
-            _context.next = 30;
+            // 4. Sign transaction
+            console.log("### 4. Sign transaction");
+            _context.next = 38;
             return signTransaction(transactionDigest, privateKey);
-          case 30:
+          case 38:
             transactionSignature = _context.sent;
             transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
             signedTransactionProposal = {
               signature: transactionSignatureHex,
               transaction: transactionHex
             }; // 5. Send signed transaction to server
-            url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-            _context.next = 36;
+            url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+            _context.next = 44;
             return sendToServer("POST", url, signedTransactionProposal, token);
-          case 36:
+          case 44:
             commitTransactionResponse = _context.sent;
             commitResult = commitTransactionResponse.result;
             if (!(commitResult == "SUCCESS")) {
-              _context.next = 40;
+              _context.next = 48;
               break;
             }
             return _context.abrupt("return", {
               result: "SUCCESS",
               payload: payload
             });
-          case 40:
+          case 48:
             return _context.abrupt("return", {
               result: "FAILURE"
             });
-          case 41:
+          case 49:
           case "end":
             return _context.stop();
         }
@@ -11475,25 +11486,27 @@ var signTransaction = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
+            console.log('entrou signtransaction');
+
             //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
             _KEYUTIL$getKey = KEYUTIL.getKey(privateKeyPEM), prvKeyHex = _KEYUTIL$getKey.prvKeyHex;
             EC = elliptic.ec;
             ecdsaCurve = elliptic.curves['p256'];
             ecdsa = new EC(ecdsaCurve);
-            _context3.next = 6;
+            _context3.next = 7;
             return ecdsa.keyFromPrivate(prvKeyHex, 'hex');
-          case 6:
+          case 7:
             signKey = _context3.sent;
-            _context3.next = 9;
+            _context3.next = 10;
             return ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
-          case 9:
+          case 10:
             sig = _context3.sent;
             sig = _preventMalleability(sig);
 
             // now we have the signature, next we should send the signed transaction proposal to the peer
             signature = Buffer.from(sig.toDER());
             return _context3.abrupt("return", signature);
-          case 13:
+          case 14:
           case "end":
             return _context3.stop();
         }

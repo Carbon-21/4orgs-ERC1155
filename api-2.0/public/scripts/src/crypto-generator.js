@@ -12,6 +12,7 @@ export const generateCryptoMaterial = async function (username) {
     let [publicKey, privateKey, cryptoPK] = await generateKeyPair();
     var domains = [ username, 'www.example.com', 'api.example.com' ];
     let csr = await ecdsa({ key: privateKey, domains: domains });
+    console.log('CSR\n',csr);
     return {csr: csr, privateKey: privateKey, cryptoPK: cryptoPK};
 
   } catch (e) {
@@ -78,8 +79,11 @@ const generateKeyPair = async function () {
     ["sign", "verify"]
   );
 
+  //console.log('keyPair = ', keyPair)
   let privateKey = await exportCryptoKey('private', keyPair.privateKey)
+  console.log(privateKey)
   let publicKey = await exportCryptoKey('public', keyPair.publicKey)
+  console.log(publicKey)
   return [publicKey, privateKey, keyPair.privateKey];
   } catch(e) {
     return e.message

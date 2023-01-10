@@ -51,10 +51,4 @@ router.get(
   queryController.getURI
 );
 
-router.get(
-  "/channels/:channel/chaincodes/:chaincode/isUserRegistered",
-  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("username").not().isEmpty().isString(), query("org").not().isEmpty().isString(), validateAll],
-  queryController.isUserRegistered
-);
-
 module.exports = router;

@@ -39,9 +39,12 @@ exports.mint = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
+  if (!receiverAccountId) return;
+
   //mint
   try {
-    let receiverAccountId = await helper.mountClientAccountId(tokenReceiver, 'client', org);
     await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount);
     logger.info("Mint successful");
 
@@ -50,7 +53,7 @@ exports.mint = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, err.message));
+    return next(new HttpError(500, errMessage[1]));
   }
   
   //send OK response
@@ -78,10 +81,12 @@ exports.transfer = async (req, res, next) => {
   const senderAccountId = await helper.getAccountId(channel, chaincodeName, tokenSender, org, next);
   if (!senderAccountId) return;
 
-  
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
+  if (!receiverAccountId) return;
+
   //transfer
   try {
-    let receiverAccountId = await helper.mountClientAccountId(tokenReceiver, 'client', org);
     await chaincode.submitTransaction("SmartContract:TransferFrom", senderAccountId, receiverAccountId, tokenId, tokenAmount);
     logger.info("Transference successful");
 
@@ -95,7 +100,7 @@ exports.transfer = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, errMessage));
+    return next(new HttpError(500, errMessage[1]));
   }
 };
 
