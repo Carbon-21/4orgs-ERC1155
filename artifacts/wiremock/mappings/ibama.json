@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPath": "/ibama/health",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "ibamaHealth.json"
+  }
+}

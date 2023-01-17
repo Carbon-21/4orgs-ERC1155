@@ -364,3 +364,11 @@ services:
       - 4001:4001/tcp
     networks:
       - test
+
+  wiremock:
+    container_name: wiremock_server
+    image: wiremock/wiremock
+    volumes:
+      - ./wiremock:/home/wiremock
+    ports:
+      - 8888:8080
