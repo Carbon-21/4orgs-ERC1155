@@ -127,3 +127,39 @@ window.login = async function () {
       }
   }
 }
+
+window.logout = async function () {
+
+  event.preventDefault();
+
+  let headers = new Headers();
+
+  headers.append("Content-Type", "application/json");
+
+  let url = `https://${HOST}:${PORT}/logout`;
+
+  var init = {
+      method: "GET",
+      headers: headers,
+  };
+
+  let response = await fetch(url, init);
+
+  if (response.ok) {
+      response = await response.json();
+      if (response.success) {
+          window.localStorage.clear();
+          window.location.href = '/';
+      } else {
+          let element =     
+          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
+              `${response.err}`+
+              `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
+          `</div>`
+          document.getElementById("flash").innerHTML = element;
+      }
+  }
+
+  
+
+}

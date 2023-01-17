@@ -27210,6 +27210,46 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
     }
   }, _callee2);
 }));
+window.logout = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  var headers, url, init, response, _element3;
+  return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          event.preventDefault();
+          headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          url = "https://localhost:4000/logout";
+          init = {
+            method: "GET",
+            headers: headers
+          };
+          _context3.next = 7;
+          return fetch(url, init);
+        case 7:
+          response = _context3.sent;
+          if (!response.ok) {
+            _context3.next = 13;
+            break;
+          }
+          _context3.next = 11;
+          return response.json();
+        case 11:
+          response = _context3.sent;
+          if (response.success) {
+            window.localStorage.clear();
+            window.location.href = '/';
+          } else {
+            _element3 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+            document.getElementById("flash").innerHTML = _element3;
+          }
+        case 13:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  }, _callee3);
+}));
 
 },{"./crypto-generator":224}],223:[function(require,module,exports){
 (function (Buffer){(function (){

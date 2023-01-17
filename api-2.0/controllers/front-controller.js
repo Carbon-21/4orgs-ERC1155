@@ -212,6 +212,7 @@ exports.getLogout = (req, res, next) => {
 
   req.session.token = null;
   req.session.username = null;
+  res.json({success: true})
   // req.session.destroy();
   res.redirect("/");
 };
