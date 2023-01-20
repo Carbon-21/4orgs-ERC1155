@@ -208,3 +208,35 @@ exports.getURI = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 };
+
+//get the NFT listed for sale
+exports.checkForSale = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get URI
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:CheckForSale");
+    result = result.toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`NFT listed for sale: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};

@@ -40,6 +40,33 @@ router.post(
   invokeController.transfer
 );
 
+// List NFT for sale
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/ListForSale", 
+  [
+    param("channel").not().isEmpty(), 
+    param("chaincode").not().isEmpty(), 
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("price").trim().not().isEmpty().isInt({ min: 1 }),
+    validateAll
+  ], 
+  invokeController.listForSale
+);
+
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/transfer",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("tokenAmount").trim().not().isEmpty().isInt({ min: 1 }),
+    body("tokenSender").trim().not().isEmpty().isEmail(),
+    body("tokenReceiver").trim().not().isEmpty().isEmail(),
+    validateAll,
+  ],
+  invokeController.transfer
+);
+
 //auxiliary route used by postMetadata. Not invoked directly in the front.
 router.post(
   "/channels/:channel/chaincodes/:chaincode/setURI",
