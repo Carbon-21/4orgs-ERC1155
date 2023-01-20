@@ -53,6 +53,18 @@ router.post(
   invokeController.listForSale
 );
 
+// Buy listed NFT
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/Buy", 
+  [
+    param("channel").not().isEmpty(), 
+    param("chaincode").not().isEmpty(), 
+    body("tokenId").trim().not().isEmpty().isString(),
+    validateAll
+  ], 
+  invokeController.buylisted
+);
+
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [

@@ -23,17 +23,17 @@ import (
 // const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
-const nftPrefix = "nftPrefix"
+const bookorder = "BookOrder"
 
 const minterMSPID = "CarbonMSP"
 const systemAccount = "eDUwOTo6Q049YWRtaW5AYWRtaW4uY29tLE9VPWFkbWluK09VPWNhcmJvbitPVT1kZXBhcnRtZW50MTo6Q049ZmFicmljLWNhLXNlcnZlcixPVT1GYWJyaWMsTz1IeXBlcmxlZGdlcixTVD1Ob3J0aCBDYXJvbGluYSxDPVVT"
 
 // Token struct for marshal/unmarshal buy and sell listings
 type Token struct {
-    ID         string `json:"id"`
-    Owner      string `json:"owner"`
-    ListingStatus bool `json:"listing_status"`
-    Price      uint64 `json:"price"`
+    ID         	string 	`json:"id"`
+    Owner      	string 	`json:"owner"`
+    Status 		string 	`json:"listing_status"`
+    Price     	uint64 	`json:"price"`
 }
 
 type ListForSaleEvent struct {
@@ -1158,18 +1158,9 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 // taxPercentage: tax percentage to apply
 func taxes(ctx contractapi.TransactionContextInterface, operator string, sender string, recipient string, id string, amount uint64, taxPercentage int) error {
 
-
 	if recipient == "0x0" {
 		return fmt.Errorf("transfer to the zero address")
 	}
-	
-	// DEBUG
-	// log.Println("Operator: ", operator)
-	// log.Println("Sender  : ", sender)
-	// fmt.Println("Sender  : ", sender)
-	// log.Println("Receiver: ", recipient)
-	// log.Println("Token ID: ", id)
-	// log.Println("Amount  : ", amount)
 
     // Calculate tax amount
     taxAmount := amount * uint64(taxPercentage) / 100
@@ -1218,7 +1209,8 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 	}
 
 	// Create the composite key for the NFT
-	compositeKey, err := ctx.GetStub().CreateCompositeKey(nftPrefix, []string{owner, id})
+	status := "sale"
+	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{owner, id, status})
 	if err != nil {
 		return fmt.Errorf("failed to create composite key for NFT: %v", err)
 	}
@@ -1234,41 +1226,144 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 	return nil
 }
 
-func (s *SmartContract) CheckForSale(ctx contractapi.TransactionContextInterface) ([][]string, error) {
+func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
     
 	var forSaleNFTs [][]string
 
     // Create a composite key to retrieve all NFTs
-    iterator, err := ctx.GetStub().GetStateByPartialCompositeKey(nftPrefix, []string{})
+    iterator, err := ctx.GetStub().GetStateByPartialCompositeKey(bookorder, []string{})
     if err != nil {
         return nil, fmt.Errorf("failed to create iterator: %v", err)
     }
     defer iterator.Close()
 
-
-
     // Iterate over all NFTs
     for iterator.HasNext() {
+
         // Get the next NFT
         responseRange, err := iterator.Next()
         if err != nil {
             return nil, fmt.Errorf("failed to get next token: %v", err)
         }
 
-        // Unpack the composite key (ntprefix - id)
+        // Unpack the composite key (owner - id - status)
         _, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
         if err != nil {
             return nil, fmt.Errorf("failed to split composite key: %v", err)
         }
-		priceBytes, err := ctx.GetStub().GetState(responseRange.Key)
-		if err != nil {
-            return nil, fmt.Errorf("failed to get price: %v", err)
-        }
-		price := strconv.FormatUint(binary.LittleEndian.Uint64(priceBytes), 10)
-
-		element := []string{compositeKeyParts[0], compositeKeyParts[1], price}
-        forSaleNFTs = append(forSaleNFTs, element)
+		
+		if compositeKeyParts[2] == status {
+			priceBytes, err := ctx.GetStub().GetState(responseRange.Key)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get price: %v", err)
+			}
+			rcvprice := binary.LittleEndian.Uint64(priceBytes)
+			price := strconv.FormatUint(rcvprice, 10)
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], compositeKeyParts[2], price}
+			forSaleNFTs = append(forSaleNFTs, element)
+		}
+		
+				        
     }
 
     return forSaleNFTs, nil
+}
+
+func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer string, id string) error {
+
+	// Get the caller identity
+	operator, err := ctx.GetClientIdentity().GetID()
+
+	// Check whether operator is approved
+	if operator != buyer {
+		approved, err := _isApprovedForAll(ctx, buyer, operator)
+		if err != nil {
+			return err
+		}
+		if !approved {
+			return fmt.Errorf("Chamador não está aprovado a realizar esta transação")
+		}
+	}
+
+	// Check the status of the NFT
+	forSaleNFTs, err := s.CheckForStatus(ctx, "sale")
+	if err != nil {
+		return fmt.Errorf("failed to check NFT status: %v", err)
+	}
+
+	var found bool
+
+	// Find the NFT that is being sold
+	for _, forSaleNFT := range forSaleNFTs {
+		if forSaleNFT[1] == id {
+			found = true
+			
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{forSaleNFT[0], id, "sale"})
+			if err != nil {
+				return fmt.Errorf("failed to create composite key: %v", err)
+			}
+
+			priceBytes, err := ctx.GetStub().GetState(compositeKey)
+			if err != nil {
+				return fmt.Errorf("failed to get NFT price: %v", err)
+			}
+			salePrice := binary.LittleEndian.Uint64(priceBytes)
+
+			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], "$ylvas"}, []uint64{1, salePrice})
+			if err != nil {
+				return fmt.Errorf("failed dealing for NFT: %v", err)
+			}
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("NFT with id %s not found or not for sale", id)
+	}
+
+	return nil
+
+}
+
+func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64) error {
+
+	// Transfer the $ylvas to the seller with taxes
+	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
+	if err != nil {
+		return fmt.Errorf("failed transfering sylvas for NFT: %v", err)
+	}
+
+	// Transfer the NFT to the buyer
+	// Withdraw the NFT from the seller address
+	err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
+	if err != nil {
+		return err
+	}
+
+	// Send NFT to buyer account
+    err = addBalance(ctx, operator, buyer, id[0], 1)
+    if err != nil {
+        return err
+    }
+
+
+	// Update the book order
+	status := "sold"
+	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{seller, id[0], status})
+	if err != nil {
+		return fmt.Errorf("failed to create composite key for NFT: %v", err)
+	}
+
+	// Save the updated NFT state to the world state
+	priceBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(priceBytes[:], amount[1])
+	err = ctx.GetStub().PutState(compositeKey, priceBytes)
+	if err != nil {
+		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+	}
+
+	// Emit TransferSingle event
+	transferSingleEvent := TransferSingle{operator, seller, buyer, id[0], 1}
+	return emitTransferSingle(ctx, transferSingleEvent)
+
+
 }

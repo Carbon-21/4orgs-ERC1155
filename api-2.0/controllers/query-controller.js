@@ -209,27 +209,28 @@ exports.getURI = async (req, res, next) => {
   }
 };
 
-//get the NFT listed for sale
-exports.checkForSale = async (req, res, next) => {
+// General
+exports.checkForStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const username = req.jwt.username;
+  const status = req.body.status;
   const org = req.jwt.org;
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //get URI
+  //get the NFT listed given status
   try {
-    let result = await chaincode.submitTransaction("SmartContract:CheckForSale");
+    let result = await chaincode.submitTransaction("SmartContract:CheckForStatus", status);
     result = result.toString();
 
     //close communication channel
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`NFT listed for sale: ${result} `);
+    logger.info(`NFT list for status ${status}: ${result} `);
     return res.json({
       result,
     });
