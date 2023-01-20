@@ -1313,6 +1313,11 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 			if err != nil {
 				return fmt.Errorf("failed dealing for NFT: %v", err)
 			}
+
+			err = ctx.GetStub().DelState(compositeKey)
+			if err != nil {
+				return fmt.Errorf("failed to delete key from state: %v", err)
+			}
 		}
 	}
 
