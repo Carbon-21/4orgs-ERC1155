@@ -23,7 +23,7 @@ async function collection() {
         `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#${tokenId.replace(
           /\s/g,
           ""
-        )}" aria-controls="${tokenId}"> <h3> ${tokenId}  </h3> </button>` +
+        )}" aria-controls="${tokenId}"> ${tokenId} </button>` +
         (await renderMetadata(tokenId, metadata)) +
         "</div>" +
         "</div>" +
@@ -95,9 +95,7 @@ async function renderMetadata(tokenId, metadata) {
     `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${metadata?.properties?.compensation_owner} <br />` +
-    renderCompensation(tokenId.replace(/\s/g, ""),
-      metadata?.properties?.compensation_state
-    ) +
+    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
     "<p>" +
     "</div>"
   );
