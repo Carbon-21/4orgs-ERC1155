@@ -144,6 +144,11 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 		return fmt.Errorf("failed to get client id: %v", err)
 	}
 
+	//Garante que não seja emitido mais de uma NFT em nenhuma circunstância
+	if id != "$ylvas" {
+		amount = 1
+	}
+
 	// Mint tokens
 	err = mintHelper(ctx, operator, account, id, amount)
 	if err != nil {

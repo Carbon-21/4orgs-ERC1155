@@ -131,62 +131,25 @@ exports.login = async (req, res, next) => {
     return next(new HttpError(500));
   }
 
-  //user doesnt exist => error
-  //registering means that the signup process wasn't complete
-  if (!user || user.status === "registering") {
-    return next(new HttpError(401));
-  }
-
-  //user registering  => error
-  if (user.status === "pending") {
-    return next(new HttpError(403, "Por favor, confirme seu cadastro via email."));
-  }
-
-  //on a shell, user must be active
-  if (user.status !== "active") {
-    return next(new HttpError(412, "Usuário inativo. Contate o suporte para mais informações."));
-  }
-
   //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
   //derive it again so we can check if the given pwd is correct
-  password = hkdf(password, user.seed);
+  //note: this must be done even if the user doesn't exist, to avoid usernames sweeping via side channels attacks
+  password = hkdf(password, user ? user.seed : process.env.WEED);
 
-  //if pwd doesnt match or org isnt carbon => log this activity and don't authenticate
-  if (user.password !== password || user.org !== org) {
-    logger.info("Credentials do not match");
+  //create jwt
+  const token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
 
-    //log activity
-    try {
-      await models.authenticationLog.create({
-        userId: user.id,
-        success: false,
-        eventType: "login",
-      });
-    } catch (err) {
-      return next(new HttpError(500));
-    }
-
-    //login failed due to wrong pwd
-    return next(new HttpError(401));
+  //check username, status, pwd and org
+  if (!user || user.status !== "active" || user.password !== password || user.org !== org) {
+    return next(new HttpError(401)); //login failed
   }
 
-  let token;
   try {
-    //create jwt
-    token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
-
-    //log succesful login
-    await models.authenticationLog.create({
-      userId: user.id,
-      success: true,
-      eventType: "login",
-    });
-
     //send OK response
     return res.status(200).json({
       message: `Welcome!`,
       token,
-      keyOnServer: user.keyOnServer // Boolean that informs whether the user's key is stored on the server or not.
+      keyOnServer: user.keyOnServer, // Boolean that informs whether the user's key is stored on the server or not.
     });
   } catch (err) {
     logger.error(err);
@@ -307,7 +270,7 @@ const enrollUserInCA = async (user, next, role = "client") => {
   if (userIdentity) {
     logger.error(`An identity for the user ${user.email} already exists in the wallet`);
 
-    return {success: false};
+    return { success: false };
   }
 
   //enroll an admin users if they doesn't exist yet
@@ -361,9 +324,7 @@ const enrollUserInCA = async (user, next, role = "client") => {
         csr: user.csr,
       });
       certificate = enrollment.certificate;
-    }
-
-    else {
+    } else {
       logger.debug(`--- Server-side Private Key and CSR Generation Mode ---`);
 
       var enrollment = await ca.enroll({
@@ -371,7 +332,7 @@ const enrollUserInCA = async (user, next, role = "client") => {
         enrollmentSecret: secret,
       });
       privateKey = enrollment.key.toBytes();
-      certificate = enrollment.certificate
+      certificate = enrollment.certificate;
     }
 
     //save cert and privateKey to wallet
@@ -391,7 +352,7 @@ const enrollUserInCA = async (user, next, role = "client") => {
     await wallet.put(user.email, x509Identity);
 
     //OK
-    return {success: true, certificate: certificate};
+    return { success: true, certificate: certificate };
   } catch (err) {
     //change user status in DB, so they can try to sign up again
     await models.users.update({ status: "registering" }, { where: { email: user.email } });

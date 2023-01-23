@@ -96,9 +96,8 @@ const mintFTServerSideSigning = async () => {
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
 
-  headers.append("Authorization", "Bearer " + token)
+  headers.append("Authorization", "Bearer " + token);
   let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
-
 
   var init = {
     method: "POST",
@@ -145,8 +144,8 @@ const mintNFTClientSideSigning = async () => {
     event.preventDefault();
 
     let username = document.getElementById("username").value;
-    let nftId = document.getElementById("nftId").value;
     let qty = 1;
+    // let nftId = document.getElementById("nftId").value;
     //let phyto = document.getElementById("phyto").value;
     //let location = document.getElementById("location").value;
 
@@ -160,7 +159,8 @@ const mintNFTClientSideSigning = async () => {
       chaincodeId: "erc1155",
       channelId: "mychannel",
       fcn: "Mint",
-      args: [clientAccountId, nftId, qty],
+      // args: [clientAccountId, nftId, qty],
+      args: [clientAccountId, "NFT", qty],
     };
 
     try {
@@ -173,7 +173,7 @@ const mintNFTClientSideSigning = async () => {
       document.getElementById("loader").style.display = "none";
 
       // Displays Flash Messages
-      if (response.result == "SUCCESS") {
+      if (response.result == "success") {
         document.getElementById("flash").innerHTML = successFlashMessage;
       } else {
         document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -195,15 +195,13 @@ const mintNFTServerSideSigning = async () => {
   document.getElementById("submitButton").style.display = "none";
 
   let username = document.getElementById("username").value;
-  let nftId = document.getElementById("nftId").value;
   let qty = 1;
   let token = localStorage.getItem("token");
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token)
+  headers.append("Authorization", "Bearer " + token);
   let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/mint`;
-
 
   var init = {
     method: "POST",
@@ -211,50 +209,84 @@ const mintNFTServerSideSigning = async () => {
   };
 
   var body = {
-    tokenId: nftId,
+    tokenId: "NFT",
     tokenAmount: qty,
     tokenReceiver: username,
+    metadata: {
+      id: "NFT",
+      status: `Ativo`,
+      amount: qty,
+      land_owner: document.getElementById("landOwner").value,
+      land: document.getElementById("area").value,
+      phyto: document.getElementById("phyto").value,
+      geolocation: document.getElementById("location").value,
+      compensation_owner: document.getElementById("compensationOwner").value,
+      compensation_state: "Não Compensado",
+    },
   };
 
   init.body = JSON.stringify(body);
 
   let response = await fetch(url, init);
   let responseJson = await response.json();
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("submitButton").style.display = "flex";
   if (!response.ok || responseJson.result == null) {
-    document.getElementById("submitButton").style.display = "flex";
-    document.getElementById("loader").style.display = "none";
     document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
+  } else {
+    document.getElementById("flash").innerHTML = successFlashMessage;
   }
 
   // Post metadata through ipfs node
-  let metadata = {
-    id: nftId,
-    status: `Ativo`,
-    amount: qty,
-    land_owner: document.getElementById("landOwner").value,
-    land: document.getElementById("area").value,
-    phyto: document.getElementById("phyto").value,
-    geolocation: document.getElementById("location").value,
-    compensation_owner: document.getElementById("compensationOwner").value,
-    compensation_state: "Não Compensado",
-  };
+  // let metadata = {
+  //   id: "NFT", //AQUI
+  //   status: `Ativo`,
+  //   amount: qty,
+  //   land_owner: document.getElementById("landOwner").value,
+  //   land: document.getElementById("area").value,
+  //   phyto: document.getElementById("phyto").value,
+  //   geolocation: document.getElementById("location").value,
+  //   compensation_owner: document.getElementById("compensationOwner").value,
+  //   compensation_state: "Não Compensado",
+  // };
 
-  let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
-  init.body = JSON.stringify({
-    metadata,
-    tokenId: nftId,
-  });
-  let metadataResponse = await fetch(postMetadataURL, init);
-  let metadataResponseJson = await metadataResponse.json();
+  // let postMetadataURL = `https://${HOST}:${PORT}/meta/postMetadata`;
+  // init.body = JSON.stringify({
+  //   metadata,
+  //   tokenId: "NFT", //AQUI
+  // });
+  // let metadataResponse = await fetch(postMetadataURL, init);
+  // let metadataResponseJson = await metadataResponse.json();
 
-  document.getElementById("submitButton").style.display = "flex";
-  document.getElementById("loader").style.display = "none";
+  // if (!metadataResponse.ok || metadataResponseJson.result != "success") {
+  //   document.getElementById("submitButton").style.display = "flex";
+  //   document.getElementById("loader").style.display = "none";
+  //   document.getElementById("flash").innerHTML = failureFlashMessage;
+  //   return null;
+  // }
 
-  if (!metadataResponse.ok || metadataResponseJson.result == null) {
-    document.getElementById("flash").innerHTML = failureFlashMessage;
-    return null;
-  }
+  // let metadataHash = metadataResponseJson.metadataHash;
+  // // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  // const URI = `http://${metadataHash}.com`;
+  // let setUriURL = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setURI`;
+  // body = JSON.stringify({
+  //   URI: URI,
+  //   tokenId: "NFT", //AQUI
+  // });
+  // init = {
+  //   method: "POST",
+  //   headers: headers,
+  //   body: body,
+  // };
 
-  document.getElementById("flash").innerHTML = successFlashMessage;
+  // let setURIResponse = await fetch(setUriURL, init);
+
+  // document.getElementById("submitButton").style.display = "flex";
+  // document.getElementById("loader").style.display = "none";
+
+  // if (!metadataResponse.ok || metadataResponseJson.result == null) {
+  //   document.getElementById("flash").innerHTML = failureFlashMessage;
+  //   return null;
+  // }
 };
