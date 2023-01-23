@@ -1,0 +1,53 @@
+#!/bin/bash
+set -e
+o=Org1
+c=channel1
+a="[]"
+
+#Help message
+usage() {
+  echo "$0 -f funçãoDoChaincode"
+  echo "Parâmetros opcionais:"
+  echo "-a: Argumentos da função, se houver, no formato ""'["'"arg1","arg2"'"]'"
+  echo "-o: Organização que realizará a query. Padrão é Org1"
+  echo "-c: Canal em que o chaincode está implantado. Padrão é channel1"
+  1>&2
+  exit 1
+  }
+
+#Get args
+while getopts ":o:c:f:a:" i; do
+    case "${i}" in
+        o)
+            o=${OPTARG}
+            ;;
+        c)
+            c=${OPTARG}
+            ;;
+        f)
+            f=${OPTARG}
+            ;;
+        a)
+            a=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+#f is a mandatory arg
+if [ -z "$f" ]; then
+        usage
+fi
+
+#Set environment
+export FABRIC_CFG_PATH=$(pwd)/config
+export CORE_PEER_LOCALMSPID=${o}MSP
+export CORE_PEER_MSPCONFIGPATH=$(pwd)/msp/${o}/${o,,}admin/msp
+export CORE_PEER_ADDRESS=${o,,}peer-api.127-0-0-1.nip.io:8080
+
+#Commit CC
+call='{"function":"'${f}'","Args":'${a}'}'
+peer chaincode invoke -o orderer-api.127-0-0-1.nip.io:8080 --channelID ${c} -n chaincode -c ${call}

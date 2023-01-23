@@ -158,6 +158,53 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
+func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) (error) {
+	fmt.Print("ENTRANDO")
+
+	// Check if user is admin
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print("AUTORIZADO")
+
+	keysIter, err := ctx.GetStub().GetStateByRange("", "")
+	if err != nil {
+			fmt.Print("ERRO 1")
+			return err
+	}
+	defer keysIter.Close()
+
+	fmt.Print(keysIter)
+
+	// var keys []string
+	for keysIter.HasNext() {
+		res, iterErr := keysIter.Next()
+
+		if iterErr != nil {
+			fmt.Print("ERRO 2")
+				return iterErr
+		}
+
+		fmt.Print(res)
+
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(res.Key)
+		
+		if err != nil {
+				return err
+		}
+     		   
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+		// returnedTokenID := compositeKeyParts[1]
+	}
+
+	fmt.Print("SAINDO")
+	return nil
+}
+
+// Mint creates amount tokens of token type id and assigns them to account.
+// This function emits a TransferSingle event.
 func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
 
 	// -------- Get all NFTs --------

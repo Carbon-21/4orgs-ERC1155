@@ -44,6 +44,12 @@ router.get(
   queryController.totalSupply
 );
 
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getWorldState",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getWorldState
+);
+
 //auxiliary route used by getMetadata. Not invoked directly in the front.
 router.get(
   "/channels/:channel/chaincodes/:chaincode/getURI",
