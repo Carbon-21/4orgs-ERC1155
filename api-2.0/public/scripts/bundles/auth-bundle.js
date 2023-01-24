@@ -27099,7 +27099,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 24:
           response = _context.sent;
           if (!response.ok) {
-            _context.next = 47;
+            _context.next = 46;
             break;
           }
           _context.next = 28;
@@ -27107,40 +27107,42 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         case 28:
           response = _context.sent;
           if (!response.success) {
-            _context.next = 43;
+            _context.next = 42;
             break;
           }
           localStorage.setItem("token", response.token);
-          localStorage.setItem("username", email.slice(0, -1));
+          localStorage.setItem("username", email.split("/")[0]);
+          // localStorage.setItem("username", email.slice(0, -1));
           localStorage.setItem("keyOnServer", saveKeyOnServer);
-          console.log('response', response);
+
+          //if saveKeyOnServer => download cert and private key
           if (!response.certificate) {
-            _context.next = 40;
+            _context.next = 39;
             break;
           }
           if (saveKeyOnServer) {
-            _context.next = 38;
+            _context.next = 39;
             break;
           }
-          _context.next = 38;
-          return crypto.downloadCrypto(name, cryptoMaterials.privateKey, 'privateKey');
-        case 38:
-          _context.next = 40;
-          return crypto.downloadCrypto(name, response.certificate, 'certificate');
-        case 40:
-          window.location.href = '/';
-          _context.next = 45;
+          _context.next = 37;
+          return crypto.downloadCrypto(name, cryptoMaterials.privateKey, "privateKey");
+        case 37:
+          _context.next = 39;
+          return crypto.downloadCrypto(name, response.certificate, "certificate");
+        case 39:
+          window.location.href = "/";
+          _context.next = 44;
           break;
-        case 43:
+        case 42:
           _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = _element;
-        case 45:
-          _context.next = 49;
+        case 44:
+          _context.next = 48;
           break;
-        case 47:
+        case 46:
           element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
           document.getElementById("flash").innerHTML = element;
-        case 49:
+        case 48:
         case "end":
           return _context.stop();
       }
@@ -27198,7 +27200,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
             localStorage.setItem("token", response.token);
             localStorage.setItem("username", email.split("/")[0]);
             localStorage.setItem("keyOnServer", response.keyOnServer);
-            window.location.href = '/';
+            window.location.href = "/";
           } else {
             _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
             document.getElementById("flash").innerHTML = _element2;

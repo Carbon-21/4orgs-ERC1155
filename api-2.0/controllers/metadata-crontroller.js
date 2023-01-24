@@ -1,8 +1,8 @@
 const logger = require("../util/logger");
-const axios = require("axios").default;
 const HttpError = require("../util/http-error");
-
+// const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
+const axios = require("axios").default;
 
 exports.getMetadata = async (req, res, next) => {
   let tokenId = req.query.tokenId;
@@ -70,16 +70,22 @@ exports.postMetadata = async (req, res, next) => {
     metadata = makeMetadata(req.body.metadata);
     tokenId = tokenId || metadata.properties.id;
     hash = await ipfs.uploadIPFS(metadata);
+    logger.debug("TokenId: " + tokenId);
     logger.debug("Hash of uploaded Metadata: " + hash);
   } catch (error) {
-    logger.error(error);
-    return res.status(500).json({
-      message: "Falha na aquisição dos metadados",
-      success: false,
-    });
+    return next(new HttpError(500), "Falha na aquisição dos metadados");
+    // logger.error(error);
+    // return res.status(500).json({
+    //   message: "Falha na aquisição dos metadados",
+    //   success: false,
+    // });
   }
 
   // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  // req.body.URI = `ipfs://${hash}`;
+  // await setURI(req, res, next);
+  // return;
+
   const URI = `ipfs://${hash}`;
   axios
     .post(
@@ -95,14 +101,16 @@ exports.postMetadata = async (req, res, next) => {
     )
     .then(function (response) {
       logger.debug("Publicado Metadados - " + response.statusText);
-      return res.status(200).json({ ...response.data, message: "Publicado Metadados e URI setada" });
+      return;
+      // return res.json({ ...response.data, message: "Publicado Metadados e URI setada" });
     })
     .catch(function (error) {
-      logger.error(error);
-      return res.status(500).json({
-        message: "Falha na publicação dos metadados no chaincode, URI: " + URI,
-        success: false,
-      });
+      logger.error("ERRORR", error);
+      return next(new HttpError(500), "Falha na publicação dos metadados no chaincode");
+      // return res.status(500).json({
+      //   message: "Falha na publicação dos metadados no chaincode, URI: " + URI,
+      //   success: false,
+      // });
     });
 };
 
@@ -114,19 +122,19 @@ function makeMetadata(dto) {
     private_verifier: dto.private_verifier || "",
     land_owner: dto.land_owner || "",
     // land_info: {
-      phyto: dto.phyto || "",
-      land: dto.land || "",
-      geolocation: dto.geolocation || "",
-      area_classification: dto.area_classification || "",
+    phyto: dto.phyto || "",
+    land: dto.land || "",
+    geolocation: dto.geolocation || "",
+    area_classification: dto.area_classification || "",
     // },
     // nft_info: {
-      amount: dto.amount || "",
-      status: dto.status || "",
-      nft_type: dto.nft_type || "",
-      value: dto.value || "",
-      can_mint_sylvas: dto.can_mint_sylvas || "",
-      sylvas_minted: dto.sylvas_minted || "",
-      bonus_ft: dto.bonus_ft || "",
+    amount: dto.amount || "",
+    status: dto.status || "",
+    nft_type: dto.nft_type || "",
+    value: dto.value || "",
+    can_mint_sylvas: dto.can_mint_sylvas || "",
+    sylvas_minted: dto.sylvas_minted || "",
+    bonus_ft: dto.bonus_ft || "",
     // },
     compensation_owner: dto.compensation_owner || "",
     compensation_state: dto.compensation_state || "",
