@@ -18,6 +18,7 @@ import (
 )
 
 // const uriKey = "uri"
+const balancePrefixMeta = "account~tokenId~sender~metadata"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
@@ -110,6 +111,49 @@ type ToID struct {
 	ID string
 }
 
+type Metadata struct{
+	Id string `json:"id"`
+	Status string `json:"status"`
+	Amount string `json:"amount"`	
+	LandOwner string `json:"land_owner"`
+	Land string `json:"land"`
+	//AreaClassification string `json:"areaclassification"`
+	Phyto string `json:"phyto"`
+	Geolocation string `json:"geolocation"`
+	//Verifier string `json:"verifier"`
+	CompensationOwner string `json:"compensation_owner"`
+	CompensationState string `json:"compensation_state"`
+}
+
+  /* Definições no metadata controller
+  const customData = {
+    id: dto.id || "",
+    verifier: dto.verifier || "",
+    private_verifier: dto.private_verifier || "",
+    land_owner: dto.land_owner || "",
+    // land_info: {
+    phyto: dto.phyto || "",
+    land: dto.land || "",
+    geolocation: dto.geolocation || "",
+    area_classification: dto.area_classification || "",
+    // },
+    // nft_info: {
+    amount: dto.amount || "",
+    status: dto.status || "",
+    nft_type: dto.nft_type || "",
+    value: dto.value || "",
+    can_mint_sylvas: dto.can_mint_sylvas || "",
+    sylvas_minted: dto.sylvas_minted || "",
+    bonus_ft: dto.bonus_ft || "",f
+    // },
+    compensation_owner: dto.compensation_owner || "",
+    compensation_state: dto.compensation_state || "",
+    certificate: dto.certificate || "",
+    minter: dto.minter || "",
+    queue: dto.queue || "",
+    custom_notes: dto.custom_notes || "",
+	*/
+
 // Get role (OU) from clientAccountID
 func GetRole(clientAccountID string) string {
 	//decode from b64
@@ -130,8 +174,14 @@ func GetRole(clientAccountID string) string {
 
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
+func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, metadata string) error {
 
+	var decMetadata Metadata
+	json.Unmarshal([]byte(metadata), &decMetadata)
+	
+		
+	fmt.Printf("Metadata : %#v",decMetadata)
+	
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
@@ -150,7 +200,7 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	}
 
 	// Mint tokens
-	err = mintHelper(ctx, operator, account, id, amount)
+	err = mintHelper(ctx, operator, account, id, amount, decMetadata)
 	if err != nil {
 		return err
 	}
@@ -253,7 +303,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 			for i:= range NFTSumList{
 				// 'Minting' the tokens from the temporary list		
 				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
-				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt))
+				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt), *new(Metadata))
 				if err != nil {
 					return 0,err
 				}
@@ -316,7 +366,7 @@ func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, a
 	// Mint tokens
 	for _, id := range amountToSendKeys {
 		amount := amountToSend[id]
-		err = mintHelper(ctx, operator, account, id, amount)
+		err = mintHelper(ctx, operator, account, id, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -426,7 +476,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Deposit the fund to the recipient address
-	err = addBalance(ctx, operator, recipient, id, amount)
+	err = addBalance(ctx, operator, recipient, id, amount, *new(Metadata))
 	if err != nil {
 		return err
 	}
@@ -488,7 +538,7 @@ func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInte
 	// Deposit the funds to the recipient address
 	for _, id := range amountToSendKeys {
 		amount := amountToSend[id]
-		err = addBalance(ctx, sender, recipient, id, amount)
+		err = addBalance(ctx, sender, recipient, id, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -554,7 +604,7 @@ func (s *SmartContract) BatchTransferFromMultiRecipient(ctx contractapi.Transact
 
 		amount := amountToSend[key]
 
-		err = addBalance(ctx, sender, key.To, key.ID, amount)
+		err = addBalance(ctx, sender, key.To, key.ID, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -821,7 +871,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 	return nil
 }
 
-func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id string, amount uint64) error {
+func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id string, amount uint64, metadata Metadata) error {
 	if account == "0x0" {
 		return fmt.Errorf("mint to the zero address")
 	}
@@ -830,7 +880,7 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 		return fmt.Errorf("Quantidade emitida dever um inteiro positivo")
 	}
 
-	err := addBalance(ctx, operator, account, id, amount)
+	err := addBalance(ctx, operator, account, id, amount,metadata)
 	if err != nil {
 		return err
 	}
@@ -838,11 +888,31 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 	return nil
 }
 
-func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
+func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64, metadata Metadata) error {
 
-	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
+	var metadataString string
+	
+	//Consulta world state e pega metadados, se eles estiverem vazios para um NFT
+	if (metadata == Metadata{} && idString != "$ylvas"){
+		res, err := getMetada(ctx,sender,idString)
+		if err != nil {
+			return err
+		}
+
+		metadataString = res
+	}else{
+		//de Metadata para JSON
+		metadataJson, err := json.Marshal(metadata)
+		if err != nil {
+			return err
+		}
+
+		metadataString = string(metadataJson)
+	}
+	
+	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefixMeta, []string{recipient, idString, sender, metadataString})
 	if err != nil {
-		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefixMeta, err)
 	}
 
 	balanceBytes, err := ctx.GetStub().GetState(balanceKey)
@@ -867,9 +937,14 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
 
-	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
+	metadataString, err := getMetada(ctx,sender,idString)
 	if err != nil {
-		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
+		return err
+	}
+
+	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender, metadataString})
+	if err != nil {
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefixMeta, err)
 	}
 
 	err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(amount), 10)))
@@ -899,9 +974,9 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		var selfRecipientKeyNeedsToBeRemoved bool
 		var selfRecipientKey string
 
-		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{sender, tokenId})
+		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefixMeta, []string{sender, tokenId})
 		if err != nil {
-			return fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
+			return fmt.Errorf("failed to get state for prefix %v: %v", balancePrefixMeta, err)
 		}
 		defer balanceIterator.Close()
 
@@ -910,7 +985,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		for balanceIterator.HasNext() && partialBalance < neededAmount {
 			queryResponse, err := balanceIterator.Next()
 			if err != nil {
-				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefixMeta, err)
 			}
 
 			partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
@@ -944,7 +1019,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 					return err
 				}
 			} else {
-				err = addBalance(ctx, sender, sender, tokenId, remainder)
+				err = addBalance(ctx, sender, sender, tokenId, remainder, *new(Metadata))
 				if err != nil {
 					return err
 				}
@@ -1127,4 +1202,41 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 		return keys[i].ID < keys[j].ID
 	})
 	return keys
+}
+
+
+func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (string, error){
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{} 
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefixMeta, []string{account,tokenId})
+	if err != nil {
+		return "", fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefixMeta, err)
+	}
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match	
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return "", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefixMeta, err)
+		}
+
+		// Divide o valor do par chave/valores em cada um dos seus valores
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+				return "", fmt.Errorf("failed to get key: %s", err)
+			}
+		// tokenAccount := compositeKeyParts[0]
+		// tokenID := compositeKeyParts[1]
+		// tokenSender := compositeKeyParts[2]
+		metadata := compositeKeyParts[3]
+		
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+
+		// Adiciona info. do token à slice/array de tokens
+		return metadata, nil
+	}
+	return "",fmt.Errorf("Token não encontrado")
 }

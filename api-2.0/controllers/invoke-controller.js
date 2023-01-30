@@ -35,8 +35,11 @@ exports.mint = async (req, res, next) => {
   let tokenId = req.body.tokenId;
   const tokenAmount = req.body.tokenAmount;
   const tokenReceiver = req.body.tokenReceiver;
+  const metadata = req.body.metadata;
   const username = req.jwt.username;
   const org = req.jwt.org;
+  
+  console.log("Metadata:", metadata);
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
@@ -54,7 +57,7 @@ exports.mint = async (req, res, next) => {
 
   //mint.
   try {
-    await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount);
+    await chaincode.submitTransaction("SmartContract:Mint", receiverAccountId, tokenId, tokenAmount, JSON.stringify(metadata));
 
     logger.info("Mint successful");
 
