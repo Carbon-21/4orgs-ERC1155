@@ -208,3 +208,33 @@ exports.getURI = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 };
+
+//get entire world state
+exports.getWorldState = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode("Carbon", channel, chaincodeName, "admin", next);
+  if (!chaincode) return;
+
+  //get balance
+  try {
+    let result = await chaincode.evaluateTransaction("SmartContract:GetWorldState");
+
+    result = Buffer.from(result).toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`World state fetched!`);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err));
+  }
+};

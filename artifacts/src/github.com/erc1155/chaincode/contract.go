@@ -110,6 +110,50 @@ type ToID struct {
 	ID string
 }
 
+//TESTE PARA PEGAR WORLD STATE
+func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
+	// Slice de slices que conterá os tokens e suas quantidades
+	var tokens [][]string
+
+	//! Busca pares de chave cujo prefixo é "account~tokenId~sender" e a conta que possui o token seja a mesma de quem está invocando a função
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Divide a chave
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", err)
+		}
+
+		// Pega partes da chave
+		tokenAccount := compositeKeyParts[0]
+		tokenID := compositeKeyParts[1]
+		tokenSender := compositeKeyParts[2]
+		// metadata := compositeKeyParts[3]
+
+		// Pega o valor associado à chave (quantidade de tokens)
+		tokenAmount := queryResponse.Value
+
+		//! Adiciona info. do token à slice de tokens. U$Ps devem ser ignorados
+		// if tokenID != "usp" {
+		element := []string{tokenAccount,tokenID,tokenSender, string(tokenAmount)}
+		tokens = append(tokens, element)
+		// }
+	}
+
+	return tokens, nil
+}
+
 // Get role (OU) from clientAccountID
 func GetRole(clientAccountID string) string {
 	//decode from b64

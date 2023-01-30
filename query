@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+o=Carbon
+c=mychannel
+a="[]"
+
+#Help message
+usage() {
+  echo "$0 -f funçãoDoChaincode"
+  echo "Parâmetros opcionais:"
+  echo "-a: Argumentos da função, se houver, no formato ""'["'"arg1","arg2"'"]'"
+  echo "-o: Organização que realizará a query. Padrão é Org1"
+  echo "-c: Canal em que o chaincode está implantado. Padrão é channel1"
+  1>&2
+  exit 1
+  }
+
+#Get args
+while getopts ":o:c:f:a:" i; do
+    case "${i}" in
+        o)
+            o=${OPTARG}
+            ;;
+        c)
+            c=${OPTARG}
+            ;;
+        f)
+            f=${OPTARG}
+            ;;
+        a)
+            a=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+#f is a mandatory arg
+if [ -z "$f" ]; then
+        usage
+fi
+
+#Set environment
+export CORE_PEER_LOCALMSPID=${o}MSP
+export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp
+export CORE_PEER_ADDRESS=localhost:7051
+export FABRIC_CFG_PATH=$(pwd)/artifacts/channel/config/
+
+export PEER0_ORG1_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/peers/peer0.carbon.example.com/tls/ca.crt
+export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
+
+#Commit CC
+call='{"function":"'${f}'","Args":'${a}'}'
+peer chaincode query --channelID ${c} -n erc1155 -c ${call}
