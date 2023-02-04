@@ -156,7 +156,7 @@ type Metadata struct {
 
 }
 
-type Token struct {
+type NFToken struct {
 	Amount   string   `json:"amount"`
 	Metadata Metadata `json:"metadata"`
 }
@@ -238,12 +238,12 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 	}
 
 	// Get ID of submitting client identity
-	operator, err := ctx.GetClientIdentity().GetID()
+	/*operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return 0, fmt.Errorf("failed to get client id: %v", err)
-	}
+	}*/
 
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefixMeta, []string{})
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
 		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 	}
@@ -255,7 +255,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 			return 0, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
 
-		fmt.Print(queryResponse)
+		//fmt.Print(queryResponse)
 		// Split Key to search for specific tokenid
 		// The compositekey (account -  tokenid - senderer)
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
@@ -264,10 +264,13 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 			return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
 		}
 
-		// Contains the metadata of the NFT
-		metadataNFT := compositeKeyParts[3]
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
 
-		fmt.Print("metadata NFT", metadataNFT)
+		fmt.Print("Teste de linha")
+
+		fmt.Printf("NFT Qtd:" + nft.Metadata.Amount)
+
 		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
 
@@ -279,14 +282,15 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
-			SylvasAdd = 10 // add 10 sylvas per nft
+			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Amount)
+			// SylvasAdd =  10 // add 10 sylvas per nft
 
 			// Function that checks if the NFT receiver is in the temporary Slice Array
 			// If found, it returns the index to concatenate the id of the nft found and add the qty of sylvas
 			// Otherwise, add to this slice the set of the token id, the receiver and some sylvas
 			containInSliceIndex := containInSlice(NFTSumList, accountNFT)
 
-			//  Found the account in the list
+			//  Found thes account in the list
 			if containInSliceIndex != -1 {
 				// Concatenates the id of the other nft
 				//fmt.Print("ID nfts", NFTSumList[containInSliceIndex][0])
@@ -309,12 +313,12 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 			for i := range NFTSumList {
 				// 'Minting' the tokens from the temporary list
-				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
-				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt), *new(Metadata))
+				//sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
+				//err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt),s *new(Metadata))
 				if err != nil {
 					return 0, err
 				}
-				fmt.Print("AQUI:", string(NFTSumList[i][0]), "-", string(NFTSumList[i][1]), "-", string(NFTSumList[i][2]))
+				fmt.Print("AQUI:" + string(NFTSumList[i][0]) + "-" + string(NFTSumList[i][1]) + "-" + string(NFTSumList[i][2]))
 			}
 		}
 
@@ -929,14 +933,16 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 		}
 	*/
 
+	// Se o token for Sylvas (FT), não serão armazenados os metadados, somente a quantidade
 	if idString == "$ylvas" {
 		err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(balance), 10)))
 		if err != nil {
 			return err
 		}
-
+		// Caso o token for referente a um NFT os metadados serão armazenados
 	} else {
-		var tokenMint Token
+
+		var tokenMint NFToken
 
 		tokenMint.Amount = strconv.FormatUint(uint64(balance), 10)
 		tokenMint.Metadata = metadata
