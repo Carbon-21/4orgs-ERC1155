@@ -278,17 +278,13 @@ const enrollUserInCA = async (user, next, role = "client") => {
   if (!adminIdentity) {
     logger.info('An identity for the admin user "admin" does not exist in the wallet');
 
-    try {
-      //add admin user to the blockchain
-      await helper.enrollAdmin(user.org, ccp);
-      adminIdentity = await wallet.get("admin");
-    } catch (err) {
-      logger.debug(err);
-      return next(new HttpError(500));
-    }
+    //add admin user to the blockchain
+    await helper.enrollAdmin(user.org, ccp);
+    adminIdentity = await wallet.get("admin");
+    if (!adminIdentity) return { success: false };
 
     //create a second admin identity, admin@admin.com, both in the blockchain and in the DB
-    let response = createAdmin(next);
+    let response = await createAdmin(next);
     if (!response) return;
 
     logger.info("Admin Enrolled Successfully");

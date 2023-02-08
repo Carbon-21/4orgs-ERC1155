@@ -19,6 +19,7 @@ adicionaPath(){
 	. ~/.bashrc
 }
 
+sudo systemctl start docker
 obtemFabricSamples
 adicionaPath
 

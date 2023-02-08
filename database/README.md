@@ -46,5 +46,5 @@ chmod +x reset-db
 ./reset-db
 ```
 
-Dica: instalar a extensão "MySQL" no VScode. Não é ótima mas quebra um galho
+Dica: instalar a extensão "MySQL" do Weijan Chen, no VScode. Não é ótima mas quebra um galho.
 <br><br>

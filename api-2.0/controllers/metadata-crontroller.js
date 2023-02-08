@@ -105,7 +105,7 @@ exports.postMetadata = async (req, res, next) => {
       // return res.json({ ...response.data, message: "Publicado Metadados e URI setada" });
     })
     .catch(function (error) {
-      logger.error("ERRORR", error);
+      logger.error("ERROR", error);
       return next(new HttpError(500), "Falha na publicação dos metadados no chaincode");
       // return res.status(500).json({
       //   message: "Falha na publicação dos metadados no chaincode, URI: " + URI,

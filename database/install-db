@@ -4,7 +4,7 @@
 source ../api-2.0/.env
 
 #install mysql
-sudo apt install default-mysql-server
+# sudo apt install default-mysql-server
 
 #set systemd
 sudo systemctl disable mysql

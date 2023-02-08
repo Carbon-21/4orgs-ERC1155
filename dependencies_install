@@ -44,7 +44,7 @@ preReqs(){
 
 	# Obtendo Node
 	echo Obtendo Node...
-	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+	curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 
 	# Obtendo git
@@ -58,9 +58,10 @@ preReqs(){
 	echo ---------------------
 	echo versao do npm
 	npm -v
-	echo -----------------
-	echo versao do docker
-	docker version
+	# docker só vai funcionar direito depois de reiniciar o PC
+	# echo -----------------
+	# echo versao do docker
+	# docker version
 	echo ---------------
 	echo versao docker-compose
 	docker compose version
@@ -77,4 +78,4 @@ preReqs(){
 
 preReqs
 
-echo "Finalizado!"
+echo "Finalizado! Por favor, reinicie a máquina."
