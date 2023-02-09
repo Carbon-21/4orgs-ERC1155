@@ -238,10 +238,10 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 	}
 
 	// Get ID of submitting client identity
-	/*operator, err := ctx.GetClientIdentity().GetID()
+	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return 0, fmt.Errorf("failed to get client id: %v", err)
-	}*/
+	}
 
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
@@ -267,9 +267,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		nft := new(NFToken)
 		_ = json.Unmarshal(queryResponse.Value, nft)
 
-		fmt.Print("Teste de linha")
-
-		fmt.Printf("NFT Qtd:" + nft.Metadata.Amount)
+		fmt.Printf("NFT Qtd:" + nft.Metadata.Land)
 
 		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
@@ -282,7 +280,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
-			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Amount)
+			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Land)
 			// SylvasAdd =  10 // add 10 sylvas per nft
 
 			// Function that checks if the NFT receiver is in the temporary Slice Array
@@ -313,8 +311,8 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 			for i := range NFTSumList {
 				// 'Minting' the tokens from the temporary list
-				//sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
-				//err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt),s *new(Metadata))
+				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
+				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt), *new(Metadata))
 				if err != nil {
 					return 0, err
 				}
