@@ -7,10 +7,10 @@ client:
       path: /tmp/hfc-cvs
 channels:
   mychannel:
-    orderers: 
-    - orderer.example.com
-    - orderer2.example.com
-    - orderer3.example.com
+    orderers:
+      - orderer.example.com
+      - orderer2.example.com
+      - orderer3.example.com
     peers:
       peer0.carbon.example.com:
         endorsingPeer: true
@@ -50,13 +50,13 @@ organizations:
     peers:
       - peer0.ibama.example.com
     certificateAuthorities:
-      - ca.ibama.example.com    
+      - ca.ibama.example.com
   CetesbMSP:
     mspid: CetesbMSP
     peers:
       - peer0.cetesb.example.com
     certificateAuthorities:
-      - ca.cetesb.example.com    
+      - ca.cetesb.example.com
 orderers:
   orderer.example.com:
     url: grpcs://localhost:7050

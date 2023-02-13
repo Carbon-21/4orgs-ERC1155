@@ -46,7 +46,7 @@ cd ../artifacts/channel/create-certificate-with-ca
 
 #run one docker for each CA (each org has 1, incluind the orderer)
 docker-compose up -d
-sleep 15
+sleep 8
 
 #creates CAs and orgs certificates
 # su
@@ -62,7 +62,7 @@ chmod +x create-artifacts.sh
 #run chouchdb, orgs peers and orderers dockers
 cd ..
 docker-compose up -d
-sleep 15
+sleep 8
 
 #create channel and deploy cahincode on each org
 cd ..

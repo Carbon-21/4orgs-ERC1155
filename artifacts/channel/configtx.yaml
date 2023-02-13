@@ -1,334 +1,331 @@
 Organizations:
-    - &OrdererOrg
-        Name: OrdererOrg
-        ID: OrdererMSP
-        MSPDir: crypto-config/ordererOrganizations/example.com/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('OrdererMSP.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('OrdererMSP.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('OrdererMSP.admin')"
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
 
-    - &Carbon
-        Name: CarbonMSP
-        ID: CarbonMSP
-        MSPDir: crypto-config/peerOrganizations/carbon.example.com/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('CarbonMSP.admin', 'CarbonMSP.peer', 'CarbonMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('CarbonMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('CarbonMSP.peer')"
-            # CustomPolicy:
-            #     Type: Signature
-            #     Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
+  - &Carbon
+    Name: CarbonMSP
+    ID: CarbonMSP
+    MSPDir: crypto-config/peerOrganizations/carbon.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('CarbonMSP.admin', 'CarbonMSP.peer', 'CarbonMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('CarbonMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('CarbonMSP.peer')"
+      # CustomPolicy:
+      #     Type: Signature
+      #     Rule: "OR('CarbonMSP.admin', 'CarbonMSP.client')"
 
-        AnchorPeers:
-            - Host: peer0.carbon.example.com
-              Port: 7051
+    AnchorPeers:
+      - Host: peer0.carbon.example.com
+        Port: 7051
 
-    - &Users
-        Name: UsersMSP
-        ID: UsersMSP
-        MSPDir: crypto-config/peerOrganizations/users.example.com/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('UsersMSP.admin', 'UsersMSP.peer', 'UsersMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('UsersMSP.admin', 'UsersMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('UsersMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('UsersMSP.peer')"
-            # CustomPolicy:
-            #     Type: Signature
-            #     Rule: "OR('CarbonMSP.admin')"
+  - &Users
+    Name: UsersMSP
+    ID: UsersMSP
+    MSPDir: crypto-config/peerOrganizations/users.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('UsersMSP.admin', 'UsersMSP.peer', 'UsersMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('UsersMSP.admin', 'UsersMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('UsersMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('UsersMSP.peer')"
+      # CustomPolicy:
+      #     Type: Signature
+      #     Rule: "OR('CarbonMSP.admin')"
 
-        AnchorPeers:
-            - Host: peer0.users.example.com
-              Port: 9051
-    
-    - &Cetesb
-        Name: CetesbMSP
-        ID: CetesbMSP
-        MSPDir: crypto-config/peerOrganizations/cetesb.example.com/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('CetesbMSP.admin', 'CetesbMSP.peer', 'CetesbMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('CetesbMSP.admin', 'CetesbMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('CetesbMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('CetesbMSP.peer')"
-            # CustomPolicy:
-            #     Type: Signature
-            #     Rule: "OR('CarbonMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.users.example.com
+        Port: 9051
 
-        AnchorPeers:
-            - Host: peer0.cetesb.example.com
-              Port: 11051
+  - &Cetesb
+    Name: CetesbMSP
+    ID: CetesbMSP
+    MSPDir: crypto-config/peerOrganizations/cetesb.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('CetesbMSP.admin', 'CetesbMSP.peer', 'CetesbMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('CetesbMSP.admin', 'CetesbMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('CetesbMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('CetesbMSP.peer')"
+      # CustomPolicy:
+      #     Type: Signature
+      #     Rule: "OR('CarbonMSP.admin')"
 
-    - &Ibama
-        Name: IbamaMSP
-        ID: IbamaMSP
-        MSPDir: crypto-config/peerOrganizations/ibama.example.com/msp
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('IbamaMSP.admin', 'IbamaMSP.peer', 'IbamaMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('IbamaMSP.admin', 'IbamaMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('IbamaMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('IbamaMSP.peer')"
-            # CustomPolicy:
-            #     Type: Signature
-            #     Rule: "OR('CarbonMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.cetesb.example.com
+        Port: 11051
 
-        AnchorPeers:
-            - Host: peer0.ibama.example.com
-              Port: 13051
+  - &Ibama
+    Name: IbamaMSP
+    ID: IbamaMSP
+    MSPDir: crypto-config/peerOrganizations/ibama.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('IbamaMSP.admin', 'IbamaMSP.peer', 'IbamaMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('IbamaMSP.admin', 'IbamaMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('IbamaMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('IbamaMSP.peer')"
+      # CustomPolicy:
+      #     Type: Signature
+      #     Rule: "OR('CarbonMSP.admin')"
+
+    AnchorPeers:
+      - Host: peer0.ibama.example.com
+        Port: 13051
 
 Capabilities:
-    Channel: &ChannelCapabilities
-        V2_0: true
-    Orderer: &OrdererCapabilities
-        V2_0: true
-    Application: &ApplicationCapabilities
-        V2_0: true
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_0: true
 
 Application: &ApplicationDefaults
-    ACLs: &ACLsDefault
-        # This section provides defaults for policies for various resources
-        # in the system. These "resources" could be functions on system chaincodes
-        # (e.g., "GetBlockByNumber" on the "qscc" system chaincode) or other resources
-        # (e.g.,who can receive Block events). This section does NOT specify the resource's
-        # definition or API, but just the ACL policy for it.
-        #
-        # User's can override these defaults with their own policy mapping by defining the
-        # mapping under ACLs in their channel definition
+  ACLs: &ACLsDefault
+    # This section provides defaults for policies for various resources
+    # in the system. These "resources" could be functions on system chaincodes
+    # (e.g., "GetBlockByNumber" on the "qscc" system chaincode) or other resources
+    # (e.g.,who can receive Block events). This section does NOT specify the resource's
+    # definition or API, but just the ACL policy for it.
+    #
+    # User's can override these defaults with their own policy mapping by defining the
+    # mapping under ACLs in their channel definition
 
-        #---New Lifecycle System Chaincode (_lifecycle) function to policy mapping for access control--#
+    #---New Lifecycle System Chaincode (_lifecycle) function to policy mapping for access control--#
 
-        # ACL policy for _lifecycle's "CommitChaincodeDefinition" function
-        _lifecycle/CommitChaincodeDefinition: /Channel/Application/Writers
+    # ACL policy for _lifecycle's "CommitChaincodeDefinition" function
+    _lifecycle/CommitChaincodeDefinition: /Channel/Application/Writers
 
-        # ACL policy for _lifecycle's "QueryChaincodeDefinition" function
-        _lifecycle/QueryChaincodeDefinition: /Channel/Application/Readers
+    # ACL policy for _lifecycle's "QueryChaincodeDefinition" function
+    _lifecycle/QueryChaincodeDefinition: /Channel/Application/Readers
 
-        # ACL policy for _lifecycle's "QueryNamespaceDefinitions" function
-        _lifecycle/QueryNamespaceDefinitions: /Channel/Application/Readers
+    # ACL policy for _lifecycle's "QueryNamespaceDefinitions" function
+    _lifecycle/QueryNamespaceDefinitions: /Channel/Application/Readers
 
-        #---Lifecycle System Chaincode (lscc) function to policy mapping for access control---#
+    #---Lifecycle System Chaincode (lscc) function to policy mapping for access control---#
 
-        # ACL policy for lscc's "getid" function
-        lscc/ChaincodeExists: /Channel/Application/Readers
+    # ACL policy for lscc's "getid" function
+    lscc/ChaincodeExists: /Channel/Application/Readers
 
-        # ACL policy for lscc's "getdepspec" function
-        lscc/GetDeploymentSpec: /Channel/Application/Readers
+    # ACL policy for lscc's "getdepspec" function
+    lscc/GetDeploymentSpec: /Channel/Application/Readers
 
-        # ACL policy for lscc's "getccdata" function
-        lscc/GetChaincodeData: /Channel/Application/Readers
+    # ACL policy for lscc's "getccdata" function
+    lscc/GetChaincodeData: /Channel/Application/Readers
 
-        # ACL Policy for lscc's "getchaincodes" function
-        lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
+    # ACL Policy for lscc's "getchaincodes" function
+    lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
 
-        #---Query System Chaincode (qscc) function to policy mapping for access control---#
+    #---Query System Chaincode (qscc) function to policy mapping for access control---#
 
-        # ACL policy for qscc's "GetChainInfo" function
-        qscc/GetChainInfo: /Channel/Application/Readers
+    # ACL policy for qscc's "GetChainInfo" function
+    qscc/GetChainInfo: /Channel/Application/Readers
 
-        # ACL policy for qscc's "GetBlockByNumber" function
-        qscc/GetBlockByNumber: /Channel/Application/Readers
+    # ACL policy for qscc's "GetBlockByNumber" function
+    qscc/GetBlockByNumber: /Channel/Application/Readers
 
-        # ACL policy for qscc's  "GetBlockByHash" function
-        qscc/GetBlockByHash: /Channel/Application/Readers
+    # ACL policy for qscc's  "GetBlockByHash" function
+    qscc/GetBlockByHash: /Channel/Application/Readers
 
-        # ACL policy for qscc's "GetTransactionByID" function
-        qscc/GetTransactionByID: /Channel/Application/Readers
-        # qscc/GetTransactionByID: /Channel/Application/CustomPolicy
+    # ACL policy for qscc's "GetTransactionByID" function
+    qscc/GetTransactionByID: /Channel/Application/Readers
+    # qscc/GetTransactionByID: /Channel/Application/CustomPolicy
 
-        # ACL policy for qscc's "GetBlockByTxID" function
-        qscc/GetBlockByTxID: /Channel/Application/Readers
+    # ACL policy for qscc's "GetBlockByTxID" function
+    qscc/GetBlockByTxID: /Channel/Application/Readers
 
-        #---Configuration System Chaincode (cscc) function to policy mapping for access control---#
+    #---Configuration System Chaincode (cscc) function to policy mapping for access control---#
 
-        # ACL policy for cscc's "GetConfigBlock" function
-        cscc/GetConfigBlock: /Channel/Application/Readers
+    # ACL policy for cscc's "GetConfigBlock" function
+    cscc/GetConfigBlock: /Channel/Application/Readers
 
-        # ACL policy for cscc's "GetConfigTree" function
-        cscc/GetConfigTree: /Channel/Application/Readers
+    # ACL policy for cscc's "GetConfigTree" function
+    cscc/GetConfigTree: /Channel/Application/Readers
 
-        # ACL policy for cscc's "SimulateConfigTreeUpdate" function
-        cscc/SimulateConfigTreeUpdate: /Channel/Application/Readers
+    # ACL policy for cscc's "SimulateConfigTreeUpdate" function
+    cscc/SimulateConfigTreeUpdate: /Channel/Application/Readers
 
-        #---Miscellanesous peer function to policy mapping for access control---#
+    #---Miscellanesous peer function to policy mapping for access control---#
 
-        # ACL policy for invoking chaincodes on peer
-        peer/Propose: /Channel/Application/Writers
-        # peer/Propose: /Channel/Application/Restrict
+    # ACL policy for invoking chaincodes on peer
+    peer/Propose: /Channel/Application/Writers
+    # peer/Propose: /Channel/Application/Restrict
 
-        # ACL policy for chaincode to chaincode invocation
-        peer/ChaincodeToChaincode: /Channel/Application/Readers
+    # ACL policy for chaincode to chaincode invocation
+    peer/ChaincodeToChaincode: /Channel/Application/Readers
 
-        #---Events resource to policy mapping for access control###---#
+    #---Events resource to policy mapping for access control###---#
 
-        # ACL policy for sending block events
-        event/Block: /Channel/Application/Readers
+    # ACL policy for sending block events
+    event/Block: /Channel/Application/Readers
 
-        # ACL policy for sending filtered block events
-        event/FilteredBlock: /Channel/Application/Readers
+    # ACL policy for sending filtered block events
+    event/FilteredBlock: /Channel/Application/Readers
 
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
+    # Restrict:
+    #     Type: ImplicitMeta
+    #     Rule: "ANY CustomPolicy"
 
-    Organizations:
-    Policies:
-        Readers:
-            Type: ImplicitMeta
-            Rule: "ANY Readers"
-        Writers:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
-        LifecycleEndorsement:
-            Type: ImplicitMeta
-            Rule: "ANY Endorsement"
-        Endorsement:
-            Type: ImplicitMeta
-            Rule: "ANY Endorsement"
-        # Restrict:
-        #     Type: ImplicitMeta
-        #     Rule: "ANY CustomPolicy"
-
-    Capabilities:
-        <<: *ApplicationCapabilities
+  Capabilities:
+    <<: *ApplicationCapabilities
 
 Orderer: &OrdererDefaults
+  OrdererType: etcdraft
 
-    OrdererType: etcdraft
+  EtcdRaft:
+    Consenters:
+      - Host: orderer.example.com
+        Port: 7050
+        ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+        ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
 
-    EtcdRaft:
-        Consenters:
-        - Host: orderer.example.com
-          Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+  Addresses:
+    - orderer.example.com:7050
 
-    Addresses:
-        - orderer.example.com:7050
+  BatchTimeout: 2s
 
-    BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
 
-    BatchSize:
-        MaxMessageCount: 10
-        AbsoluteMaxBytes: 99 MB
-        PreferredMaxBytes: 512 KB
+  Organizations:
 
-    Organizations:
-
-    Policies:
-        Readers:
-            Type: ImplicitMeta
-            Rule: "ANY Readers"
-        Writers:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
-        BlockValidation:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
 
 Channel: &ChannelDefaults
-    Policies:
-        Readers:
-            Type: ImplicitMeta
-            Rule: "ANY Readers"
-        Writers:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
 
-    Capabilities:
-        <<: *ChannelCapabilities
-
+  Capabilities:
+    <<: *ChannelCapabilities
 
 Profiles:
-    BasicChannel:
-        Consortium: SampleConsortium
-        <<: *ChannelDefaults
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Carbon
-                - *Users
-                - *Cetesb
-                - *Ibama
-            Capabilities:
-                <<: *ApplicationCapabilities
-    OrdererGenesis:
-        <<: *ChannelDefaults
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            OrdererType: etcdraft
-            EtcdRaft:
-                Consenters:
-                - Host: orderer.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                - Host: orderer2.example.com
-                  Port: 8050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                - Host: orderer3.example.com
-                  Port: 9050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-            Addresses:
-                - orderer.example.com:7050
-                - orderer2.example.com:8050
-                - orderer3.example.com:9050
+  BasicChannel:
+    Consortium: SampleConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Carbon
+        - *Users
+        - *Cetesb
+        - *Ibama
+      Capabilities:
+        <<: *ApplicationCapabilities
+  OrdererGenesis:
+    <<: *ChannelDefaults
+    Capabilities:
+      <<: *ChannelCapabilities
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.example.com
+            Port: 7050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+          - Host: orderer2.example.com
+            Port: 8050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+          - Host: orderer3.example.com
+            Port: 9050
+            ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+            ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+      Addresses:
+        - orderer.example.com:7050
+        - orderer2.example.com:8050
+        - orderer3.example.com:9050
 
-            Organizations:
-            - *OrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
-            SampleConsortium:
-                Organizations:
-                - *Carbon
-                - *Users
-                - *Cetesb
-                - *Ibama
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *Carbon
+          - *Users
+          - *Cetesb
+          - *Ibama
