@@ -128,6 +128,56 @@ func GetRole(clientAccountID string) string {
 	return match[1]
 }
 
+//returns whole world state
+func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
+
+	// Must be Carbon's admin
+	err := authorizationHelper(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Slice de slices que conterá os tokens e suas quantidades
+	var tokens [][]string
+
+	// Get all transactions
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Split the key
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", err)
+		}
+
+		// Get key parts
+		tokenAccount := compositeKeyParts[0]
+		tokenID := compositeKeyParts[1]
+		tokenSender := compositeKeyParts[2]
+		// metadata := compositeKeyParts[3]
+
+		// Get value
+		tokenAmount := queryResponse.Value
+
+		//! Add info to the array of arrays
+		element := []string{tokenAccount,tokenID,tokenSender, string(tokenAmount)}
+		tokens = append(tokens, element)
+		// }
+	}
+
+	return tokens, nil
+}
+
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
