@@ -16,24 +16,34 @@ import (
 	"log"
 	"encoding/binary"
 
-
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 // const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
-const bookorder = "BookOrder"
+
+// The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
+const bookorder = "owner~id"
 
 const minterMSPID = "CarbonMSP"
+
+// System account set to admin@admin.com
 const systemAccount = "eDUwOTo6Q049YWRtaW5AYWRtaW4uY29tLE9VPWFkbWluK09VPWNhcmJvbitPVT1kZXBhcnRtZW50MTo6Q049ZmFicmljLWNhLXNlcnZlcixPVT1GYWJyaWMsTz1IeXBlcmxlZGdlcixTVD1Ob3J0aCBDYXJvbGluYSxDPVVT"
 
+// System currency: Default token which tax applies
+const systemCurrency = "$ylvas"
+
+// Tax (in %) to be applied and reverted to system account
+const taxPercentage = 10
+
 // Token struct for marshal/unmarshal buy and sell listings
-type Token struct {
-    ID         	string 	`json:"id"`
-    Owner      	string 	`json:"owner"`
-    Status 		string 	`json:"listing_status"`
-    Price     	uint64 	`json:"price"`
+type BookOrder struct {
+	Operator string
+	Sender   string
+	Id       string
+	Status   string
+	Price	 uint64
 }
 
 type ListForSaleEvent struct {
@@ -43,6 +53,7 @@ type ListForSaleEvent struct {
 	IsForSale bool
 	Price	uint64
 }
+
 
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
@@ -288,8 +299,6 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 	return uint64(0), nil
 }
 
-
-
 func containInSlice(NFTSumList [][]string, account string) int {
 	// Checks if it has a receiver for sylvas and if yes, returns the index and the ids of the nfts, if not, it returns 0
 	// Check the list if there is already a destination with the same code
@@ -413,7 +422,6 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 
 // TransferFrom transfers tokens from sender account to recipient account
 // recipient account must be a valid clientID as returned by the ClientID() function
-// This function triggers a TransferSingle event
 func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id string, amount uint64) error {
 	if sender == recipient {
 		return fmt.Errorf("Proibido transferir para si mesmo")
@@ -436,13 +444,22 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 		}
 	}
 
-	// Apply taxes
-	err = taxes(ctx, operator, sender, recipient, id, amount, 10)
+	// Withdraw the funds from the sender address
+	err = removeBalance(ctx, sender, []string{id}, []uint64{amount})
 	if err != nil {
 		return err
 	}
 
-	return nil
+	// Deposit the amount to the recipient address
+	err = addBalance(ctx, sender, recipient, id, amount)
+	if err != nil {
+		return err
+	}
+
+	// Emit TransferSingle event
+	transferSingleEvent := TransferSingle{operator, sender, recipient, id, amount}
+	return emitTransferSingle(ctx, transferSingleEvent)
+
 }
 
 // BatchTransferFrom transfers multiple tokens from sender account to recipient account
@@ -894,7 +911,15 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 	necessaryFunds := make(map[string]uint64) // token id -> necessary amount
 
 	for i := 0; i < len(amounts); i++ {
-		necessaryFunds[ids[i]] += amounts[i]
+		if ids[i] =="$ylvas" {
+			// Calculate tax amount
+			taxAmount := amounts[i] * uint64(taxPercentage) / 100
+			log.Println("taxAmount: ", taxAmount)
+
+			necessaryFunds[ids[i]] += amounts[i] + taxAmount
+		} else {
+			necessaryFunds[ids[i]] += amounts[i]
+		}
 	}
 
 	// Copy the map keys and sort it. This is necessary because iterating maps in Go is not deterministic
@@ -953,9 +978,21 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 					return err
 				}
 			} else {
-				err = addBalance(ctx, sender, sender, tokenId, remainder)
-				if err != nil {
-					return err
+
+				if tokenId == "$ylvas" {
+					// Calculate amount discounted taxes
+					amount := neededAmount / (1 + (uint64(taxPercentage) / 100))
+
+					// Calculate and transfer taxes to system
+					err = taxes(ctx, sender, sender, tokenId, amount)
+					if err != nil {
+						return err
+					}
+
+					err = addBalance(ctx, sender, sender, tokenId, remainder)
+					if err != nil {
+						return err
+					}
 				}
 			}
 
@@ -1156,42 +1193,32 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 // Important to note that the taxpercentage ideally should be defined in the begining, being possible to modify it (DAO decision maybe?)
 // amount: total token amount to be taxed. MUST be previously validated by the caller function!!
 // taxPercentage: tax percentage to apply
-func taxes(ctx contractapi.TransactionContextInterface, operator string, sender string, recipient string, id string, amount uint64, taxPercentage int) error {
-
-	if recipient == "0x0" {
-		return fmt.Errorf("transfer to the zero address")
-	}
+func taxes(ctx contractapi.TransactionContextInterface, operator string, sender string, id string, amount uint64) error {
 
     // Calculate tax amount
     taxAmount := amount * uint64(taxPercentage) / 100
 	log.Println("taxAmount: ", taxAmount)
-
-    // Add tax amount in total transfer amount. The sender must have funds to pay the taxes, in order to complete the transaction.
-    total := amount + taxAmount
-	log.Println("Total with taxes: ", total)
 	
 	// Withdraw the funds from the sender address
-	err := removeBalance(ctx, operator, []string{id}, []uint64{total})
+	err := removeBalance(ctx, sender, []string{id}, []uint64{taxAmount})
 	if err != nil {
 		return err
 	}
 
 	// Send tax amount to system account
-    err = addBalance(ctx, operator, systemAccount, id, taxAmount)
+    err = addBalance(ctx, sender, systemAccount, id, taxAmount)
     if err != nil {
         return err
     }
 
-	// Deposit the amount to the recipient address
-	err = addBalance(ctx, operator, recipient, id, amount)
-	if err != nil {
-		return err
-	}
-
-	transferBatchMultiRecipientEvent := TransferBatchMultiRecipient{operator, sender, []string{recipient, systemAccount}, []string{"$ylvas", "$ylvas"}, []uint64{amount, taxAmount}}
-	return emitTransferBatchMultiRecipient(ctx, transferBatchMultiRecipientEvent)
+	// Emit TransferSingle event
+	transferSingleEvent := TransferSingle{operator, sender, systemAccount, id, taxAmount}
+	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
+// Trade functions
+// 
+// List NFT for sale by a given price
 func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface, owner string, id string, price uint64) error {
 
 	// Get the caller identity
@@ -1209,8 +1236,7 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 	}
 
 	// Create the composite key for the NFT
-	status := "sale"
-	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{owner, id, status})
+	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{owner, id})
 	if err != nil {
 		return fmt.Errorf("failed to create composite key for NFT: %v", err)
 	}
@@ -1218,7 +1244,8 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 	// Save the updated NFT state to the world state
 	priceBytes := make([]byte, 8)
 	binary.LittleEndian.PutUint64(priceBytes[:], price)
-	err = ctx.GetStub().PutState(compositeKey, priceBytes)
+	value := append([]byte("sale"), priceBytes...)
+	err = ctx.GetStub().PutState(compositeKey, value)
 	if err != nil {
 		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
 	}
@@ -1226,6 +1253,9 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 	return nil
 }
 
+// Check book order for given status
+// e.g.
+// sale, sold
 func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
     
 	var forSaleNFTs [][]string
@@ -1246,29 +1276,42 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
             return nil, fmt.Errorf("failed to get next token: %v", err)
         }
 
-        // Unpack the composite key (owner - id - status)
+        // Unpack the composite key (owner - id)
         _, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
         if err != nil {
             return nil, fmt.Errorf("failed to split composite key: %v", err)
         }
-		
-		if compositeKeyParts[2] == status {
-			priceBytes, err := ctx.GetStub().GetState(responseRange.Key)
+
+		// Get the status of the NFT
+		statusBytes, err := ctx.GetStub().GetState(string(responseRange.Value))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get status: %v", err)
+		}
+
+		// Check if the NFT's status matches the requested status
+		if string(statusBytes) == status {
+			// Get the price of the NFT
+			priceBytes, err := ctx.GetStub().GetState(string(responseRange.Value))
 			if err != nil {
 				return nil, fmt.Errorf("failed to get price: %v", err)
 			}
-			rcvprice := binary.LittleEndian.Uint64(priceBytes)
-			price := strconv.FormatUint(rcvprice, 10)
-			element := []string{compositeKeyParts[0], compositeKeyParts[1], compositeKeyParts[2], price}
+			
+			// Unmarshal the price of the NFT
+			var price uint64
+			err = json.Unmarshal(priceBytes, &price)
+			if err != nil {
+				return nil, fmt.Errorf("failed to unmarshal price: %v", err)
+			}
+
+			priceStr := strconv.FormatUint(price, 10)
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], status, priceStr}
 			forSaleNFTs = append(forSaleNFTs, element)
 		}
-		
-				        
     }
-
     return forSaleNFTs, nil
 }
 
+// Buy listed NFT paying the asked price
 func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer string, id string) error {
 
 	// Get the caller identity
@@ -1291,9 +1334,8 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 		return fmt.Errorf("failed to check NFT status: %v", err)
 	}
 
-	var found bool
-
 	// Find the NFT that is being sold
+	var found bool
 	for _, forSaleNFT := range forSaleNFTs {
 		if forSaleNFT[1] == id {
 			found = true
@@ -1326,30 +1368,53 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 	}
 
 	return nil
-
 }
 
+// execute the deal
+// id[0] = NFT
+// id[1] = FT
 func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64) error {
 
-	// Transfer the $ylvas to the seller with taxes
-	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
-	if err != nil {
-		return fmt.Errorf("failed transfering sylvas for NFT: %v", err)
-	}
+	// // Calculate and transfer taxes to system account
+	// err := taxes(ctx, operator, buyer, id[1], amount[1])
+	// if err != nil {
+	// 	return err
+	// }
 
-	// Transfer the NFT to the buyer
-	// Withdraw the NFT from the seller address
-	err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
+	// // Deposit the amount FT to the recipient address
+	// err = addBalance(ctx, operator, seller, id[1], amount[1])
+	// if err != nil {
+	// 	return err
+	// }
+	
+	// // Generate TransferSingle event
+	// transferFT := TransferSingle{operator, buyer, seller, id[1], amount[1]}		
+	// emitTransferSingle(ctx, transferFT)
+
+	// Transfer FT to seller
+	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
 	if err != nil {
 		return err
 	}
 
-	// Send NFT to buyer account
-    err = addBalance(ctx, operator, buyer, id[0], 1)
-    if err != nil {
-        return err
-    }
+	// Transfer NFT to buyer
+	err = s.TransferFrom(ctx, seller, buyer, id[0], 1)
+	if err != nil {
+		return err
+	}
+	
+	// // Transfer the NFT to the buyer
+	// // Withdraw the NFT from the seller address
+	// err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
+	// if err != nil {
+	// 	return err
+	// }
 
+	// // Send NFT to buyer account
+    // err = addBalance(ctx, operator, buyer, id[0], 1)
+    // if err != nil {
+    //     return err
+    // }
 
 	// Update the book order
 	status := "sold"
@@ -1367,8 +1432,7 @@ func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operat
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, seller, buyer, id[0], 1}
-	return emitTransferSingle(ctx, transferSingleEvent)
-
+	transferNFT := TransferSingle{operator, seller, buyer, id[0], 1}
+	return emitTransferSingle(ctx, transferNFT)
 
 }

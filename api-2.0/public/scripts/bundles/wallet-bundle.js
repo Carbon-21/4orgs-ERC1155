@@ -11641,7 +11641,7 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
           token = localStorage.getItem("token");
           headers = new Headers();
           headers.append("Authorization", "Bearer " + token);
-          url = "https://192.168.18.32:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
+          url = "https://192.168.18.39:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
           init = {
             method: "GET",
             headers: headers
