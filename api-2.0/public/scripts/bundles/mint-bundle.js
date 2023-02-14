@@ -9533,6 +9533,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               metadata: {
                 id: "NFT",
                 status: "Ativo",
+                mint_sylvas: "Ativo",                   
                 amount: qty,
                 land_owner: document.getElementById("landOwner").value,
                 land: document.getElementById("area").value,

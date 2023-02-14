@@ -95,6 +95,7 @@ async function renderMetadata(tokenId, metadata) {
     `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
     `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${metadata?.properties?.compensation_owner} <br />` +
+    `<b> Geração de Sylvas: </b> ${metadata?.properties?.mint_sylvas} <br />` +    
     renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
     "<p>" +
     "</div>"

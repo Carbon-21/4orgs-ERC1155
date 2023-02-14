@@ -114,13 +114,16 @@ type ToID struct {
 type Metadata struct {
 	Id                string `json:"id"`
 	Status            string `json:"status"`
-	Amount            string `json:"amount"`
+	Amount            string `json:"amount"` // Área em  hectares
 	LandOwner         string `json:"land_owner"`
 	Land              string `json:"land"`
 	Phyto             string `json:"phyto"`
 	Geolocation       string `json:"geolocation"`
 	CompensationOwner string `json:"compensation_owner"`
 	CompensationState string `json:"compensation_state"`
+	MintSylvas        string `json:"mint_sylvas"`
+	// PlantedAmount  string `json:"planted_amount"`
+	// OrigPlantedAmount  string `json:"orig_planted_amount"`
 
 	//AreaClassification string `json:"areaclassification"`
 	//Verifier string `json:"verifier"`
@@ -276,7 +279,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
-		if returnedTokenID != tokenid {
+		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") {
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
