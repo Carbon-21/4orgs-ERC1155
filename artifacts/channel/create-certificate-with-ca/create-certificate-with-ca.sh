@@ -1,7 +1,10 @@
+#!/bin/bash
+cd "$(dirname "$0")"
 createcertificatesForCarbon() {
   echo
   echo "Enroll the CA admin"
   echo
+
   mkdir -p ../crypto-config/peerOrganizations/carbon.example.com/
   export FABRIC_CA_CLIENT_HOME=${PWD}/../crypto-config/peerOrganizations/carbon.example.com/
 

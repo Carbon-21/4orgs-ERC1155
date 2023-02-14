@@ -1,6 +1,7 @@
-
+#!/bin/bash
+cd "$(dirname "$0")"
 # Delete existing artifacts
-rm genesis.block mychannel.tx
+rm -rf genesis.block mychannel.tx
 rm -rf ../../channel-artifacts/*
 
 #Generate Crypto artifactes for organizations

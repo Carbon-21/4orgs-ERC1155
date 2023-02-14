@@ -1,11 +1,7 @@
 #!/bin/bash
 source ./api-2.0/.env
-
-kill-hlf () {
-	docker-compose down 
-	containers=$(docker ps -q) && docker kill $containers
-	docker network prune -f && docker volume prune -f
-}
+INFO_COLOR='\033[0;34m'
+NC='\033[0m' # No Color
 
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
 start-mysql() {
@@ -17,74 +13,75 @@ start-mysql() {
   fi
 }
 
-###### +X ######
+
+###### Executable files (+x) ######
 chmod +x kill
 chmod +x git-branch
 chmod +x git-push
 chmod +x cc-debug
 chmod +x cc-build
+chmod +x database/reset-db
+chmod +x artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
+chmod +x artifacts/channel/create-artifacts.sh
+chmod +x createChannel.sh
+chmod +x deployChaincode.sh
+chmod +x api-2.0/public/scripts/src/genscripts.sh
+chmod +x api-2.0/config/generate-ccp.sh
+chmod +x api-2.0/get-bundles
 
 ###### KILL ######
 #kill other dockers 
-cd ./explorer
-kill-hlf
-cd ../artifacts
-kill-hlf
-cd channel/create-certificate-with-ca
-kill-hlf
+echo -e "${INFO_COLOR}Docker compose setup:${NC}"
+docker-compose -f ./explorer/docker-compose.yaml down
+docker-compose -f ./artifacts/docker-compose.yaml down
+docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml down
+containers=$(docker ps -q) && [[ ! -z "$containers" ]] && docker kill $containers
+docker network prune -f && docker volume prune -f
 
 #remove couch-db instance, so identities get properly deleted
-rm fabric-ca/carbon/fabric-ca-server.db
+# TODO - manage restart
+rm  ./artifacts/channel/create-certificate-with-ca/fabric-ca/carbon/fabric-ca-server.db
 
 ###### RUN ######
+echo -e "${INFO_COLOR}Database setup:${NC}"
 #run mysql
 start-mysql
-cd ../../../database
-chmod +x reset-db
-./reset-db
-cd ../artifacts/channel/create-certificate-with-ca
 
+# TODO - Manage restart
+./database/reset-db
+echo -e "${INFO_COLOR}Docker compose CA setup:${NC}"
 #run one docker for each CA (each org has 1, incluind the orderer)
-docker-compose up -d
+docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml up -d
 sleep 15
 
 #creates CAs and orgs certificates
-# su
-chmod +x create-certificate-with-ca.sh
-./create-certificate-with-ca.sh
+./artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
 
-#create genisis block, config channel and generate anchors
-cd ..
-chmod +x create-artifacts.sh
-./create-artifacts.sh
+# #create genisis block, config channel and generate anchors
+./artifacts/channel/create-artifacts.sh
+
 # exit
 
 #run chouchdb, orgs peers and orderers dockers
-cd ..
-docker-compose up -d
+echo ${PWD}
+docker-compose -f artifacts/docker-compose.yaml up -d 
 sleep 15
 
-#create channel and deploy cahincode on each org
-cd ..
-chmod +x createChannel.sh
+# #create channel and deploy chaincode on each org
 ./createChannel.sh
-chmod +x deployChaincode.sh
 ./deployChaincode.sh
 
-#create connection profiles if they don't exist already
-cd api-2.0
-cd ./config/
-[ -f ./connection-carbon.json ] || ./generate-ccp.sh
+# #create connection profiles if they don't exist already
+[ -f ./api-2.0/config/connection-carbon.json ] || ./api-2.0/config/generate-ccp.sh
 
-#create public scripts
-cd ../public/scripts/src
-chmod +x genscripts.sh
-./genscripts.sh
+# #create public scripts
+./api-2.0/public/scripts/src/genscripts.sh
 
-#generate bundle
-cd ../../..
-chmod +x get-bundles
-./get-bundles
-
-npm install
-nodemon
+(
+  cd api-2.0/
+  #generate bundle
+  ./get-bundles
+  #start service
+  npm install
+  nodemon
+)

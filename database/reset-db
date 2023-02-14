@@ -2,6 +2,8 @@
 #regenerate sequelize models using sequelize-auto and recreate carbon DB
 
 # source containing env values
+#set path to script's path
+cd "$(dirname "$0")"
 source ../api-2.0/.env
 
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
@@ -14,8 +16,7 @@ start-mysql() {
   fi
 }
 
-#set path to script's path
-cd "$(dirname "$0")"
+
 
 #run mysql
 start-mysql
