@@ -19,16 +19,16 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
 // The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
 const bookorder = "owner~id"
 
+// Org allowed to mint tokens
 const minterMSPID = "CarbonMSP"
 
-// System account set to admin@admin.com
+// System account set to admin@admin.com (account that will receive system tax)
 const systemAccount = "eDUwOTo6Q049YWRtaW5AYWRtaW4uY29tLE9VPWFkbWluK09VPWNhcmJvbitPVT1kZXBhcnRtZW50MTo6Q049ZmFicmljLWNhLXNlcnZlcixPVT1GYWJyaWMsTz1IeXBlcmxlZGdlcixTVD1Ob3J0aCBDYXJvbGluYSxDPVVT"
 
 // System currency: Default token which tax applies
