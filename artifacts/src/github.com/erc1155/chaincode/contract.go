@@ -14,7 +14,7 @@ import (
 	"sort"
 	"strconv"
 	"log"
-	"encoding/binary"
+	// "encoding/binary"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -1231,7 +1231,7 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 			return err
 		}
 		if !approved {
-			return fmt.Errorf("Chamador não é o dono do token nem está aprovado a realizar esta transação")
+			return fmt.Errorf("caller is neither the owner of the token nor approved to perform this transaction")
 		}
 	}
 
@@ -1241,10 +1241,21 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 		return fmt.Errorf("failed to create composite key for NFT: %v", err)
 	}
 
+	// Marshal the status and price into JSON
+	status := "sale"
+	data := struct {
+		Status string `json:"status"`
+		Price  uint64 `json:"price"`
+	}{
+		Status: status,
+		Price:  price,
+	}
+	value, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal NFT data: %v", err)
+	}
+
 	// Save the updated NFT state to the world state
-	priceBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(priceBytes[:], price)
-	value := append([]byte("sale"), priceBytes...)
 	err = ctx.GetStub().PutState(compositeKey, value)
 	if err != nil {
 		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
@@ -1257,11 +1268,11 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 // e.g.
 // sale, sold
 func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
-    
+
 	var forSaleNFTs [][]string
 
-    // Create a composite key to retrieve all NFTs
-    iterator, err := ctx.GetStub().GetStateByPartialCompositeKey(bookorder, []string{})
+	// Get the NFT state from the world state
+	iterator, err := ctx.GetStub().GetStateByPartialCompositeKey(bookorder, []string{})
     if err != nil {
         return nil, fmt.Errorf("failed to create iterator: %v", err)
     }
@@ -1282,32 +1293,23 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
             return nil, fmt.Errorf("failed to split composite key: %v", err)
         }
 
-		// Get the status of the NFT
-		statusBytes, err := ctx.GetStub().GetState(string(responseRange.Value))
+		// Parse the JSON object
+		var data struct {
+			Status string `json:"status"`
+			Price  uint64 `json:"price"`
+		}
+		err = json.Unmarshal(responseRange.Value, &data)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get status: %v", err)
+			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
 		}
 
-		// Check if the NFT's status matches the requested status
-		if string(statusBytes) == status {
-			// Get the price of the NFT
-			priceBytes, err := ctx.GetStub().GetState(string(responseRange.Value))
-			if err != nil {
-				return nil, fmt.Errorf("failed to get price: %v", err)
-			}
-			
-			// Unmarshal the price of the NFT
-			var price uint64
-			err = json.Unmarshal(priceBytes, &price)
-			if err != nil {
-				return nil, fmt.Errorf("failed to unmarshal price: %v", err)
-			}
-
-			priceStr := strconv.FormatUint(price, 10)
-			element := []string{compositeKeyParts[0], compositeKeyParts[1], status, priceStr}
+		if data.Status == status {
+			price := strconv.FormatUint(data.Price, 10)
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price}
 			forSaleNFTs = append(forSaleNFTs, element)
 		}
-    }
+	}
+
     return forSaleNFTs, nil
 }
 
@@ -1335,31 +1337,55 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 	}
 
 	// Find the NFT that is being sold
+	// forSaleNFT[0] = Owner
+	// forSaleNFT[1] = TokenID
+	// forSaleNFT[2] = Status
+	// forSaleNFT[3] = Price
 	var found bool
 	for _, forSaleNFT := range forSaleNFTs {
 		if forSaleNFT[1] == id {
 			found = true
-			
-			compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{forSaleNFT[0], id, "sale"})
+
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{forSaleNFT[0], forSaleNFT[1]})
 			if err != nil {
 				return fmt.Errorf("failed to create composite key: %v", err)
 			}
 
-			priceBytes, err := ctx.GetStub().GetState(compositeKey)
+			salePrice, err := strconv.ParseUint(forSaleNFT[3], 10, 64)
 			if err != nil {
-				return fmt.Errorf("failed to get NFT price: %v", err)
+				return fmt.Errorf("failed to parse price: %v", err)
 			}
-			salePrice := binary.LittleEndian.Uint64(priceBytes)
+
+			// err = ctx.GetStub().DelState(compositeKey)
+			// if err != nil {
+			// 	return fmt.Errorf("failed to delete key from state: %v", err)
+			// }
 
 			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], "$ylvas"}, []uint64{1, salePrice})
 			if err != nil {
 				return fmt.Errorf("failed dealing for NFT: %v", err)
 			}
 
-			err = ctx.GetStub().DelState(compositeKey)
-			if err != nil {
-				return fmt.Errorf("failed to delete key from state: %v", err)
+			// Marshal the status and price into JSON
+			status := "sold"
+			data := struct {
+				Status string `json:"status"`
+				Price  uint64 `json:"price"`
+			}{
+				Status: status,
+				Price:  salePrice,
 			}
+			value, err := json.Marshal(data)
+			if err != nil {
+				return fmt.Errorf("failed to marshal NFT data: %v", err)
+			}
+
+			// Save the updated NFT state to the world state
+			err = ctx.GetStub().PutState(compositeKey, value)
+			if err != nil {
+				return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+			}
+
 		}
 	}
 
@@ -1375,64 +1401,58 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 // id[1] = FT
 func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64) error {
 
-	// // Calculate and transfer taxes to system account
-	// err := taxes(ctx, operator, buyer, id[1], amount[1])
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // Deposit the amount FT to the recipient address
-	// err = addBalance(ctx, operator, seller, id[1], amount[1])
-	// if err != nil {
-	// 	return err
-	// }
-	
-	// // Generate TransferSingle event
-	// transferFT := TransferSingle{operator, buyer, seller, id[1], amount[1]}		
-	// emitTransferSingle(ctx, transferFT)
-
 	// Transfer FT to seller
 	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
 	if err != nil {
 		return err
-	}
+	}	
 
+	////
+	//
 	// Transfer NFT to buyer
-	err = s.TransferFrom(ctx, seller, buyer, id[0], 1)
-	if err != nil {
-		return err
-	}
+		err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
+		if err != nil {
+			return err
+		}
+
+		// Send tax amount to system account
+		err = addBalance(ctx, seller, buyer, id[0], 1)
+		if err != nil {
+			return err
+		}
+		transferNFT := TransferSingle{operator, seller, buyer, id[0], 1}
+	//
+	////
 	
-	// // Transfer the NFT to the buyer
-	// // Withdraw the NFT from the seller address
-	// err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // Send NFT to buyer account
-    // err = addBalance(ctx, operator, buyer, id[0], 1)
-    // if err != nil {
-    //     return err
-    // }
-
 	// Update the book order
 	status := "sold"
-	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{seller, id[0], status})
+
+	// Create the composite key for the NFT
+	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{seller, id[0]})
 	if err != nil {
 		return fmt.Errorf("failed to create composite key for NFT: %v", err)
 	}
 
+	// Marshal the status and price into JSON
+	status = "sale"
+	data := struct {
+		Status string `json:"status"`
+		Price  uint64 `json:"price"`
+	}{
+		Status: status,
+		Price:  amount[1],
+	}
+	value, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal NFT data: %v", err)
+	}
+
 	// Save the updated NFT state to the world state
-	priceBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(priceBytes[:], amount[1])
-	err = ctx.GetStub().PutState(compositeKey, priceBytes)
+	err = ctx.GetStub().PutState(compositeKey, value)
 	if err != nil {
 		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
 	}
-
-	// Emit TransferSingle event
-	transferNFT := TransferSingle{operator, seller, buyer, id[0], 1}
+	// Emit TransferSingle NFT event
 	return emitTransferSingle(ctx, transferNFT)
 
 }
