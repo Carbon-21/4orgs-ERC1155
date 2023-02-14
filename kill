@@ -17,3 +17,6 @@ kill-hlf
 
 #stop mysql
 sudo systemctl stop mysql
+
+#clear git ignored
+git clean -dfX
