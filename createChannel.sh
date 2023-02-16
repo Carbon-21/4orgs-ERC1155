@@ -1,5 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
+
+
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/peers/peer0.carbon.example.com/tls/ca.crt
@@ -42,35 +44,30 @@ setGlobalsForPeer0Ibama(){
 }
 
 createChannel(){
-    rm -rf ./channel-artifacts/*
     setGlobalsForPeer0Carbon
-    
+    echo "Creating channel ${CHANNEL_NAME} with ordered ${ORDERER_CA}"
     peer channel create -o localhost:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
     -f ./artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block \
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 }
 
-removeOldCrypto(){
-    rm -rf ./api-1.4/crypto/*
-    rm -rf ./api-1.4/fabric-client-kv-carbon/*
-    rm -rf ./api-2.0/carbon-wallet/*
-    rm -rf ./api-2.0/users-wallet/*
-}
-
 
 joinChannel(){
     setGlobalsForPeer0Carbon
+    echo "Peer ${CORE_PEER_LOCALMSPID} Joining channel ${CHANNEL_NAME}"
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
-    
     setGlobalsForPeer0Users
+    echo "Peer ${CORE_PEER_LOCALMSPID} Joining channel ${CHANNEL_NAME}"
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
     setGlobalsForPeer0Cetesb
+    echo "Peer ${CORE_PEER_LOCALMSPID} Joining channel ${CHANNEL_NAME}"
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
     setGlobalsForPeer0Ibama
+    echo "Peer ${CORE_PEER_LOCALMSPID} Joining channel ${CHANNEL_NAME}"
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
 }
@@ -89,8 +86,6 @@ updateAnchorPeers(){
     peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 
 }
-
-removeOldCrypto
 
 createChannel
 joinChannel

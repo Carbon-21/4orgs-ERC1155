@@ -1,22 +1,154 @@
 #!/bin/bash
 
-###### KILL ######
-kill-hlf () {
-	docker-compose down 
-	containers=$(docker ps -q) && docker kill $containers
-	docker network prune -f && docker volume prune -f
+# TODO move to a global env setup
+PID_FILE=.carbon.pid
+
+###
+# Removable package Chaincoide files (Chaincode name)
+###
+CC_NAME="erc1155"
+
+###
+#Color config
+##
+SUCCESS_COLOR='\033[0;32m'
+WARNING_COLOR='\033[0;33m'
+INFO_COLOR='\033[0;34m'
+ERROR_COLOR='\033[0;31m'
+NC='\033[0m' # No Color
+
+unset reset_soft
+unset yes_all
+unset skip_mysql
+unset reset_hard
+
+if [[ "$EUID" = 0 ]]; then
+    echo -e "${ERROR_COLOR}Please do not run this script as root ${NC}" && exit 1 
+fi
+
+
+usage() {
+    cat<<EOM
+    Usage:
+    $(basename $0) [-hrys]
+    Stop all containers and databases
+    -r Reset envirionment (dockers, couchDB and MySQL)
+    -y Non-interactively (sudo may be required)
+    -s Skip mysql stop
+    -a Remove all docker related (docker system prune -a --volumes)
+    -h Display a brief help message
+EOM
+exit 0; 
+}
+while getopts ":hrya" o; do
+    case "${o}" in
+      r)
+        reset_soft=1
+        ;;
+      s)
+        skip_mysql=1
+        ;;
+      a)
+        reset_soft=1
+        reset_hard=1
+        ;;
+      y)
+        yes_all=1
+        ;;
+      *|h)
+        echo "usage"
+        usage
+        ;;
+    esac
+done
+
+
+reset_soft_applications(){
+  echo -e "${WARNING_COLOR}RESETING ENV!${NC}"
+  if [ -z "${yes_all}" ]; then
+    echo -e "${WARNING_COLOR}Are you sure?(yY) ${NC}"
+    read -n 1 -r
+    echo    # (optional) move to a new line
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1 
+    fi
+  fi
+
+  #kill other dockers 
+  echo -e "${WARNING_COLOR}Reseting Docker Containers${NC}"
+  docker-compose -f ./explorer/docker-compose.yaml down
+  docker-compose -f ./artifacts/docker-compose.yaml down
+  docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml down
+
+  containers=$(docker ps -q) && [[ ! -z "$containers" ]] && docker kill $containers
+  if [ "${reset_hard}" == "1" ]; then
+    docker system prune -a --volumes
+  else
+    docker network prune -f && docker volume prune -f
+  fi
+  #Reset database
+  echo -e "${WARNING_COLOR}Reseting MySQL${NC}"
+  ./database/reset-db
+  echo -e "${WARNING_COLOR}Reseting CouchDB${NC}"
+  db_file=./artifacts/channel/create-certificate-with-ca/fabric-ca/carbon/fabric-ca-server.db
+  [ -f ${db_file} ] && rm -f ${db_file}
+
+  #Remove old Crypto
+  rm -rf ./api-1.4/crypto/*
+  rm -rf ./api-1.4/fabric-client-kv-carbon/*
+  rm -rf ./api-2.0/carbon-wallet/*
+  rm -rf ./api-2.0/users-wallet/*
+
+  #Clear channel artifacts
+  rm -rf ./channel-artifacts/*
+
+  # Delete existing artifacts
+  rm -rf ./artifacts/channels/genesis.block ./artifacts/channels/mychannel.tx
+  rm -rf ./channel-artifacts/*
+  #Remove package chaincode
+  rm -rf ./${CC_NAME}.tar.gz
+  
+  #Remove old crypto config
+  rm -rf ./artifacts/channel/crypto-config/*
+  
+  #clear git ignored files
+  git clean -dfX
+  rm -rf ${PID_FILE}
 }
 
-#kill other dockers 
-cd ./explorer
-kill-hlf
-cd ../artifacts
-kill-hlf
-cd channel/create-certificate-with-ca
-kill-hlf
+stop_applications(){
+  docker-compose -f ./explorer/docker-compose.yaml stop
+  docker-compose -f ./artifacts/docker-compose.yaml stop
+  docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml stop
+}
 
-#stop mysql
-sudo systemctl stop mysql
+###
+# Process started
+###
+echo -e "${SUCCESS_COLOR}Running $(basename $0) process ${NC}"
 
-#clear git ignored
-git clean -dfX
+if [ -z "${skip_mysql}" ] && ! [ -x "$(command -v sudo)" ]; then
+  echo 'Error: sudo  is not installed.' >&2
+  exit 1
+fi
+
+if [ "${reset_soft}" == "1" ]; then
+  reset_soft_applications
+else
+  stop_applications
+fi
+
+
+if [ -z "${skip_mysql}" ]; then
+  #stop mysql
+  sudo systemctl stop mysql
+fi
+
+#remove sudo cache
+if [ "${reset_soft}" == "1" ]; then
+	sudo -k
+fi
+
+###
+# Process finished
+###

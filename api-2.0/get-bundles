@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd "$(dirname "$0")"
 #install node modules if they are not installed already
 echo "Installing node modules if they are not installed already"
 if [ -d ./node_modules/babelify ]; then
