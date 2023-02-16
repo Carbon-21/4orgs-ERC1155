@@ -1,12 +1,8 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-# Delete existing artifacts
-rm -rf genesis.block mychannel.tx
-rm -rf ../../channel-artifacts/*
 
 #Generate Crypto artifactes for organizations
 # cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
-
 
 
 # System channel
@@ -15,7 +11,7 @@ SYS_CHANNEL="sys-channel"
 # channel name defaults to "mychannel"
 CHANNEL_NAME="mychannel"
 
-echo $CHANNEL_NAME
+echo "Default Channel: $CHANNEL_NAME"
 
 # Generate System Genesis block
 configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
