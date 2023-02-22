@@ -1,8 +1,8 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
-var { BlockDecoder } = require("fabric-common");
-const { json } = require("body-parser");
+const { BlockDecoder } = require("fabric-common");
+const fabproto6 = require("fabric-protos");
 
 //get user's balance of a given token
 exports.balance = async (req, res, next) => {
@@ -245,61 +245,30 @@ exports.getBlockchainTail = async (req, res, next) => {
   const channelName = req.params.channel;
 
   // //connect to the channel and get the
-  // const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", next);
-  // if (!chaincode) return;
-
-  // console.log(chaincode);
-
-  const [channel, gateway] = await helper.getChannel("Carbon", channelName, "admin", next);
-  if (!channel) return;
-
-  // const [channel, gateway] = await helper.getChannel("Carbon", "mychannel", "admin", next);
-  // if (!channel) return;
-
-  // const FabricClient = require("fabric-client");
-
-  // client = FabricClient.loadFromConfig("../network_org1.yaml");
-  // await client.initCredentialStores();
-  // channelObj = client.getChannel("mychannel");
+  const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", next);
 
   try {
-    r = await channel.queryBlock(1);
-    console.log(r);
-
     //use QSCC
-    // const network = await gateway.getNetwork(channel);
-    // const contract = network.getContract("qscc");
+    const network = await gateway.getNetwork(channelName);
+    const contract = network.getContract("qscc");
 
-    // let info = await contract.evaluateTransaction("GetChainInfo", channel);
-    // // console.log(BlockDecoder.decodeTransaction(info));
-    // // a = JSON.parse(JSON.stringify(info).toString()).data;
-    // // console.log(a);
-    // // console.log(Buffer.from(a).toString("hex"));
-    // // json.Unmarshall(info);
-
-    // // console.log(Buffer.from(JSON.parse(JSON.stringify(info).data.toString())));
-    // // const bytesString = String.fromCharCode(...info);
-    // // console.log(JSON.Unmarshal(info));
-    // // console.log(Buffer.from(info).toString());
-    // // console.log(bytesString);
+    //get last block's number
+    let info = await contract.evaluateTransaction("GetChainInfo", channelName);
+    info = fabproto6.common.BlockchainInfo.decode(info);
+    let tailNumber = info.height.low - 1;
 
     // //get blockhain's tail
-    // // let result = await contract.evaluateTransaction("GetBlockByNumber", channel, 12);
-
-    // let result = await contract.evaluateTransaction("GetBlockByNumber", channel, 12);
-
-    // //decode result
-    // // console.log(Buffer.from(result).toString());
-
-    // result = BlockDecoder.decode(result);
-    // console.log(BlockDecoder.decodeBlock(result));
-    // console.log(Buffer.from(result.header.data_hash).toString());
+    let tail = await contract.evaluateTransaction("GetBlockByNumber", channelName, String(tailNumber));
+    tail = BlockDecoder.decode(tail);
+    // console.log(tail.data.data[0].signature);
 
     //close communication channel
     await gateway.disconnect();
 
+    //send OK response
+    logger.info(`Tail fetched!`);
     return res.json({
-      r,
+      tail,
     });
   } catch (err) {
     return next(new HttpError(500, err));

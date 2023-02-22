@@ -25,6 +25,7 @@
     "fabric-client": "^1.4.20",
     "fabric-common": "^2.2.3",
     "fabric-network": "^2.2.2",
+    "fabric-protos": "^2.2.16",
     "ipfs-mini": "^1.1.5",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.5.2",
