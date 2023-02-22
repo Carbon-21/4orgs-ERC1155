@@ -10,7 +10,7 @@ const util = require("util");
 const HttpError = require("../util/http-error");
 
 //connect to a channel and get a given chaincode
-const getChaincode = async (org, channel, chaincodeName, username, next) => {
+const getChaincode = async (org, channelName, chaincodeName, username, next) => {
   try {
     // load the network configuration
     const ccp = await getCCP(org);
@@ -39,7 +39,7 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
     });
 
     // Get the network (channel) our contract is deployed to.
-    const network = await gateway.getNetwork(channel);
+    const network = await gateway.getNetwork(channelName);
 
     // Get the contract from the network.
     const contract = network.getContract(chaincodeName);
@@ -52,6 +52,54 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
     //Listen for new emitted block events
     // await network.addBlockListener(blockListener);
     return [contract, gateway];
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
+  }
+};
+
+const getChannel = async (org, channelName, username, next) => {
+  try {
+    // load the network configuration
+    const ccp = await getCCP(org);
+
+    // Create a new file system based wallet for managing identities.
+    const walletPath = await getWalletPath(org);
+    const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+    //TODO tirar isso quando docker for persistente
+    // Check to see if we've already enrolled the user.
+    let identity = await wallet.get(username);
+    if (!identity) {
+      logger.info(`An identity for the user ${username} does not exist in the wallet. Registering user...`);
+      await getRegisteredUser(username, org, true);
+      identity = await wallet.get(username);
+
+      return;
+    }
+
+    // Create a new gateway for connecting to our peer node.
+    const gateway = new Gateway();
+    await gateway.connect(ccp, {
+      wallet,
+      identity: username,
+      discovery: { enabled: true, asLocalhost: true },
+    });
+
+    // Get the network our contract is deployed to.
+    const network = await gateway.getNetwork(channelName);
+
+    // Get the channel from the network.
+    const channel = network.getChannel();
+
+    //TODO o pavan deixou um TODO escondido aqui kkk
+    // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.
+    // Instead create separate function and call it once server started, it will keep listening.
+    //Listen for new events emitted by the smart contract
+    // await contract.addContractListener(contractListener);
+    //Listen for new emitted block events
+    // await network.addBlockListener(blockListener);
+    return [channel, gateway];
   } catch (err) {
     logger.error(err);
     return next(new HttpError(500));
@@ -415,5 +463,6 @@ module.exports = {
   execWrapper,
   getOrgMSP,
   getChaincode,
+  getChannel,
   getAccountIdFromChaincode,
 };

@@ -856,7 +856,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("failed to get MSPID: %v", err)
 	}
 	if clientMSPID != minterMSPID {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	// Get ID of submitting client identity and check if role is admin
@@ -865,7 +865,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 	if GetRole(operator) != "admin" {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	return nil
