@@ -54,7 +54,8 @@ const getChaincode = async (org, channelName, chaincodeName, username, next) => 
     return [contract, gateway];
   } catch (err) {
     logger.error(err);
-    return next(new HttpError(500));
+    if (next !== nill) return next(new HttpError(500));
+    else return new HttpError(500);
   }
 };
 
