@@ -1223,45 +1223,44 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 
 	// Get the caller identity
 	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("Erro ao obter ID: %v", err)
+	}
 
-	// Check whether operator is owner or approved
-	if operator != owner {
-		approved, err := _isApprovedForAll(ctx, owner, operator)
-		if err != nil {
-			return err
+	idNFTs, _ := idNFTHelper(ctx,operator)
+	for i := 0; i < len(idNFTs); i++ {
+		if id == idNFTs[i][0] {
+			// Create the composite key for the NFT
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{owner, id})
+			if err != nil {
+				return fmt.Errorf("failed to create composite key for NFT: %v", err)
+			}
+
+			// Marshal the status and price into JSON
+			status := "sale"
+			data := struct {
+				Status string `json:"status"`
+				Price  uint64 `json:"price"`
+			}{
+				Status: status,
+				Price:  price,
+			}
+			value, err := json.Marshal(data)
+			if err != nil {
+				return fmt.Errorf("failed to marshal NFT data: %v", err)
+			}
+
+			// Save the updated NFT state to the world state
+			err = ctx.GetStub().PutState(compositeKey, value)
+			if err != nil {
+				return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+			}
+			return nil
 		}
-		if !approved {
-			return fmt.Errorf("caller is neither the owner of the token nor approved to perform this transaction")
-		}
 	}
 
-	// Create the composite key for the NFT
-	compositeKey, err := ctx.GetStub().CreateCompositeKey(bookorder, []string{owner, id})
-	if err != nil {
-		return fmt.Errorf("failed to create composite key for NFT: %v", err)
-	}
+	return fmt.Errorf("Only NFT owner can list to sale")
 
-	// Marshal the status and price into JSON
-	status := "sale"
-	data := struct {
-		Status string `json:"status"`
-		Price  uint64 `json:"price"`
-	}{
-		Status: status,
-		Price:  price,
-	}
-	value, err := json.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("failed to marshal NFT data: %v", err)
-	}
-
-	// Save the updated NFT state to the world state
-	err = ctx.GetStub().PutState(compositeKey, value)
-	if err != nil {
-		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
-	}
-
-	return nil
 }
 
 // Check book order for given status
