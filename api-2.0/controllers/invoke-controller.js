@@ -170,9 +170,7 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
 
   //set URI
   try {
-    // console.log("1111");
     await chaincode.submitTransaction("SmartContract:SetURI", String(currentDate), uri);
-    // console.log("2");
 
     logger.info("URI set successfully");
 
@@ -180,9 +178,7 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
     await gateway.disconnect();
 
     //send OK response
-    return res.json({
-      uri,
-    });
+    return uri;
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);

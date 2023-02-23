@@ -178,6 +178,7 @@ exports.totalSupply = async (req, res, next) => {
   }
 };
 
+//TODO remover quando os metadados forem pro chaincode. Remover tb setURI e metadata-controller
 //get the URI for a given token
 exports.getURI = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
@@ -208,6 +209,28 @@ exports.getURI = async (req, res, next) => {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
+  }
+};
+
+//get block IPFS URI, given a date
+exports.getURILocal = async (currentDate, org, chaincodeName, channelName) => {
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channelName, chaincodeName, "admin", null);
+
+  //set URI
+  try {
+    let uri = await chaincode.submitTransaction("SmartContract:GetURI", currentDate);
+    uri = Buffer.from(uri).toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return uri;
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return new HttpError(500, errMessage[1]);
   }
 };
 

@@ -6,7 +6,7 @@
   <%- include("partials/head") %>
   <script src="/scripts/logs.js"></script>
 
-  <body id ="top" onload="getBlockchainTail()">
+  <body id ="top" onload="getLatestIPFSBlock(); getBlockchainTail()">
     <!-- Intro Section -->
 
     <section id="intro">
@@ -26,7 +26,7 @@
         <div class="row feature">
           <div class="col-md-6 feature-img-container">
             <h3>Último bloco no IPFS</h3>
-            <spam class="description">Todo dia 00:00, a cauda da blockchain, desse horário, é inserida no IPFS</spam>
+            <spam class="description">Todo dia à 00:00, a cauda da blockchain desse horário é inserida no IPFS</spam>
           </div>
           <div class="col-md-6 feature-text-container">
             <h3>Cauda da blockchain</h3>
@@ -75,7 +75,7 @@
       </div>
     </section>
 
-    <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;" />
+    <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto; width:20%" />
 
   </body>
 </html>

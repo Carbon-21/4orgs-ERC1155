@@ -11,6 +11,12 @@ const failureFlashMessage =
   `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
   `</div>`;
 
+const failureFlashMessage2 =
+  `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+  `Nenhum bloco foi adicionado ainda ao IPFS` +
+  `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+  `</div>`;
+
 //retrieve last block in IPFS
 async function getLatestIPFSBlock() {
   //loading...
@@ -28,6 +34,7 @@ async function getLatestIPFSBlock() {
 
   if (response.ok) {
     response = await response.json();
+    console.log(response.tail);
 
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;
@@ -37,25 +44,19 @@ async function getLatestIPFSBlock() {
     ipfsPreviousHash.innerText = response.tail.header.previous_hash;
     ipfsTimestamp.innerText = response.tail.data.data[0].payload.header.channel_header.timestamp;
   } else {
-    document.getElementById("flash").innerHTML = failureFlashMessage;
+    document.getElementById("flash").innerHTML = failureFlashMessage2;
     console.log("HTTP Error ", response.status);
   }
 }
 
 //retrieve blockchains's last block
 async function getBlockchainTail() {
-  //loading...
-  document.getElementById("loader").style.display = "flex";
-
   //make request to the backend
   let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail`;
   var init = {
     method: "GET",
   };
   let response = await fetch(url, init);
-
-  //stop loading
-  document.getElementById("loader").style.display = "none";
 
   if (response.ok) {
     response = await response.json();

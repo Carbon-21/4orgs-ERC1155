@@ -43,6 +43,9 @@ const app = express();
 //cors
 app.use(cors);
 
+//timezone
+process.env.TZ = "America/Sao_Paulo";
+
 //bodyParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -83,7 +86,7 @@ app.get("/", function (req, res) {
 });
 
 //transparency log: post blockchain's tail every day at 00:00
-// new cronJob("00 00 00 * * *", postTransparencyLog, null, true); // ss mm hh dd ww mm
+new cronJob("00 00 00 * * *", postTransparencyLog, null, true); // ss mm hh dd ww mm
 // postTransparencyLog();
 
 ///// ROUTES /////
