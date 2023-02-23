@@ -1,0 +1,163 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Intro Section */
+
+/* Hero */
+
+.hero {
+  background-image: url("../images/hero-image.webp");
+  background-repeat: no-repeat;
+  background-position: top;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;
+  align-content: center; */
+  background-size: cover;
+  height: 550px;
+}
+
+.hero-text {
+  color: #ffff;
+  width: 50%;
+  margin: 0px auto;
+  /* text-align: center; */
+}
+
+.hero-title {
+  font-weight: 700;
+  font-size: 3.5rem;
+  margin-top: 60px;
+  margin-bottom: 40px;
+}
+
+.hero-description {
+  font-weight: 500;
+  font-size: 1.5rem;
+}
+
+.doc-btn {
+  margin: 30px 0 20px 0;
+}
+
+.data {
+  max-width: 14rem;
+}
+
+/* Feature Section */
+
+#features {
+  padding: 7% 10% 3% 10%;
+  /* text-align: center; */
+}
+
+.features-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-bottom: 80px;
+}
+
+.feature-title {
+  margin-bottom: 20px;
+}
+
+.feature-img-container {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;
+  align-items: center; */
+}
+
+.feature-text-container {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;
+  align-items: center; */
+}
+
+.feature-image {
+  width: 40%;
+  border-radius: 100%;
+}
+
+/* Reforestation Section */
+
+#reforestation {
+  background-color: #adcf9f;
+  padding: 7% 10% 3% 10%;
+  /* text-align: center; */
+}
+
+.reforestation-header {
+  margin-bottom: 40px;
+}
+
+.benefit-icon {
+  margin-top: 20px;
+}
+
+.benefit-description {
+  margin: 20px auto;
+  width: 70%;
+}
+
+/* Promoters Section */
+
+#promoters {
+  background-color: #fff;
+  /* text-align: center; */
+  padding: 5% 15% 1% 15%;
+}
+
+.promoters-header {
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.promoter-image {
+  width: 35%;
+  height: 300px;
+  width: 300px;
+}
+
+.carousel-control-prev {
+  color: #adcf9f;
+}
+
+/* Footer Section */
+
+#footer {
+  background-color: #adcf9f;
+  padding: 3% 14%;
+  /* text-align: center; */
+}
+
+.social-icon {
+  color: #000;
+  margin: 20px 10px;
+}
+
+.social-icon:hover {
+  color: #00c897;
+}
+
+.description {
+  color: grey;
+  /* font-size: 10rem; */
+}
+
+.blockchainTail {
+  display: block;
+  float: left;
+}
+
+.ipfsTail {
+  text-align: left;
+  display: block;
+  float: left;
+}

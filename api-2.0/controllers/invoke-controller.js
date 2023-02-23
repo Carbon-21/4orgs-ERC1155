@@ -156,6 +156,40 @@ exports.setURI = async (req, res, next) => {
   }
 };
 
+//set a URI for an IPFS input
+exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
+  //get get date in dd-mm-yyyy format
+  let currentDate = new Date();
+  currentDate = currentDate.getDate() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getFullYear();
+
+  //set URL to ipfs format
+  const uri = "ipfs://" + hash;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channelName, chaincodeName, "admin", null);
+
+  //set URI
+  try {
+    // console.log("1111");
+    await chaincode.submitTransaction("SmartContract:SetURI", String(currentDate), uri);
+    // console.log("2");
+
+    logger.info("URI set successfully");
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      uri,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return new HttpError(500, errMessage[1]);
+  }
+};
+
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
 /**
