@@ -62,10 +62,4 @@ router.get(
   queryController.getWorldState
 );
 
-router.get(
-  "/channels/:channel/chaincodes/:chaincode/getWorldState",
-  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
-  queryController.getWorldState
-);
-
 module.exports = router;

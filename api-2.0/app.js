@@ -34,7 +34,7 @@ const metadataRoutes = require("./routes/metadata-routes");
 const options = {
   key: fs.readFileSync(path.join(__dirname, "keys/key.pem")),
   cert: fs.readFileSync(path.join(__dirname, "keys/cert.pem")),
-  passphrase: "secret",
+  passphrase: process.env.TLS_SECRET_KEY,
 };
 
 //express
