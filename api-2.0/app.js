@@ -23,7 +23,7 @@ const { postTransparencyLog } = require("./controllers/ipfs-controller");
 
 //routes
 const authRoutes = require("./routes/auth-routes");
-// const chaincodeRoutes = require("./routes/chaincode-routes");
+const ipfsRoutes = require("./routes/ipfs-routes");
 const invokeRoutes = require("./routes/invoke-routes");
 const queryRoutes = require("./routes/query-routes");
 const frontRoutes = require("./routes/front-routes");
@@ -82,8 +82,9 @@ app.get("/", function (req, res) {
   res.render("home", { title: "Home", cssPath: "css/home.css" });
 });
 
-//transparency log: post blockchain's tail every day at 23:59
-new cronJob("00 59 23 * * *", postTransparencyLog, null, true);
+//transparency log: post blockchain's tail every day at 00:00
+// new cronJob("00 00 00 * * *", postTransparencyLog, null, true); // ss mm hh dd ww mm
+// postTransparencyLog();
 
 ///// ROUTES /////
 app.use("/auth", authRoutes);
@@ -91,6 +92,7 @@ app.use("/invoke", invokeRoutes);
 app.use("/query", queryRoutes);
 app.use("/", frontRoutes);
 app.use("/meta", metadataRoutes);
+app.use("/ipfs", ipfsRoutes);
 
 ///// ERROR MIDDLEWARE /////
 //executed if any other middleware yields an error

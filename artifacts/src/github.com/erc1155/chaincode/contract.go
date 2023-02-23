@@ -796,6 +796,7 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 }
 
+//TODO: após metadados saírem do IPFS, ajsutar o nome das variáveis. Essa função será usada somente pra logs transparentes
 //  SetURI set a specific URI containing the metadata related to a given tokenID
 func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
 
