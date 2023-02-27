@@ -13,8 +13,6 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"log"
-	// "encoding/binary"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -39,9 +37,6 @@ const taxPercentage = 10
 
 // Token struct for marshal/unmarshal buy and sell listings
 type listitem struct {
-	// Operator string
-	// Sender   string
-	// Id       string
 	Status   string
 	Price	 uint64
 }
@@ -177,7 +172,7 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	}
 
 	//Garante que não seja emitido mais de uma NFT em nenhuma circunstância
-	if id != "$ylvas" {
+	if id != systemCurrency {
 		amount = 1
 	}
 
@@ -199,7 +194,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 	// -------- Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
-	var tokenid = "$ylvas"
+	var tokenid = systemCurrency
 
 	
 	// Stores a list of all NFTs of the same user (account))
@@ -911,10 +906,10 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 	necessaryFunds := make(map[string]uint64) // token id -> necessary amount
 
 	for i := 0; i < len(amounts); i++ {
-		if ids[i] =="$ylvas" {
+		if ids[i] ==systemCurrency {
 			// Calculate tax amount
 			taxAmount := amounts[i] * uint64(taxPercentage) / 100
-			log.Println("taxAmount: ", taxAmount)
+			fmt.Println("taxAmount: ", taxAmount)
 
 			necessaryFunds[ids[i]] += amounts[i] + taxAmount
 		} else {
@@ -979,7 +974,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				}
 			} else {
 
-				if tokenId == "$ylvas" {
+				if tokenId == systemCurrency {
 					// Calculate amount discounted taxes
 					amount := neededAmount / (1 + (uint64(taxPercentage) / 100))
 
@@ -1114,7 +1109,7 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 	
 	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
-	var tokenid = "$ylvas"
+	var tokenid = systemCurrency
 	nftlist := make([][]string,0)	
 	
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
@@ -1197,7 +1192,7 @@ func taxes(ctx contractapi.TransactionContextInterface, operator string, sender 
 
     // Calculate tax amount
     taxAmount := amount * uint64(taxPercentage) / 100
-	log.Println("taxAmount: ", taxAmount)
+	fmt.Println("taxAmount: ", taxAmount)
 	
 	// Withdraw the funds from the sender address
 	err := removeBalance(ctx, sender, []string{id}, []uint64{taxAmount})
@@ -1346,12 +1341,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 				return fmt.Errorf("failed to parse price: %v", err)
 			}
 
-			// err = ctx.GetStub().DelState(compositeKey)
-			// if err != nil {
-			// 	return fmt.Errorf("failed to delete key from state: %v", err)
-			// }
-
-			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], "$ylvas"}, []uint64{1, salePrice})
+			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], systemCurrency}, []uint64{1, salePrice})
 			if err != nil {
 				return fmt.Errorf("failed dealing for NFT: %v", err)
 			}
