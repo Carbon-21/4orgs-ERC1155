@@ -23,8 +23,8 @@ configtxgen -profile BasicChannel -configPath . -outputCreateChannelTx ./$CHANNE
 echo "#######    Generating anchor peer update for CarbonMSP  ##########"
 configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./CarbonMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CarbonMSP
 
-echo "#######    Generating anchor peer update for UsersMSP  ##########"
-configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./UsersMSPanchors.tx -channelID $CHANNEL_NAME -asOrg UsersMSP
+# echo "#######    Generating anchor peer update for UsersMSP  ##########"
+# configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./UsersMSPanchors.tx -channelID $CHANNEL_NAME -asOrg UsersMSP
 
 echo "#######    Generating anchor peer update for CetesbMSP  ##########"
 configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./CetesbMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CetesbMSP
