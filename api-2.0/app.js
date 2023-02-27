@@ -86,8 +86,7 @@ app.get("/", function (req, res) {
 });
 
 //transparency log: post blockchain's tail every day at 00:00
-new cronJob("00 00 00 * * *", postTransparencyLog, null, true); // ss mm hh dd ww mm
-// postTransparencyLog();
+new cronJob(process.env.LOG_CRONTAB, postTransparencyLog, null, true);
 
 ///// ROUTES /////
 app.use("/auth", authRoutes);
