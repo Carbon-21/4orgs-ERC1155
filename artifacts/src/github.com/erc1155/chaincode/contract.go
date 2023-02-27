@@ -36,7 +36,7 @@ const systemCurrency = "$ylvas"
 const taxPercentage = 10
 
 // Token struct for marshal/unmarshal buy and sell listings
-type listitem struct {
+type ListItem struct {
 	Status   string
 	Price	 uint64
 }
@@ -1233,7 +1233,7 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 
 			// Marshal the status and price into JSON
 			status := "sale"
-			data := listitem{status, price}
+			data := ListItem{status, price}
 			value, err := json.Marshal(data)
 			if err != nil {
 				return fmt.Errorf("failed to marshal NFT data: %v", err)
@@ -1282,7 +1282,7 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
         }
 
 		// Parse the JSON object
-		var data listitem
+		var data ListItem
 		err = json.Unmarshal(responseRange.Value, &data)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
@@ -1410,7 +1410,7 @@ func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operat
 
 	// Marshal the status and price into JSON
 	status = "sale"
-	data := listitem{status, amount[1]}
+	data := ListItem{status, amount[1]}
 	value, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal NFT data: %v", err)

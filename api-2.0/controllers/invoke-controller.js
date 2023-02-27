@@ -194,7 +194,7 @@ exports.listForSale = async (req, res, next) => {
 
 
 //Buy a listed NFT
-exports.buylisted = async (req, res, next) => {
+exports.buyListed = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;

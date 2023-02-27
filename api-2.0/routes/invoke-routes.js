@@ -62,7 +62,7 @@ router.post(
     body("tokenId").trim().not().isEmpty().isString(),
     validateAll
   ], 
-  invokeController.buylisted
+  invokeController.buyListed
 );
 
 router.post(
