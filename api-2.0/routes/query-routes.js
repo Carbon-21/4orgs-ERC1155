@@ -8,6 +8,11 @@ const queryController = require("../controllers/query-controller.js");
 const router = Router();
 
 //// UNAUTHENTICATED ROUTES ////
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getBlockchainTail",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getBlockchainTail
+);
 
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
@@ -49,6 +54,12 @@ router.get(
   "/channels/:channel/chaincodes/:chaincode/getURI",
   [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],
   queryController.getURI
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getWorldState",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getWorldState
 );
 
 module.exports = router;

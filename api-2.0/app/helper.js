@@ -23,11 +23,21 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
     // Check to see if we've already enrolled the user.
     let identity = await wallet.get(username);
     if (!identity) {
-      logger.info(`An identity for the user ${username} does not exist in the wallet. Registering user...`);
-      await getRegisteredUser(username, org, true);
-      identity = await wallet.get(username);
-
-      return;
+      if (username === "admin") {
+        // Check to see if we've already enrolled the admin user.
+        let adminIdentity = await wallet.get("admin");
+        if (!adminIdentity) {
+          console.log('An identity for the admin user "admin" does not exist in the wallet');
+          await enrollAdmin(org, ccp);
+          adminIdentity = await wallet.get("admin");
+          console.log("Admin Enrolled Successfully");
+        }
+      } else {
+        logger.info(`An identity for the user ${username} does not exist in the wallet. Registering user...`);
+        await getRegisteredUser(username, org, true);
+        identity = await wallet.get(username);
+        return;
+      }
     }
 
     // Create a new gateway for connecting to our peer node.
