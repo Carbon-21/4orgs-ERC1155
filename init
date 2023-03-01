@@ -1,90 +1,203 @@
 #!/bin/bash
+
+
 source ./api-2.0/.env
 
-kill-hlf () {
-	docker-compose down 
-	containers=$(docker ps -q) && docker kill $containers
-	docker network prune -f && docker volume prune -f
-}
+# TODO move to a global env setup
+PID_FILE=.carbon.pid
+
+SUCCESS_COLOR='\033[0;32m'
+WARNING_COLOR='\033[0;33m'
+INFO_COLOR='\033[0;34m'
+ERROR_COLOR='\033[0;31m'
+NC='\033[0m' # No Color
+
+unset reset_all
+unset skip_mysql
+unset fresh_inst
+fast_install="--prefer-offline --no-audit --progress=false"
+set -e
+
 
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
 start-mysql() {
-  if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
-    echo "MySQL already running"
-  else
+  local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+  if [ ${mysql_up} -ne 0 ]; then
+   echo -e "${SUCCESS_COLOR}MySQL already running${NC}"
+    return 0
+  fi
+  if [ -z "${skip_mysql}" ]; then
+    sudo -k # make sure to ask for password on next sudo
+    if ! sudo true; then
+        echo -e "${ERROR_COLOR} Wrong password, you need be sudo to start MySQL ${NC}"
+        exit 1
+    fi
     sudo systemctl start mysql
-    echo "Started MySQL"
+    echo "MySQL started ..."
+    local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+    local tries=0
+    
+    while [ ${mysql_up} -eq 0 ] && [ ${tries} -le 10 ]; do
+      mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+      sleep 3
+      tries=$((tries+1))
+      echo echo -e "${INFO_COLOR}Waiting for MySQL ...${NC}"
+    done
+    if [ ${mysql_up} -eq 0 ]; then
+      echo -e "${ERROR_COLOR}Error starting MySQL, check process list${NC}"
+      exit 1
+    fi
+    echo -e "${SUCCESS_COLOR}Started MySQL${NC}"
+  else
+    echo -e "${WARNING_COLOR}Skipping MySQL startup${NC}"
+  fi
+  
+  if [ ${mysql_up} -eq 0 ]; then
+    echo -e "${ERROR_COLOR}MySQL is down.${NC}";
+    exit 1   
   fi
 }
 
-###### +X ######
+usage() {    
+  cat<<EOM
+    Usage:
+    $(basename $0) [-hrsi]
+    Start all containers and databases - skip channels creation/deploy, host setup, js bundles and change NPM start up
+    -r Reset all envirionments
+    -s Skip mysql start
+    -i Fresh install
+    -j Javascript Rebundle
+    -h Display a brief help message
+EOM
+  exit 1; 
+}
+
+while getopts ":hrsij" o; do
+    case "${o}" in     
+      s)
+        skip_mysql=1
+        ;;
+      i)
+        fresh_inst=1;
+        reset_all=1;
+        unset fast_install;
+        unset skip_mysql;
+        ;;
+      r)
+        reset_all=1;
+        unset skip_mysql;
+        unset fast_install;
+        ;;
+      j)
+        rebundle=1;
+        ;;
+      *|has)
+        usage
+        ;;
+    esac
+done
+
+###
+# Start Process
+###
+
+if [[ "$EUID" = 0 ]]; then
+  echo -e "${ERROR_COLOR}Please do not run this script as root ${NC}" && exit 1 
+fi
+
+echo -e "${SUCCESS_COLOR}Running $(basename $0) process ${NC}"
+
+if [ -z "${skip_mysql}"  ] && ! [ -x "$(command -v sudo)" ]; then
+  echo 'Error: sudo  is not installed.' >&2
+  exit 1
+fi
+
+echo -e "${INFO_COLOR}Running processes [${PWD}]${NC}" 
+
+
+###### Executable files (+x) ######
 chmod +x kill
 chmod +x git-branch
 chmod +x git-push
 chmod +x cc-debug
 chmod +x cc-build
+chmod +x database/reset-db
+chmod +x artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
+chmod +x artifacts/channel/create-artifacts.sh
+chmod +x createChannel.sh
+chmod +x deployChaincode.sh
+chmod +x api-2.0/public/scripts/src/genscripts.sh
+chmod +x api-2.0/config/generate-ccp.sh
+chmod +x api-2.0/get-bundles
+
 
 ###### KILL ######
-#kill other dockers 
-cd ./explorer
-kill-hlf
-cd ../artifacts
-kill-hlf
-cd channel/create-certificate-with-ca
-kill-hlf
+#kill other dockers and reset envirionments
+if [ -n "${reset_all}"  ]; then
+  echo -e "${WARNING_COLOR}Reseting all:${NC}"
+  ./kill -ry
+  echo $$ > ${PID_FILE}
+fi
 
-#remove couch-db instance, so identities get properly deleted
-rm fabric-ca/carbon/fabric-ca-server.db
+
+if [ ! -f "${PID_FILE}" ] && [ -n "${fresh_inst}"]; then
+  echo -e "${ERROR_COLOR}First install not found. Run ./init -i ${NC}" && exit 1 
+fi
 
 ###### RUN ######
+echo -e "${INFO_COLOR}Database setup:${NC}"
 #run mysql
 start-mysql
-cd ../../../database
-chmod +x reset-db
-./reset-db
-cd ../artifacts/channel/create-certificate-with-ca
 
+echo -e "${INFO_COLOR}Docker compose CA setup:${NC}"
 #run one docker for each CA (each org has 1, incluind the orderer)
-docker-compose up -d
-sleep 15
+docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml up -d
 
-#creates CAs and orgs certificates
-# su
-chmod +x create-certificate-with-ca.sh
-./create-certificate-with-ca.sh
 
-#create genisis block, config channel and generate anchors
-cd ..
-chmod +x create-artifacts.sh
-./create-artifacts.sh
-# exit
+if [ -z "${fast_install}" ]; then
+  echo -e "${INFO_COLOR}Waiting for services to be up and running...${NC}"
+  sleep 15
+  echo -e "${INFO_COLOR}Creating CAs and orgs certificates:${NC}"
+  #creates CAs and orgs certificates
+  ./artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
+
+  echo -e "${INFO_COLOR}Creating artifacts:${NC}"
+  # #create genisis block, config channel and generate anchors
+  ./artifacts/channel/create-artifacts.sh
+fi
 
 #run chouchdb, orgs peers and orderers dockers
-cd ..
-docker-compose up -d
-sleep 15
+docker-compose -f artifacts/docker-compose.yaml up -d 
 
-#create channel and deploy cahincode on each org
-cd ..
-chmod +x createChannel.sh
-./createChannel.sh
-chmod +x deployChaincode.sh
-./deployChaincode.sh
+# #create channel and deploy chaincode on each org
+if [ -z "${fast_install}" ]; then
+  echo -e "${INFO_COLOR}Waiting for services to be up and running...${NC}"
+  sleep 15
+  echo -e "${INFO_COLOR}Creating channels:${NC}"
+  ./createChannel.sh
+  echo -e "${INFO_COLOR}Deploying channels:${NC}"
+  ./deployChaincode.sh
+fi
 
-#create connection profiles if they don't exist already
-cd api-2.0
-cd ./config/
-[ -f ./connection-carbon.json ] || ./generate-ccp.sh
+# #create connection profiles if they don't exist already
 
-#create public scripts
-cd ../public/scripts/src
-chmod +x genscripts.sh
-./genscripts.sh
+if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
+  echo -e "${INFO_COLOR}Generating CCP:${NC}"
+  ./api-2.0/config/generate-ccp.sh
+fi
 
-#generate bundle
-cd ../../..
-chmod +x get-bundles
-./get-bundles
-
-npm install
-nodemon
+# #create public scripts
+if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
+  echo -e "${INFO_COLOR}Generating Scripts:${NC}"
+  ./api-2.0/public/scripts/src/genscripts.sh
+  echo -e "${INFO_COLOR}Generating Bundles:${NC}"
+  #generate bundle
+  ./api-2.0/get-bundles
+fi
+(
+  cd api-2.0/
+  #start service
+  echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
+  npm install ${fast_install}
+  nodemon
+)

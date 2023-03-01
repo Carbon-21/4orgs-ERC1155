@@ -42,6 +42,7 @@ exports.postPreSignup = async (req, res, next) => {
 
     // If an error occurs, redirect to the login page and send error message
     .catch(function (err) {
+      console.error(err)
       req.flash("error", err.response.data.message);
       res.redirect("/presignup");
     });
