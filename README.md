@@ -32,24 +32,61 @@ Por fim, configure o banco de dados de usuários, conforme a seção "instalaç�
 <br><br>
 
 ## Como Usar
-
-### Rede
-
-Para subir a rede:
+---
+### Utilizando o sistema a primeira vez:
+<br>
+No diretório raiz, adicione a permissão de execução para os scripts:
 
 ```
-chmod +x init
+chmod +x init kill
+```
+<br>
+
+Inicie o sistema a primeira vez executando o comando:
+```
+./init -i
+```
+<br>
+
+Finalize o sistema todo (incluindo Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) executando o comando:
+```
+./kill -r
+```
+
+### Utilizando o sistema persistente:
+
+<br>
+
+Iniciar/Reiniciar o sistema executando o comando:
+```
 ./init
 ```
 
-<br>
-Para matar a rede, sem subir uma nova:
+Iniciar o sistema e recompilar o Bundle Javascript (Browserify):
+```
+./init -j
+```
 
+Finalizar o sistema sem reinicar o containers:
 ```
 ./kill
 ```
 
-_Nota: o script init também roda o kill, e ambos matam qualquer conatiner docker previamente ativo!_
+Finalizar o sistema forçando a reinicialização (inclusive Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) :
+```
+./kill -r
+```
+
+Para mais informações utilize:
+```
+./init -h
+
+e
+
+./kill -h
+```
+
+_Nota: o script ./init -r também roda o kill, e ambos matam qualquer container docker previamente ativo!_
 <br>
 <br>
 
