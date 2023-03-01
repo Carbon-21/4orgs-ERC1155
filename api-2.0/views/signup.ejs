@@ -19,7 +19,9 @@
             <div class="row">
               <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                 <h1 class="sign-up-header">Registrar</h1>
-
+                <% if(recaptcha) { %>
+                  <%- recaptcha %>
+                <%}%>
                 <div class="register-data">
                   <i class="fas fa-user fa-lg"></i>
                   <div class="flex-fill">
@@ -81,10 +83,11 @@
                 </div>
 
                 <!--get email, pass it to the server again -->
-                <input type="text" name="email" id="email" hidden value=<%= email %>/>
+                <input type="text" name="email" id="email" hidden value="<%= email %>"/>
 
                 <!--get salt, use it on client's PHS -->
-                <input type="text" name="salt" id="salt" hidden value=<%= salt %>/>
+                <input type="text" name="salt" id="salt" hidden value='<%= salt %>'/>
+                
 
                 <!--each time the user type in the password field, update this with the hash of the input -->
                 <!-- <input type="text" name="hashedPassword" id="hashedPassword" hidden/> -->
