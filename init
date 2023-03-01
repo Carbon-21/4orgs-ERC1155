@@ -16,7 +16,6 @@ unset reset_all
 unset skip_mysql
 unset fresh_inst
 fast_install="--prefer-offline --no-audit --progress=false"
-
 set -e
 
 
@@ -67,12 +66,13 @@ usage() {
     -r Reset all envirionments
     -s Skip mysql start
     -i Fresh install
+    -j Javascript Rebundle
     -h Display a brief help message
 EOM
   exit 1; 
 }
 
-while getopts ":hrsi" o; do
+while getopts ":hrsij" o; do
     case "${o}" in     
       s)
         skip_mysql=1
@@ -87,6 +87,9 @@ while getopts ":hrsi" o; do
         reset_all=1;
         unset skip_mysql;
         unset fast_install;
+        ;;
+      j)
+        rebundle=1;
         ;;
       *|has)
         usage
@@ -184,7 +187,7 @@ if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
 fi
 
 # #create public scripts
-if [ -z "${fast_install}" ]; then
+if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
   echo -e "${INFO_COLOR}Generating Scripts:${NC}"
   ./api-2.0/public/scripts/src/genscripts.sh
   echo -e "${INFO_COLOR}Generating Bundles:${NC}"
