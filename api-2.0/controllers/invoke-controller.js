@@ -38,8 +38,6 @@ exports.mint = async (req, res, next) => {
   const metadata = req.body.metadata !== undefined ? req.body.metadata : {};
   const username = req.jwt.username;
   const org = req.jwt.org;
-  
-  console.log("Metadata:", metadata);
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
