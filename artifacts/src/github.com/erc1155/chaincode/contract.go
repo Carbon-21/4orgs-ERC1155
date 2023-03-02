@@ -18,7 +18,6 @@ import (
 )
 
 // const uriKey = "uri"
-const balancePrefixMeta = "account~tokenId~sender~metadata"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
@@ -900,7 +899,7 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
-		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefixMeta, err)
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
 	}
 
 	balanceBytes, err := ctx.GetStub().GetState(balanceKey)
@@ -967,7 +966,7 @@ func setBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender, metadataString})
 	if err != nil {
-		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefixMeta, err)
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
 	}
 
 	err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(amount), 10)))
@@ -997,9 +996,9 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		var selfRecipientKeyNeedsToBeRemoved bool
 		var selfRecipientKey string
 
-		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefixMeta, []string{sender, tokenId})
+		balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{sender, tokenId})
 		if err != nil {
-			return fmt.Errorf("failed to get state for prefix %v: %v", balancePrefixMeta, err)
+			return fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 		}
 		defer balanceIterator.Close()
 
@@ -1008,7 +1007,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		for balanceIterator.HasNext() && partialBalance < neededAmount {
 			queryResponse, err := balanceIterator.Next()
 			if err != nil {
-				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefixMeta, err)
+				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 			}
 
 			partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
@@ -1229,9 +1228,9 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (string, error) {
 	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
 	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefixMeta, []string{account, tokenId})
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
 	if err != nil {
-		return "", fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefixMeta, err)
+		return "", fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
 	}
 	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
 	defer balanceIterator.Close()
@@ -1240,7 +1239,7 @@ func getMetada(ctx contractapi.TransactionContextInterface, account string, toke
 	for balanceIterator.HasNext() {
 		queryResponse, err := balanceIterator.Next()
 		if err != nil {
-			return "", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefixMeta, err)
+			return "", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
 
 		// Divide o valor do par chave/valores em cada um dos seus valores
