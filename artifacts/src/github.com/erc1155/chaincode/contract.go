@@ -915,23 +915,14 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 	balance += amount
 
 	//Consulta world state e pega metadados, se eles estiverem vazios para um NFT
-	/*	if (metadata == Metadata{} && idString != "$ylvas") {
-			res, err := getMetada(ctx, sender, idString)
-			if err != nil {
-				return err
-			}
-
-			metadataString = res
-		} else {
-			//de Metadata para JSON
-			metadataJson, err := json.Marshal(metadata)
-			if err != nil {
-				return err
-			}
-
-			metadataString = string(metadataJson)
+	if (metadata == Metadata{} && idString != "$ylvas") {
+		res, err := getMetada(ctx, sender, idString)
+		if err != nil {
+			return err
 		}
-	*/
+
+		metadata = res
+	}
 
 	// Se o token for Sylvas (FT), não serão armazenados os metadados, somente a quantidade
 	if idString == "$ylvas" {
@@ -959,12 +950,12 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
 
-	metadataString, err := getMetada(ctx, sender, idString)
+	/*metadataString, err := getMetada(ctx, sender, idString)
 	if err != nil {
 		return err
-	}
+	}*/
 
-	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender, metadataString})
+	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
 		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
 	}
@@ -1010,9 +1001,6 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 			}
 
-			partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
-			partialBalance += partBalAmount
-
 			_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
 			if err != nil {
 				return err
@@ -1026,6 +1014,16 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				if err != nil {
 					return fmt.Errorf("failed to delete the state of %v: %v", queryResponse.Key, err)
 				}
+			}
+
+			// Verify if the token is an NFT
+			if compositeKeyParts[1] != "$ylvas" {
+				nft := new(NFToken)
+				_ = json.Unmarshal(queryResponse.Value, nft)
+				partialBalance, _ = strconv.ParseUint(string(nft.Amount), 10, 64)
+			} else {
+				partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
+				partialBalance += partBalAmount
 			}
 		}
 
@@ -1225,12 +1223,12 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 	return keys
 }
 
-func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (string, error) {
+func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (Metadata, error) {
 	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
 	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
 	if err != nil {
-		return "", fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+		return *new(Metadata), fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
 	}
 	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
 	defer balanceIterator.Close()
@@ -1239,24 +1237,17 @@ func getMetada(ctx contractapi.TransactionContextInterface, account string, toke
 	for balanceIterator.HasNext() {
 		queryResponse, err := balanceIterator.Next()
 		if err != nil {
-			return "", fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+			return *new(Metadata), fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
-
-		// Divide o valor do par chave/valores em cada um dos seus valores
-		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-		if err != nil {
-			return "", fmt.Errorf("failed to get key: %s", err)
-		}
-		// tokenAccount := compositeKeyParts[0]
-		// tokenID := compositeKeyParts[1]
-		// tokenSender := compositeKeyParts[2]
-		metadata := compositeKeyParts[3]
 
 		// Pega a quantidade de tokens TokenId que a conta possui
 		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+		metadata := nft.Metadata
 
 		// Adiciona info. do token à slice/array de tokens
 		return metadata, nil
 	}
-	return "", fmt.Errorf("Token não encontrado")
+	return *new(Metadata), fmt.Errorf("Token não encontrado")
 }
