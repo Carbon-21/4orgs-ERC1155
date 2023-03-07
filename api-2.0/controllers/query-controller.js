@@ -193,7 +193,7 @@ exports.getURI = async (req, res, next) => {
 
   //get URI
   try {
-    let result = await chaincode.submitTransaction("SmartContract:GetURI", tokenId);
+    let result = await chaincode.evaluateTransaction("SmartContract:GetURI", tokenId);
     result = result.toString();
 
     //close communication channel
@@ -219,7 +219,7 @@ exports.getURILocal = async (currentDate, org, chaincodeName, channelName) => {
 
   //set URI
   try {
-    let uri = await chaincode.submitTransaction("SmartContract:GetURI", currentDate);
+    let uri = await chaincode.evaluateTransaction("SmartContract:GetURI", currentDate);
     uri = Buffer.from(uri).toString();
 
     //close communication channel
@@ -292,7 +292,7 @@ exports.getBlockchainTail = async (req, res, next) => {
     logger.info(`Tail fetched!`);
     return res.json({
       tail,
-      info
+      info,
     });
   } catch (err) {
     return next(new HttpError(500, err));
@@ -322,12 +322,11 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
     //close communication channel
     await gateway.disconnect();
 
-    tail.info = info
+    tail.info = info;
 
     //send OK response
     logger.info(`Tail fetched!`);
     return tail;
-    
   } catch (err) {
     return new HttpError(500, err);
   }

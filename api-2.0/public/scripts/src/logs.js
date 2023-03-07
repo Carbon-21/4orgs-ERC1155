@@ -40,7 +40,11 @@ async function getLatestIPFSBlock() {
     ipfsBlockNumber.innerText = String(response.tail.info.height - 1);
     ipfsHash.innerText = response.tail.info.currentBlockHash;
     ipfsPreviousHash.innerText = response.tail.info.previousBlockHash;
-    ipfsTimestamp.innerText = response.tail.data.data[0].payload.header.channel_header.timestamp;
+
+    //timestamp to date
+    let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
+    ipfsTimestamp.innerText = timestamp;
 
     //remove info from json, it doesn't belong to the original json
     delete response.tail.info;
@@ -69,7 +73,11 @@ async function getBlockchainTail() {
     tailBlockNumber.innerText = String(response.info.height - 1);
     tailHash.innerText = response.info.currentBlockHash;
     tailPreviousHash.innerText = response.info.previousBlockHash;
-    tailTimestamp.innerText = response.tail.data.data[0].payload.header.channel_header.timestamp;
+
+    //timestamp to date
+    let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
+    tailTimestamp.innerText = timestamp;
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
