@@ -292,6 +292,7 @@ exports.getBlockchainTail = async (req, res, next) => {
     logger.info(`Tail fetched!`);
     return res.json({
       tail,
+      info
     });
   } catch (err) {
     return next(new HttpError(500, err));
@@ -321,9 +322,12 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
     //close communication channel
     await gateway.disconnect();
 
+    tail.info = info
+
     //send OK response
     logger.info(`Tail fetched!`);
     return tail;
+    
   } catch (err) {
     return new HttpError(500, err);
   }

@@ -34,15 +34,17 @@ async function getLatestIPFSBlock() {
 
   if (response.ok) {
     response = await response.json();
-    console.log(response.tail);
 
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;
-    ipfsJson.innerText = JSON.stringify(response.tail, null, 4);
-    ipfsBlockNumber.innerText = String(response.tail.header.number.low - 1);
-    ipfsHash.innerText = response.tail.header.data_hash;
-    ipfsPreviousHash.innerText = response.tail.header.previous_hash;
+    ipfsBlockNumber.innerText = String(response.tail.info.height - 1);
+    ipfsHash.innerText = response.tail.info.currentBlockHash;
+    ipfsPreviousHash.innerText = response.tail.info.previousBlockHash;
     ipfsTimestamp.innerText = response.tail.data.data[0].payload.header.channel_header.timestamp;
+
+    //remove info from json, it doesn't belong to the original json
+    delete response.tail.info;
+    ipfsJson.innerText = JSON.stringify(response.tail, null, 4);
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage2;
     console.log("HTTP Error ", response.status);
@@ -64,9 +66,9 @@ async function getBlockchainTail() {
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;
     tailJson.innerText = JSON.stringify(response.tail, null, 4);
-    tailBlockNumber.innerText = String(response.tail.header.number.low - 1);
-    tailHash.innerText = response.tail.header.data_hash;
-    tailPreviousHash.innerText = response.tail.header.previous_hash;
+    tailBlockNumber.innerText = String(response.info.height - 1);
+    tailHash.innerText = response.info.currentBlockHash;
+    tailPreviousHash.innerText = response.info.previousBlockHash;
     tailTimestamp.innerText = response.tail.data.data[0].payload.header.channel_header.timestamp;
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;

@@ -17,7 +17,7 @@ exports.getLatestIPFSBlock = async (req, res, next) => {
   currentDate = currentDate.getDate() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getFullYear();
 
   try {
-    //get IPFS URI from the ledger
+    //get IPFS URI from the ledger, using current date as key
     const uri = await getURILocal(String(currentDate), org, chaincodeName, channelName);
     if (!uri) return next(new HttpError(404, "Nenhum bloco adicionado ao IPFS"));
     logger.info("IFPS URI retrieved from the ledger:", uri);
@@ -44,7 +44,7 @@ exports.postTransparencyLog = async () => {
     const tail = await getBlockchainTailLocal(chaincodeName, channelName);
 
     const hash = await ipfs.uploadIPFS(tail);
-    logger.info("Daily crontrab done! Transparency log (blockchain's tail) posted to IPFS");
+    logger.info("Daily crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
 
     const uri = await setURILocal(hash, org, chaincodeName, channelName);
     logger.info("IFPS URI added to the ledger:", uri);
