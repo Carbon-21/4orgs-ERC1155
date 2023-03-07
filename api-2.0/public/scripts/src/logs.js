@@ -43,6 +43,7 @@ async function getLatestIPFSBlock() {
 
     //timestamp to date
     let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
     timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
     ipfsTimestamp.innerText = timestamp;
 
@@ -76,10 +77,15 @@ async function getBlockchainTail() {
 
     //timestamp to date
     let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
     timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
     tailTimestamp.innerText = timestamp;
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
   }
+}
+
+function convertTZ(date, tzString) {
+  return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
 }
