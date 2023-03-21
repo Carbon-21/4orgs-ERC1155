@@ -11,11 +11,11 @@ sudo systemctl disable mysql
 sudo systemctl start mysql
 
 #create carbon user with low password policy and all permissions
-sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
-sudo mysql --execute "CREATE USER 'carbon'@'localhost' IDENTIFIED BY $MYSQL_PASSWORD" 
+# sudo mysql --execute "SET GLOBAL validate_password.policy=LOW"
+sudo mysql --execute "CREATE USER 'carbon'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'" 
 # create user to any host (allow non-localhost calls)
 sudo mysql --execute "GRANT ALL ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION"
-sudo mysql --execute "CREATE USER 'carbon'@'%' IDENTIFIED BY $MYSQL_PASSWORD"
+sudo mysql --execute "CREATE USER 'carbon'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
 sudo mysql --execute "GRANT ALL ON *.* TO 'carbon'@'%' WITH GRANT OPTION"
 
 #create carbon db
