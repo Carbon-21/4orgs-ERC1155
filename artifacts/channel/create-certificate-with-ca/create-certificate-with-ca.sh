@@ -1,7 +1,11 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+set -e
 createcertificatesForCarbon() {
   echo
-  echo "Enroll the CA admin"
+  echo "Enroll the CA admin for Carbon"
   echo
+
   mkdir -p ../crypto-config/peerOrganizations/carbon.example.com/
   export FABRIC_CA_CLIENT_HOME=${PWD}/../crypto-config/peerOrganizations/carbon.example.com/
 
@@ -95,9 +99,9 @@ createcertificatesForCarbon() {
 
 createCertificatesForUsers() {
   echo
-  echo "Enroll the CA admin"
+  echo "Enroll the CA admin for Users"
   echo
-  mkdir -p /../crypto-config/peerOrganizations/users.example.com/
+  mkdir -p ../crypto-config/peerOrganizations/users.example.com/
 
   export FABRIC_CA_CLIENT_HOME=${PWD}/../crypto-config/peerOrganizations/users.example.com/
 
@@ -204,7 +208,7 @@ createCertificatesForUsers() {
 
 createCertificatesForCetesb() {
   echo
-  echo "Enroll the CA admin"
+  echo "Enroll the CA admin for Cetesb"
   echo
   mkdir -p ../crypto-config/peerOrganizations/cetesb.example.com/
 
@@ -311,7 +315,7 @@ createCertificatesForCetesb() {
 
 createCertificatesForIbama() {
   echo
-  echo "Enroll the CA admin"
+  echo "Enroll the CA admin for Ibama"
   echo
   mkdir -p ../crypto-config/peerOrganizations/ibama.example.com/
 
@@ -418,7 +422,7 @@ createCertificatesForIbama() {
 
 createCretificatesForOrderer() {
   echo
-  echo "Enroll the CA admin"
+  echo "Enroll the CA admin for Ordered"
   echo
   mkdir -p ../crypto-config/ordererOrganizations/example.com
 
