@@ -161,3 +161,21 @@ body {
   display: block;
   float: left;
 }
+
+/* .accordion-body {
+  background-color: $warning;
+} */
+
+/* .accordion-item {
+  --bs-accordion-border-color: #0f5132;
+} */
+.accordion {
+  --bs-accordion-active-bg: #d1e7dd;
+  --bs-accordion-btn-focus-border-color: #0f5132;
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem #8ab8a2;
+}
+
+.accordion-button {
+  --bs-accordion-active-color: #0f5132;
+  /* --bs-accordion-btn-focus-border-color: after #0f5132; */
+}
