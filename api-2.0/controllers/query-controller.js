@@ -3,6 +3,28 @@ const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
 const { BlockDecoder } = require("fabric-common");
 const fabproto6 = require("fabric-protos");
+const { createHash } = require("crypto");
+
+// var sha = require("js-sha256");
+// var asnjs = require("asn1.js");
+// var calculateBlockHash = function (header) {
+//   let headerAsn = asnjs.define("headerAsn", function () {
+//     this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+//   });
+
+//   let output = headerAsn.encode(
+//     {
+//       Number: parseInt(header.number),
+//       PreviousHash: header.previous_hash,
+//       DataHash: header.data_hash,
+//     },
+//     "der"
+//   );
+
+//   let hash = sha.sha256(output);
+//   return Buffer.from(hash, "hex").toString("base64");
+// };
+// console.log("calculateBlockHash", calculateBlockHash(tail.header));
 
 //get user's balance of a given token
 exports.balance = async (req, res, next) => {
@@ -282,8 +304,12 @@ exports.getBlockchainTail = async (req, res, next) => {
 
     //get blockhain's tail
     let tail = await contract.evaluateTransaction("GetBlockByNumber", channelName, String(tailNumber));
+
+    //decode block
     tail = BlockDecoder.decode(tail);
-    decodeBlockBuffers(tail); //additional decoding
+
+    //decode block's fields
+    decodeBlockBuffers(tail);
 
     //close communication channel
     await gateway.disconnect();
