@@ -3,6 +3,8 @@
 
 # Instala - Curl, Go, Docker, Docker-compose, node, npm, git
 # Por fim lista a versao dos pacotes instalados para uma verificacao
+#
+
 preReqs(){
 	# Atualizando lista de pacotes
 	sudo apt-get update

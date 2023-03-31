@@ -215,6 +215,7 @@ const mintNFTServerSideSigning = async () => {
     metadata: {
       id: "NFT",
       status: `Ativo`,
+      mint_sylvas:"Ativo",      
       amount: qty,
       land_owner: document.getElementById("landOwner").value,
       land: document.getElementById("area").value,

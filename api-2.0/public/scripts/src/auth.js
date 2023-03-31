@@ -1,11 +1,40 @@
-const crypto = require("./crypto-generator");
 
+const crypto = require("./crypto-generator");
 let username;
 let token;
 
-window.signup = async function () {
-  event.preventDefault();
+window._getRecaptcha = function () {
+  return new Promise((resolve, reject) => {
+    if (typeof recaptchaKey !== 'undefined') {
+      if (recaptchaKey != void 0) {
+        grecaptcha.ready(function () {
+          resolve(grecaptcha.execute(recaptchaKey, { action: 'submit' }))
+        });
+      } else {
+        let error = 'Falha no Recpatcha!'
+        let element =
+          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+          `${error}` +
+          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+          `</div>`;
+        document.getElementById("flash").innerHTML = element;
+        reject('Fail recaptcha')
+      }
+    } else {
+      reject('No recaptcha')
+    }
+  });
 
+
+}
+window.signup = async function () {
+  event.preventDefault()
+  let recaptchaToken = null
+  try {
+    recaptchaToken = await _getRecaptcha()
+  } catch (error) {
+    console.warn(error)
+  }
   let email = document.getElementById("email").value.split("/")[0];
   let password = document.getElementById("password").value.split("/")[0];
   let cpf = document.getElementById("cpf").value.split("/")[0];
@@ -35,6 +64,7 @@ window.signup = async function () {
     email: email,
     name: name,
     saveKeyOnServer: saveKeyOnServer,
+    recaptcha: recaptchaToken
   };
 
   if (!saveKeyOnServer)
@@ -70,9 +100,14 @@ window.signup = async function () {
       document.getElementById("flash").innerHTML = element;
     }
   } else {
-    element =
+    let responseJson = await response.json();
+    let responseText = response.err || ''
+    if (response.status >= 400) {
+      responseText = responseJson.message
+    }
+    let element =
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `${response.err}` +
+      `${responseText}` +
       `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
       `</div>`;
     document.getElementById("flash").innerHTML = element;
