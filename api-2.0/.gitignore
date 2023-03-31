@@ -120,3 +120,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Bundle files
+api-2.0/public/scripts/bundles/*
