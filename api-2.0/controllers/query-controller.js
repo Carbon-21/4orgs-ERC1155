@@ -214,7 +214,8 @@ exports.checkForStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const username = req.jwt.username;
-  const status = req.body.status;
+  const status = "sale";
+  //const status = req.body.status;
   const org = req.jwt.org;
 
   //connect to the channel and get the chaincode
