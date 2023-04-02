@@ -50,7 +50,7 @@ router.get(
   [
     param("channel").not().isEmpty(), 
     param("chaincode").not().isEmpty(), 
-    body("status").not().isEmpty(), 
+    //body("status").not().isEmpty(), 
     validateAll
   ], 
   queryController.checkForStatus
