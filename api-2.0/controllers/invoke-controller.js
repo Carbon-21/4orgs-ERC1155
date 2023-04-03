@@ -1,7 +1,6 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
-const { postMetadata } = require("../controllers/metadata-crontroller");
 const FabricClient = require("fabric-client");
 var util = require("util");
 var crypto = require("crypto");
@@ -65,16 +64,6 @@ exports.mint = async (req, res, next) => {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
-  }
-
-  //if NFT => add metadata to IPFS
-  if (tokenId !== "$ylvas") {
-    try {
-      await postMetadata(req, res, next);
-    } catch (error) {
-      console.log(error);
-      return next(new HttpError(500, "Falha ao criar metadados no IPFS"));
-    }
   }
 
   //send OK response
