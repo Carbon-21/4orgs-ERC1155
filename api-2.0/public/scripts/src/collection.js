@@ -8,9 +8,7 @@ async function collection() {
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     for (var key in nftTokens) {
-      let tokenId = nftTokens[key];
-      metadata = (await nftMetadata(tokenId))?.message;
-      metadataArray.push(metadata);
+      let tokenId = nftTokens[key][0];
       element +=
         '<div class="card shadow-lg mt-3">' +
         '<div class="card-body flex-column">' +
@@ -24,7 +22,7 @@ async function collection() {
           /\s/g,
           ""
         )}" aria-controls="${tokenId}"> ${tokenId} </button>` +
-        (await renderMetadata(tokenId, metadata)) +
+        await renderMetadata(tokenId,JSON.parse(nftTokens[key][1])) +
         "</div>" +
         "</div>" +
         "</div>" +
@@ -56,47 +54,35 @@ async function getNftTokens() {
   };
 
   let response = await fetch(url, init);
-  let result = (await response.json())?.result;
+  let result = (await response.json());
   let nftArray = [];
   // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {
-    nftArray = nftArray.concat(result[i][0]);
+    nftArray = nftArray.concat(result[i]);
+    // Adiciona um _ na frente dos ids para evitar problemas de nomeclatura de ID com HTML4 (Ids iniciando com numeros não sao aceitos)
+  }
+
+  for (var el in nftArray){
+    nftArray[el][0] = "_"+ nftArray[el][0];
   }
   return nftArray;
 }
 
-// Recuperar json dos metadados do nft (dado tokenId)
-async function nftMetadata(tokenId) {
-  let token = localStorage.getItem("token");
-  let headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + token);
-
-  let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
-  var init = {
-    method: "GET",
-    headers: headers,
-  };
-
-  let response = await fetch(url, init);
-  return response.json();
-}
-
 // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
-async function renderMetadata(tokenId, metadata) {
-  if (!metadata.name) return "Metadados não recuperados";
+async function renderMetadata(tokenId,nftinfo) {
+  if (!nftinfo.amount) return "Metadados não recuperados";
   return (
     `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
-    `<b> Status: </b> ${metadata?.properties?.status} <br />` +
-    // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
-    `<b> Proprietário da Terra: </b> ${metadata?.properties?.land_owner} <br />` +
-    `<b> Área (hectares): </b> ${metadata?.properties?.land} <br />` +
-    `<b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br />` +
-    `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
-    `<b> Dono dos direitos de Compensação: </b> ${metadata?.properties?.compensation_owner} <br />` +
-    `<b> Geração de Sylvas: </b> ${metadata?.properties?.mint_sylvas} <br />` +    
-    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
+    `<b> Status: </b> ${nftinfo?.metadata?.status} <br />` +
+    `<b> Quantidade: </b> ${nftinfo?.amount} <br />` +
+    `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.land_owner} <br />` +
+    `<b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />` +
+    `<b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br />` +
+    `<b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />` +
+    `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
+    `<b> Geração de Sylvas: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
+    renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
     "<p>" +
     "</div>"
   );
@@ -127,7 +113,7 @@ async function compensate(tokenId) {
   //set loading
   document.getElementById("loader").style.display = "flex";
   document.getElementById("submitCompensationButton").style.display = "none";
-
+/*
   tokenId = tokenId.id;
 
   let jwt = localStorage.getItem("token");
@@ -195,4 +181,5 @@ async function compensate(tokenId) {
     document.getElementById("flash").innerHTML = element;
     return null;
   }
+  */
 }
