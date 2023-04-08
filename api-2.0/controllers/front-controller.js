@@ -59,6 +59,7 @@ exports.getSignup = (req, res, next) => {
     cssPath: "css/signup.css",
     salt,
     email,
+    recaptcha: res.recaptcha
   });
 };
 
