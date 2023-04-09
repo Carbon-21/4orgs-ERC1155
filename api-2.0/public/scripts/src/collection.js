@@ -96,27 +96,123 @@ async function renderMetadata(tokenId, metadata) {
     `<b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${metadata?.properties?.compensation_owner} <br />` +
     `<b> Geração de Sylvas: </b> ${metadata?.properties?.mint_sylvas} <br />` +    
-    renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
+    await renderCompensation(tokenId.replace(/\s/g, ""), metadata?.properties?.compensation_state) +
     "<p>" +
     "</div>"
   );
 }
 
 // Retorna string do metadado de compensação, dependendo do estado
-function renderCompensation(tokenId, compensation_state) {
+async function renderCompensation(tokenId, compensation_state) {
   switch (compensation_state) {
     case "Aguardando":
-      return `<b> Estado de compensação:</b> Aguardando <br />`;
+      return `<b> Estado de compensação:</b> Aguardando <br />` + await renderListForSale(tokenId);
     case "Compensado":
-      return `<b> Estado de compensação:</b> Compensado <br />`;
+      return `<b> Estado de compensação:</b> Compensado <br />`+ await renderListForSale(tokenId);
     // Inclui botão de compensação quando não compensado
     case "Não Compensado":
     default:
       return (
-        `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+        `<b> Estado de compensação:</b> Não compensado <br />` +  
+        await renderListForSale(tokenId) 
       );
   }
+}
+
+// Retorna string do metadado de compensação, dependendo do estado
+async function renderListForSale(tokenId) {
+
+  let nftTokens = await getNftOnSale();
+
+  for (var key in nftTokens) {
+    if (tokenId == nftTokens[key]){
+      return  `<b> Estado na loja :</b> Disponível <br />` +  
+      `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`;
+    }
+    else{
+      return (
+        `<b> Estado na loja :</b> Indisponível <br />` +
+
+        '<span style="display: inline-block; margin-right: 10px;">'+
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`+                  
+        '</span>'+
+        '<span style="display: inline-block;">'+
+          `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
+        '</span>'+
+
+        `<form id="setPriceForm" class="validated-form collapse" onsubmit="listForSale(${tokenId})">`+
+           '<div class="flex-fill">'+
+              '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+              '<br />'+
+              '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+                '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
+              '<span style="display: inline-block;">'+
+                '<input type="text" name="price" id="price" class="form-control" required/>'+
+              '</span>'+  
+           '</div>'+
+
+            '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
+              '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
+            '</span>'+
+          '<span style="display: inline-block;">'+
+            '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
+          '</span>'+
+        '</form>'
+      );
+    }
+  }
+}
+
+// Recuperar todos os nfts com status "sale"
+async function getNftOnSale() {
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Authorization", "Bearer " + token);
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/CheckForStatus?status=sale`;
+
+  var init = {
+    method: "GET",
+    headers: headers,
+  };
+ 
+  let response = await fetch(url, init)
+  let result = JSON.parse((await response.json())?.result);
+
+  let nftArray = [];
+  // Retornar array contendo somente a lista de ids dos nfts
+  for (var i in result) {
+    nftArray = nftArray.concat(result[i][1]);
+  }
+  
+  return nftArray;
+}
+
+function listForSale(tokenId) {
+
+  document.getElementById("loader").style.display = "flex";
+  document.getElementById("lisForSaleButton").style.display = "none";
+  document.getElementById("submitOfferButton").style.display = "none";
+  document.getElementById("CancelOfferButton").style.display = "none";
+
+  let price = document.getElementById("price").value;
+
+  let jwt = localStorage.getItem("token");
+
+  let headers = new Headers();
+  headers.append("Authorization", "Bearer " + jwt);
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
+
+  var init = {
+    method: "POST",
+    headers: headers,
+  };
+
+  let body = {
+    "tokenId": tokenId,
+    "price": price
+  }
+
+  init.body = JSON.stringify(body);
 }
 
 //change token status to "Compensado" in the IPFS
@@ -196,3 +292,5 @@ async function compensate(tokenId) {
     return null;
   }
 }
+
+
