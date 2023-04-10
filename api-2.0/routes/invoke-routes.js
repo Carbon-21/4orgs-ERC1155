@@ -52,7 +52,19 @@ router.post(
   ],
   invokeController.setURI
 );
-
+/*
+//auxiliary route ised to update an NFT compensation State
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/editNFTCompensation",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  invokeController.editNFTCompensations
+);
+*/
 ////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
 
 router.post(
