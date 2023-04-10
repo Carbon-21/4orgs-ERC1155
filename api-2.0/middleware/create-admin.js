@@ -9,159 +9,9 @@ var { Wallets } = require("fabric-network");
 const FabricCAServices = require("fabric-ca-client");
 const argon2 = require("argon2-browser");
 
-//////////////CONSTANTS//////////////
 const SALT_BYTES_LENGTH = 32;
-// const BCRYPT_ALGORITHM = "$2a";
-// const BCRYPT_ROUNDS = "$11$";
 
-//////////DIRECT API CALLS//////////
-//given the username, return a salt so the user can perform the PHS
-exports.getSalt = async (req, res, next) => {
-  logger.trace("Entered getSalt controller");
-
-  const email = req.body.email;
-  const isSignUp = req.body.isSignUp;
-  logger.debug(`Email: ${email}, isSignUp: ${isSignUp}`);
-
-  //look for user with given email
-  let user;
-  try {
-    user = await models.users.findOne({
-      where: { email },
-    });
-  } catch (err) {
-    return next(new HttpError(500));
-  }
-
-  if (isSignUp) {
-    if (user) {
-      //user already registering/signing up => return salt
-      if (user.status === "registering") {
-        logger.info(`User already registering, previously created salt returned`);
-
-        return res.status(200).json({
-          salt: user.salt,
-        });
-      }
-      //user already exists and its not still registering/signing up => error
-      else {
-        logger.warn(`User is being shady`);
-        return next(new HttpError(409));
-      }
-    }
-    //user doesn't exist yet
-    else {
-      //generate random seed and derive a key (salt) from it, using HKDF. This will be sent to the user so they can use it as salt to perform PHS
-      const seed = generateSeed();
-      const salt = hkdf(email, seed);
-
-      //add PHS info to DB
-      try {
-        await models.users.create({ email, seed });
-      } catch (err) {
-        logger.error(err);
-        return next(new HttpError(500));
-      }
-
-      return res.status(200).json({
-        salt,
-      });
-    }
-  }
-
-  // login: return weeded (dummy) salt if user doesn't exist
-  else {
-    if (user && user.status === "active") {
-      const salt = hkdf(email, user.seed);
-
-      logger.info(`Valid email, salt returned`);
-      return res.status(200).json({
-        salt,
-      });
-    } else {
-      const weededSalt = hkdf(email, process.env.WEED);
-
-      logger.info(`Unknown email, weeded salt returned`);
-      return res.status(200).json({
-        salt: weededSalt,
-      });
-    }
-  }
-};
-
-exports.signup = async (req, res, next) => {
-  logger.trace("Entered signup controller");
-
-  const user = req.body;
-  user.org = "Carbon";
-  logger.debug("Username: " + user.email);
-
-  //update user on DB
-  let response = await saveUserToDatabase(user);
-  // if (!response) return;
-  if (!response) return next(new HttpError(500));
-
-  //enroll user in the CA and save it in the wallet
-  let enrollResponse = await enrollUserInCA(user);
-  // if (!enrollResponse.success) return;
-  if (!enrollResponse.success) return next(new HttpError(500));
-  response.certificate = enrollResponse.certificate;
-
-  //create JWT, add to reponse
-  response.token = auth.createJWT(user.email, user.org);
-
-  res.json(response);
-};
-
-exports.login = async (req, res, next) => {
-  logger.trace("Entered login controller");
-
-  const org = "Carbon"; // hardcoded
-  const email = req.body.email;
-  let password = req.body.password;
-
-  logger.debug("Email: " + email);
-  logger.debug("Password: " + password);
-
-  //look for user with given email
-  let user;
-  try {
-    user = await models.users.findOne({
-      where: { email },
-    });
-  } catch (err) {
-    return next(new HttpError(500));
-  }
-
-  //password is stored in DB as a derivation from the PHS sent from the user, using their seed as salt.
-  //derive it again so we can check if the given pwd is correct
-  //note: this must be done even if the user doesn't exist, to avoid usernames sweeping via side channels attacks
-  password = hkdf(password, user ? user.seed : process.env.WEED);
-
-  //check username, status, pwd and org
-  if (!user || user.status !== "active" || user.password !== password || user.org !== org) {
-    return next(new HttpError(401)); //login failed
-  }
-
-  //create jwt
-  const token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
-
-  try {
-    //send OK response
-    return res.status(200).json({
-      message: `Welcome!`,
-      token,
-      keyOnServer: user.keyOnServer, // Boolean that informs whether the user's key is stored on the server or not.
-    });
-  } catch (err) {
-    logger.error(err);
-    return next(new HttpError(500));
-  }
-};
-
-//create two admins identities in the blockchain, admin and admin@admin.com. The latter is also created in the SQL DB
-//called on app initialization. No route assigned.
-exports.createAdmin = async () => {
+module.exports = async (req, res, next) => {
   logger.trace("Entered createAdmin controller");
 
   const org = "Carbon";
@@ -181,8 +31,8 @@ exports.createAdmin = async () => {
       await helper.enrollAdmin(org, ccp);
       adminIdentity = await wallet.get("admin");
     } catch (err) {
-      logger.error(err);
-      return new HttpError(500);
+      logger.debug(err);
+      return next(new HttpError(500));
     }
 
     //create a second admin identity, admin@admin.com, both in the blockchain and in the DB
@@ -192,8 +42,7 @@ exports.createAdmin = async () => {
     try {
       await models.users.create(admin);
     } catch (err) {
-      logger.error(err);
-      return new HttpError(500);
+      return next(new HttpError(500));
     }
 
     //PHS
@@ -203,22 +52,22 @@ exports.createAdmin = async () => {
       password = password.hashHex;
       admin.password = password;
     } catch (err) {
-      logger.error(err);
-      return new HttpError(500);
+      return next(new HttpError(500));
     }
 
     //update user on DB
-    let response = await saveUserToDatabase(admin);
-    if (!response) return new HttpError(500);
+    let response = await saveUserToDatabase(admin, next);
+    if (!response) return;
 
     //enroll user in the CA and save it in the wallet
-    if (!(await enrollUserInCA(admin, "admin"))) return new HttpError(500);
+    if (!(await enrollUserInCA(admin, next, "admin"))) return;
 
     logger.info("Successfully enrolled admin and admin@admin.com");
+  } else {
+    logger.info("Admins already created, skipping creation...");
   }
-  // else {
-  //   logger.info("Admins already created, skipping creation...");
-  // }
+
+  next();
 };
 
 //////////HELPER CALLS//////////
@@ -235,7 +84,7 @@ const generateSeed = () => {
 };
 
 //caled on signup
-const saveUserToDatabase = async (user) => {
+const saveUserToDatabase = async (user, next) => {
   //get user object from DB, already created during getSalt()
   user.keyOnServer = user.saveKeyOnServer; // Boolean that informs whether the user's key is stored on the server or not.
   if (typeof user.keyOnServer !== "boolean") user.keyOnServer = true;
@@ -249,13 +98,11 @@ const saveUserToDatabase = async (user) => {
     });
   } catch (err) {
     logger.error(err);
-    // return next(new HttpError(500));
-    return;
+    return next(new HttpError(500));
   }
 
   //if obj doesnt exist => error
-  // if (!obj) return next(new HttpError(404));
-  if (!obj) return;
+  if (!obj) return next(new HttpError(404));
 
   //complete user info on DB
   try {
@@ -273,8 +120,7 @@ const saveUserToDatabase = async (user) => {
     logger.error(err);
     let code, message;
     err.parent.errno == 1062 ? ((code = 409), (message = "CPF já cadastrado")) : (code = 500);
-    // return next(new HttpError(code, message));
-    return;
+    return next(new HttpError(code, message));
   }
 
   //OK
@@ -285,7 +131,7 @@ const saveUserToDatabase = async (user) => {
 };
 
 //register the user in the CA, enroll the user in the CA, and save the new identity into the wallet. Returns true if things went as expected.
-const enrollUserInCA = async (user, role = "client") => {
+const enrollUserInCA = async (user, next, role = "client") => {
   if (typeof user.saveKeyOnServer !== "boolean") user.saveKeyOnServer = true;
   //get org CCP (its configs, such as CA path and tlsCACerts)
   let ccp = await helper.getCCP(user.org);
@@ -372,49 +218,6 @@ const enrollUserInCA = async (user, role = "client") => {
 
     //issue error
     logger.debug(err);
-    // return next(new HttpError(500));
-    return;
+    return next(new HttpError(500));
   }
 };
-
-//transform 128-bit salt to bcrypt standard salt
-//bcrypt salt = PHS algorithm + # round + b64 of the 128-bit salt
-// const generateBcryptSalt = (originalSalt) => {
-//   const saltBufer = Buffer.from(originalSalt, "hex");
-//   const b64Salt = base64_encode(saltBufer, SALT_BYTES_LENGTH);
-
-//   const bcryptSalt = BCRYPT_ALGORITHM + BCRYPT_ROUNDS + b64Salt;
-//   return bcryptSalt;
-// };
-
-//transform buffer b of len bytes to b64 (bcrypt)
-// const base64_encode = (b, len) => {
-//   const BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
-//   var off = 0,
-//     rs = [],
-//     c1,
-//     c2;
-//   if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
-//   while (off < len) {
-//     c1 = b[off++] & 0xff;
-//     rs.push(BASE64_CODE[(c1 >> 2) & 0x3f]);
-//     c1 = (c1 & 0x03) << 4;
-//     if (off >= len) {
-//       rs.push(BASE64_CODE[c1 & 0x3f]);
-//       break;
-//     }
-//     c2 = b[off++] & 0xff;
-//     c1 |= (c2 >> 4) & 0x0f;
-//     rs.push(BASE64_CODE[c1 & 0x3f]);
-//     c1 = (c2 & 0x0f) << 2;
-//     if (off >= len) {
-//       rs.push(BASE64_CODE[c1 & 0x3f]);
-//       break;
-//     }
-//     c2 = b[off++] & 0xff;
-//     c1 |= (c2 >> 6) & 0x03;
-//     rs.push(BASE64_CODE[c1 & 0x3f]);
-//     rs.push(BASE64_CODE[c2 & 0x3f]);
-//   }
-//   return rs.join("");
-// };

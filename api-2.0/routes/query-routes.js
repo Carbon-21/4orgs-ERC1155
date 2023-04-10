@@ -20,6 +20,12 @@ router.get(
   queryController.getWorldState
 );
 
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllBlocks",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getAllBlocks
+);
+
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
 

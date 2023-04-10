@@ -70,7 +70,7 @@ _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 
 ### Usuário Admin
 
-Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado assim que o primeiro usuário é registrado na plataforma (rota de signup). Login e senha são:
+Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado ao inicializar-se o programa Node. Login e senha são:
 `admin@admin.com admin`
 <br>
 <br>
@@ -95,7 +95,7 @@ Para dar push direto para o branch em que se encontra:
 
 ### Blockchain explorer
 
-Para executar o blockchain explorer:
+O blockchain explorer permite a visualização de informações da rede. Para executá-lo:
 
 ```
 cd explorer
@@ -123,4 +123,15 @@ Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados 
 ./cc-debug
 ```
 
-<br>
+<br><br>
+
+## Desenvolvimento
+
+Notas importante sobre o desenvolvimento
+<br><br>
+
+### Frontend
+
+- Ao desenvolver código javascript que será rodado no navegador do usuário, modificar os arquivos localizados em `./api-2.0/public/scripts/src/`. Não modificar as réplicas contidas em os `./api-2.0/public/scripts/`.
+- Não colocar endereço e porta hardcodeds, utilizar o padrão: `https://${HOST}:${PORT}/rota/desejada`
+- Após modificar um arquivo javascript do frontend, rodar `./get-bundles` dentro de `./api-2.0`. Isso fará com que HOST e PORT sejam modificados nos javascripts finais (`./api-2.0/public/scripts/`), de acordo como os valores configurados em `./api-2.0/.env`.

@@ -20,6 +20,7 @@ const logger = require("./util/logger");
 const cors = require("./middleware/cors");
 const error = require("./middleware/error");
 const { postTransparencyLog } = require("./controllers/ipfs-controller");
+const { createAdmin } = require("./controllers/auth-crontroller");
 
 //routes
 const authRoutes = require("./routes/auth-routes");
@@ -85,9 +86,8 @@ app.get("/", function (req, res) {
   res.render("home", { title: "Home", cssPath: "css/home.css" });
 });
 
-//transparency log: post blockchain's tail every day at 00:00
+//transparency log: regularly post blockchain's tail to the IPFS
 new cronJob(process.env.LOG_CRONTAB, postTransparencyLog, null, true);
-// postTransparencyLog();
 
 ///// ROUTES /////
 app.use("/auth", authRoutes);
@@ -102,8 +102,16 @@ app.use("/ipfs", ipfsRoutes);
 app.use(error);
 
 ///// SERVER INIT /////
-const httpsServer = https.createServer(options, app);
-httpsServer.listen(port, host, () => {
-  logger.info("****************** HTTPS SERVER STARTED ************************");
-  logger.info("***************  https://%s:%s  *******************", host, port);
-});
+//create admin accounts if needed and start the server
+createAdmin()
+  .then(() => {
+    const httpsServer = https.createServer(options, app);
+    httpsServer.listen(port, host, () => {
+      logger.info("****************** HTTPS SERVER STARTED ************************");
+      logger.info("***************  https://%s:%s  *******************", host, port);
+    });
+    // postTransparencyLog();
+  })
+  .catch((err) => {
+    logger.fatal("Server couldn't be initialized:", err);
+  });

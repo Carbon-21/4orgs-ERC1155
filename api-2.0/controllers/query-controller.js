@@ -3,28 +3,26 @@ const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
 const { BlockDecoder } = require("fabric-common");
 const fabproto6 = require("fabric-protos");
-const { createHash } = require("crypto");
 
-// var sha = require("js-sha256");
-// var asnjs = require("asn1.js");
-// var calculateBlockHash = function (header) {
-//   let headerAsn = asnjs.define("headerAsn", function () {
-//     this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-//   });
+var sha = require("js-sha256");
+var asnjs = require("asn1.js");
+var calculateBlockHash = function (header) {
+  let headerAsn = asnjs.define("headerAsn", function () {
+    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+  });
 
-//   let output = headerAsn.encode(
-//     {
-//       Number: parseInt(header.number),
-//       PreviousHash: header.previous_hash,
-//       DataHash: header.data_hash,
-//     },
-//     "der"
-//   );
+  let output = headerAsn.encode(
+    {
+      Number: parseInt(header.number),
+      PreviousHash: header.previous_hash,
+      DataHash: header.data_hash,
+    },
+    "der"
+  );
 
-//   let hash = sha.sha256(output);
-//   return Buffer.from(hash, "hex").toString("base64");
-// };
-// console.log("calculateBlockHash", calculateBlockHash(tail.header));
+  let hash = sha.sha256(output);
+  return Buffer.from(hash, "hex").toString("base64");
+};
 
 //get user's balance of a given token
 exports.balance = async (req, res, next) => {
@@ -355,6 +353,47 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
     return tail;
   } catch (err) {
     return new HttpError(500, err);
+  }
+};
+
+//get last block
+exports.getAllBlocks = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channelName = req.params.channel;
+
+  // //connect to the channel and get the
+  const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", next);
+
+  try {
+    //use QSCC
+    const network = await gateway.getNetwork(channelName);
+    const contract = network.getContract("qscc");
+
+    //get last block's number
+    let info = await contract.evaluateTransaction("GetChainInfo", channelName);
+    info = fabproto6.common.BlockchainInfo.decode(info);
+    let tailNumber = info.height.low - 1;
+
+    //get blockhain's tail
+    let tail = await contract.evaluateTransaction("GetBlockByNumber", channelName, String(tailNumber));
+
+    //decode block
+    tail = BlockDecoder.decode(tail);
+
+    //decode block's fields
+    // decodeBlockBuffers(tail);
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`Tail fetched!`);
+    return res.json({
+      tail,
+      info,
+    });
+  } catch (err) {
+    return next(new HttpError(500, err));
   }
 };
 

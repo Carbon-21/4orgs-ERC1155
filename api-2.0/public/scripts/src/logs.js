@@ -1,3 +1,6 @@
+let sha = require("js-sha256");
+let asnjs = require("asn1.js");
+
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
 const successFlashMessage =
   `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
@@ -18,7 +21,7 @@ const failureFlashMessage2 =
   `</div>`;
 
 //retrieve last block in IPFS
-async function getLatestIPFSBlock() {
+window.getLatestIPFSBlock = async function () {
   //loading...
   document.getElementById("loader").style.display = "flex";
 
@@ -54,10 +57,10 @@ async function getLatestIPFSBlock() {
     document.getElementById("flash").innerHTML = failureFlashMessage2;
     console.log("HTTP Error ", response.status);
   }
-}
+};
 
 //retrieve blockchains's last block
-async function getBlockchainTail() {
+window.getBlockchainTail = async function () {
   //make request to the backend
   let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail`;
   var init = {
@@ -84,10 +87,10 @@ async function getBlockchainTail() {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
   }
-}
+};
 
 //get world state
-async function getWorldState() {
+window.getWorldState = async function () {
   //make request to the backend
   let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getWorldState`;
   var init = {
@@ -96,19 +99,27 @@ async function getWorldState() {
   let response = await fetch(url, init);
 
   if (response.ok) {
+    // WS to json
     response = await response.json();
-    wsValues = JSON.parse(response.result); // to arrays of arrays
-    //
+    if (response.result === "") return;
+
+    // WS to arrays of arrays
+    wsValues = JSON.parse(response.result);
+
     //add each keys and values from the WS to the HTML
     htmlOutput = "";
     wsValues.forEach((element) => {
       htmlOutput =
         htmlOutput +
         "<p>" +
-        `<b> Origem: </b> <br/><spam class="limit">${element[2]}</spam> <br/>` +
-        `<b> Destino: </b><br/> <spam class="limit">${element[0]}</spam> <br/>` +
-        `<b> ID do Token: </b><br/> <spam class="limit">${element[1]}</spam> <br/>` +
-        `<b> Quantidade: </b> <br/><spam class="limit">${element[3]}</spam> <br/>` +
+        `<b> Origem: </b> <spam class="limit">${atob(element[2])
+          .match(/CN=([^,]*)/g)[0]
+          .replace("CN=", "")}</spam> <br/>` +
+        `<b> Destino: </b> <spam class="limit">${atob(element[0])
+          .match(/CN=([^,]*)/g)[0]
+          .replace("CN=", "")}</spam> <br/>` +
+        `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` +
+        `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` +
         "<p>";
     });
     ws.innerHTML = htmlOutput;
@@ -118,8 +129,94 @@ async function getWorldState() {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
   }
-}
+};
 
+//retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
+window.checkBlockchain = async function () {
+  //make request to the backend
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getAllBlocks`;
+  var init = {
+    method: "GET",
+  };
+  let response = await fetch(url, init);
+
+  if (response.ok) {
+    response = await response.json();
+
+    //set block info in HTML
+    document.getElementById("flash").innerHTML = successFlashMessage;
+
+    console.log("calculateBlockHash", calculateBlockHash(response.tail.header));
+    // console.log("calculateBlockHashh", calculateBlockHashh(response.tail.header));
+    // console.log("calculateBlockHashhh", calculateBlockHashhh(response.tail.header));
+    console.log("Gabarito", response.info.currentBlockHash);
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    console.log("HTTP Error ", response.status);
+  }
+};
+
+///// AUX /////
 function convertTZ(date, tzString) {
   return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
 }
+
+var calculateBlockHash = function (header) {
+  let headerAsn = asnjs.define("headerAsn", function () {
+    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+  });
+
+  let output = headerAsn.encode(
+    {
+      Number: parseInt(header.number),
+      PreviousHash: header.previous_hash.data,
+      DataHash: header.data_hash.data,
+    },
+    "der"
+  );
+
+  let hash = sha.sha256(output);
+
+  return Buffer.from(hash, "hex").toString("base64");
+};
+
+var calculateBlockHashh = function (header) {
+  let headerAsn = asnjs.define("headerAsn", function () {
+    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+  });
+
+  let output = headerAsn.encode(
+    {
+      Number: parseInt(header.number),
+
+      PreviousHash: Buffer.from(header.previous_hash.data, "hex"),
+      DataHash: Buffer.from(header.data_hash.data, "hex"),
+    },
+    "der"
+  );
+
+  let hash = sha.sha256(output);
+
+  return Buffer.from(hash, "hex").toString("base64");
+};
+
+var calculateBlockHashhh = function (header) {
+  let headerAsn = asnjs.define("headerAsn", function () {
+    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+  });
+
+  let output = headerAsn.encode(
+    {
+      Number: parseInt(header.number),
+      // PreviousHash: header.previous_hash.data,
+      // DataHash: header.data_hash.data,
+      PreviousHash: Buffer.from(header.previous_hash, "hex"),
+      DataHash: Buffer.from(header.data_hash, "hex"),
+    },
+    "der"
+  );
+
+  let hash = sha.sha256(output);
+
+  return Buffer.from(hash, "hex").toString("base64");
+};

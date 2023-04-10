@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
-  <script src="/scripts/logs.js"></script>
+  <script src="/scripts/bundles/logs-bundle.js"></script>
 
-  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail()">
+  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail(); checkBlockchain()">
     <section id="intro"><%- include("partials/navbar") %></section>
 
     <section id="features">
