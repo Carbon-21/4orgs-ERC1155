@@ -5,7 +5,7 @@
   <%- include("partials/head") %>
   <script src="/scripts/logs.js"></script>
 
-  <body id="top" onload="getLatestIPFSBlock(); getBlockchainTail()">
+  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail()">
     <section id="intro"><%- include("partials/navbar") %></section>
 
     <section id="features">
@@ -25,20 +25,9 @@
             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
               <div class="accordion-body">
                 <spam class="description">A partir do World State é possível reconstruir o saldo de cada carteira</spam>
-                <!-- <div class="mt-3">
-                  <span><strong>Número do bloco: </strong> </span>
-                  <span id="ipfsBlockNumber"></span><br />
-                  <span><strong>Data: </strong> </span>
-                  <span id="ipfsTimestamp"></span><br />
-                  <span><strong>Hash do bloco: </strong> </span>
-                  <span id="ipfsHash"></span><br />
-                  <span><strong>Bloco anterior: </strong> </span>
-                  <span id="ipfsPreviousHash"></span><br />
-                  <details>
-                    <summary><strong>JSON</strong></summary>
-                    <pre><code class="content" id="ipfsJson"></code></pre>
-                  </details>
-                </div> -->
+                <div class="mt-3">
+                  <div id="ws"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -86,7 +75,7 @@
             <!-- Content -->
             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <spam class="description">Todo dia à 00:00, a cauda da ledger é inserida no IPFS</spam>
+                <spam class="description">A cada uma hora, a cauda da ledger é inserida no IPFS</spam>
                 <div class="mt-3">
                   <span><strong>Número do bloco: </strong> </span>
                   <span id="ipfsBlockNumber"></span><br />

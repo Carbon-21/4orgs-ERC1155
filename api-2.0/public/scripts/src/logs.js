@@ -86,6 +86,40 @@ async function getBlockchainTail() {
   }
 }
 
+//get world state
+async function getWorldState() {
+  //make request to the backend
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getWorldState`;
+  var init = {
+    method: "GET",
+  };
+  let response = await fetch(url, init);
+
+  if (response.ok) {
+    response = await response.json();
+    wsValues = JSON.parse(response.result); // to arrays of arrays
+    //
+    //add each keys and values from the WS to the HTML
+    htmlOutput = "";
+    wsValues.forEach((element) => {
+      htmlOutput =
+        htmlOutput +
+        "<p>" +
+        `<b> Origem: </b> <br/><spam class="limit">${element[2]}</spam> <br/>` +
+        `<b> Destino: </b><br/> <spam class="limit">${element[0]}</spam> <br/>` +
+        `<b> ID do Token: </b><br/> <spam class="limit">${element[1]}</spam> <br/>` +
+        `<b> Quantidade: </b> <br/><spam class="limit">${element[3]}</spam> <br/>` +
+        "<p>";
+    });
+    ws.innerHTML = htmlOutput;
+
+    document.getElementById("flash").innerHTML = successFlashMessage;
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    console.log("HTTP Error ", response.status);
+  }
+}
+
 function convertTZ(date, tzString) {
   return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
 }

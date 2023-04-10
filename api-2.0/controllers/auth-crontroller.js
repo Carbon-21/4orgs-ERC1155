@@ -136,13 +136,13 @@ exports.login = async (req, res, next) => {
   //note: this must be done even if the user doesn't exist, to avoid usernames sweeping via side channels attacks
   password = hkdf(password, user ? user.seed : process.env.WEED);
 
-  //create jwt
-  const token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
-
   //check username, status, pwd and org
   if (!user || user.status !== "active" || user.password !== password || user.org !== org) {
     return next(new HttpError(401)); //login failed
   }
+
+  //create jwt
+  const token = auth.createJWT(email, org, email === process.env.ADMIN_LOGIN ? "admin" : "client");
 
   try {
     //send OK response

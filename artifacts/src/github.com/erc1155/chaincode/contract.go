@@ -131,11 +131,11 @@ func GetRole(clientAccountID string) string {
 //returns whole world state
 func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
 
-	// Must be Carbon's admin
-	err := authorizationHelper(ctx)
-	if err != nil {
-		return nil, err
-	}
+	// // Must be Carbon's admin
+	// err := authorizationHelper(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// Slice de slices que conterá os tokens e suas quantidades
 	var tokens [][]string

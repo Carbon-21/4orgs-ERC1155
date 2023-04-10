@@ -33,15 +33,7 @@
             ><strong><u>Logs Transparentes</u></strong></a
           >
         </li>
-        <% } %>
-        <!-- <% if(title==="Logs Transparentes" && !currentUser){ %>
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/">Início</a>
-        </li>
-      
-        </li>
-        <% } %>  -->
-        <% if (currentUser) { %> <% if(title !=="Logs Transparentes"){ %>
+        <% } %> <% if (currentUser) { %> <% if(title !=="Logs Transparentes"){ %>
         <li class="nav-item">
           <a class="nav-link" href="/logs">Logs Transparentes</a>
         </li>
