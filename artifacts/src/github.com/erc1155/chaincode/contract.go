@@ -1052,7 +1052,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 			}
 
 			// Verify if the token is an NFT
-			if compositeKeyParts[1] != "$ylvas" {
+			if compositeKeyParts[1] != systemCurrency {
 				nft := new(NFToken)
 				_ = json.Unmarshal(queryResponse.Value, nft)
 				partialBalance, _ = strconv.ParseUint(string(nft.Amount), 10, 64)
