@@ -50,6 +50,8 @@ Para matar a rede, sem subir uma nova:
 ```
 
 _Nota: o script init também roda o kill, e ambos matam qualquer conatiner docker previamente ativo!_
+
+_Nota 2: caso você veja erros no output do comando init, veja se há uma pasta chamada genesis.block em ./artifacts/channel/. Se houver, delete ela. Trata-se de uma pasta intermediária que não deveria existir e pode não ter sido deletada adequadamente._
 <br>
 <br>
 

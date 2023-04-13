@@ -99,16 +99,13 @@ window.getWorldState = async function () {
   let response = await fetch(url, init);
 
   if (response.ok) {
-    // WS to json
+    // get WS
     response = await response.json();
     if (response.result === "") return;
 
-    // WS to arrays of arrays
-    wsValues = JSON.parse(response.result);
-
     //add each keys and values from the WS to the HTML
-    htmlOutput = "";
-    wsValues.forEach((element) => {
+    let htmlOutput = "";
+    response.result.forEach((element) => {
       htmlOutput =
         htmlOutput +
         "<p>" +
@@ -134,7 +131,7 @@ window.getWorldState = async function () {
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = async function () {
   //make request to the backend
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getAllBlocks`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=início&max=1.1`;
   var init = {
     method: "GET",
   };
@@ -142,13 +139,12 @@ window.checkBlockchain = async function () {
 
   if (response.ok) {
     response = await response.json();
+    console.log("response", response);
 
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;
 
-    console.log("calculateBlockHash", calculateBlockHash(response.tail.header));
-    // console.log("calculateBlockHashh", calculateBlockHashh(response.tail.header));
-    // console.log("calculateBlockHashhh", calculateBlockHashhh(response.tail.header));
+    console.log("HASH CLIENT SIDE", calculateBlockHash(response.tail.header));
     console.log("Gabarito", response.info.currentBlockHash);
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -168,50 +164,9 @@ var calculateBlockHash = function (header) {
 
   let output = headerAsn.encode(
     {
-      Number: parseInt(header.number),
+      Number: parseInt(header.number.low),
       PreviousHash: header.previous_hash.data,
       DataHash: header.data_hash.data,
-    },
-    "der"
-  );
-
-  let hash = sha.sha256(output);
-
-  return Buffer.from(hash, "hex").toString("base64");
-};
-
-var calculateBlockHashh = function (header) {
-  let headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-  });
-
-  let output = headerAsn.encode(
-    {
-      Number: parseInt(header.number),
-
-      PreviousHash: Buffer.from(header.previous_hash.data, "hex"),
-      DataHash: Buffer.from(header.data_hash.data, "hex"),
-    },
-    "der"
-  );
-
-  let hash = sha.sha256(output);
-
-  return Buffer.from(hash, "hex").toString("base64");
-};
-
-var calculateBlockHashhh = function (header) {
-  let headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-  });
-
-  let output = headerAsn.encode(
-    {
-      Number: parseInt(header.number),
-      // PreviousHash: header.previous_hash.data,
-      // DataHash: header.data_hash.data,
-      PreviousHash: Buffer.from(header.previous_hash, "hex"),
-      DataHash: Buffer.from(header.data_hash, "hex"),
     },
     "der"
   );

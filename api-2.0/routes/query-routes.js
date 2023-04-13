@@ -21,9 +21,15 @@ router.get(
 );
 
 router.get(
-  "/channels/:channel/chaincodes/:chaincode/getAllBlocks",
-  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
-  queryController.getAllBlocks
+  "/channels/:channel/chaincodes/:chaincode/getRangeOfBlocks",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("min").trim().not().isEmpty().isString(),
+    query("max").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getRangeOfBlocks
 );
 
 ///// AUTHENTICATED ROUTES /////

@@ -4,26 +4,6 @@ const helper = require("../app/helper");
 const { BlockDecoder } = require("fabric-common");
 const fabproto6 = require("fabric-protos");
 
-var sha = require("js-sha256");
-var asnjs = require("asn1.js");
-var calculateBlockHash = function (header) {
-  let headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-  });
-
-  let output = headerAsn.encode(
-    {
-      Number: parseInt(header.number),
-      PreviousHash: header.previous_hash,
-      DataHash: header.data_hash,
-    },
-    "der"
-  );
-
-  let hash = sha.sha256(output);
-  return Buffer.from(hash, "hex").toString("base64");
-};
-
 //get user's balance of a given token
 exports.balance = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
@@ -107,7 +87,6 @@ exports.selfBalanceNFT = async (req, res, next) => {
   //get balance
   try {
     let result = await chaincode.evaluateTransaction("SmartContract:SelfBalanceNFT");
-    console.log("Result", result);
     result = JSON.parse(result.toString());
 
     //close communication channel
@@ -121,8 +100,7 @@ exports.selfBalanceNFT = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    console.log(err.message);
-    //return next(new HttpError(500, errMessage[1]));
+
     return next(new HttpError(500, err.message));
   }
 };
@@ -160,7 +138,7 @@ exports.balanceNFT = async (req, res, next) => {
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    console.log("aqqui", err.message);
+
     return next(new HttpError(500, err.message));
     //return next(new HttpError(500, errMessage[1]));
   }
@@ -225,7 +203,6 @@ exports.getURI = async (req, res, next) => {
       result,
     });
   } catch (err) {
-    console.log(err);
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
     return next(new HttpError(500, errMessage[1]));
@@ -275,7 +252,7 @@ exports.getWorldState = async (req, res, next) => {
     //send OK response
     logger.info(`World state fetched!`);
     return res.json({
-      result,
+      result: JSON.parse(result),
     });
   } catch (err) {
     return next(new HttpError(500, err));
@@ -357,9 +334,11 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
 };
 
 //get last block
-exports.getAllBlocks = async (req, res, next) => {
+exports.getRangeOfBlocks = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channelName = req.params.channel;
+  let min = req.query.min;
+  let max = req.query.max;
 
   // //connect to the channel and get the
   const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", next);
@@ -369,28 +348,41 @@ exports.getAllBlocks = async (req, res, next) => {
     const network = await gateway.getNetwork(channelName);
     const contract = network.getContract("qscc");
 
-    //get last block's number
+    //get tail's number
     let info = await contract.evaluateTransaction("GetChainInfo", channelName);
     info = fabproto6.common.BlockchainInfo.decode(info);
-    let tailNumber = info.height.low - 1;
+    const tailNumber = info.height.low - 1;
 
-    //get blockhain's tail
-    let tail = await contract.evaluateTransaction("GetBlockByNumber", channelName, String(tailNumber));
+    //adjust initial block's number, if needed
+    if (min === "início") min = 0;
 
-    //decode block
-    tail = BlockDecoder.decode(tail);
+    //get tail's number, if user requested it
+    if (max === "fim") max = tailNumber;
 
-    //decode block's fields
-    // decodeBlockBuffers(tail);
+    //if requested range is out of boundaries or isn't int => error
+    min = parseInt(min);
+    max = parseInt(max);
+    if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max > tailNumber) return next(new HttpError(500, "Valor inválido."));
+
+    //put every requested block in the blocks array
+    let blocks = [];
+    for (let i = min; i <= max; i++) {
+      //get block
+      let block = await contract.evaluateTransaction("GetBlockByNumber", channelName, String(i));
+
+      //decode block
+      block = BlockDecoder.decode(block);
+
+      //append
+      blocks.push(block);
+    }
 
     //close communication channel
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`Tail fetched!`);
     return res.json({
-      tail,
-      info,
+      blocks,
     });
   } catch (err) {
     return next(new HttpError(500, err));

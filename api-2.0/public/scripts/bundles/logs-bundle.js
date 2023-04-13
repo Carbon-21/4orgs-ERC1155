@@ -8222,7 +8222,7 @@ window.getBlockchainTail = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
 
 //get world state
 window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-  var url, init, response;
+  var url, init, response, htmlOutput;
   return _regeneratorRuntime().wrap(function _callee3$(_context3) {
     while (1) switch (_context3.prev = _context3.next) {
       case 0:
@@ -8236,7 +8236,7 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
       case 4:
         response = _context3.sent;
         if (!response.ok) {
-          _context3.next = 18;
+          _context3.next = 17;
           break;
         }
         _context3.next = 8;
@@ -8249,22 +8249,19 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
         }
         return _context3.abrupt("return");
       case 11:
-        // WS to arrays of arrays
-        wsValues = JSON.parse(response.result);
-
         //add each keys and values from the WS to the HTML
         htmlOutput = "";
-        wsValues.forEach(function (element) {
+        response.result.forEach(function (element) {
           htmlOutput = htmlOutput + "<p>" + "<b> Origem: </b> <spam class=\"limit\">".concat(atob(element[2]).match(/CN=([^,]*)/g)[0].replace("CN=", ""), "</spam> <br/>") + "<b> Destino: </b> <spam class=\"limit\">".concat(atob(element[0]).match(/CN=([^,]*)/g)[0].replace("CN=", ""), "</spam> <br/>") + "<b> ID do Token: </b> <spam class=\"limit\">".concat(element[1], "</spam> <br/>") + "<b> Quantidade: </b><spam class=\"limit\">".concat(element[3], "</spam> <br/>") + "<p>";
         });
         ws.innerHTML = htmlOutput;
         document.getElementById("flash").innerHTML = successFlashMessage;
-        _context3.next = 20;
+        _context3.next = 19;
         break;
-      case 18:
+      case 17:
         document.getElementById("flash").innerHTML = failureFlashMessage;
         console.log("HTTP Error ", response.status);
-      case 20:
+      case 19:
       case "end":
         return _context3.stop();
     }
@@ -8278,7 +8275,7 @@ window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerat
     while (1) switch (_context4.prev = _context4.next) {
       case 0:
         //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getAllBlocks";
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=in\xEDcio&max=1.1";
         init = {
           method: "GET"
         };
@@ -8287,25 +8284,25 @@ window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerat
       case 4:
         response = _context4.sent;
         if (!response.ok) {
-          _context4.next = 14;
+          _context4.next = 15;
           break;
         }
         _context4.next = 8;
         return response.json();
       case 8:
         response = _context4.sent;
+        console.log("response", response);
+
         //set block info in HTML
         document.getElementById("flash").innerHTML = successFlashMessage;
-        console.log("calculateBlockHash", calculateBlockHash(response.tail.header));
-        // console.log("calculateBlockHashh", calculateBlockHashh(response.tail.header));
-        // console.log("calculateBlockHashhh", calculateBlockHashhh(response.tail.header));
+        console.log("HASH CLIENT SIDE", calculateBlockHash(response.tail.header));
         console.log("Gabarito", response.info.currentBlockHash);
-        _context4.next = 16;
+        _context4.next = 17;
         break;
-      case 14:
+      case 15:
         document.getElementById("flash").innerHTML = failureFlashMessage;
         console.log("HTTP Error ", response.status);
-      case 16:
+      case 17:
       case "end":
         return _context4.stop();
     }
@@ -8323,35 +8320,9 @@ var calculateBlockHash = function calculateBlockHash(header) {
     this.seq().obj(this.key("Number")["int"](), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
   });
   var output = headerAsn.encode({
-    Number: parseInt(header.number),
+    Number: parseInt(header.number.low),
     PreviousHash: header.previous_hash.data,
     DataHash: header.data_hash.data
-  }, "der");
-  var hash = sha.sha256(output);
-  return Buffer.from(hash, "hex").toString("base64");
-};
-var calculateBlockHashh = function calculateBlockHashh(header) {
-  var headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number")["int"](), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-  });
-  var output = headerAsn.encode({
-    Number: parseInt(header.number),
-    PreviousHash: Buffer.from(header.previous_hash.data, "hex"),
-    DataHash: Buffer.from(header.data_hash.data, "hex")
-  }, "der");
-  var hash = sha.sha256(output);
-  return Buffer.from(hash, "hex").toString("base64");
-};
-var calculateBlockHashhh = function calculateBlockHashhh(header) {
-  var headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number")["int"](), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
-  });
-  var output = headerAsn.encode({
-    Number: parseInt(header.number),
-    // PreviousHash: header.previous_hash.data,
-    // DataHash: header.data_hash.data,
-    PreviousHash: Buffer.from(header.previous_hash, "hex"),
-    DataHash: Buffer.from(header.data_hash, "hex")
   }, "der");
   var hash = sha.sha256(output);
   return Buffer.from(hash, "hex").toString("base64");
