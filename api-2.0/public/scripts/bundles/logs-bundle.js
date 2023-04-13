@@ -8270,12 +8270,12 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
 
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-  var url, init, response;
+  var url, init, response, checkedBlocksHtml, i;
   return _regeneratorRuntime().wrap(function _callee4$(_context4) {
     while (1) switch (_context4.prev = _context4.next) {
       case 0:
         //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=in\xEDcio&max=1.1";
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=in\xEDcio&max=10";
         init = {
           method: "GET"
         };
@@ -8293,10 +8293,38 @@ window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerat
         response = _context4.sent;
         console.log("response", response);
 
+        //hash every block and check if they correspond to the previousHash field in the following block
+        checkedBlocksHtml = "";
+        for (i = response.min; i < response.max; i++) {
+          blockchainChecking.innerHTML = checkedBlocksHtml + "Checking block ".concat(i, "...");
+          if (calculateBlockHash(response.blocks[i].header) === Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64")) {
+            console.log(i, "BATEU");
+            checkedBlocksHtml = checkedBlocksHtml + "Bloco ".concat(i, " OK.");
+            blockchainChecking.innerHTML = checkedBlocksHtml;
+          } else {
+            blockchainChecking.innerHTML = checkedBlocksHtml + "DEU RUIM";
+            console.log(i, "NÃO BATEU", calculateBlockHash(response.blocks[i].header), Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"));
+          }
+        }
+        // response.blocks.forEach((block) => {
+        //   blockchainChecking.innerHTML = "Checking...";
+        //   htmlOutput =
+        //     htmlOutput +
+        //     "<p>" +
+        //     `<b> Origem: </b> <spam class="limit">${atob(element[2])
+        //       .match(/CN=([^,]*)/g)[0]
+        //       .replace("CN=", "")}</spam> <br/>` +
+        //     `<b> Destino: </b> <spam class="limit">${atob(element[0])
+        //       .match(/CN=([^,]*)/g)[0]
+        //       .replace("CN=", "")}</spam> <br/>` +
+        //     `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` +
+        //     `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` +
+        //     "<p>";
+        // });
+        // blockchainChecking.innerHTML = htmlOutput;
+
         //set block info in HTML
         document.getElementById("flash").innerHTML = successFlashMessage;
-        console.log("HASH CLIENT SIDE", calculateBlockHash(response.tail.header));
-        console.log("Gabarito", response.info.currentBlockHash);
         _context4.next = 17;
         break;
       case 15:

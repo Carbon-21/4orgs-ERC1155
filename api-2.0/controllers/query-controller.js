@@ -383,6 +383,8 @@ exports.getRangeOfBlocks = async (req, res, next) => {
     //send OK response
     return res.json({
       blocks,
+      min,
+      max,
     });
   } catch (err) {
     return next(new HttpError(500, err));

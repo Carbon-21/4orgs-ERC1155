@@ -131,7 +131,7 @@ window.getWorldState = async function () {
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = async function () {
   //make request to the backend
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=início&max=1.1`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=início&max=10`;
   var init = {
     method: "GET",
   };
@@ -141,11 +141,39 @@ window.checkBlockchain = async function () {
     response = await response.json();
     console.log("response", response);
 
+    //hash every block and check if they correspond to the previousHash field in the following block
+    let checkedBlocksHtml = "";
+    for (let i = response.min; i < response.max; i++) {
+      blockchainChecking.innerHTML = checkedBlocksHtml + `Checking block ${i}...`;
+
+      if (calculateBlockHash(response.blocks[i].header) === Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64")) {
+        console.log(i, "BATEU");
+        checkedBlocksHtml = checkedBlocksHtml + `Bloco ${i} OK.`;
+        blockchainChecking.innerHTML = checkedBlocksHtml;
+      } else {
+        blockchainChecking.innerHTML = checkedBlocksHtml + "DEU RUIM";
+        console.log(i, "NÃO BATEU", calculateBlockHash(response.blocks[i].header), Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"));
+      }
+    }
+    // response.blocks.forEach((block) => {
+    //   blockchainChecking.innerHTML = "Checking...";
+    //   htmlOutput =
+    //     htmlOutput +
+    //     "<p>" +
+    //     `<b> Origem: </b> <spam class="limit">${atob(element[2])
+    //       .match(/CN=([^,]*)/g)[0]
+    //       .replace("CN=", "")}</spam> <br/>` +
+    //     `<b> Destino: </b> <spam class="limit">${atob(element[0])
+    //       .match(/CN=([^,]*)/g)[0]
+    //       .replace("CN=", "")}</spam> <br/>` +
+    //     `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` +
+    //     `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` +
+    //     "<p>";
+    // });
+    // blockchainChecking.innerHTML = htmlOutput;
+
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;
-
-    console.log("HASH CLIENT SIDE", calculateBlockHash(response.tail.header));
-    console.log("Gabarito", response.info.currentBlockHash);
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
