@@ -252,7 +252,7 @@ exports.getWorldState = async (req, res, next) => {
     //send OK response
     logger.info(`World state fetched!`);
     return res.json({
-      result: JSON.parse(result),
+      result: result === "" ? "" : JSON.parse(result),
     });
   } catch (err) {
     return next(new HttpError(500, err));
@@ -362,7 +362,7 @@ exports.getRangeOfBlocks = async (req, res, next) => {
     //if requested range is out of boundaries or isn't int => error
     min = parseInt(min);
     max = parseInt(max);
-    if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max > tailNumber) return next(new HttpError(500, "Valor inválido."));
+    if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max > tailNumber || min >= max) return next(new HttpError(500, "Valor inválido."));
 
     //put every requested block in the blocks array
     let blocks = [];

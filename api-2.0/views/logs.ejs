@@ -5,7 +5,7 @@
   <%- include("partials/head") %>
   <script src="/scripts/bundles/logs-bundle.js"></script>
 
-  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail(); checkBlockchain()">
+  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail();">
     <section id="intro"><%- include("partials/navbar") %></section>
 
     <section id="features">
@@ -106,8 +106,18 @@
             <!-- Content -->
             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <spam class="description">Requisite determinada sequência de blocos e seu navegador irá conferir se os hashs retornados de cada bloco conferem</spam>
-                <div class="mt-3">
+                <spam class="description"
+                  >Requisite à Carbon determinada sequência de blocos, cada um contendo o hash do bloco anterior. Seu computador caculará então os hashs dos blocos recebidos e verificará se eles
+                  conferem com os hashs enviados pela Carbon.<br /><br />Insira números ou as palavras-chave "início" e "fim".
+                </spam>
+
+                <div class="input-group mt-3 mb-3">
+                  <input id="min" type="text" class="form-control mr-3 w-25" placeholder="Primeiro bloco" />
+                  <input id="max" type="text" class="form-control mx-3 w-25" placeholder="Último bloco" />
+                  <button class="btn btn-primary w-25" style="background-color: #1fac1f; border-color: #d1e7dd" type="button" onclick="checkBlockchain()">Solicitar</button>
+                </div>
+
+                <div class="mt-4">
                   <div id="blockchainChecking"></div>
                 </div>
               </div>

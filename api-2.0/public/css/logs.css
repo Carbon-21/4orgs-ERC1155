@@ -184,3 +184,12 @@ body {
   width: 10px;
   word-wrap: break-word;
 }
+
+.checkBCForm {
+  margin-top: 1rem;
+}
+
+.checkBCFormElements {
+  display: inline;
+  width: 0.5rem;
+}

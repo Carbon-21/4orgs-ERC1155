@@ -130,8 +130,12 @@ window.getWorldState = async function () {
 
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = async function () {
+  //get requested values
+  let minHtml = min.value;
+  let maxHtml = max.value;
+  console.log(minHtml, maxHtml);
   //make request to the backend
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=início&max=10`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=${minHtml}&max=${maxHtml}`;
   var init = {
     method: "GET",
   };
@@ -143,40 +147,40 @@ window.checkBlockchain = async function () {
 
     //hash every block and check if they correspond to the previousHash field in the following block
     let checkedBlocksHtml = "";
+    let blocksMatch = true;
     for (let i = response.min; i < response.max; i++) {
-      blockchainChecking.innerHTML = checkedBlocksHtml + `Checking block ${i}...`;
+      //get hashes
+      let calculatedHash = calculateBlockHash(response.blocks[i].header);
+      let nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64");
 
-      if (calculateBlockHash(response.blocks[i].header) === Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64")) {
-        console.log(i, "BATEU");
-        checkedBlocksHtml = checkedBlocksHtml + `Bloco ${i} OK.`;
-        blockchainChecking.innerHTML = checkedBlocksHtml;
+      //uncomment if you want to test a non matching scenario
+      // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
+
+      //print hashes
+      checkedBlocksHtml += `Bloco ${i}, hash calculado pelo seu PC: ${calculatedHash}<br>`;
+      checkedBlocksHtml += `Bloco ${i + 1}, campo previous_hash: ${nextBlockPreviousHash}<br>`;
+
+      //print if hashes match
+      if (calculatedHash === nextBlockPreviousHash) {
+        checkedBlocksHtml += `<span style="color:green">Bloco ${i} OK</span><br><br>`;
       } else {
-        blockchainChecking.innerHTML = checkedBlocksHtml + "DEU RUIM";
-        console.log(i, "NÃO BATEU", calculateBlockHash(response.blocks[i].header), Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"));
+        checkedBlocksHtml += `<span style="color:red ">Bloco ${i} não confere</span><br><br>`;
+        blocksMatch = false;
       }
+      blockchainChecking.innerHTML = checkedBlocksHtml;
     }
-    // response.blocks.forEach((block) => {
-    //   blockchainChecking.innerHTML = "Checking...";
-    //   htmlOutput =
-    //     htmlOutput +
-    //     "<p>" +
-    //     `<b> Origem: </b> <spam class="limit">${atob(element[2])
-    //       .match(/CN=([^,]*)/g)[0]
-    //       .replace("CN=", "")}</spam> <br/>` +
-    //     `<b> Destino: </b> <spam class="limit">${atob(element[0])
-    //       .match(/CN=([^,]*)/g)[0]
-    //       .replace("CN=", "")}</spam> <br/>` +
-    //     `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` +
-    //     `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` +
-    //     "<p>";
-    // });
-    // blockchainChecking.innerHTML = htmlOutput;
 
-    //set block info in HTML
+    //print final result
+    blocksMatch
+      ? (blockchainChecking.innerHTML = `<span style="color:green">Hashs dos blocos batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML)
+      : (blockchainChecking.innerHTML = `<span style="color:red ">Hashs dos blocos NÃO batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML);
+
+    //requisition success message
     document.getElementById("flash").innerHTML = successFlashMessage;
   } else {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     console.log("HTTP Error ", response.status);
+    console.log(response);
   }
 };
 

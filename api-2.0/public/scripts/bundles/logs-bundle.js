@@ -8270,67 +8270,67 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
 
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-  var url, init, response, checkedBlocksHtml, i;
+  var minHtml, maxHtml, url, init, response, checkedBlocksHtml, blocksMatch, i, calculatedHash, nextBlockPreviousHash;
   return _regeneratorRuntime().wrap(function _callee4$(_context4) {
     while (1) switch (_context4.prev = _context4.next) {
       case 0:
+        //get requested values
+        minHtml = min.value;
+        maxHtml = max.value;
+        console.log(minHtml, maxHtml);
         //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=in\xEDcio&max=10";
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=".concat(minHtml, "&max=").concat(maxHtml);
         init = {
           method: "GET"
         };
-        _context4.next = 4;
+        _context4.next = 7;
         return fetch(url, init);
-      case 4:
+      case 7:
         response = _context4.sent;
         if (!response.ok) {
-          _context4.next = 15;
+          _context4.next = 20;
           break;
         }
-        _context4.next = 8;
+        _context4.next = 11;
         return response.json();
-      case 8:
+      case 11:
         response = _context4.sent;
         console.log("response", response);
 
         //hash every block and check if they correspond to the previousHash field in the following block
         checkedBlocksHtml = "";
+        blocksMatch = true;
         for (i = response.min; i < response.max; i++) {
-          blockchainChecking.innerHTML = checkedBlocksHtml + "Checking block ".concat(i, "...");
-          if (calculateBlockHash(response.blocks[i].header) === Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64")) {
-            console.log(i, "BATEU");
-            checkedBlocksHtml = checkedBlocksHtml + "Bloco ".concat(i, " OK.");
-            blockchainChecking.innerHTML = checkedBlocksHtml;
-          } else {
-            blockchainChecking.innerHTML = checkedBlocksHtml + "DEU RUIM";
-            console.log(i, "NÃO BATEU", calculateBlockHash(response.blocks[i].header), Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"));
-          }
-        }
-        // response.blocks.forEach((block) => {
-        //   blockchainChecking.innerHTML = "Checking...";
-        //   htmlOutput =
-        //     htmlOutput +
-        //     "<p>" +
-        //     `<b> Origem: </b> <spam class="limit">${atob(element[2])
-        //       .match(/CN=([^,]*)/g)[0]
-        //       .replace("CN=", "")}</spam> <br/>` +
-        //     `<b> Destino: </b> <spam class="limit">${atob(element[0])
-        //       .match(/CN=([^,]*)/g)[0]
-        //       .replace("CN=", "")}</spam> <br/>` +
-        //     `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` +
-        //     `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` +
-        //     "<p>";
-        // });
-        // blockchainChecking.innerHTML = htmlOutput;
+          //get hashes
+          calculatedHash = calculateBlockHash(response.blocks[i].header);
+          nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"); //uncomment if you want to test a non matching scenario
+          // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
+          //print hashes
+          checkedBlocksHtml += "Bloco ".concat(i, ", hash calculado pelo seu PC: ").concat(calculatedHash, "<br>");
+          checkedBlocksHtml += "Bloco ".concat(i + 1, ", campo previous_hash: ").concat(nextBlockPreviousHash, "<br>");
 
-        //set block info in HTML
+          //print if hashes match
+          if (calculatedHash === nextBlockPreviousHash) {
+            checkedBlocksHtml += "<span style=\"color:green\">Bloco ".concat(i, " OK</span><br><br>");
+          } else {
+            checkedBlocksHtml += "<span style=\"color:red \">Bloco ".concat(i, " n\xE3o confere</span><br><br>");
+            blocksMatch = false;
+          }
+          blockchainChecking.innerHTML = checkedBlocksHtml;
+        }
+
+        //print final result
+        blocksMatch ? blockchainChecking.innerHTML = "<span style=\"color:green\">Hashs dos blocos batem com os enviados pela Carbon</span><br><br>" + blockchainChecking.innerHTML : blockchainChecking.innerHTML = "<span style=\"color:red \">Hashs dos blocos N\xC3O batem com os enviados pela Carbon</span><br><br>" + blockchainChecking.innerHTML;
+
+        //requisition success message
         document.getElementById("flash").innerHTML = successFlashMessage;
-        _context4.next = 17;
+        _context4.next = 23;
         break;
-      case 15:
+      case 20:
         document.getElementById("flash").innerHTML = failureFlashMessage;
         console.log("HTTP Error ", response.status);
-      case 17:
+        console.log(response);
+      case 23:
       case "end":
         return _context4.stop();
     }
