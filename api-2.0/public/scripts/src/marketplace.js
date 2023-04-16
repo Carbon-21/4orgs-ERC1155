@@ -57,8 +57,12 @@ async function getNftOnSale() {
   };
  
   let response = await fetch(url, init)
-  let result = JSON.parse((await response.json())?.result);
 
+  let result = (await response.json())?.result;
+  if(result){
+    result = JSON.parse(result);
+  }
+  
   let nftArray = [];
   // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {

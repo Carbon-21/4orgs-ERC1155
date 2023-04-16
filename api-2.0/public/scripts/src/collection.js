@@ -161,6 +161,37 @@ async function renderListForSale(tokenId) {
       );
     }
   }
+
+  return (
+    `<b> Estado na loja :</b> Indisponível <br />` +
+
+    '<span style="display: inline-block; margin-right: 10px;">'+
+      `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`+                  
+    '</span>'+
+    '<span style="display: inline-block;">'+
+      `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
+    '</span>'+
+
+    `<form id="setPriceForm" class="validated-form collapse" onsubmit="listForSale(${tokenId})">`+
+       '<div class="flex-fill">'+
+          '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<input type="text" name="price" id="price" class="form-control" required/>'+
+          '</span>'+  
+       '</div>'+
+
+        '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
+          '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
+        '</span>'+
+      '<span style="display: inline-block;">'+
+        '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
+      '</span>'+
+    '</form>'
+  );
+
 }
 
 // Recuperar todos os nfts com status "sale"
@@ -175,15 +206,18 @@ async function getNftOnSale() {
     headers: headers,
   };
  
-  let response = await fetch(url, init)
-  let result = JSON.parse((await response.json())?.result);
+  let response = await fetch(url, init);
+  let result = (await response.json())?.result;
+  if(result){
+    result = JSON.parse(result);
+  }
 
   let nftArray = [];
   // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {
     nftArray = nftArray.concat(result[i][1]);
   }
-  
+
   return nftArray;
 }
 
