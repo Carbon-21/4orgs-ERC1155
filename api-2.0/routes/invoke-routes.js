@@ -25,7 +25,16 @@ router.post(
   invokeController.mint
 );
 
-router.post("/channels/:channel/chaincodes/:chaincode/ftfromnft", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], invokeController.ftfromnft);
+router.post(
+  "/channels/:channel/chaincodes/:chaincode/ftfromnft", 
+[
+  param("channel").not().isEmpty(), 
+  param("chaincode").not().isEmpty(), 
+  validateAll], 
+  invokeController.ftfromnft
+);
+
+
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [
@@ -52,19 +61,20 @@ router.post(
   ],
   invokeController.setURI
 );
-/*
+
 //auxiliary route ised to update an NFT compensation State
 router.post(
-  "/channels/:channel/chaincodes/:chaincode/editNFTCompensation",
+  "/channels/:channel/chaincodes/:chaincode/compensateNFT",
   [
     param("channel").trim().not().isEmpty().isString(),
     param("chaincode").trim().not().isEmpty().isString(),
     body("tokenId").trim().not().isEmpty().isString(),
+    body("requestingAccount").trim().not().isEmpty().isString(),    
     validateAll,
   ],
-  invokeController.editNFTCompensations
+  invokeController.compensatenft
 );
-*/
+
 ////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
 
 router.post(

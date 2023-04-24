@@ -7,33 +7,40 @@ async function collection() {
   // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
-    for (var key in nftTokens) {
-      let tokenId = nftTokens[key][0];
+    if (nftTokens.length == 0){
       element +=
-        '<div class="card shadow-lg mt-3">' +
-        '<div class="card-body flex-column">' +
-        '<div class="d-flex justify-content-between p-md-1">' +
-        '<div class="d-flex flex-row">' +
-        '<div class="align-self-center">' +
-        '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
-        "</div>" +
-        "<div>" +
-        `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#${tokenId.replace(
-          /\s/g,
-          ""
-        )}" aria-controls="${tokenId}"> ${tokenId} </button>` +
-        await renderMetadata(tokenId,JSON.parse(nftTokens[key][1])) +
-        "</div>" +
-        "</div>" +
-        "</div>" +
-        "</div>" +
-        "</div>" +
+        '<center><h2>Você não possui NFTs em sua coleção :( </h2> </center>'+
         "</div>";
+        document.getElementById("nft-showroom").innerHTML = element;        
+    }else{
+      for (var key in nftTokens) {
+        let tokenId = nftTokens[key][0];
+        element +=
+          '<div class="card shadow-lg mt-3">' +
+          '<div class="card-body flex-column">' +
+          '<div class="d-flex justify-content-between p-md-1">' +
+          '<div class="d-flex flex-row">' +
+          '<div class="align-self-center">' +
+          '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+          "</div>" +
+          "<div>" +
+          `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#${tokenId.replace(
+            /\s/g,
+            ""
+          )}" aria-controls="${tokenId}"> ${tokenId.slice(1)} </button>` + // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
+          await renderMetadata(tokenId,JSON.parse(nftTokens[key][1])) +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>";
 
-      // Renderizar a cada nft carregado
-      document.getElementById("nft-showroom").innerHTML = element;
+        // Renderizar a cada nft carregado
+        document.getElementById("nft-showroom").innerHTML = element;
+      }
     }
-  } else {
+  }else {
     console.log("HTTP Error ", response.status);
     return null;
   }
@@ -100,7 +107,7 @@ function renderCompensation(tokenId, compensation_state) {
     default:
       return (
         `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>` // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
       );
   }
 }
@@ -113,31 +120,26 @@ async function compensate(tokenId) {
   //set loading
   document.getElementById("loader").style.display = "flex";
   document.getElementById("submitCompensationButton").style.display = "none";
-/*
-  tokenId = tokenId.id;
+
+  tokenId = (tokenId.id).slice(1);
+  //tokenId = tokenId.id;
 
   let jwt = localStorage.getItem("token");
 
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `https://${HOST}:${PORT}/meta/patchMetadata`;
-
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/compensateNFT`;
+  
   var init = {
-    method: "PATCH",
+    method: "POST",
     headers: headers,
-  };
+  };  
 
-  //get token info
-  let tokenInfo = metadataArray.filter((metadataArray) => metadataArray.name === tokenId);
-  tokenInfo = tokenInfo[0].properties;
 
   let body = {
     tokenId,
-    metadata: {
-      ...tokenInfo,
-      compensation_state: "Compensado",
-    },
+    requestingAccount:"lcr010@teste.com",
   };
 
   init.body = JSON.stringify(body);
@@ -181,5 +183,4 @@ async function compensate(tokenId) {
     document.getElementById("flash").innerHTML = element;
     return null;
   }
-  */
 }
