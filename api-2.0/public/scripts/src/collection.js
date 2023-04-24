@@ -143,29 +143,24 @@ async function renderListForSale(tokenId) {
       `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
     '</span>'+
 
-    `<div id="setPriceForm" class="input-group mt-3 mb-3 collapse">` +
-      `<input id="priceInput" type="text" class="form-control mr-3 w-25" placeholder="Preço" />`+
-      `<button id = "submitOfferButton" class="btn btn-primary w-25" style="background-color: #1fac1f; border-color: #d1e7dd" type="button" onclick="listForSale(${tokenId})">Enviar</button>`+
+     `<div id="setPriceForm" class="validated-form collapse">` +
+       '<div class="flex-fill">'+
+          '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<input type="text" name="priceInput" id="priceInput" class="form-control" required/>'+
+          '</span>'+  
+       '</div>'+
+
+        `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
+          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick="listForSale(${tokenId})"> Enviar </button>`+
+        '</span>'+
+      '<span style="display: inline-block;">'+
+        '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm">Cancelar</button>'+
+      '</span>'+
     `</div>`
-
-    // `<form method = "POST" id="setPriceForm" class="validated-form collapse" onclick="listForSale(${tokenId})">`+
-    //    '<div class="flex-fill">'+
-    //       '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
-    //       '<br />'+
-    //       '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
-    //         '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
-    //       '<span style="display: inline-block;">'+
-    //         '<input type="text" name="price" id="price" class="form-control" required/>'+
-    //       '</span>'+  
-    //    '</div>'+
-
-    //     '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
-    //       '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
-    //     '</span>'+
-    //   '<span style="display: inline-block;">'+
-    //     '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
-    //   '</span>'+
-    // '</form>'
   );
 
 }
@@ -200,44 +195,59 @@ async function getNftOnSale() {
 async function listForSale(tokenIdInput) {
     
   document.getElementById("loader").style.display = "flex";
-  document.getElementById("lisForSaleButton").style.display = "none";
-  document.getElementById("submitOfferButton").style.display = "none";
-  //document.getElementById("CancelOfferButton").style.display = "none";
+  document.getElementById("setPriceForm").style.display = "none";
 
-  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
-  tokenId = tokenIdInput.id;
-  let price = priceInput.value;
-
-  console.log(tokenId);
-  console.log(price);
-  
-  let bodyData = {
-    "tokenId": tokenId,
-    "price": price
-  }; 
+  tokenIdValue = tokenIdInput.id;
+  let priceValue = priceInput.value;
 
   let jwt = localStorage.getItem("token");
   
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + jwt);
+  headers.append("Content-Type", "application/json");
+
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
 
   var init = {
     method: "POST",
     headers: headers,
-    body: JSON.stringify(bodyData)
   };
 
-  let response = fetch(url, init);
+  body = {
+    tokenId: tokenIdValue,
+    price: priceValue
+  }; 
+
+  init.body = JSON.stringify(body);
+
+  let response = await fetch(url, init);
   
   if (response.ok) {
-    console.log("ok");
+    document.getElementById("loader").style.display = "none";
+    response = await response.json();
+    if (response.result != "success") {
+      let element =
+        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Ocorreu um erro na publicação do produto` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    } else {
+      let element =
+        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Publicação do produto realizada com sucesso` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    }
+    window.location.href = `/collection`;
   }
   else {
     document.getElementById("loader").style.display = "none";
     console.log("HTTP Error ", response.status);
     let element =
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na compensação` +
+      `Ocorreu um erro na publicação do produto` +
       `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
       `</div>`;
     document.getElementById("flash").innerHTML = element;
