@@ -124,41 +124,12 @@ async function renderListForSale(tokenId) {
 
   let nftTokens = await getNftOnSale();
 
-  for (var key in nftTokens) {
-    if (tokenId == nftTokens[key]){
-      return  `<b> Estado na loja :</b> Disponível <br />` +  
-      `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`;
-    }
-    else{
-      return (
-        `<b> Estado na loja :</b> Indisponível <br />` +
-
-        '<span style="display: inline-block; margin-right: 10px;">'+
-          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`+                  
-        '</span>'+
-        '<span style="display: inline-block;">'+
-          `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
-        '</span>'+
-
-        `<form id="setPriceForm" class="validated-form collapse" onsubmit="listForSale(${tokenId})">`+
-           '<div class="flex-fill">'+
-              '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
-              '<br />'+
-              '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
-                '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
-              '<span style="display: inline-block;">'+
-                '<input type="text" name="price" id="price" class="form-control" required/>'+
-              '</span>'+  
-           '</div>'+
-
-            '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
-              '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
-            '</span>'+
-          '<span style="display: inline-block;">'+
-            '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
-          '</span>'+
-        '</form>'
-      );
+  if (nftTokens){
+    for (var key in nftTokens) {
+      if (tokenId == nftTokens[key]){
+        return  `<b> Estado na loja :</b> Disponível <br />` +  
+        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`;
+      }
     }
   }
 
@@ -172,24 +143,29 @@ async function renderListForSale(tokenId) {
       `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
     '</span>'+
 
-    `<form id="setPriceForm" class="validated-form collapse" onsubmit="listForSale(${tokenId})">`+
-       '<div class="flex-fill">'+
-          '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
-          '<br />'+
-          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
-            '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
-          '<span style="display: inline-block;">'+
-            '<input type="text" name="price" id="price" class="form-control" required/>'+
-          '</span>'+  
-       '</div>'+
+    `<div id="setPriceForm" class="input-group mt-3 mb-3 collapse">` +
+      `<input id="priceInput" type="text" class="form-control mr-3 w-25" placeholder="Preço" />`+
+      `<button id = "submitOfferButton" class="btn btn-primary w-25" style="background-color: #1fac1f; border-color: #d1e7dd" type="button" onclick="listForSale(${tokenId})">Enviar</button>`+
+    `</div>`
 
-        '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
-          '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
-        '</span>'+
-      '<span style="display: inline-block;">'+
-        '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
-      '</span>'+
-    '</form>'
+    // `<form method = "POST" id="setPriceForm" class="validated-form collapse" onclick="listForSale(${tokenId})">`+
+    //    '<div class="flex-fill">'+
+    //       '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+    //       '<br />'+
+    //       '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+    //         '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
+    //       '<span style="display: inline-block;">'+
+    //         '<input type="text" name="price" id="price" class="form-control" required/>'+
+    //       '</span>'+  
+    //    '</div>'+
+
+    //     '<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">'+
+    //       '<button id="submitOfferButton" type="submit" style="display: flex" class="btn btn-primary btn-md"> Enviar </button>'+
+    //     '</span>'+
+    //   '<span style="display: inline-block;">'+
+    //     '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" href="/collection">Cancelar</button>'+
+    //   '</span>'+
+    // '</form>'
   );
 
 }
@@ -221,32 +197,53 @@ async function getNftOnSale() {
   return nftArray;
 }
 
-function listForSale(tokenId) {
-
+async function listForSale(tokenIdInput) {
+    
   document.getElementById("loader").style.display = "flex";
   document.getElementById("lisForSaleButton").style.display = "none";
   document.getElementById("submitOfferButton").style.display = "none";
-  document.getElementById("CancelOfferButton").style.display = "none";
+  //document.getElementById("CancelOfferButton").style.display = "none";
 
-  let price = document.getElementById("price").value;
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
+  tokenId = tokenIdInput.id;
+  let price = priceInput.value;
+
+  console.log(tokenId);
+  console.log(price);
+  
+  let bodyData = {
+    "tokenId": tokenId,
+    "price": price
+  }; 
 
   let jwt = localStorage.getItem("token");
-
+  
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + jwt);
-  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
 
   var init = {
     method: "POST",
     headers: headers,
+    body: JSON.stringify(bodyData)
   };
 
-  let body = {
-    "tokenId": tokenId,
-    "price": price
+  let response = fetch(url, init);
+  
+  if (response.ok) {
+    console.log("ok");
+  }
+  else {
+    document.getElementById("loader").style.display = "none";
+    console.log("HTTP Error ", response.status);
+    let element =
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+      `Ocorreu um erro na compensação` +
+      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+      `</div>`;
+    document.getElementById("flash").innerHTML = element;
+    return null;
   }
 
-  init.body = JSON.stringify(body);
 }
 
 //change token status to "Compensado" in the IPFS
