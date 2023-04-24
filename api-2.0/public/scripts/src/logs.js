@@ -133,7 +133,7 @@ window.checkBlockchain = async function () {
   //get requested values
   let minHtml = min.value;
   let maxHtml = max.value;
-  console.log(minHtml, maxHtml);
+
   //make request to the backend
   let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=${minHtml}&max=${maxHtml}`;
   var init = {
@@ -143,12 +143,13 @@ window.checkBlockchain = async function () {
 
   if (response.ok) {
     response = await response.json();
-    console.log("response", response);
 
     //hash every block and check if they correspond to the previousHash field in the following block
     let checkedBlocksHtml = "";
     let blocksMatch = true;
-    for (let i = response.min; i < response.max; i++) {
+    const numBlocks = response.max - response.min;
+
+    for (let i = 0; i < numBlocks; i++) {
       //get hashes
       let calculatedHash = calculateBlockHash(response.blocks[i].header);
       let nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64");
@@ -157,14 +158,14 @@ window.checkBlockchain = async function () {
       // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
 
       //print hashes
-      checkedBlocksHtml += `Bloco ${i}, hash calculado pelo seu PC: ${calculatedHash}<br>`;
-      checkedBlocksHtml += `Bloco ${i + 1}, campo previous_hash: ${nextBlockPreviousHash}<br>`;
+      checkedBlocksHtml += `Bloco ${i + response.min}, hash calculado pelo seu PC: ${calculatedHash}<br>`;
+      checkedBlocksHtml += `Bloco ${i + response.min + 1}, campo previous_hash: ${nextBlockPreviousHash}<br>`;
 
       //print if hashes match
       if (calculatedHash === nextBlockPreviousHash) {
-        checkedBlocksHtml += `<span style="color:green">Bloco ${i} OK</span><br><br>`;
+        checkedBlocksHtml += `<span style="color:green">Bloco ${i + response.min} OK</span><br><br>`;
       } else {
-        checkedBlocksHtml += `<span style="color:red ">Bloco ${i} não confere</span><br><br>`;
+        checkedBlocksHtml += `<span style="color:red ">Bloco ${i + response.min} não confere</span><br><br>`;
         blocksMatch = false;
       }
       blockchainChecking.innerHTML = checkedBlocksHtml;

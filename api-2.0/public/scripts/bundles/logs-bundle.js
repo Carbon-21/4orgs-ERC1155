@@ -8270,50 +8270,47 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
 
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
 window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-  var minHtml, maxHtml, url, init, response, checkedBlocksHtml, blocksMatch, i, calculatedHash, nextBlockPreviousHash;
+  var minHtml, maxHtml, url, init, response, checkedBlocksHtml, blocksMatch, numBlocks, i, calculatedHash, nextBlockPreviousHash;
   return _regeneratorRuntime().wrap(function _callee4$(_context4) {
     while (1) switch (_context4.prev = _context4.next) {
       case 0:
         //get requested values
         minHtml = min.value;
-        maxHtml = max.value;
-        console.log(minHtml, maxHtml);
-        //make request to the backend
+        maxHtml = max.value; //make request to the backend
         url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=".concat(minHtml, "&max=").concat(maxHtml);
         init = {
           method: "GET"
         };
-        _context4.next = 7;
+        _context4.next = 6;
         return fetch(url, init);
-      case 7:
+      case 6:
         response = _context4.sent;
         if (!response.ok) {
-          _context4.next = 20;
+          _context4.next = 19;
           break;
         }
-        _context4.next = 11;
+        _context4.next = 10;
         return response.json();
-      case 11:
+      case 10:
         response = _context4.sent;
-        console.log("response", response);
-
         //hash every block and check if they correspond to the previousHash field in the following block
         checkedBlocksHtml = "";
         blocksMatch = true;
-        for (i = response.min; i < response.max; i++) {
+        numBlocks = response.max - response.min;
+        for (i = 0; i < numBlocks; i++) {
           //get hashes
           calculatedHash = calculateBlockHash(response.blocks[i].header);
           nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"); //uncomment if you want to test a non matching scenario
           // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
           //print hashes
-          checkedBlocksHtml += "Bloco ".concat(i, ", hash calculado pelo seu PC: ").concat(calculatedHash, "<br>");
-          checkedBlocksHtml += "Bloco ".concat(i + 1, ", campo previous_hash: ").concat(nextBlockPreviousHash, "<br>");
+          checkedBlocksHtml += "Bloco ".concat(i + response.min, ", hash calculado pelo seu PC: ").concat(calculatedHash, "<br>");
+          checkedBlocksHtml += "Bloco ".concat(i + response.min + 1, ", campo previous_hash: ").concat(nextBlockPreviousHash, "<br>");
 
           //print if hashes match
           if (calculatedHash === nextBlockPreviousHash) {
-            checkedBlocksHtml += "<span style=\"color:green\">Bloco ".concat(i, " OK</span><br><br>");
+            checkedBlocksHtml += "<span style=\"color:green\">Bloco ".concat(i + response.min, " OK</span><br><br>");
           } else {
-            checkedBlocksHtml += "<span style=\"color:red \">Bloco ".concat(i, " n\xE3o confere</span><br><br>");
+            checkedBlocksHtml += "<span style=\"color:red \">Bloco ".concat(i + response.min, " n\xE3o confere</span><br><br>");
             blocksMatch = false;
           }
           blockchainChecking.innerHTML = checkedBlocksHtml;
@@ -8324,13 +8321,13 @@ window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerat
 
         //requisition success message
         document.getElementById("flash").innerHTML = successFlashMessage;
-        _context4.next = 23;
+        _context4.next = 22;
         break;
-      case 20:
+      case 19:
         document.getElementById("flash").innerHTML = failureFlashMessage;
         console.log("HTTP Error ", response.status);
         console.log(response);
-      case 23:
+      case 22:
       case "end":
         return _context4.stop();
     }

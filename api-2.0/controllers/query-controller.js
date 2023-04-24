@@ -362,7 +362,7 @@ exports.getRangeOfBlocks = async (req, res, next) => {
     //if requested range is out of boundaries or isn't int => error
     min = parseInt(min);
     max = parseInt(max);
-    if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max > tailNumber || min >= max) return next(new HttpError(500, "Valor inválido."));
+    if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max < 0 || max > tailNumber || min > tailNumber || min >= max) return next(new HttpError(500, "Valor inválido."));
 
     //put every requested block in the blocks array
     let blocks = [];
