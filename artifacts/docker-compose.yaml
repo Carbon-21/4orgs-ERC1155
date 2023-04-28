@@ -54,8 +54,8 @@ services:
     networks:
       - test
 
-  couchdb2:
-    container_name: couchdb2
+  couchdb1:
+    container_name: couchdb1
     image: couchdb:3.1.1
     environment:
       - COUCHDB_USER=admin
@@ -65,8 +65,8 @@ services:
     networks:
       - test
 
-  couchdb3:
-    container_name: couchdb3
+  couchdb2:
+    container_name: couchdb2
     image: couchdb:3.1.1
     environment:
       - COUCHDB_USER=admin
@@ -149,7 +149,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -159,7 +159,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
     depends_on:
-      - couchdb2
+      - couchdb1
     ports:
       - 11051:11051
     volumes:
@@ -196,7 +196,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -206,7 +206,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
     depends_on:
-      - couchdb3
+      - couchdb2
     ports:
       - 13051:13051
     volumes:

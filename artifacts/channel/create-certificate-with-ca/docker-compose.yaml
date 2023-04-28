@@ -22,23 +22,6 @@ services:
     networks:
       - test
 
-  # ca_users:
-  #   image: hyperledger/fabric-ca
-  #   environment:
-  #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-  #     - FABRIC_CA_SERVER_CA_NAME=ca.users.example.com
-  #     - FABRIC_CA_SERVER_TLS_ENABLED=true
-  #     - FABRIC_CA_SERVER_PORT=8054
-  #   ports:
-  #     - "8054:8054"
-  #   command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
-  #   volumes:
-  #     - ./fabric-ca/users:/etc/hyperledger/fabric-ca-server
-  #   container_name: ca.users.example.com
-  #   hostname: ca.users.example.com
-  #   networks:
-  #     - test
-
   ca_cetesb:
     image: hyperledger/fabric-ca
     environment:
