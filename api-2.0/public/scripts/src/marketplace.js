@@ -20,10 +20,10 @@ async function marketplace() {
         '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
         "</div>" +
         "<div>" +
-        `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#${tokenId.replace(
+        `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${tokenId.replace(
           /\s/g,
           ""
-        )}" aria-controls="${tokenId}"> ${tokenId} </button>` +
+        )}" aria-controls="tk${tokenId}"> ${tokenId} </button>` +
         (await  renderMetadata(tokenId, metadata)) +
         "</div>" +
         "</div>" +
@@ -93,7 +93,7 @@ async function nftMetadata(tokenId) {
 async function renderMetadata(tokenId, metadata) {
   if (!metadata.name) return "Metadados não recuperados";
   return (
-    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+    `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
     `<b> Status: </b> ${metadata?.properties?.status} <br />` +
     // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
@@ -119,86 +119,8 @@ function renderCompensation(tokenId, compensation_state) {
     case "Não Compensado":
     default:
       return (
-        `<b> Estado de compensação:</b> Não compensado <br />` +
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`
+        `<b> Estado de compensação:</b> Não compensado <br />`
       );
   }
 }
 
-//change token status to "Compensado" in the IPFS
-//OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
-async function compensate(tokenId) {
-  event.preventDefault();
-
-  //set loading
-  document.getElementById("loader").style.display = "flex";
-  document.getElementById("submitCompensationButton").style.display = "none";
-
-  tokenId = tokenId.id;
-
-  let jwt = localStorage.getItem("token");
-
-  let headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  headers.append("Authorization", "Bearer " + jwt);
-  let url = `https://${HOST}:${PORT}/meta/patchMetadata`;
-
-  var init = {
-    method: "PATCH",
-    headers: headers,
-  };
-
-  //get token info
-  let tokenInfo = metadataArray.filter((metadataArray) => metadataArray.name === tokenId);
-  tokenInfo = tokenInfo[0].properties;
-
-  let body = {
-    tokenId,
-    metadata: {
-      ...tokenInfo,
-      compensation_state: "Compensado",
-    },
-  };
-
-  init.body = JSON.stringify(body);
-
-  //POST to postMetadata
-  let response = await fetch(url, init);
-  // let element =
-  //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-  //   `Compensando...` +
-  //   `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-  //   `</div>`;
-  // document.getElementById("flash").innerHTML = element;
-
-  if (response.ok) {
-    document.getElementById("loader").style.display = "none";
-    response = await response.json();
-    if (response.result != "success") {
-      let element =
-        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na compensação` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
-    } else {
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Compensado com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
-    }
-    window.location.href = `/collection`;
-  } else {
-    document.getElementById("loader").style.display = "none";
-    console.log("HTTP Error ", response.status);
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na compensação` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
-    document.getElementById("flash").innerHTML = element;
-    return null;
-  }
-}

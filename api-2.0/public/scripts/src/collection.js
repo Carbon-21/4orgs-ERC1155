@@ -20,10 +20,10 @@ async function collection() {
         '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
         "</div>" +
         "<div>" +
-        `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#${tokenId.replace(
+        `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${tokenId.replace(
           /\s/g,
           ""
-        )}" aria-controls="${tokenId}"> ${tokenId} </button>` +
+        )}" aria-controls="tk${tokenId}"> ${tokenId} </button>` +
         (await renderMetadata(tokenId, metadata)) +
         "</div>" +
         "</div>" +
@@ -34,6 +34,7 @@ async function collection() {
 
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
+      document.getElementById("nft-showroom").style.display = "block";
     }
   } else {
     console.log("HTTP Error ", response.status);
@@ -86,7 +87,7 @@ async function nftMetadata(tokenId) {
 async function renderMetadata(tokenId, metadata) {
   if (!metadata.name) return "Metadados não recuperados";
   return (
-    `<div id="${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+    `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
     `<b> Status: </b> ${metadata?.properties?.status} <br />` +
     // `<b> Quantidade: </b> ${metadata?.properties?.amount} <br />` +
@@ -121,7 +122,7 @@ async function renderCompensation(tokenId, compensation_state) {
 
 // Retorna string do metadado de compensação, dependendo do estado
 async function renderListForSale(tokenId) {
-
+  
   let nftTokens = await getNftOnSale();
 
   if (nftTokens){
@@ -140,10 +141,10 @@ async function renderListForSale(tokenId) {
       `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`+                  
     '</span>'+
     '<span style="display: inline-block;">'+
-      `<button id="lisForSaleButton" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
+      `<button id="lisForSaleButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
     '</span>'+
 
-     `<div id="setPriceForm" class="validated-form collapse">` +
+     `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
        '<div class="flex-fill">'+
           '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
           '<br />'+
@@ -155,10 +156,10 @@ async function renderListForSale(tokenId) {
        '</div>'+
 
         `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
-          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick="listForSale(${tokenId})"> Enviar </button>`+
+          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick='listForSale("${tokenId}")'> Enviar </button>`+
         '</span>'+
       '<span style="display: inline-block;">'+
-        '<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm">Cancelar</button>'+
+        `<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}">Cancelar</button>`+
       '</span>'+
     `</div>`
   );
@@ -194,11 +195,16 @@ async function getNftOnSale() {
 
 async function listForSale(tokenIdInput) {
     
+  //document.getElementById("setPriceForm"+tokenIdInput).style.display = "none";
+  //document.getElementById("lisForSaleButton"+tokenIdInput).style.display = "none";
+  document.getElementById("nft-showroom").style.display = "none";
   document.getElementById("loader").style.display = "flex";
-  document.getElementById("setPriceForm").style.display = "none";
 
-  tokenIdValue = tokenIdInput.id;
-  let priceValue = priceInput.value;
+  tokenIdValue = tokenIdInput.replace(/\s/g, "");
+  let priceValue = document.getElementById("priceInput").value;
+
+  console.log(tokenIdValue);
+  console.log(priceValue);
 
   let jwt = localStorage.getItem("token");
   
@@ -223,9 +229,10 @@ async function listForSale(tokenIdInput) {
   let response = await fetch(url, init);
   
   if (response.ok) {
-    document.getElementById("loader").style.display = "none";
+    
     response = await response.json();
     if (response.result != "success") {
+      await collection();
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
         `Ocorreu um erro na publicação do produto` +
@@ -233,6 +240,7 @@ async function listForSale(tokenIdInput) {
         `</div>`;
       document.getElementById("flash").innerHTML = element;
     } else {
+      await collection();
       let element =
         `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
         `Publicação do produto realizada com sucesso` +
@@ -240,11 +248,11 @@ async function listForSale(tokenIdInput) {
         `</div>`;
       document.getElementById("flash").innerHTML = element;
     }
-    window.location.href = `/collection`;
   }
   else {
     document.getElementById("loader").style.display = "none";
     console.log("HTTP Error ", response.status);
+    await collection();
     let element =
       `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
       `Ocorreu um erro na publicação do produto` +
