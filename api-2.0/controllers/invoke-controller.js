@@ -78,7 +78,6 @@ exports.compensatenft = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;
-  const requestingAccount = req.body.requestingAccount;
   const username = req.jwt.username;
   const org = req.jwt.org;
 
@@ -87,15 +86,13 @@ exports.compensatenft = async (req, res, next) => {
   if (!chaincode) return;
 
   //get receiver id
-  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, requestingAccount, org, next);
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
   if (!receiverAccountId) return;
 
   // Verifica se esta tentando compensar sylvas
   if (tokenId === "$ylvas") {
     return next(new HttpError(500,"Não é possivel compensar $ylvas"));
   }
-
-//  return next(new HttpError(500,"Ola"));
 
   try {
     await chaincode.submitTransaction("SmartContract:CompensateNFT", receiverAccountId, tokenId);

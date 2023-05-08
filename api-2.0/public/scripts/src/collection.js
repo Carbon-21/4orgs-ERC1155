@@ -9,7 +9,7 @@ async function collection() {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     if (nftTokens.length == 0){
       element +=
-        '<center><h2>Você não possui NFTs em sua coleção :( </h2> </center>'+
+        '<center><h2><font color="#5f5f5f">Você não possui NFTs em sua coleção </font></h2> </center>'+
         "</div>";
         document.getElementById("nft-showroom").innerHTML = element;        
     }else{
@@ -66,10 +66,10 @@ async function getNftTokens() {
   // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {
     nftArray = nftArray.concat(result[i]);
-    // Adiciona um _ na frente dos ids para evitar problemas de nomeclatura de ID com HTML4 (Ids iniciando com numeros não sao aceitos)
   }
 
   for (var el in nftArray){
+    // Adiciona um _ na frente dos ids para evitar problemas de nomeclatura de ID com HTML4 (Ids iniciando com numeros não sao aceitos)    
     nftArray[el][0] = "_"+ nftArray[el][0];
   }
   return nftArray;
@@ -112,8 +112,7 @@ function renderCompensation(tokenId, compensation_state) {
   }
 }
 
-//change token status to "Compensado" in the IPFS
-//OBS: funções de escrita e leitura dos metadados no IPFS foram feitas de maneira desiguais, deveriam receber/retornar mesma estrutura json. Por isso, apenas alguns campos são mantidos ao se compensar (ver variável body)
+//change token status to "Compensado" in the World State
 async function compensate(tokenId) {
   event.preventDefault();
 
@@ -121,8 +120,15 @@ async function compensate(tokenId) {
   document.getElementById("loader").style.display = "flex";
   document.getElementById("submitCompensationButton").style.display = "none";
 
+  let element =
+  `<div class="alert alert-warning alert-dismissible fade show mb-3 mt-3" role="alert">` +
+  `Compensando...` +
+  `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+  `</div>`;
+
+  document.getElementById("flash").innerHTML = element;  
+
   tokenId = (tokenId.id).slice(1);
-  //tokenId = tokenId.id;
 
   let jwt = localStorage.getItem("token");
 
@@ -139,19 +145,13 @@ async function compensate(tokenId) {
 
   let body = {
     tokenId,
-    requestingAccount:"lcr010@teste.com",
   };
 
   init.body = JSON.stringify(body);
 
   //POST to postMetadata
   let response = await fetch(url, init);
-  // let element =
-  //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-  //   `Compensando...` +
-  //   `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-  //   `</div>`;
-  // document.getElementById("flash").innerHTML = element;
+
 
   if (response.ok) {
     document.getElementById("loader").style.display = "none";

@@ -69,7 +69,6 @@ router.post(
     param("channel").trim().not().isEmpty().isString(),
     param("chaincode").trim().not().isEmpty().isString(),
     body("tokenId").trim().not().isEmpty().isString(),
-    body("requestingAccount").trim().not().isEmpty().isString(),    
     validateAll,
   ],
   invokeController.compensatenft
