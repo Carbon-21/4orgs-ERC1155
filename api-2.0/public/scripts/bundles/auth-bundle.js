@@ -26758,186 +26758,121 @@ arguments[4][137][0].apply(exports,arguments)
 },{"dup":137}],222:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var crypto = require("./crypto-generator");
-var username;
-var token;
-window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var email, password, cpf, name, salt, saveKeyOnServer, cryptoMaterials, hashedPassword, headers, url, init, body, response, _element;
-  return _regeneratorRuntime().wrap(function _callee$(_context) {
-    while (1) switch (_context.prev = _context.next) {
-      case 0:
-        event.preventDefault();
-        email = document.getElementById("email").value.split("/")[0];
-        password = document.getElementById("password").value.split("/")[0];
-        cpf = document.getElementById("cpf").value.split("/")[0];
-        name = document.getElementById("name").value.split("/")[0];
-        salt = document.getElementById("salt").value.split("/")[0];
-        saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
-        if (saveKeyOnServer) {
-          _context.next = 11;
-          break;
-        }
-        _context.next = 10;
-        return crypto.generateCryptoMaterial(email);
-      case 10:
-        cryptoMaterials = _context.sent;
-      case 11:
-        _context.next = 13;
-        return argon2.hash({
-          pass: password,
-          salt: salt,
-          hashLen: 32,
-          type: argon2.ArgonType.Argon2id,
-          time: 3,
-          mem: 15625,
-          parallelism: 1
-        });
-      case 13:
-        hashedPassword = _context.sent;
-        hashedPassword = hashedPassword.hashHex;
-        headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        url = "https://localhost:4000/signup";
-        init = {
-          method: "POST",
-          headers: headers
-        };
-        body = {
-          password: hashedPassword,
-          cpf: cpf,
-          email: email,
-          name: name,
-          saveKeyOnServer: saveKeyOnServer
-        };
-        if (!saveKeyOnServer)
-          // If the user chose not to save his private key on the server, the browser generated a CSR that will be sent to the server.
-          body.csr = cryptoMaterials.csr;
-        init.body = JSON.stringify(body);
-        _context.next = 24;
-        return fetch(url, init);
-      case 24:
-        response = _context.sent;
-        if (!response.ok) {
-          _context.next = 46;
-          break;
-        }
-        _context.next = 28;
-        return response.json();
-      case 28:
-        response = _context.sent;
-        if (!response.success) {
-          _context.next = 42;
-          break;
-        }
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("username", email.split("/")[0]);
-        // localStorage.setItem("username", email.slice(0, -1));
-        localStorage.setItem("keyOnServer", saveKeyOnServer);
+const crypto = require("./crypto-generator");
+let username;
+let token;
+window.signup = async function () {
+  event.preventDefault();
+  let email = document.getElementById("email").value.split("/")[0];
+  let password = document.getElementById("password").value.split("/")[0];
+  let cpf = document.getElementById("cpf").value.split("/")[0];
+  let name = document.getElementById("name").value.split("/")[0];
+  let salt = document.getElementById("salt").value.split("/")[0];
+  let saveKeyOnServer = document.getElementById("saveKeyOnServer").checked; // Boolean that informs whether the user's key is stored on the server or not.
 
-        //if saveKeyOnServer => download cert and private key
-        if (!response.certificate) {
-          _context.next = 39;
-          break;
+  let cryptoMaterials;
+  // Generation of user's private key and CSR in Client-Side Mode
+  if (!saveKeyOnServer) cryptoMaterials = await crypto.generateCryptoMaterial(email);
+  let hashedPassword = await argon2.hash({
+    pass: password,
+    salt,
+    hashLen: 32,
+    type: argon2.ArgonType.Argon2id,
+    time: 3,
+    mem: 15625,
+    parallelism: 1
+  });
+  hashedPassword = hashedPassword.hashHex;
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  let url = `https://localhost:4000/signup`;
+  var init = {
+    method: "POST",
+    headers: headers
+  };
+  let body = {
+    password: hashedPassword,
+    cpf: cpf,
+    email: email,
+    name: name,
+    saveKeyOnServer: saveKeyOnServer
+  };
+  if (!saveKeyOnServer)
+    // If the user chose not to save his private key on the server, the browser generated a CSR that will be sent to the server.
+    body.csr = cryptoMaterials.csr;
+  init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  if (response.ok) {
+    response = await response.json();
+    if (response.success) {
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("username", email.split("/")[0]);
+      // localStorage.setItem("username", email.slice(0, -1));
+      localStorage.setItem("keyOnServer", saveKeyOnServer);
+
+      //if saveKeyOnServer => download cert and private key
+      if (response.certificate) {
+        if (!saveKeyOnServer) {
+          await crypto.downloadCrypto(name, cryptoMaterials.privateKey, "privateKey");
+          await crypto.downloadCrypto(name, response.certificate, "certificate");
         }
-        if (saveKeyOnServer) {
-          _context.next = 39;
-          break;
-        }
-        _context.next = 37;
-        return crypto.downloadCrypto(name, cryptoMaterials.privateKey, "privateKey");
-      case 37:
-        _context.next = 39;
-        return crypto.downloadCrypto(name, response.certificate, "certificate");
-      case 39:
-        window.location.href = "/";
-        _context.next = 44;
-        break;
-      case 42:
-        _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-        document.getElementById("flash").innerHTML = _element;
-      case 44:
-        _context.next = 48;
-        break;
-      case 46:
-        element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-        document.getElementById("flash").innerHTML = element;
-      case 48:
-      case "end":
-        return _context.stop();
+      }
+      window.location.href = "/";
+    } else {
+      let element = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `${response.err}` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+      document.getElementById("flash").innerHTML = element;
     }
-  }, _callee);
-}));
-window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var url, password, email, salt, hashedPassword, headers, init, body, response, _element2;
-  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-    while (1) switch (_context2.prev = _context2.next) {
-      case 0:
-        event.preventDefault();
-        url = "https://localhost:4000/login";
-        password = document.getElementById("password").value.toString().split("/")[0];
-        email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
-        salt = document.getElementById("salt").value.split("/")[0];
-        _context2.next = 7;
-        return argon2.hash({
-          pass: password,
-          salt: salt,
-          hashLen: 32,
-          type: argon2.ArgonType.Argon2id,
-          time: 3,
-          mem: 15625,
-          parallelism: 1
-        });
-      case 7:
-        hashedPassword = _context2.sent;
-        hashedPassword = hashedPassword.hashHex;
-        headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        init = {
-          method: "POST",
-          headers: headers
-        };
-        body = {
-          email: email,
-          password: hashedPassword
-        };
-        init.body = JSON.stringify(body);
-        _context2.next = 16;
-        return fetch(url, init);
-      case 16:
-        response = _context2.sent;
-        if (!response.ok) {
-          _context2.next = 22;
-          break;
-        }
-        _context2.next = 20;
-        return response.json();
-      case 20:
-        response = _context2.sent;
-        if (response.success) {
-          localStorage.setItem("token", response.token);
-          localStorage.setItem("username", email.split("/")[0]);
-          localStorage.setItem("keyOnServer", response.keyOnServer);
-          window.location.href = "/";
-        } else {
-          _element2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-          document.getElementById("flash").innerHTML = _element2;
-        }
-      case 22:
-      case "end":
-        return _context2.stop();
+  } else {
+    element = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `${response.err}` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+    document.getElementById("flash").innerHTML = element;
+  }
+};
+window.login = async function () {
+  event.preventDefault();
+  const url = `https://localhost:4000/login`;
+  const password = document.getElementById("password").value.toString().split("/")[0];
+  const email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
+  const salt = document.getElementById("salt").value.split("/")[0];
+  let hashedPassword = await argon2.hash({
+    pass: password,
+    salt,
+    hashLen: 32,
+    type: argon2.ArgonType.Argon2id,
+    time: 3,
+    mem: 15625,
+    parallelism: 1
+  });
+  hashedPassword = hashedPassword.hashHex;
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  var init = {
+    method: "POST",
+    headers
+  };
+  let body = {
+    email,
+    password: hashedPassword
+  };
+  init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  if (response.ok) {
+    response = await response.json();
+    if (response.success) {
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("username", email.split("/")[0]);
+      localStorage.setItem("keyOnServer", response.keyOnServer);
+      window.location.href = "/";
+    } else {
+      let element = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `${response.err}` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+      document.getElementById("flash").innerHTML = element;
     }
-  }, _callee2);
-}));
+  }
+};
 
 },{"./crypto-generator":224}],223:[function(require,module,exports){
 (function (Buffer){(function (){
 'use strict';
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 var crypto = require('crypto');
 
 // 1.2.840.10045.3.1.7
@@ -27128,7 +27063,7 @@ PEM.from = function ensurePem(key) {
 
   // no matter which path we take, we should arrive at a Uint8Array
   if (!(key instanceof Uint8Array)) {
-    throw new Error("typeof key is '" + _typeof(key) + "', not any of the supported types: utf8 string," + " binary string, node Buffer, Uint8Array, or Array of ints between 0 and 255");
+    throw new Error("typeof key is '" + typeof key + "', not any of the supported types: utf8 string," + " binary string, node Buffer, Uint8Array, or Array of ints between 0 and 255");
   }
 
   // if DER, convert to PEM
@@ -27392,73 +27327,39 @@ module.exports = function (opts) {
 },{"buffer":63,"crypto":71}],224:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.generateCryptoMaterial = exports.downloadCrypto = void 0;
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var ecdsa = require('./bundles/ecdsacsr-bundle.js');
-var elliptic = require('elliptic');
-var _require = require('jsrsasign'),
-  KEYUTIL = _require.KEYUTIL;
+const ecdsa = require('./bundles/ecdsacsr-bundle.js');
+const elliptic = require('elliptic');
+const {
+  KEYUTIL
+} = require('jsrsasign');
 
 /**
  * Main function, responsible for generating the user's ECDSA Private Key and CSR
  * @param {*} username The user's username
  * @returns The user's cryptographic materials
  */
-var generateCryptoMaterial = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(username) {
-    var _yield$generateKeyPai, _yield$generateKeyPai2, publicKey, privateKey, cryptoPK, domains, csr;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          _context.prev = 0;
-          _context.next = 3;
-          return generateKeyPair();
-        case 3:
-          _yield$generateKeyPai = _context.sent;
-          _yield$generateKeyPai2 = _slicedToArray(_yield$generateKeyPai, 3);
-          publicKey = _yield$generateKeyPai2[0];
-          privateKey = _yield$generateKeyPai2[1];
-          cryptoPK = _yield$generateKeyPai2[2];
-          domains = [username, 'www.example.com', 'api.example.com'];
-          _context.next = 11;
-          return ecdsa({
-            key: privateKey,
-            domains: domains
-          });
-        case 11:
-          csr = _context.sent;
-          console.log('CSR\n', csr);
-          return _context.abrupt("return", {
-            csr: csr,
-            privateKey: privateKey,
-            cryptoPK: cryptoPK
-          });
-        case 16:
-          _context.prev = 16;
-          _context.t0 = _context["catch"](0);
-          console.log(_context.t0.message);
-        case 19:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee, null, [[0, 16]]);
-  }));
-  return function generateCryptoMaterial(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
+const generateCryptoMaterial = async function (username) {
+  try {
+    let [publicKey, privateKey, cryptoPK] = await generateKeyPair();
+    var domains = [username, 'www.example.com', 'api.example.com'];
+    let csr = await ecdsa({
+      key: privateKey,
+      domains: domains
+    });
+    console.log('CSR\n', csr);
+    return {
+      csr: csr,
+      privateKey: privateKey,
+      cryptoPK: cryptoPK
+    };
+  } catch (e) {
+    console.log(e.message);
+  }
+};
 
 /**
  * Decodes Base-64 Strings.
@@ -27466,22 +27367,9 @@ var generateCryptoMaterial = /*#__PURE__*/function () {
  * @returns 
  */
 exports.generateCryptoMaterial = generateCryptoMaterial;
-var ab2str = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(buf) {
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
-        case 0:
-          return _context2.abrupt("return", String.fromCharCode.apply(null, new Uint8Array(buf)));
-        case 1:
-        case "end":
-          return _context2.stop();
-      }
-    }, _callee2);
-  }));
-  return function ab2str(_x2) {
-    return _ref2.apply(this, arguments);
-  };
-}();
+const ab2str = async function (buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
+};
 
 /**
  * Exports a CryptoKey object into a PEM-encoded key string.
@@ -27489,98 +27377,49 @@ var ab2str = /*#__PURE__*/function () {
  * @param {*} key The CryptoKey object that represents the user's key.
  * @returns The PEM-encoded key string.
  */
-var exportCryptoKey = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(keyType, key) {
-    var exported, exportedAsString, exportedAsBase64, pemExported;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.prev = 0;
-          _context3.t0 = keyType;
-          _context3.next = _context3.t0 === "private" ? 4 : _context3.t0 === "public" ? 13 : 20;
-          break;
-        case 4:
-          _context3.next = 6;
-          return window.crypto.subtle.exportKey("pkcs8", key);
-        case 6:
-          exported = _context3.sent;
-          _context3.next = 9;
-          return ab2str(exported);
-        case 9:
-          exportedAsString = _context3.sent;
-          exportedAsBase64 = window.btoa(exportedAsString);
-          pemExported = "-----BEGIN PRIVATE KEY-----\n".concat(exportedAsBase64, "\n-----END PRIVATE KEY-----");
-          return _context3.abrupt("return", pemExported);
-        case 13:
-          _context3.next = 15;
-          return window.crypto.subtle.exportKey("spki", key);
-        case 15:
-          exported = _context3.sent;
-          exportedAsString = ab2str(exported);
-          exportedAsBase64 = window.btoa(exportedAsString);
-          pemExported = "-----BEGIN PUBLIC KEY-----\n".concat(exportedAsBase64, "\n-----END PUBLIC KEY-----");
-          return _context3.abrupt("return", pemExported);
-        case 20:
-          _context3.next = 25;
-          break;
-        case 22:
-          _context3.prev = 22;
-          _context3.t1 = _context3["catch"](0);
-          console.log(_context3.t1.message);
-        case 25:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3, null, [[0, 22]]);
-  }));
-  return function exportCryptoKey(_x3, _x4) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+const exportCryptoKey = async function (keyType, key) {
+  try {
+    let exported, exportedAsString, exportedAsBase64, pemExported;
+    switch (keyType) {
+      case "private":
+        exported = await window.crypto.subtle.exportKey("pkcs8", key);
+        exportedAsString = await ab2str(exported);
+        exportedAsBase64 = window.btoa(exportedAsString);
+        pemExported = `-----BEGIN PRIVATE KEY-----\n${exportedAsBase64}\n-----END PRIVATE KEY-----`;
+        return pemExported;
+      case "public":
+        exported = await window.crypto.subtle.exportKey("spki", key);
+        exportedAsString = ab2str(exported);
+        exportedAsBase64 = window.btoa(exportedAsString);
+        pemExported = `-----BEGIN PUBLIC KEY-----\n${exportedAsBase64}\n-----END PUBLIC KEY-----`;
+        return pemExported;
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+};
 
 /**
  * Generates a pair of public and private ECDSA keys.
  * @returns The ECDSA key pair.
  */
-var generateKeyPair = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-    var keyPair, privateKey, publicKey;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          _context4.prev = 0;
-          _context4.next = 3;
-          return window.crypto.subtle.generateKey({
-            name: "ECDSA",
-            namedCurve: "P-256"
-          }, true, ["sign", "verify"]);
-        case 3:
-          keyPair = _context4.sent;
-          _context4.next = 6;
-          return exportCryptoKey('private', keyPair.privateKey);
-        case 6:
-          privateKey = _context4.sent;
-          console.log(privateKey);
-          _context4.next = 10;
-          return exportCryptoKey('public', keyPair.publicKey);
-        case 10:
-          publicKey = _context4.sent;
-          console.log(publicKey);
-          return _context4.abrupt("return", [publicKey, privateKey, keyPair.privateKey]);
-        case 15:
-          _context4.prev = 15;
-          _context4.t0 = _context4["catch"](0);
-          return _context4.abrupt("return", _context4.t0.message);
-        case 18:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4, null, [[0, 15]]);
-  }));
-  return function generateKeyPair() {
-    return _ref4.apply(this, arguments);
-  };
-}();
+const generateKeyPair = async function () {
+  try {
+    let keyPair = await window.crypto.subtle.generateKey({
+      name: "ECDSA",
+      namedCurve: "P-256"
+    }, true, ["sign", "verify"]);
+
+    //console.log('keyPair = ', keyPair)
+    let privateKey = await exportCryptoKey('private', keyPair.privateKey);
+    console.log(privateKey);
+    let publicKey = await exportCryptoKey('public', keyPair.publicKey);
+    console.log(publicKey);
+    return [publicKey, privateKey, keyPair.privateKey];
+  } catch (e) {
+    return e.message;
+  }
+};
 
 /**
  * Executes the download of the user's private key and certificate by the browser.
@@ -27588,47 +27427,17 @@ var generateKeyPair = /*#__PURE__*/function () {
  * @param {*} material The string that will be downloaded.
  * @param {*} materialType "privateKey" if the string is a private key; "certificate" if the string is a certificate.
  */
-var downloadCrypto = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(name, material, materialType) {
-    var filename, element;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          if (!(materialType == "privateKey")) {
-            _context5.next = 4;
-            break;
-          }
-          filename = "pk_".concat(name, ".pem");
-          _context5.next = 9;
-          break;
-        case 4:
-          if (!(materialType == "certificate")) {
-            _context5.next = 8;
-            break;
-          }
-          filename = "certificate_".concat(name, ".pem");
-          _context5.next = 9;
-          break;
-        case 8:
-          throw new Error("InvalidArgumentException - materialType ".concat(materialType, " is not valid"));
-        case 9:
-          element = document.createElement('a');
-          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(material));
-          element.setAttribute('download', filename);
-          element.style.display = 'none';
-          document.body.appendChild(element);
-          element.click();
-          document.body.removeChild(element);
-        case 16:
-        case "end":
-          return _context5.stop();
-      }
-    }, _callee5);
-  }));
-  return function downloadCrypto(_x5, _x6, _x7) {
-    return _ref5.apply(this, arguments);
-  };
-}();
+const downloadCrypto = async function (name, material, materialType) {
+  let filename;
+  if (materialType == "privateKey") filename = `pk_${name}.pem`;else if (materialType == "certificate") filename = `certificate_${name}.pem`;else throw new Error(`InvalidArgumentException - materialType ${materialType} is not valid`);
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(material));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+};
 exports.downloadCrypto = downloadCrypto;
 
 },{"./bundles/ecdsacsr-bundle.js":223,"elliptic":189,"jsrsasign":219}]},{},[222]);

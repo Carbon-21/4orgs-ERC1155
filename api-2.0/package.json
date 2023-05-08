@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --out-dir dist"
   },
   "keywords": [],
   "author": "",
@@ -28,7 +29,7 @@
     "fabric-common": "^2.2.3",
     "fabric-network": "^2.2.2",
     "fabric-protos": "^2.2.16",
-    "ipfs-mini": "^1.1.5",
+    "ipfs-core": "^0.18.0",
     "js-sha256": "^0.9.0",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.5.2",
@@ -37,8 +38,9 @@
     "sequelize": "^6.21.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.10",
-    "@babel/preset-env": "^7.18.10",
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
     "babelify": "^10.0.0"
   }
 }

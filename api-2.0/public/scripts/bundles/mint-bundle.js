@@ -11279,325 +11279,274 @@ utils.encode = function encode(arr, enc) {
 },{}],40:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var client = require("./transaction-handler");
+const client = require("./transaction-handler");
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
-var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Transa\xE7\xE3o realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na execu\xE7\xE3o da transa\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+const successFlashMessage = `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` + `Transação realizada com sucesso` + `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+const failureFlashMessage = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `Ocorreu um erro na execução da transação` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
 
 /**
  * Calls Server or Client-Side Signing Mint functions depending on where the user chose
  * to store his Private Key (on his computer or on the server).
  */
-window.mintFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var keyOnServer;
-  return _regeneratorRuntime().wrap(function _callee$(_context) {
-    while (1) switch (_context.prev = _context.next) {
-      case 0:
-        keyOnServer = localStorage.getItem("keyOnServer");
-        if (keyOnServer == "true") mintFTServerSideSigning();else mintFTClientSideSigning();
-      case 2:
-      case "end":
-        return _context.stop();
-    }
-  }, _callee);
-}));
-window.mintNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var keyOnServer;
-  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-    while (1) switch (_context2.prev = _context2.next) {
-      case 0:
-        keyOnServer = localStorage.getItem("keyOnServer");
-        if (keyOnServer == "true") mintNFTServerSideSigning();else mintNFTClientSideSigning();
-      case 2:
-      case "end":
-        return _context2.stop();
-    }
-  }, _callee2);
-}));
+window.mintFT = async () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  if (keyOnServer == "true") mintFTServerSideSigning();else mintFTClientSideSigning();
+};
+window.mintNFT = async () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  if (keyOnServer == "true") mintNFTServerSideSigning();else mintNFTClientSideSigning();
+};
 
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
-var mintFTClientSideSigning = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-    var _document$getElementB, username, qty, clientAccountId, transaction, response;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context3.next = 25;
-            break;
-          }
-          // Hides the file upload fields and displays loading image while the transaction is processing.
-          document.getElementById("signing-files").style.display = "none";
-          document.getElementById("submitButton").style.display = "none";
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB = document.getElementById("flash-button")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.click();
-          event.preventDefault();
-          username = document.getElementById("username").value;
-          qty = document.getElementById("qty").value; // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-          clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
-          clientAccountId = window.btoa(clientAccountId);
-          transaction = {
-            chaincodeId: "erc1155",
-            channelId: "mychannel",
-            fcn: "Mint",
-            args: [clientAccountId, "$ylvas", qty]
-          };
-          _context3.prev = 11;
-          _context3.next = 14;
-          return client.offlineTransaction(transaction);
-        case 14:
-          response = _context3.sent;
-          // Hides the loading image and displays the file upload fields again
-          document.getElementById("signing-files").style.display = "block";
-          document.getElementById("submitButton").style.display = "block";
-          document.getElementById("loader").style.display = "none";
+const mintFTClientSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "false") {
+    // Hides the file upload fields and displays loading image while the transaction is processing.
+    document.getElementById("signing-files").style.display = "none";
+    document.getElementById("submitButton").style.display = "none";
+    document.getElementById("loader").style.display = "flex";
+    document.getElementById("flash-button")?.click();
+    event.preventDefault();
+    let username = document.getElementById("username").value;
+    let qty = document.getElementById("qty").value;
 
-          // Displays Flash Messages
-          if (response.result == "SUCCESS") {
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          } else {
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-          }
-          _context3.next = 25;
-          break;
-        case 21:
-          _context3.prev = 21;
-          _context3.t0 = _context3["catch"](11);
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("Error:", _context3.t0.message);
-        case 25:
-        case "end":
-          return _context3.stop();
+    // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
+    let clientAccountId = `x509::CN=${username},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+
+    // Base-64 encoding of clientAccountId
+    clientAccountId = window.btoa(clientAccountId);
+    const transaction = {
+      chaincodeId: "erc1155",
+      channelId: "mychannel",
+      fcn: "Mint",
+      args: [clientAccountId, "$ylvas", qty]
+    };
+    try {
+      // Executes the transaction in Client-Side Signing Mode
+      let response = await client.offlineTransaction(transaction);
+
+      // Hides the loading image and displays the file upload fields again
+      document.getElementById("signing-files").style.display = "block";
+      document.getElementById("submitButton").style.display = "block";
+      document.getElementById("loader").style.display = "none";
+
+      // Displays Flash Messages
+      if (response.result == "SUCCESS") {
+        document.getElementById("flash").innerHTML = successFlashMessage;
+      } else {
+        document.getElementById("flash").innerHTML = failureFlashMessage;
       }
-    }, _callee3, null, [[11, 21]]);
-  }));
-  return function mintFTClientSideSigning() {
-    return _ref3.apply(this, arguments);
-  };
-}();
+    } catch (e) {
+      document.getElementById("flash").innerHTML = failureFlashMessage;
+      console.log("Error:", e.message);
+    }
+  }
+};
 
 /**
  * Executes "Mint" transaction in Server-Side Signing Mode.
  */
-var mintFTServerSideSigning = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-    var username, qty, token, headers, url, init, body, response;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          event.preventDefault();
-          document.getElementById("loader").style.display = "flex";
-          document.getElementById("submitButton").style.display = "none";
-          username = document.getElementById("username").value;
-          qty = document.getElementById("qty").value;
-          token = localStorage.getItem("token");
-          headers = new Headers();
-          headers.append("Content-Type", "application/json");
-          headers.append("Authorization", "Bearer " + token);
-          url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
-          init = {
-            method: "POST",
-            headers: headers
-          };
-          body = {
-            tokenId: "$ylvas",
-            tokenAmount: qty,
-            tokenReceiver: username
-          };
-          init.body = JSON.stringify(body);
-          _context4.next = 15;
-          return fetch(url, init);
-        case 15:
-          response = _context4.sent;
-          document.getElementById("submitButton").style.display = "flex";
-          document.getElementById("loader").style.display = "none";
-          if (!response.ok) {
-            _context4.next = 25;
-            break;
-          }
-          _context4.next = 21;
-          return response.json();
-        case 21:
-          response = _context4.sent;
-          if (response.result != "success") {
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-          } else {
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          }
-          _context4.next = 27;
-          break;
-        case 25:
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          return _context4.abrupt("return", null);
-        case 27:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  }));
-  return function mintFTServerSideSigning() {
-    return _ref4.apply(this, arguments);
+const mintFTServerSideSigning = async () => {
+  event.preventDefault();
+  document.getElementById("loader").style.display = "flex";
+  document.getElementById("submitButton").style.display = "none";
+  let username = document.getElementById("username").value;
+  let qty = document.getElementById("qty").value;
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+  let url = `https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+  var init = {
+    method: "POST",
+    headers: headers
   };
-}();
+  var body = {
+    tokenId: "$ylvas",
+    tokenAmount: qty,
+    tokenReceiver: username
+  };
+  init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  document.getElementById("submitButton").style.display = "flex";
+  document.getElementById("loader").style.display = "none";
+  if (response.ok) {
+    response = await response.json();
+    if (response.result != "success") {
+      document.getElementById("flash").innerHTML = failureFlashMessage;
+    } else {
+      document.getElementById("flash").innerHTML = successFlashMessage;
+    }
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    return null;
+  }
+};
 
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
-var mintNFTClientSideSigning = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-    var _document$getElementB2, username, qty, clientAccountId, transaction, response;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context5.next = 25;
-            break;
-          }
-          // Hides the file upload fields and displays loading image while the transaction is processing.
-          document.getElementById("signing-files").style.display = "none";
-          document.getElementById("submitButton").style.display = "none";
-          document.getElementById("loader").style.display = "flex";
-          (_document$getElementB2 = document.getElementById("flash-button")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.click();
-          event.preventDefault();
-          username = document.getElementById("username").value;
-          qty = 1; // let nftId = document.getElementById("nftId").value;
-          //let phyto = document.getElementById("phyto").value;
-          //let location = document.getElementById("location").value;
-          // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
-          clientAccountId = "x509::CN=".concat(username, ",OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US"); // Base-64 encoding of clientAccountId
-          clientAccountId = window.btoa(clientAccountId);
-          transaction = {
-            chaincodeId: "erc1155",
-            channelId: "mychannel",
-            fcn: "Mint",
-            // args: [clientAccountId, nftId, qty],
-            args: [clientAccountId, "NFT", qty]
-          };
-          _context5.prev = 11;
-          _context5.next = 14;
-          return client.offlineTransaction(transaction);
-        case 14:
-          response = _context5.sent;
-          // Hides the loading image and displays the file upload fields again
-          document.getElementById("signing-files").style.display = "block";
-          document.getElementById("submitButton").style.display = "block";
-          document.getElementById("loader").style.display = "none";
+const mintNFTClientSideSigning = async () => {
+  if (localStorage.getItem("keyOnServer") == "false") {
+    // Hides the file upload fields and displays loading image while the transaction is processing.
+    document.getElementById("signing-files").style.display = "none";
+    document.getElementById("submitButton").style.display = "none";
+    document.getElementById("loader").style.display = "flex";
+    document.getElementById("flash-button")?.click();
+    event.preventDefault();
+    let username = document.getElementById("username").value;
+    let qty = 1;
+    // let nftId = document.getElementById("nftId").value;
+    //let phyto = document.getElementById("phyto").value;
+    //let location = document.getElementById("location").value;
 
-          // Displays Flash Messages
-          if (response.result == "success") {
-            document.getElementById("flash").innerHTML = successFlashMessage;
-          } else {
-            document.getElementById("flash").innerHTML = failureFlashMessage;
-          }
-          _context5.next = 25;
-          break;
-        case 21:
-          _context5.prev = 21;
-          _context5.t0 = _context5["catch"](11);
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("Error:", _context5.t0.message);
-        case 25:
-        case "end":
-          return _context5.stop();
+    // Temporary way to get ClientAccountId while we don't know how to get it without needing the client's private key to access the Chaincode
+    let clientAccountId = `x509::CN=${username},OU=client+OU=carbon+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+
+    // Base-64 encoding of clientAccountId
+    clientAccountId = window.btoa(clientAccountId);
+    const transaction = {
+      chaincodeId: "erc1155",
+      channelId: "mychannel",
+      fcn: "Mint",
+      // args: [clientAccountId, nftId, qty],
+      args: [clientAccountId, "NFT", qty]
+    };
+    try {
+      // Executes the transaction in Client-Side Signing Mode
+      let response = await client.offlineTransaction(transaction);
+
+      // Hides the loading image and displays the file upload fields again
+      document.getElementById("signing-files").style.display = "block";
+      document.getElementById("submitButton").style.display = "block";
+      document.getElementById("loader").style.display = "none";
+
+      // Displays Flash Messages
+      if (response.result == "success") {
+        document.getElementById("flash").innerHTML = successFlashMessage;
+      } else {
+        document.getElementById("flash").innerHTML = failureFlashMessage;
       }
-    }, _callee5, null, [[11, 21]]);
-  }));
-  return function mintNFTClientSideSigning() {
-    return _ref5.apply(this, arguments);
-  };
-}();
+    } catch (e) {
+      document.getElementById("flash").innerHTML = failureFlashMessage;
+      console.log("Error:", e.message);
+    }
+  }
+};
 
 /**
  * Executes "Mint" transaction in Server-Side Signing Mode.
  */
-var mintNFTServerSideSigning = /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-    var username, qty, token, headers, url, init, body, response, responseJson;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          event.preventDefault();
-          document.getElementById("loader").style.display = "flex";
-          document.getElementById("submitButton").style.display = "none";
-          username = document.getElementById("username").value;
-          qty = 1;
-          token = localStorage.getItem("token");
-          headers = new Headers();
-          headers.append("Content-Type", "application/json");
-          headers.append("Authorization", "Bearer " + token);
-          url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
-          init = {
-            method: "POST",
-            headers: headers
-          };
-          body = {
-            tokenId: "NFT",
-            tokenAmount: qty,
-            tokenReceiver: username,
-            metadata: {
-              id: "NFT",
-              status: "Ativo",
-              amount: qty,
-              land_owner: document.getElementById("landOwner").value,
-              land: document.getElementById("area").value,
-              phyto: document.getElementById("phyto").value,
-              geolocation: document.getElementById("location").value,
-              compensation_owner: document.getElementById("compensationOwner").value,
-              compensation_state: "Não Compensado"
-            }
-          };
-          init.body = JSON.stringify(body);
-          _context6.next = 15;
-          return fetch(url, init);
-        case 15:
-          response = _context6.sent;
-          _context6.next = 18;
-          return response.json();
-        case 18:
-          responseJson = _context6.sent;
-          document.getElementById("loader").style.display = "none";
-          document.getElementById("submitButton").style.display = "flex";
-          if (!(!response.ok || responseJson.result == null)) {
-            _context6.next = 26;
-            break;
-          }
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-          return _context6.abrupt("return", null);
-        case 26:
-          document.getElementById("flash").innerHTML = successFlashMessage;
-        case 27:
-        case "end":
-          return _context6.stop();
-      }
-    }, _callee6);
-  }));
-  return function mintNFTServerSideSigning() {
-    return _ref6.apply(this, arguments);
+const mintNFTServerSideSigning = async () => {
+  event.preventDefault();
+  document.getElementById("loader").style.display = "flex";
+  document.getElementById("submitButton").style.display = "none";
+  let username = document.getElementById("username").value;
+  let qty = 1;
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+  let url = `https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint`;
+  var init = {
+    method: "POST",
+    headers: headers
   };
-}();
+  var body = {
+    tokenId: "NFT",
+    tokenAmount: qty,
+    tokenReceiver: username,
+    metadata: {
+      id: "NFT",
+      status: `Ativo`,
+      amount: qty,
+      land_owner: document.getElementById("landOwner").value,
+      land: document.getElementById("area").value,
+      phyto: document.getElementById("phyto").value,
+      geolocation: document.getElementById("location").value,
+      compensation_owner: document.getElementById("compensationOwner").value,
+      compensation_state: "Não Compensado"
+    }
+  };
+  init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  let responseJson = await response.json();
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("submitButton").style.display = "flex";
+  if (!response.ok || responseJson.result == null) {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    return null;
+  } else {
+    document.getElementById("flash").innerHTML = successFlashMessage;
+  }
+
+  // Post metadata through ipfs node
+  // let metadata = {
+  //   id: "NFT", //AQUI
+  //   status: `Ativo`,
+  //   amount: qty,
+  //   land_owner: document.getElementById("landOwner").value,
+  //   land: document.getElementById("area").value,
+  //   phyto: document.getElementById("phyto").value,
+  //   geolocation: document.getElementById("location").value,
+  //   compensation_owner: document.getElementById("compensationOwner").value,
+  //   compensation_state: "Não Compensado",
+  // };
+
+  // let postMetadataURL = `https://localhost:4000/meta/postMetadata`;
+  // init.body = JSON.stringify({
+  //   metadata,
+  //   tokenId: "NFT", //AQUI
+  // });
+  // let metadataResponse = await fetch(postMetadataURL, init);
+  // let metadataResponseJson = await metadataResponse.json();
+
+  // if (!metadataResponse.ok || metadataResponseJson.result != "success") {
+  //   document.getElementById("submitButton").style.display = "flex";
+  //   document.getElementById("loader").style.display = "none";
+  //   document.getElementById("flash").innerHTML = failureFlashMessage;
+  //   return null;
+  // }
+
+  // let metadataHash = metadataResponseJson.metadataHash;
+  // // Publicar URI e TokenId no chaincode por meio de chamada em invoke controller (SetURI)
+  // const URI = `http://${metadataHash}.com`;
+  // let setUriURL = `https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/setURI`;
+  // body = JSON.stringify({
+  //   URI: URI,
+  //   tokenId: "NFT", //AQUI
+  // });
+  // init = {
+  //   method: "POST",
+  //   headers: headers,
+  //   body: body,
+  // };
+
+  // let setURIResponse = await fetch(setUriURL, init);
+
+  // document.getElementById("submitButton").style.display = "flex";
+  // document.getElementById("loader").style.display = "none";
+
+  // if (!metadataResponse.ok || metadataResponseJson.result == null) {
+  //   document.getElementById("flash").innerHTML = failureFlashMessage;
+  //   return null;
+  // }
+};
 
 },{"./transaction-handler":41}],41:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.offlineTransaction = void 0;
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var elliptic = require('elliptic');
-var _require = require('jsrsasign'),
-  KEYUTIL = _require.KEYUTIL;
+const elliptic = require('elliptic');
+const {
+  KEYUTIL
+} = require('jsrsasign');
 
 /**
  * This script is responsible for dealing with offline transactions
@@ -11608,9 +11557,9 @@ var _require = require('jsrsasign'),
  * upload fields for the client's private key and certificate if
  * the client chose the client-side transaction signing mode at signup.
  */
-window.addEventListener("load", function () {
-  var keyOnServer = localStorage.getItem("keyOnServer");
-  var signingFilesElement = document.getElementById("signing-files");
+window.addEventListener("load", () => {
+  const keyOnServer = localStorage.getItem("keyOnServer");
+  const signingFilesElement = document.getElementById("signing-files");
   if (signingFilesElement && keyOnServer) {
     // Renders uploading crypto files element conditionally, depending on the value of keyOnServer
     signingFilesElement.hidden = keyOnServer == "true" ? true : false;
@@ -11624,108 +11573,72 @@ window.addEventListener("load", function () {
  * to be executed
  * @returns The transaction result
  */
-var offlineTransaction = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(transaction) {
-    var privateKey, certificate, body, token, url, proposalResponse, digest, proposalHex, proposalSignature, proposalSignatureHex, signedProposal, sendProposalResponse, transactionDigest, transactionHex, proposalResponseStatus, payload, transactionSignature, transactionSignatureHex, signedTransactionProposal, commitTransactionResponse, commitResult;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          _context.next = 2;
-          return readUploadedFile("private-key");
-        case 2:
-          privateKey = _context.sent;
-          _context.next = 5;
-          return readUploadedFile("certificate");
-        case 5:
-          certificate = _context.sent;
-          // 1. Request transaction proposal generation
-          body = {
-            username: localStorage.getItem("username"),
-            transaction: transaction,
-            certificate: certificate
-          };
-          token = localStorage.getItem("token");
-          console.log("### 1. Request transaction proposal generation");
-          // Sends transaction proposal generation request to server
-          url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
-          _context.next = 12;
-          return sendToServer("POST", url, body, token);
-        case 12:
-          proposalResponse = _context.sent;
-          // The transaction proposal hash
-          digest = proposalResponse.result.digest;
-          console.log('Transaction proposal hash =', digest);
+const offlineTransaction = async transaction => {
+  const privateKey = await readUploadedFile("private-key");
+  const certificate = await readUploadedFile("certificate");
 
-          // The transaction proposal in Hex
-          proposalHex = proposalResponse.result.proposal;
-          console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
-
-          // 2. Sign transaction proposal
-          console.log("### 2. Sign transaction proposal");
-          _context.next = 20;
-          return signTransaction(digest, privateKey);
-        case 20:
-          proposalSignature = _context.sent;
-          proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
-          console.log('signature 1 =', proposalSignature);
-          console.log('proposalHex =', proposalHex);
-          signedProposal = {
-            signature: proposalSignatureHex,
-            proposal: proposalHex
-          }; // 3. Send signed transaction proposal to server
-          console.log("### 3. Send signed transaction proposal to server");
-          url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
-          _context.next = 29;
-          return sendToServer("POST", url, signedProposal, token);
-        case 29:
-          sendProposalResponse = _context.sent;
-          transactionDigest = sendProposalResponse.result.transactionDigest;
-          transactionHex = sendProposalResponse.result.transaction;
-          proposalResponseStatus = sendProposalResponse.result.status;
-          payload = sendProposalResponse.result.payload;
-          if (!(proposalResponseStatus == 200)) {
-            _context.next = 48;
-            break;
-          }
-          // 4. Sign transaction
-          console.log("### 4. Sign transaction");
-          _context.next = 38;
-          return signTransaction(transactionDigest, privateKey);
-        case 38:
-          transactionSignature = _context.sent;
-          transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
-          signedTransactionProposal = {
-            signature: transactionSignatureHex,
-            transaction: transactionHex
-          }; // 5. Send signed transaction to server
-          url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
-          _context.next = 44;
-          return sendToServer("POST", url, signedTransactionProposal, token);
-        case 44:
-          commitTransactionResponse = _context.sent;
-          commitResult = commitTransactionResponse.result;
-          if (!(commitResult == "SUCCESS")) {
-            _context.next = 48;
-            break;
-          }
-          return _context.abrupt("return", {
-            result: "SUCCESS",
-            payload: payload
-          });
-        case 48:
-          return _context.abrupt("return", {
-            result: "FAILURE"
-          });
-        case 49:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee);
-  }));
-  return function offlineTransaction(_x) {
-    return _ref.apply(this, arguments);
+  // 1. Request transaction proposal generation
+  const body = {
+    username: localStorage.getItem("username"),
+    transaction: transaction,
+    certificate: certificate
   };
-}();
+  const token = localStorage.getItem("token");
+  console.log("### 1. Request transaction proposal generation");
+  // Sends transaction proposal generation request to server
+  var url = "/invoke/channels/mychannel/chaincodes/erc1155/generate-proposal";
+  const proposalResponse = await sendToServer("POST", url, body, token);
+
+  // The transaction proposal hash
+  const digest = proposalResponse.result.digest;
+  console.log('Transaction proposal hash =', digest);
+
+  // The transaction proposal in Hex
+  const proposalHex = proposalResponse.result.proposal;
+  console.log('proposal bytes', Buffer.from(proposalHex, 'hex'));
+
+  // 2. Sign transaction proposal
+  console.log("### 2. Sign transaction proposal");
+  const proposalSignature = await signTransaction(digest, privateKey);
+  let proposalSignatureHex = Buffer.from(proposalSignature).toString('hex');
+  console.log('signature 1 =', proposalSignature);
+  console.log('proposalHex =', proposalHex);
+  let signedProposal = {
+    signature: proposalSignatureHex,
+    proposal: proposalHex
+  };
+
+  // 3. Send signed transaction proposal to server
+  console.log("### 3. Send signed transaction proposal to server");
+  url = "/invoke/channels/mychannel/chaincodes/erc1155/send-proposal";
+  const sendProposalResponse = await sendToServer("POST", url, signedProposal, token);
+  const transactionDigest = sendProposalResponse.result.transactionDigest;
+  const transactionHex = sendProposalResponse.result.transaction;
+  const proposalResponseStatus = sendProposalResponse.result.status;
+  const payload = sendProposalResponse.result.payload;
+  if (proposalResponseStatus == 200) {
+    // 4. Sign transaction
+    console.log("### 4. Sign transaction");
+    let transactionSignature = await signTransaction(transactionDigest, privateKey);
+    let transactionSignatureHex = Buffer.from(transactionSignature).toString('hex');
+    var signedTransactionProposal = {
+      signature: transactionSignatureHex,
+      transaction: transactionHex
+    };
+
+    // 5. Send signed transaction to server
+    url = "/invoke/channels/mychannel/chaincodes/erc1155/commit-transaction";
+    let commitTransactionResponse = await sendToServer("POST", url, signedTransactionProposal, token);
+    let commitResult = commitTransactionResponse.result;
+    if (commitResult == "SUCCESS") return {
+      result: "SUCCESS",
+      payload: payload
+    };
+  }
+  return {
+    result: "FAILURE"
+  };
+};
 
 /**
  * Sends Request to the server. Returns the server's response
@@ -11736,94 +11649,54 @@ var offlineTransaction = /*#__PURE__*/function () {
  * @returns Response of the server
  */
 exports.offlineTransaction = offlineTransaction;
-var sendToServer = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(method, url, body, token) {
-    var headers, init, response, json;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
-        case 0:
-          headers = new Headers();
-          headers.append("Content-Type", "application/json");
-          if (token != null) headers.append("Authorization", "Bearer " + token);
-          init = {
-            method: method,
-            headers: headers
-          };
-          if (method == "POST") init.body = JSON.stringify(body);
-          _context2.next = 7;
-          return fetch(url, init);
-        case 7:
-          response = _context2.sent;
-          if (!response.ok) {
-            _context2.next = 15;
-            break;
-          }
-          _context2.next = 11;
-          return response.json();
-        case 11:
-          json = _context2.sent;
-          return _context2.abrupt("return", json);
-        case 15:
-          console.log("HTTP Error ", response.status);
-          return _context2.abrupt("return", null);
-        case 17:
-        case "end":
-          return _context2.stop();
-      }
-    }, _callee2);
-  }));
-  return function sendToServer(_x2, _x3, _x4, _x5) {
-    return _ref2.apply(this, arguments);
+const sendToServer = async (method, url, body, token) => {
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  if (token != null) headers.append("Authorization", "Bearer " + token);
+  var init = {
+    method: method,
+    headers: headers
   };
-}();
+  if (method == "POST") init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  if (response.ok) {
+    let json = await response.json();
+    return json;
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+};
 
 /**
  * Signs a hashed transaction proposal.
  * @param {*} digest Hash of a transaction proposal
  * @returns The signature of the transaction proposal
  */
-var signTransaction = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(digest, privateKeyPEM) {
-    var _KEYUTIL$getKey, prvKeyHex, EC, ecdsaCurve, ecdsa, signKey, sig, signature;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          console.log('entrou signtransaction');
+const signTransaction = async function (digest, privateKeyPEM) {
+  console.log('entrou signtransaction');
 
-          //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
-          _KEYUTIL$getKey = KEYUTIL.getKey(privateKeyPEM), prvKeyHex = _KEYUTIL$getKey.prvKeyHex;
-          EC = elliptic.ec;
-          ecdsaCurve = elliptic.curves['p256'];
-          ecdsa = new EC(ecdsaCurve);
-          _context3.next = 7;
-          return ecdsa.keyFromPrivate(prvKeyHex, 'hex');
-        case 7:
-          signKey = _context3.sent;
-          _context3.next = 10;
-          return ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
-        case 10:
-          sig = _context3.sent;
-          sig = _preventMalleability(sig);
+  //let prvKeyHex = await KEYUTIL.getKeyFromPlainPrivatePKCS8PEM(privateKeyPEM);
+  var {
+    prvKeyHex
+  } = KEYUTIL.getKey(privateKeyPEM);
+  const EC = elliptic.ec;
+  const ecdsaCurve = elliptic.curves['p256'];
+  const ecdsa = new EC(ecdsaCurve);
+  const signKey = await ecdsa.keyFromPrivate(prvKeyHex, 'hex');
+  let sig = await ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
+  sig = _preventMalleability(sig);
 
-          // now we have the signature, next we should send the signed transaction proposal to the peer
-          signature = Buffer.from(sig.toDER());
-          return _context3.abrupt("return", signature);
-        case 14:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3);
-  }));
-  return function signTransaction(_x6, _x7) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+  // now we have the signature, next we should send the signed transaction proposal to the peer
+  const signature = Buffer.from(sig.toDER());
+  return signature;
+};
 
 // Helper function for signTransaction
-var _preventMalleability = function _preventMalleability(sig) {
-  var halfOrder = elliptic.curves.p256.n.shrn(1);
+const _preventMalleability = sig => {
+  const halfOrder = elliptic.curves.p256.n.shrn(1);
   if (sig.s.cmp(halfOrder) === 1) {
-    var bigNum = elliptic.curves.p256.n;
+    const bigNum = elliptic.curves.p256.n;
     sig.s = bigNum.sub(sig.s);
   }
   return sig;
@@ -11834,29 +11707,16 @@ var _preventMalleability = function _preventMalleability(sig) {
  * @param {*} fileId The id of the upload field in the DOM.
  * @returns The file's text as a string.
  */
-var readUploadedFile = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(fileId) {
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          return _context4.abrupt("return", new Promise(function (resolve) {
-            var reader = new FileReader();
-            reader.onload = function () {
-              resolve(reader.result);
-            };
-            var file = document.getElementById(fileId).files[0];
-            reader.readAsText(file);
-          }));
-        case 1:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  }));
-  return function readUploadedFile(_x8) {
-    return _ref4.apply(this, arguments);
-  };
-}();
+const readUploadedFile = async fileId => {
+  return new Promise(resolve => {
+    var reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    let file = document.getElementById(fileId).files[0];
+    reader.readAsText(file);
+  });
+};
 
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"buffer":3,"elliptic":7,"jsrsasign":37}]},{},[40]);

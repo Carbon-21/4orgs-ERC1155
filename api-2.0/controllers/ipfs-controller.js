@@ -44,7 +44,7 @@ exports.postTransparencyLog = async () => {
     const tail = await getBlockchainTailLocal(chaincodeName, channelName);
 
     const hash = await ipfs.uploadIPFS(tail);
-    logger.info("Daily crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
+    logger.info("Crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
 
     const uri = await setURILocal(hash, org, chaincodeName, channelName);
     logger.info("IFPS URI added to the ledger:", uri);

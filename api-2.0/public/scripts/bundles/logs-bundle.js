@@ -8106,233 +8106,160 @@ assert.equal = function assertEqual(l, r, msg) {
 (function (Buffer){(function (){
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-var sha = require("js-sha256");
-var asnjs = require("asn1.js");
+let sha = require("js-sha256");
+let asnjs = require("asn1.js");
 
 // Flash messages that are displayed to the user in case of success or failure of the transaction execution
-var successFlashMessage = "<div  id=\"flash-message\" class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Consulta realizada com sucesso" + "<button id=\"flash-button\" type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na consulta" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
-var failureFlashMessage2 = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Nenhum bloco foi adicionado ainda ao IPFS" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+const successFlashMessage = `<div  id="flash-message" class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` + `Consulta realizada com sucesso` + `<button id="flash-button" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+const failureFlashMessage = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `Ocorreu um erro na consulta` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
+const failureFlashMessage2 = `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` + `Nenhum bloco foi adicionado ainda ao IPFS` + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` + `</div>`;
 
 //retrieve last block in IPFS
-window.getLatestIPFSBlock = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var url, init, response, timestamp;
-  return _regeneratorRuntime().wrap(function _callee$(_context) {
-    while (1) switch (_context.prev = _context.next) {
-      case 0:
-        //loading...
-        document.getElementById("loader").style.display = "flex";
+window.getLatestIPFSBlock = async function () {
+  //loading...
+  document.getElementById("loader").style.display = "flex";
 
-        //make request to the backend
-        url = "https://localhost:4000/ipfs/getLatestIPFSBlock";
-        init = {
-          method: "GET"
-        };
-        _context.next = 5;
-        return fetch(url, init);
-      case 5:
-        response = _context.sent;
-        //stop loading
-        document.getElementById("loader").style.display = "none";
-        if (!response.ok) {
-          _context.next = 23;
-          break;
-        }
-        _context.next = 10;
-        return response.json();
-      case 10:
-        response = _context.sent;
-        //set block info in HTML
-        document.getElementById("flash").innerHTML = successFlashMessage;
-        ipfsBlockNumber.innerText = String(response.tail.info.height - 1);
-        ipfsHash.innerText = response.tail.info.currentBlockHash;
-        ipfsPreviousHash.innerText = response.tail.info.previousBlockHash;
+  //make request to the backend
+  let url = `https://localhost:4000/ipfs/getLatestIPFSBlock`;
+  var init = {
+    method: "GET"
+  };
+  let response = await fetch(url, init);
 
-        //timestamp to date
-        timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
-        timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
-        timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
-        ipfsTimestamp.innerText = timestamp;
+  //stop loading
+  document.getElementById("loader").style.display = "none";
+  if (response.ok) {
+    response = await response.json();
+    console.log(response);
 
-        //remove info from json, it doesn't belong to the original json
-        delete response.tail.info;
-        ipfsJson.innerText = JSON.stringify(response.tail, null, 4);
-        _context.next = 25;
-        break;
-      case 23:
-        document.getElementById("flash").innerHTML = failureFlashMessage2;
-        console.log("HTTP Error ", response.status);
-      case 25:
-      case "end":
-        return _context.stop();
-    }
-  }, _callee);
-}));
+    //set block info in HTML
+    document.getElementById("flash").innerHTML = successFlashMessage;
+    ipfsBlockNumber.innerText = String(response.tail.info.height - 1);
+    ipfsHash.innerText = response.tail.info.currentBlockHash;
+    ipfsPreviousHash.innerText = response.tail.info.previousBlockHash;
+
+    //timestamp to date
+    let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
+    timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
+    ipfsTimestamp.innerText = timestamp;
+
+    //remove info from json, it doesn't belong to the original json
+    delete response.tail.info;
+    ipfsJson.innerText = JSON.stringify(response.tail, null, 4);
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage2;
+    console.log("HTTP Error ", response.status);
+  }
+};
 
 //retrieve blockchains's last block
-window.getBlockchainTail = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-  var url, init, response, timestamp;
-  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-    while (1) switch (_context2.prev = _context2.next) {
-      case 0:
-        //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail";
-        init = {
-          method: "GET"
-        };
-        _context2.next = 4;
-        return fetch(url, init);
-      case 4:
-        response = _context2.sent;
-        if (!response.ok) {
-          _context2.next = 20;
-          break;
-        }
-        _context2.next = 8;
-        return response.json();
-      case 8:
-        response = _context2.sent;
-        //set block info in HTML
-        document.getElementById("flash").innerHTML = successFlashMessage;
-        tailJson.innerText = JSON.stringify(response.tail, null, 4);
-        tailBlockNumber.innerText = String(response.info.height - 1);
-        tailHash.innerText = response.info.currentBlockHash;
-        tailPreviousHash.innerText = response.info.previousBlockHash;
+window.getBlockchainTail = async function () {
+  //make request to the backend
+  let url = `https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail`;
+  var init = {
+    method: "GET"
+  };
+  let response = await fetch(url, init);
+  if (response.ok) {
+    response = await response.json();
 
-        //timestamp to date
-        timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
-        timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
-        timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
-        tailTimestamp.innerText = timestamp;
-        _context2.next = 22;
-        break;
-      case 20:
-        document.getElementById("flash").innerHTML = failureFlashMessage;
-        console.log("HTTP Error ", response.status);
-      case 22:
-      case "end":
-        return _context2.stop();
-    }
-  }, _callee2);
-}));
+    //set block info in HTML
+    document.getElementById("flash").innerHTML = successFlashMessage;
+    tailJson.innerText = JSON.stringify(response.tail, null, 4);
+    tailBlockNumber.innerText = String(response.info.height - 1);
+    tailHash.innerText = response.info.currentBlockHash;
+    tailPreviousHash.innerText = response.info.previousBlockHash;
+
+    //timestamp to date
+    let timestamp = new Date(response.tail.data.data[0].payload.header.channel_header.timestamp);
+    timestamp = convertTZ(timestamp, "America/Sao_Paulo"); //convert to BR timezone
+    timestamp = timestamp.getDate() + "/" + (timestamp.getMonth() + 1) + "/" + timestamp.getFullYear() + " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ":" + timestamp.getSeconds();
+    tailTimestamp.innerText = timestamp;
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    console.log("HTTP Error ", response.status);
+  }
+};
 
 //get world state
-window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-  var url, init, response, htmlOutput;
-  return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-    while (1) switch (_context3.prev = _context3.next) {
-      case 0:
-        //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getWorldState";
-        init = {
-          method: "GET"
-        };
-        _context3.next = 4;
-        return fetch(url, init);
-      case 4:
-        response = _context3.sent;
-        if (!response.ok) {
-          _context3.next = 17;
-          break;
-        }
-        _context3.next = 8;
-        return response.json();
-      case 8:
-        response = _context3.sent;
-        if (!(response.result === "")) {
-          _context3.next = 11;
-          break;
-        }
-        return _context3.abrupt("return");
-      case 11:
-        //add each keys and values from the WS to the HTML
-        htmlOutput = "";
-        response.result.forEach(function (element) {
-          htmlOutput = htmlOutput + "<p>" + "<b> Origem: </b> <spam class=\"limit\">".concat(atob(element[2]).match(/CN=([^,]*)/g)[0].replace("CN=", ""), "</spam> <br/>") + "<b> Destino: </b> <spam class=\"limit\">".concat(atob(element[0]).match(/CN=([^,]*)/g)[0].replace("CN=", ""), "</spam> <br/>") + "<b> ID do Token: </b> <spam class=\"limit\">".concat(element[1], "</spam> <br/>") + "<b> Quantidade: </b><spam class=\"limit\">".concat(element[3], "</spam> <br/>") + "<p>";
-        });
-        ws.innerHTML = htmlOutput;
-        document.getElementById("flash").innerHTML = successFlashMessage;
-        _context3.next = 19;
-        break;
-      case 17:
-        document.getElementById("flash").innerHTML = failureFlashMessage;
-        console.log("HTTP Error ", response.status);
-      case 19:
-      case "end":
-        return _context3.stop();
-    }
-  }, _callee3);
-}));
+window.getWorldState = async function () {
+  //make request to the backend
+  let url = `https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getWorldState`;
+  var init = {
+    method: "GET"
+  };
+  let response = await fetch(url, init);
+  if (response.ok) {
+    // get WS
+    response = await response.json();
+    if (response.result === "") return;
+
+    //add each keys and values from the WS to the HTML
+    let htmlOutput = "";
+    response.result.forEach(element => {
+      htmlOutput = htmlOutput + "<p>" + `<b> Origem: </b> <spam class="limit">${atob(element[2]).match(/CN=([^,]*)/g)[0].replace("CN=", "")}</spam> <br/>` + `<b> Destino: </b> <spam class="limit">${atob(element[0]).match(/CN=([^,]*)/g)[0].replace("CN=", "")}</spam> <br/>` + `<b> ID do Token: </b> <spam class="limit">${element[1]}</spam> <br/>` + `<b> Quantidade: </b><spam class="limit">${element[3]}</spam> <br/>` + "<p>";
+    });
+    ws.innerHTML = htmlOutput;
+    document.getElementById("flash").innerHTML = successFlashMessage;
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    console.log("HTTP Error ", response.status);
+  }
+};
 
 //retrieve all blocks, hash them and check if the resulting hashes match the retrieved ones
-window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-  var minHtml, maxHtml, url, init, response, checkedBlocksHtml, blocksMatch, numBlocks, i, calculatedHash, nextBlockPreviousHash;
-  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-    while (1) switch (_context4.prev = _context4.next) {
-      case 0:
-        //get requested values
-        minHtml = min.value;
-        maxHtml = max.value; //make request to the backend
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=".concat(minHtml, "&max=").concat(maxHtml);
-        init = {
-          method: "GET"
-        };
-        _context4.next = 6;
-        return fetch(url, init);
-      case 6:
-        response = _context4.sent;
-        if (!response.ok) {
-          _context4.next = 19;
-          break;
-        }
-        _context4.next = 10;
-        return response.json();
-      case 10:
-        response = _context4.sent;
-        //hash every block and check if they correspond to the previousHash field in the following block
-        checkedBlocksHtml = "";
-        blocksMatch = true;
-        numBlocks = response.max - response.min;
-        for (i = 0; i < numBlocks; i++) {
-          //get hashes
-          calculatedHash = calculateBlockHash(response.blocks[i].header);
-          nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64"); //uncomment if you want to test a non matching scenario
-          // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
-          //print hashes
-          checkedBlocksHtml += "Bloco ".concat(i + response.min, ", hash calculado pelo seu PC: ").concat(calculatedHash, "<br>");
-          checkedBlocksHtml += "Bloco ".concat(i + response.min + 1, ", campo previous_hash: ").concat(nextBlockPreviousHash, "<br>");
+window.checkBlockchain = async function () {
+  //get requested values
+  let minHtml = min.value;
+  let maxHtml = max.value;
 
-          //print if hashes match
-          if (calculatedHash === nextBlockPreviousHash) {
-            checkedBlocksHtml += "<span style=\"color:green\">Bloco ".concat(i + response.min, " OK</span><br><br>");
-          } else {
-            checkedBlocksHtml += "<span style=\"color:red \">Bloco ".concat(i + response.min, " n\xE3o confere</span><br><br>");
-            blocksMatch = false;
-          }
-          blockchainChecking.innerHTML = checkedBlocksHtml;
-        }
+  //make request to the backend
+  let url = `https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=${minHtml}&max=${maxHtml}`;
+  var init = {
+    method: "GET"
+  };
+  let response = await fetch(url, init);
+  if (response.ok) {
+    response = await response.json();
 
-        //print final result
-        blocksMatch ? blockchainChecking.innerHTML = "<span style=\"color:green\">Hashs dos blocos batem com os enviados pela Carbon</span><br><br>" + blockchainChecking.innerHTML : blockchainChecking.innerHTML = "<span style=\"color:red \">Hashs dos blocos N\xC3O batem com os enviados pela Carbon</span><br><br>" + blockchainChecking.innerHTML;
+    //hash every block and check if they correspond to the previousHash field in the following block
+    let checkedBlocksHtml = "";
+    let blocksMatch = true;
+    const numBlocks = response.max - response.min;
+    for (let i = 0; i < numBlocks; i++) {
+      //get hashes
+      let calculatedHash = calculateBlockHash(response.blocks[i].header);
+      let nextBlockPreviousHash = Buffer.from(response.blocks[i + 1].header.previous_hash).toString("base64");
 
-        //requisition success message
-        document.getElementById("flash").innerHTML = successFlashMessage;
-        _context4.next = 22;
-        break;
-      case 19:
-        document.getElementById("flash").innerHTML = failureFlashMessage;
-        console.log("HTTP Error ", response.status);
-        console.log(response);
-      case 22:
-      case "end":
-        return _context4.stop();
+      //uncomment if you want to test a non matching scenario
+      // i === 3 ? (calculatedHash = "a1p4p41") : (calculatedHash = calculatedHash);
+
+      //print hashes
+      checkedBlocksHtml += `Bloco ${i + response.min}, hash calculado pelo seu PC: ${calculatedHash}<br>`;
+      checkedBlocksHtml += `Bloco ${i + response.min + 1}, campo previous_hash: ${nextBlockPreviousHash}<br>`;
+
+      //print if hashes match
+      if (calculatedHash === nextBlockPreviousHash) {
+        checkedBlocksHtml += `<span style="color:green">Bloco ${i + response.min} OK</span><br><br>`;
+      } else {
+        checkedBlocksHtml += `<span style="color:red ">Bloco ${i + response.min} não confere</span><br><br>`;
+        blocksMatch = false;
+      }
+      blockchainChecking.innerHTML = checkedBlocksHtml;
     }
-  }, _callee4);
-}));
+
+    //print final result
+    blocksMatch ? blockchainChecking.innerHTML = `<span style="color:green">Hashs dos blocos batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML : blockchainChecking.innerHTML = `<span style="color:red ">Hashs dos blocos NÃO batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML;
+
+    //requisition success message
+    document.getElementById("flash").innerHTML = successFlashMessage;
+  } else {
+    document.getElementById("flash").innerHTML = failureFlashMessage;
+    console.log("HTTP Error ", response.status);
+    console.log(response);
+  }
+};
 
 ///// AUX /////
 function convertTZ(date, tzString) {
@@ -8340,16 +8267,16 @@ function convertTZ(date, tzString) {
     timeZone: tzString
   }));
 }
-var calculateBlockHash = function calculateBlockHash(header) {
-  var headerAsn = asnjs.define("headerAsn", function () {
-    this.seq().obj(this.key("Number")["int"](), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
+var calculateBlockHash = function (header) {
+  let headerAsn = asnjs.define("headerAsn", function () {
+    this.seq().obj(this.key("Number").int(), this.key("PreviousHash").octstr(), this.key("DataHash").octstr());
   });
-  var output = headerAsn.encode({
+  let output = headerAsn.encode({
     Number: parseInt(header.number.low),
     PreviousHash: header.previous_hash.data,
     DataHash: header.data_hash.data
   }, "der");
-  var hash = sha.sha256(output);
+  let hash = sha.sha256(output);
   return Buffer.from(hash, "hex").toString("base64");
 };
 
