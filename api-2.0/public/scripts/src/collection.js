@@ -194,9 +194,6 @@ async function getNftOnSale() {
 }
 
 async function listForSale(tokenIdInput) {
-    
-  //document.getElementById("setPriceForm"+tokenIdInput).style.display = "none";
-  //document.getElementById("lisForSaleButton"+tokenIdInput).style.display = "none";
   document.getElementById("nft-showroom").style.display = "none";
   document.getElementById("loader").style.display = "flex";
 
