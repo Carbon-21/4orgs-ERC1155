@@ -20,28 +20,38 @@ async function marketplace() {
                   '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
                 "</div>" +
                 "<div>" +
-                  `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${tokenId.replace(
-                    /\s/g,"")}" aria-controls="tk${tokenId}"> 
+                  `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
                       <p>
                         ${tokenId} <br />
                         <b> Área (hectares): </b> ${metadata?.properties?.land} <br />
                         <b> Fitofisiologia: </b> ${metadata?.properties?.phyto} <br /> 
                         <b> Geolocalização: </b> ${metadata?.properties?.geolocation} <br />  
-                        <b id="seeMoreButton" class="btn btn-primary btn-md mt-3" style="margin-top: 10px;" onclick="seeMoreButton()"> Ver mais </b><br />                                                           
-                      <p>
-                                          
+                      </p>                                          
+                  </button>` +
+                  '<div class="d-flex flex-row gap-2">' +
+                    `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
+                      Ver mais                                       
                     </button>` +
+                    `<button id="buyButton" type="button" class="btn btn-primary btn-md" > 
+                      Comprar 
+                    </button>`+
+                  '</div>'+        
                   (await  renderMetadata(tokenId, metadata)) +
                 "</div>" +
               "</div>" +
-              '<div class="align-self-center">' +
-                `<h2 id="balanceHeader" class="h1 mb-0">${nftTokens[index].price} Sylvas </h2>` +
+              '<div class="d-flex flex-row">' +
+                '<div class="align-self-center" style="margin-right: 30px">' +
+                  '<i class="fa-solid fa-coins fa-4x coin-icon"></i>'+
+                "</div>" +
+                '<div class="align-self-center">' +
+                  `<h2 id="balanceHeader" class="h1 mb-0">${nftTokens[index].price} Sylvas </h2>` +
+                '</div>' +
               '</div>' +
             "</div>" +
           "</div>" +
         "</div>" +
       "</div>";
-
+     
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
     }
@@ -109,7 +119,7 @@ async function renderMetadata(tokenId, metadata) {
 
   if (!metadata.name) return "Metadados não recuperados";
   return (
-    `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">` +
+    `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" style="margin-top: 20px;" aria-labelledby="headingOne" data-bs-parent="#accordionExample">` +
       '<div class="accordion-body">' +
         "<p>" +
           `<b> Status: </b> ${metadata?.properties?.status} <br />` +
