@@ -138,7 +138,7 @@ async function compensate(tokenId) {
   let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/compensateNFT`;
   
   var init = {
-    method: "POST",
+    method: "PATCH",
     headers: headers,
   };  
 

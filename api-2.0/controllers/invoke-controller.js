@@ -72,7 +72,7 @@ exports.mint = async (req, res, next) => {
   });
 };
 
-exports.compensatenft = async (req, res, next) => {
+exports.compensateNFT = async (req, res, next) => {
   logger.info("Entered compensation function");
 
   const chaincodeName = req.params.chaincode;
@@ -88,11 +88,6 @@ exports.compensatenft = async (req, res, next) => {
   //get receiver id
   const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
   if (!receiverAccountId) return;
-
-  // Verifica se esta tentando compensar sylvas
-  if (tokenId === "$ylvas") {
-    return next(new HttpError(500,"Não é possivel compensar $ylvas"));
-  }
 
   try {
     await chaincode.submitTransaction("SmartContract:CompensateNFT", receiverAccountId, tokenId);

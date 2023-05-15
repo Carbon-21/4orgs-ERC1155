@@ -63,7 +63,7 @@ router.post(
 );
 
 //auxiliary route ised to update an NFT compensation State
-router.post(
+router.patch(
   "/channels/:channel/chaincodes/:chaincode/compensateNFT",
   [
     param("channel").trim().not().isEmpty().isString(),
@@ -71,7 +71,7 @@ router.post(
     body("tokenId").trim().not().isEmpty().isString(),
     validateAll,
   ],
-  invokeController.compensatenft
+  invokeController.compensateNFT
 );
 
 ////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
