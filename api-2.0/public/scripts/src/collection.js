@@ -34,6 +34,7 @@ async function collection() {
 
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
+      //Habilita card, pois algumas opções o desabilitam
       document.getElementById("nft-showroom").style.display = "block";
     }
   } else {

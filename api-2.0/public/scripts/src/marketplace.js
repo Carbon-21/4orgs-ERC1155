@@ -2,6 +2,9 @@ let metadata;
 let metadataArray = [];
 
 async function marketplace() {
+  //Habilita gif loader
+  document.getElementById("loader").style.display = "flex";
+  
   // Recuperar todos os nfts com status "sale"
   let nftTokens = await getNftOnSale();
   // Caso haja nfts
@@ -32,7 +35,7 @@ async function marketplace() {
                     `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
                       Ver mais                                       
                     </button>` +
-                    `<button id="buyButton" type="button" class="btn btn-primary btn-md" > 
+                    `<button id="buyButton" type="button" class="btn btn-primary btn-md" onclick='buy("${tokenId}")' > 
                       Comprar 
                     </button>`+
                   '</div>'+        
@@ -54,6 +57,8 @@ async function marketplace() {
      
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
+      //Habilita card, pois algumas opções o desabilitam
+      document.getElementById("nft-showroom").style.display = "block";
     }
   } else {
     console.log("HTTP Error ", response.status);
@@ -164,4 +169,65 @@ function seeMoreButton(){
   }
 }
 
-//function buy()
+async function buy(tokenIdInput){
+  document.getElementById("nft-showroom").style.display = "none";
+  document.getElementById("loader").style.display = "flex";
+
+  tokenIdValue = tokenIdInput.replace(/\s/g, "");
+
+  let jwt = localStorage.getItem("token");
+  
+  let headers = new Headers();
+  headers.append("Authorization", "Bearer " + jwt);
+  headers.append("Content-Type", "application/json");
+
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/Buy`;
+  
+  var init = {
+    method: "POST",
+    headers: headers,
+  };
+
+  body = {
+    tokenId: tokenIdValue,
+  }; 
+
+  init.body = JSON.stringify(body);
+
+  let response = await fetch(url, init);
+  
+  if (response.ok) {
+    
+    response = await response.json();
+    if (response.result != "success") {
+      await marketplace();
+      let element =
+        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Ocorreu um erro na compra do produto` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    } else {
+      await marketplace();
+      let element =
+        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Compra do produto realizada com sucesso` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    }
+  }
+  else {
+    document.getElementById("loader").style.display = "none";
+    console.log("HTTP Error ", response.status);
+    await marketplace();
+    let element =
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+      `Ocorreu um erro na compra do produto` +
+      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+      `</div>`;
+    document.getElementById("flash").innerHTML = element;
+    return null;
+  }
+
+}
