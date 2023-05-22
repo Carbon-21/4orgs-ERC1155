@@ -49,7 +49,7 @@ async function getMetadataFromURI(URI) {
 
   let metadata;
   try {
-    let ipfsData = await ipfs.getMetadata(hash);
+    let ipfsData = await ipfs.readIPFS(hash);
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
   } catch (error) {
     return next(new HttpError(500));
@@ -67,7 +67,7 @@ exports.postMetadata = async (req, res, next) => {
   try {
     metadata = makeMetadata(req.body.metadata);
     tokenId = tokenId || metadata.properties.id;
-    hash = await ipfs.uploadIPFS(metadata);
+    hash = await ipfs.writeIPFS(metadata);
     logger.debug("TokenId: " + tokenId);
     logger.debug("Hash of uploaded Metadata: " + hash);
   } catch (error) {

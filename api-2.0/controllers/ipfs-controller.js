@@ -23,7 +23,7 @@ exports.getLatestIPFSBlock = async (req, res, next) => {
     logger.info("IFPS URI retrieved from the ledger:", uri);
 
     //get block info from the IPFS
-    let ipfsData = await ipfs.getMetadata(uri.replace("ipfs://", ""));
+    let ipfsData = await ipfs.readIPFS(uri.replace("ipfs://", ""));
     let ipfsDataJson = (await ipfsData) ? JSON.parse(ipfsData) : null;
     logger.info("Block data retrieved from the IPFS");
 
@@ -43,7 +43,7 @@ exports.postTransparencyLog = async () => {
   try {
     const tail = await getBlockchainTailLocal(chaincodeName, channelName);
 
-    const hash = await ipfs.uploadIPFS(tail);
+    const hash = await ipfs.writeIPFS(tail);
     logger.info("Crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
 
     const uri = await setURILocal(hash, org, chaincodeName, channelName);

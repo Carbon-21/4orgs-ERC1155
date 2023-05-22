@@ -8130,7 +8130,6 @@ window.getLatestIPFSBlock = async function () {
   document.getElementById("loader").style.display = "none";
   if (response.ok) {
     response = await response.json();
-    console.log(response);
 
     //set block info in HTML
     document.getElementById("flash").innerHTML = successFlashMessage;

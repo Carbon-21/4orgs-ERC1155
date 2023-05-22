@@ -9,6 +9,7 @@ artifacts/channel/crypto-config/**
 !api-2.0/keys/**/*
 **/*.crt
 log.txt
+notes.md
 api-2.0/config/connection-*.json
 api-2.0/public/scripts/*.js
 artifacts/channel/create-certificate-with-ca/fabric-ca/**/**

@@ -35,6 +35,7 @@ kill-hlf
 
 #remove couch-db instance, so identities get properly deleted
 rm fabric-ca/carbon/fabric-ca-server.db
+rm -rf ../genesis.block
 
 ###### RUN ######
 #run mysql
