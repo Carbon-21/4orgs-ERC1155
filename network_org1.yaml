@@ -9,8 +9,8 @@ channels:
   mychannel:
     orderers: 
     - orderer.example.com
-    - orderer2.example.com
-    - orderer3.example.com
+    # - orderer2.example.com
+    # - orderer3.example.com
     peers:
       peer0.carbon.example.com:
         endorsingPeer: true
@@ -39,12 +39,12 @@ organizations:
       - peer0.carbon.example.com
     certificateAuthorities:
       - ca.carbon.example.com
-  UsersMSP:
-    mspid: UsersMSP
-    peers:
-      - peer0.users.example.com
-    certificateAuthorities:
-      - ca.users.example.com
+  # UsersMSP:
+  #   mspid: UsersMSP
+  #   peers:
+  #     - peer0.users.example.com
+  #   certificateAuthorities:
+  #     - ca.users.example.com
   IbamaMSP:
     mspid: IbamaMSP
     peers:
@@ -64,18 +64,18 @@ orderers:
       ssl-target-name-override: orderer.example.com
     tlsCACerts:
       path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
-  orderer2.example.com:
-    url: grpcs://localhost:8050
-    grpcOptions:
-      ssl-target-name-override: orderer2.example.com
-    tlsCACerts:
-      path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
-  orderer3.example.com:
-    url: grpcs://localhost:9050
-    grpcOptions:
-      ssl-target-name-override: orderer3.example.com
-    tlsCACerts:
-      path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
+  # orderer2.example.com:
+  #   url: grpcs://localhost:8050
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer2.example.com
+  #   tlsCACerts:
+  #     path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
+  # orderer3.example.com:
+  #   url: grpcs://localhost:9050
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer3.example.com
+  #   tlsCACerts:
+  #     path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
 peers:
   peer0.carbon.example.com:
     url: grpcs://localhost:7051
@@ -84,13 +84,13 @@ peers:
       grpc-max-send-message-length: -1
     tlsCACerts:
       path: artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/tlsca/tlsca.carbon.example.com-cert.pem
-  peer0.users.example.com:
-    url: grpcs://localhost:9051
-    grpcOptions:
-      ssl-target-name-override: peer0.users.example.com
-      grpc-max-send-message-length: -1
-    tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/users.example.com/tlsca/tlsca.users.example.com-cert.pem
+  # peer0.users.example.com:
+  #   url: grpcs://localhost:9051
+  #   grpcOptions:
+  #     ssl-target-name-override: peer0.users.example.com
+  #     grpc-max-send-message-length: -1
+  #   tlsCACerts:
+  #     path: artifacts/channel/crypto-config/peerOrganizations/users.example.com/tlsca/tlsca.users.example.com-cert.pem
   peer0.ibama.example.com:
     url: grpcs://localhost:11051
     grpcOptions:

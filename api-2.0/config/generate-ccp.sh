@@ -23,14 +23,6 @@ CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM )" > connection-carbon.json
 
-ORG=users
-P0PORT=9051
-CAPORT=8054
-PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/peers/peer0.users.example.com/tls/tlscacerts/tls-localhost-8054-ca-users-example-com.pem
-CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/msp/tlscacerts/ca.crt
-
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-users.json
-
 ORG=cetesb
 P0PORT=11051
 CAPORT=10054

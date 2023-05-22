@@ -167,7 +167,7 @@ if [ -z "${fast_install}" ]; then
 fi
 
 #run chouchdb, orgs peers and orderers dockers
-docker-compose -f artifacts/docker-compose.yaml up -d 
+docker-compose -f artifacts/docker-compose.yaml up -d  --remove-orphans
 
 # #create channel and deploy chaincode on each org
 if [ -z "${fast_install}" ]; then
@@ -175,7 +175,7 @@ if [ -z "${fast_install}" ]; then
   sleep 15
   echo -e "${INFO_COLOR}Creating channels:${NC}"
   ./createChannel.sh
-  echo -e "${INFO_COLOR}Deploying channels:${NC}"
+  echo -e "${INFO_COLOR}Deploying chaincode:${NC}"
   ./deployChaincode.sh
 fi
 
