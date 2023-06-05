@@ -1058,15 +1058,14 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				partialBalance, _ = strconv.ParseUint(string(nft.Amount), 10, 64)
 
 			} else {
+				// Mandando taxa para a carbon
+				err = taxes(ctx, sender, sender, tokenId, taxesPID[tokenId])
+				if err != nil {
+					return err
+				}
 				partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
 				partialBalance += partBalAmount
 			}
-		}
-
-		// Mandando taxa para a carbon
-		err = taxes(ctx, sender, sender, tokenId, taxesPID[tokenId])
-		if err != nil {
-			return err
 		}
 
 		if partialBalance < neededAmount {
