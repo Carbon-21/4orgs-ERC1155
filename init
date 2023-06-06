@@ -153,7 +153,6 @@ echo -e "${INFO_COLOR}Docker compose CA setup:${NC}"
 #run one docker for each CA (each org has 1, incluind the orderer)
 docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml up -d
 
-
 if [ -z "${fast_install}" ]; then
   echo -e "${INFO_COLOR}Waiting for services to be up and running...${NC}"
   sleep 15
@@ -169,7 +168,7 @@ fi
 #run chouchdb, orgs peers and orderers dockers
 docker-compose -f artifacts/docker-compose.yaml up -d  --remove-orphans
 
-# #create channel and deploy chaincode on each org
+#create channel and deploy chaincode on each org
 if [ -z "${fast_install}" ]; then
   echo -e "${INFO_COLOR}Waiting for services to be up and running...${NC}"
   sleep 15
@@ -179,8 +178,7 @@ if [ -z "${fast_install}" ]; then
   ./deployChaincode.sh
 fi
 
-# #create connection profiles if they don't exist already
-
+#create connection profiles if they don't exist already
 if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
   echo -e "${INFO_COLOR}Generating CCP:${NC}"
   ./api-2.0/config/generate-ccp.sh

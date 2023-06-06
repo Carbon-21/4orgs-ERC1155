@@ -181,6 +181,56 @@ func GetRole(clientAccountID string) string {
 	return match[1]
 }
 
+//returns whole world state
+func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
+
+	// // Must be Carbon's admin
+	// err := authorizationHelper(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Slice de slices que conterá os tokens e suas quantidades
+	var tokens [][]string
+
+	// Get all transactions
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Split the key
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", err)
+		}
+
+		// Get key parts
+		tokenAccount := compositeKeyParts[0]
+		tokenID := compositeKeyParts[1]
+		tokenSender := compositeKeyParts[2]
+		// metadata := compositeKeyParts[3]
+
+		// Get value
+		tokenAmount := queryResponse.Value
+
+		//! Add info to the array of arrays
+		element := []string{tokenAccount,tokenID,tokenSender, string(tokenAmount)}
+		tokens = append(tokens, element)
+		// }
+	}
+
+	return tokens, nil
+}
+
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, metadata string) error {
@@ -855,9 +905,9 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 }
 
-// SetURI set a specific URI containing the metadata related to a given tokenID
+//TODO: após metadados saírem do IPFS, ajsutar o nome das variáveis. Essa função será usada somente pra logs transparentes
+//  SetURI set a specific URI containing the metadata related to a given tokenID
 func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
-
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
 	if err != nil {
 		return err
@@ -915,7 +965,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("failed to get MSPID: %v", err)
 	}
 	if clientMSPID != minterMSPID {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	// Get ID of submitting client identity and check if role is admin
@@ -924,7 +974,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 	if GetRole(operator) != "admin" {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	return nil

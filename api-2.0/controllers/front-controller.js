@@ -2,7 +2,6 @@ const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
 
-
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
   res.render("presignup", {
@@ -77,7 +76,7 @@ exports.postSignup = async (req, res, next) => {
     password,
     cpf,
     name,
-    saveKeyOnServer
+    saveKeyOnServer,
   };
 
   if (!saveKeyOnServer) data.csr = req.body.csr;
@@ -102,7 +101,7 @@ exports.postSignup = async (req, res, next) => {
       // if the user has successfully registered, store user jwt and username info in session
       req.session.username = email;
       req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
-      res.json({success: true, token:response.data.token, certificate: response.data.certificate})
+      res.json({ success: true, token: response.data.token, certificate: response.data.certificate });
     })
 
     // If an error occurs, redirects to the login page and send error message
@@ -198,7 +197,7 @@ exports.postLogin = async (req, res, next) => {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.session.username = email;
       req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
-      res.json({success: true, token: response.data.token, keyOnServer: response.data.keyOnServer})
+      res.json({ success: true, token: response.data.token, keyOnServer: response.data.keyOnServer });
     })
 
     // If an error occurs, redirect to the login page and send error message
@@ -230,12 +229,11 @@ exports.getWallet = async (req, res, next) => {
 ///// COLLECTION CONTROLLERS /////
 
 exports.getCollection = async (req, res, next) => {
-    res.render("collection", {
-      title: "My Collection",
-      cssPath: "css/collection.css",
-    });
+  res.render("collection", {
+    title: "My Collection",
+    cssPath: "css/collection.css",
+  });
 };
-
 
 ///// $ILVAS MINT CONTROLLERS /////
 
@@ -253,7 +251,6 @@ exports.getMintFromNFT = (req, res, next) => {
   });
 };
 
-
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
@@ -269,5 +266,14 @@ exports.getTransfer = (req, res, next) => {
   res.render("transfer", {
     title: "Transfer",
     cssPath: "css/transfer.css",
+  });
+};
+
+///// TRANSPARENCY LOGS CONTROLLERS /////
+
+exports.getLogs = (req, res, next) => {
+  res.render("logs", {
+    title: "Logs Transparentes",
+    cssPath: "css/logs.css",
   });
 };

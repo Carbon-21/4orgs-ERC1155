@@ -53,4 +53,7 @@ router.get("/nft/mint", isLoggedIn, isAdmin, frontController.getMintNFT);
 
 router.get("/transfer", isLoggedIn, frontController.getTransfer);
 
+///// TRANSPARENCY LOGS CONTROLLERS /////
+router.get("/logs", frontController.getLogs);
+
 module.exports = router;
