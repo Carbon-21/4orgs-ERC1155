@@ -90,7 +90,7 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br />` +
     `<b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
-    `<b> Geração de Sylvas: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
+    `<b> Geração de C21: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
     await renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
     "<p>" +
     "</div>"
@@ -140,7 +140,7 @@ async function renderListForSale(tokenId) {
 
      `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
        '<div class="flex-fill">'+
-          '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+          '<label class="form-label" for="price">Insira o preço em C21</label>'+ 
           '<br />'+
           '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
             '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+

@@ -67,7 +67,7 @@ async function marketplace() {
                     '<i class="fa-solid fa-coins fa-4x coin-icon"></i>'+
                   "</div>" +
                   '<div class="align-self-center">' +
-                    `<h2 id="balanceHeader" class="h1 mb-0">${priceWithTaxes} Sylvas </h2>` +
+                    `<h2 id="balanceHeader" class="h1 mb-0">${priceWithTaxes} C21 </h2>` +
                   '</div>' +
                 '</div>' +
               "</div>" +
