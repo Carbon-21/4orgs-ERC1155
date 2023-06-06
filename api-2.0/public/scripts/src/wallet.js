@@ -43,7 +43,7 @@ window.walletClientSideSigning = async () => {
         
         // Displays Flash Messages
         if (response.result == "SUCCESS") {
-            balanceHeader.innerText = response.payload + " Sylvas";
+            balanceHeader.innerText = response.payload + " C21";
             document.getElementById("flash").innerHTML = successFlashMessage;
         } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -82,7 +82,7 @@ window.walletServerSideSigning = async () => {
             if (response.result == null) alert("Falha de sincronização");
             else {
                 document.getElementById("flash").innerHTML = successFlashMessage;
-                balanceHeader.innerText = response.result + " Sylvas";
+                balanceHeader.innerText = response.result + " C21";
             }
         } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;

@@ -27122,7 +27122,11 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         hashedPassword = hashedPassword.hashHex;
         headers = new Headers();
         headers.append("Content-Type", "application/json");
+<<<<<<< HEAD
         url = "https://localhost:4000/signup";
+=======
+        url = "https://192.168.18.43:4000/signup";
+>>>>>>> new view
         init = {
           method: "POST",
           headers: headers
@@ -27207,7 +27211,11 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
     while (1) switch (_context2.prev = _context2.next) {
       case 0:
         event.preventDefault();
+<<<<<<< HEAD
         url = "https://localhost:4000/login";
+=======
+        url = "https://192.168.18.43:4000/login";
+>>>>>>> new view
         password = document.getElementById("password").value.toString().split("/")[0];
         email = document.getElementById("email").value.split("/")[0]; //removes additional / in the end;
         salt = document.getElementById("salt").value.split("/")[0];

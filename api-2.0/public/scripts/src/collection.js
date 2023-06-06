@@ -147,7 +147,7 @@ async function renderListForSale(tokenId) {
 
      `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
        '<div class="flex-fill">'+
-          '<label class="form-label" for="price">Insira o preço em $ylvas</label>'+ 
+          '<label class="form-label" for="price">Insira o preço em C21</label>'+ 
           '<br />'+
           '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
             '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+

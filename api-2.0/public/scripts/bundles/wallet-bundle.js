@@ -11611,7 +11611,7 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
 
         // Displays Flash Messages
         if (response.result == "SUCCESS") {
-          balanceHeader.innerText = response.payload + " Sylvas";
+          balanceHeader.innerText = response.payload + " C21";
           document.getElementById("flash").innerHTML = successFlashMessage;
         } else {
           document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -11642,7 +11642,7 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
         token = localStorage.getItem("token");
         headers = new Headers();
         headers.append("Authorization", "Bearer " + token);
-        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
+        url = "https://192.168.18.43:4000/query/channels/mychannel/chaincodes/erc1155/selfBalance?tokenId=$ylvas";
         init = {
           method: "GET",
           headers: headers
@@ -11662,7 +11662,7 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
         response = _context2.sent;
         if (response.result == null) alert("Falha de sincronização");else {
           document.getElementById("flash").innerHTML = successFlashMessage;
-          balanceHeader.innerText = response.result + " Sylvas";
+          balanceHeader.innerText = response.result + " C21";
         }
         _context2.next = 23;
         break;

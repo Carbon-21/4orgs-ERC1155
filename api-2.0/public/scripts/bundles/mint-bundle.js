@@ -11413,7 +11413,11 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("Authorization", "Bearer " + token);
+<<<<<<< HEAD
           url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+=======
+          url = "https://192.168.18.43:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+>>>>>>> new view
           init = {
             method: "POST",
             headers: headers
@@ -11544,7 +11548,11 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("Authorization", "Bearer " + token);
+<<<<<<< HEAD
           url = "https://localhost:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+=======
+          url = "https://192.168.18.43:4000/invoke/channels/mychannel/chaincodes/erc1155/mint";
+>>>>>>> new view
           init = {
             method: "POST",
             headers: headers
