@@ -33,25 +33,73 @@ Por fim, configure o banco de dados de usuários, conforme a seção "instalaç�
 
 ## Como Usar
 
-### Rede
+---
 
-Para subir a rede:
+### Utilizando o sistema a primeira vez:
+
+<br>
+No diretório raiz, adicione a permissão de execução para os scripts:
 
 ```
-chmod +x init
-./init
+chmod +x init kill
 ```
 
 <br>
-Para matar a rede, sem subir uma nova:
+
+Inicie o sistema a primeira vez executando o comando:
+
+```
+./init -i
+```
+
+<br>
+
+Finalize o sistema todo (incluindo Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) executando o comando:
+
+```
+./kill -r
+```
+
+### Utilizando o sistema persistente:
+
+<br>
+
+Iniciar/Reiniciar o sistema executando o comando:
+
+```
+./init
+```
+
+Iniciar o sistema e recompilar o Bundle Javascript (Browserify):
+
+```
+./init -j
+```
+
+Finalizar o sistema sem reinicar o containers:
 
 ```
 ./kill
 ```
 
-_Nota: o script init também roda o kill, e ambos matam qualquer conatiner docker previamente ativo!_
+Finalizar o sistema forçando a reinicialização (inclusive Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) :
 
-_Nota 2: caso você veja erros no output do comando init, veja se há uma pasta chamada genesis.block em ./artifacts/channel/. Se houver, delete ela. Trata-se de uma pasta intermediária que não deveria existir e pode não ter sido deletada adequadamente._
+```
+./kill -r
+```
+
+Para mais informações utilize:
+
+```
+./init -h
+
+e
+
+./kill -h
+```
+
+_Nota: o script ./init -r também roda o kill, e ambos matam qualquer container docker previamente ativo!_
+
 <br>
 <br>
 

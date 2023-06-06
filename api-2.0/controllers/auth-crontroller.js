@@ -30,6 +30,7 @@ exports.getSalt = async (req, res, next) => {
       where: { email },
     });
   } catch (err) {
+    logger.error(err)
     return next(new HttpError(500));
   }
 

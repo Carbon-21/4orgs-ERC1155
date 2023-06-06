@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const frontController = require("../controllers/front-controller.js");
 const isLoggedIn = require("../middleware/is-logged-in");
 const isAdmin = require("../middleware/is-admin");
+const recaptcha = require("../middleware/recaptcha");
 const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
@@ -13,9 +14,9 @@ router.get("/presignup", frontController.getPreSignup);
 
 router.post("/presignup", frontController.postPreSignup);
 
-router.get("/signup", frontController.getSignup);
+router.get("/signup", recaptcha.render, frontController.getSignup);
 
-router.post("/signup", frontController.postSignup);
+router.post("/signup", recaptcha.verify, frontController.postSignup);
 
 ///// LOGIN ROUTES /////
 router.get("/prelogin", frontController.getPreLogin);

@@ -110,6 +110,59 @@ type ToID struct {
 	ID string
 }
 
+type Metadata struct {
+	Id                string `json:"id"`
+	Status            string `json:"status"`
+	Amount            string `json:"amount"` // Área em  hectares
+	LandOwner         string `json:"land_owner"`
+	Land              string `json:"land"`
+	Phyto             string `json:"phyto"`
+	Geolocation       string `json:"geolocation"`
+	CompensationOwner string `json:"compensation_owner"`
+	CompensationState string `json:"compensation_state"`
+	MintSylvas        string `json:"mint_sylvas"`
+	// PlantedAmount  string `json:"planted_amount"`
+	// OrigPlantedAmount  string `json:"orig_planted_amount"`
+
+	//AreaClassification string `json:"areaclassification"`
+	//Verifier string `json:"verifier"`
+
+	/* Definições no metadata controller
+	const customData = {
+	id: dto.id || "",
+	verifier: dto.verifier || "",
+	private_verifier: dto.private_verifier || "",
+	land_owner: dto.land_owner || "",
+	// land_info: {
+	phyto: dto.phyto || "",
+	land: dto.land || "",
+	geolocation: dto.geolocation || "",
+	area_classification: dto.area_classification || "",
+	// },
+	// nft_info: {
+	amount: dto.amount || "",
+	status: dto.status || "",
+	nft_type: dto.nft_type || "",
+	value: dto.value || "",
+	can_mint_sylvas: dto.can_mint_sylvas || "",
+	sylvas_minted: dto.sylvas_minted || "",
+	bonus_ft: dto.bonus_ft || "",f
+	// },
+	compensation_owner: dto.compensation_owner || "",
+	compensation_state: dto.compensation_state || "",
+	certificate: dto.certificate || "",
+	minter: dto.minter || "",
+	queue: dto.queue || "",
+	custom_notes: dto.custom_notes || "",
+	*/
+
+}
+
+type NFToken struct {
+	Amount   string   `json:"amount"`
+	Metadata Metadata `json:"metadata"`
+}
+
 // Get role (OU) from clientAccountID
 func GetRole(clientAccountID string) string {
 	//decode from b64
@@ -180,7 +233,12 @@ func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterfac
 
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64) error {
+func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, metadata string) error {
+
+	var decMetadata Metadata
+	json.Unmarshal([]byte(metadata), &decMetadata)
+
+	//fmt.Printf("Metadata : %#v",decMetadata)
 
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
@@ -200,7 +258,7 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	}
 
 	// Mint tokens
-	err = mintHelper(ctx, operator, account, id, amount)
+	err = mintHelper(ctx, operator, account, id, amount, decMetadata)
 	if err != nil {
 		return err
 	}
@@ -210,18 +268,16 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
-
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
-func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64,error) {
+func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64, error) {
 
 	// -------- Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
 
-	
 	// Stores a list of all NFTs of the same user (account))
-	NFTSumList := make([][]string,0)
+	NFTSumList := make([][]string, 0)
 
 	if tokenid == "" {
 		return 0, fmt.Errorf("Please inform tokenid!")
@@ -230,15 +286,15 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
 
 	// Get ID of submitting client identity
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		return 0,fmt.Errorf("failed to get client id: %v", err)
+		return 0, fmt.Errorf("failed to get client id: %v", err)
 	}
-	
+
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
 		return 0, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
@@ -251,86 +307,140 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 			return 0, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 		}
 
-		fmt.Print(queryResponse)
-		// Split Key to search for specific tokenid 
+		//fmt.Print(queryResponse)
+		// Split Key to search for specific tokenid
 		// The compositekey (account -  tokenid - senderer)
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-		
-      		  if err != nil {
-      		      return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-     		   }
-     		   
-     		  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+
+		if err != nil {
+			return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
+
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// fmt.Printf("NFT Qtd:" + nft.Metadata.Land)
+
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
-		
+
 		// Contains the account of the user who have the nft
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
-		if returnedTokenID != tokenid {
-		
+		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") {
+
 			// Part to insert the logic of how many sylvas to add for that NFT
-			var SylvasAdd int 
-			SylvasAdd = 10   // add 10 sylvas per nft
-			
+			var SylvasAdd int
+			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Land)
+			// SylvasAdd =  10 // add 10 sylvas per nft
+
 			// Function that checks if the NFT receiver is in the temporary Slice Array
 			// If found, it returns the index to concatenate the id of the nft found and add the qty of sylvas
 			// Otherwise, add to this slice the set of the token id, the receiver and some sylvas
-			containInSliceIndex := containInSlice(NFTSumList,accountNFT)
-			
-			//  Found the account in the list
-			if (containInSliceIndex != -1){
+			containInSliceIndex := containInSlice(NFTSumList, accountNFT)
+
+			//  Found thes account in the list
+			if containInSliceIndex != -1 {
 				// Concatenates the id of the other nft
 				//fmt.Print("ID nfts", NFTSumList[containInSliceIndex][0])
 				NFTSumList[containInSliceIndex][0] = string(NFTSumList[containInSliceIndex][0]) + "," + string(returnedTokenID)
-				
+
 				// Add the value to the total number of silvas
-				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])	
-				currentSylv,err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
+				//fmt.Print("Sylvas", NFTSumList[containInSliceIndex][2])
+				currentSylv, err := strconv.Atoi(NFTSumList[containInSliceIndex][2])
 				fmt.Print(err)
-				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd) 		
-			}else{
+				NFTSumList[containInSliceIndex][2] = strconv.Itoa(currentSylv + SylvasAdd)
+			} else {
 				//fmt.Print("Adicionando Elemento", returnedTokenID, accountNFT)
-				element := []string{string(returnedTokenID),accountNFT,strconv.Itoa(SylvasAdd)}
-				NFTSumList = append(NFTSumList, element)		
+				element := []string{string(returnedTokenID), accountNFT, strconv.Itoa(SylvasAdd)}
+				NFTSumList = append(NFTSumList, element)
 			}
-			
-						
+
 			// NFTSumList [0] - List of NFTS ids for each user
 			// NFTSumList [1] - Account that owns the nfts
 			// NFTSumList [2] - Total sylvas associated to be added to that account
-									
-			for i:= range NFTSumList{
-				// 'Minting' the tokens from the temporary list		
+
+			for i := range NFTSumList {
+				// 'Minting' the tokens from the temporary list
 				sylvaInt, err := strconv.ParseInt(NFTSumList[i][2], 10, 64)
-				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt))
+				err = mintHelper(ctx, operator, string(NFTSumList[i][1]), tokenid, uint64(sylvaInt), *new(Metadata))
 				if err != nil {
-					return 0,err
+					return 0, err
 				}
-				fmt.Print("AQUI:", string(NFTSumList[i][0]), "-", string(NFTSumList[i][1]), "-", string(NFTSumList[i][2]))
-			}		
+				fmt.Print("AQUI:" + string(NFTSumList[i][0]) + "-" + string(NFTSumList[i][1]) + "-" + string(NFTSumList[i][2]))
+			}
 		}
 
 	}
-	
 
 	return uint64(0), nil
 }
-
-
 
 func containInSlice(NFTSumList [][]string, account string) int {
 	// Checks if it has a receiver for sylvas and if yes, returns the index and the ids of the nfts, if not, it returns 0
 	// Check the list if there is already a destination with the same code
 
-	for i:= range NFTSumList{
+	for i := range NFTSumList {
 		// If it has, concatenate the id of the NFT in the first and perform the sum of the value of sylvas to be added
-		if(NFTSumList[i][1] == account){
+		if NFTSumList[i][1] == account {
 			//fmt.Print("Elemento encontrado, indice:", i)
 			return i
-		}	
-	} 	
-	return -1	
+		}
+	}
+	return -1
+}
+
+func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterface, account string, tokenId string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	if tokenId == "$ylvas" {
+		return fmt.Errorf("Não é possivel editar metadados de FTs")
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// Verifica se o estado atual do NFT já é compensado
+		if nft.Metadata.CompensationState == "Compensado" {
+			return fmt.Errorf(("NFT já compensado"))
+		} else {
+			// Logica para verificar se o nft é passivel de compensação ??
+			// Verifica se quem esta compensando é quem tem o direito de compensacao
+
+			// Altera o estado de compensação
+			nft.Metadata.CompensationState = "Compensado"
+
+			// Salva alteração no World State
+			tokenAsBytes, _ := json.Marshal(nft)
+
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao inserir no world state o nft com estado de compensado %v", err)
+			}
+
+		}
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
@@ -366,7 +476,7 @@ func (s *SmartContract) MintBatch(ctx contractapi.TransactionContextInterface, a
 	// Mint tokens
 	for _, id := range amountToSendKeys {
 		amount := amountToSend[id]
-		err = mintHelper(ctx, operator, account, id, amount)
+		err = mintHelper(ctx, operator, account, id, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -476,7 +586,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Deposit the fund to the recipient address
-	err = addBalance(ctx, operator, recipient, id, amount)
+	err = addBalance(ctx, operator, recipient, id, amount, *new(Metadata))
 	if err != nil {
 		return err
 	}
@@ -538,7 +648,7 @@ func (s *SmartContract) BatchTransferFrom(ctx contractapi.TransactionContextInte
 	// Deposit the funds to the recipient address
 	for _, id := range amountToSendKeys {
 		amount := amountToSend[id]
-		err = addBalance(ctx, sender, recipient, id, amount)
+		err = addBalance(ctx, sender, recipient, id, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -604,7 +714,7 @@ func (s *SmartContract) BatchTransferFromMultiRecipient(ctx contractapi.Transact
 
 		amount := amountToSend[key]
 
-		err = addBalance(ctx, sender, key.To, key.ID, amount)
+		err = addBalance(ctx, sender, key.To, key.ID, amount, *new(Metadata))
 		if err != nil {
 			return err
 		}
@@ -722,24 +832,23 @@ func (s *SmartContract) SelfBalance(ctx contractapi.TransactionContextInterface,
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) ([][]string) {
+func (s *SmartContract) SelfBalanceNFT(ctx contractapi.TransactionContextInterface) [][]string {
 	// Get ID of submitting client identity
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
-		ret := make([][]string,0)
-		ret = append(ret,[]string{"failed to get client id"})
+		ret := make([][]string, 0)
+		ret = append(ret, []string{"failed to get client id"})
 		return ret
 		//return "0", fmt.Errorf("failed to get client id: %v", err)
 	}
-
 
 	idNFTs, _ := idNFTHelper(ctx, clientID)
 	return idNFTs
 }
 
 // SelfBalance returns the balance of the requesting client's account
-func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) ([][]string) {
-	idNFTs, _ := idNFTHelper(ctx,account)
+func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, account string) [][]string {
+	idNFTs, _ := idNFTHelper(ctx, account)
 	return idNFTs
 }
 
@@ -756,7 +865,7 @@ func (s *SmartContract) ClientAccountID(ctx contractapi.TransactionContextInterf
 	return clientAccountID, nil
 }
 
-//  TotalSupply return the total supply of given tokenID
+// TotalSupply return the total supply of given tokenID
 func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface, tokenid string) (uint64, error) {
 
 	var balance uint64
@@ -779,9 +888,9 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 		// Split Key to search for specific tokenid
 		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-        if err != nil {
-            return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-        }
+		if err != nil {
+			return 0, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
 
 		// Add all balances of informed tokenid
 		returnedTokenID := compositeKeyParts[1]
@@ -798,8 +907,7 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 //TODO: após metadados saírem do IPFS, ajsutar o nome das variáveis. Essa função será usada somente pra logs transparentes
 //  SetURI set a specific URI containing the metadata related to a given tokenID
-func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
-
+func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
 	if err != nil {
 		return err
@@ -811,8 +919,8 @@ func  (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tok
 
 }
 
-//  GetURI return metadata URI related to a given tokenID
-func  (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
+// GetURI return metadata URI related to a given tokenID
+func (s *SmartContract) GetURI(ctx contractapi.TransactionContextInterface, tokenID string) (string, error) {
 
 	uriBytes, err := ctx.GetStub().GetState(tokenID)
 	if err != nil {
@@ -872,7 +980,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 	return nil
 }
 
-func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id string, amount uint64) error {
+func mintHelper(ctx contractapi.TransactionContextInterface, operator string, account string, id string, amount uint64, metadata Metadata) error {
 	if account == "0x0" {
 		return fmt.Errorf("mint to the zero address")
 	}
@@ -881,7 +989,7 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 		return fmt.Errorf("Quantidade emitida dever um inteiro positivo")
 	}
 
-	err := addBalance(ctx, operator, account, id, amount)
+	err := addBalance(ctx, operator, account, id, amount, metadata)
 	if err != nil {
 		return err
 	}
@@ -889,7 +997,7 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 	return nil
 }
 
-func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
+func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64, metadata Metadata) error {
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -908,15 +1016,46 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 	balance += amount
 
-	err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(balance), 10)))
-	if err != nil {
-		return err
+	//Consulta world state e pega metadados, se eles estiverem vazios para um NFT
+	if (metadata == Metadata{} && idString != "$ylvas") {
+		res, err := getMetada(ctx, sender, idString)
+		if err != nil {
+			return err
+		}
+
+		metadata = res
+	}
+
+	// Se o token for Sylvas (FT), não serão armazenados os metadados, somente a quantidade
+	if idString == "$ylvas" {
+		err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(balance), 10)))
+		if err != nil {
+			return err
+		}
+		// Caso o token for referente a um NFT os metadados serão armazenados
+	} else {
+
+		var tokenMint NFToken
+
+		tokenMint.Amount = strconv.FormatUint(uint64(balance), 10)
+		tokenMint.Metadata = metadata
+		tokenAsBytes, _ := json.Marshal(tokenMint)
+
+		err = ctx.GetStub().PutState(balanceKey, tokenAsBytes)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 func setBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64) error {
+
+	/*metadataString, err := getMetada(ctx, sender, idString)
+	if err != nil {
+		return err
+	}*/
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
 	if err != nil {
@@ -964,9 +1103,6 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
 			}
 
-			partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
-			partialBalance += partBalAmount
-
 			_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
 			if err != nil {
 				return err
@@ -980,6 +1116,16 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 				if err != nil {
 					return fmt.Errorf("failed to delete the state of %v: %v", queryResponse.Key, err)
 				}
+			}
+
+			// Verify if the token is an NFT
+			if compositeKeyParts[1] != "$ylvas" {
+				nft := new(NFToken)
+				_ = json.Unmarshal(queryResponse.Value, nft)
+				partialBalance, _ = strconv.ParseUint(string(nft.Amount), 10, 64)
+			} else {
+				partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
+				partialBalance += partBalAmount
 			}
 		}
 
@@ -995,13 +1141,13 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 					return err
 				}
 			} else {
-				err = addBalance(ctx, sender, sender, tokenId, remainder)
+				err = addBalance(ctx, sender, sender, tokenId, remainder, *new(Metadata))
 				if err != nil {
 					return err
 				}
 			}
 
-		} else if selfRecipientKeyNeedsToBeRemoved{
+		} else if selfRecipientKeyNeedsToBeRemoved {
 			// Delete self recipient key
 			err = ctx.GetStub().DelState(selfRecipientKey)
 			if err != nil {
@@ -1102,12 +1248,11 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		return nil, fmt.Errorf("balance query for the zero address")
 	}
 
-	
 	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
 	var tokenid = "$ylvas"
-	nftlist := make([][]string,0)	
-	
+	nftlist := make([][]string, 0)
+
 	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
@@ -1121,28 +1266,28 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		}
 
 		fmt.Print(queryResponse)
-		// Split Key to search for specific tokenid 
+		// Split Key to search for specific tokenid
 		// The compositekey (account -  tokenid - senderer)
-	_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
-		
-	  if err != nil {
-	      return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
-	   }
-     		   
-	  // Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
-	returnedTokenID := compositeKeyParts[1]
-	
-	// Contains the account of the user who have the nft
-	accountNFT := compositeKeyParts[0]
-	
-	// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
-	if ((returnedTokenID != tokenid) && (accountNFT == account)){
-		// Merge ID and Value of the NFTs
-		element := []string{returnedTokenID, string(queryResponse.Value)}
-		nftlist = append(nftlist,element)
-		
-	}
-	
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", queryResponse.Key, err)
+		}
+
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+		returnedTokenID := compositeKeyParts[1]
+
+		// Contains the account of the user who have the nft
+		accountNFT := compositeKeyParts[0]
+
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+		if (returnedTokenID != tokenid) && (accountNFT == account) {
+			// Merge ID and Value of the NFTs
+			element := []string{returnedTokenID, string(queryResponse.Value)}
+			nftlist = append(nftlist, element)
+
+		}
+
 	}
 	return nftlist, nil
 }
@@ -1178,4 +1323,33 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 		return keys[i].ID < keys[j].ID
 	})
 	return keys
+}
+
+func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (Metadata, error) {
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
+	if err != nil {
+		return *new(Metadata), fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return *new(Metadata), fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+		metadata := nft.Metadata
+
+		// Adiciona info. do token à slice/array de tokens
+		return metadata, nil
+	}
+	return *new(Metadata), fmt.Errorf("Token não encontrado")
 }

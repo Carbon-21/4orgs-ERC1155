@@ -45,7 +45,7 @@ services:
       - ../artifacts/channel/crypto-config/:/etc/data
     command: sh -c "node /opt/explorer/main.js && tail -f /dev/null"
     ports:
-      - 8080:8080
+      - 8181:8080
     depends_on:
       explorerdb.mynetwork.com:
         condition: service_healthy

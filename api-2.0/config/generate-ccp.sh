@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd "$(dirname "$0")"
 function one_line_pem {
     echo "`awk 'NF {sub(/\\n/, ""); printf "%s\\\\\\\n",$0;}' $1`"
 }
@@ -21,13 +21,6 @@ CAPORT=7054
 PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/peers/peer0.carbon.example.com/tls/tlscacerts/tls-localhost-7054-ca-carbon-example-com.pem
 CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/msp/tlscacerts/ca.crt
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM )" > connection-carbon.json
-
-ORG=users
-P0PORT=9051
-CAPORT=8054
-PEERPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/peers/peer0.users.example.com/tls/tlscacerts/tls-localhost-8054-ca-users-example-com.pem
-CAPEM=../../artifacts/channel/crypto-config/peerOrganizations/users.example.com/msp/tlscacerts/ca.crt
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-users.json
 
 ORG=cetesb
 P0PORT=11051
