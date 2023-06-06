@@ -12,6 +12,7 @@ async function marketplace() {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     for (var index in nftTokens) {
       let tokenId = nftTokens[index].id;
+      let priceWithTaxes = parseInt(nftTokens[index].price) + parseInt(nftTokens[index].taxes) ;
       metadata = (await nftMetadata(tokenId))?.message;
       metadataArray.push(metadata);
       element +=
@@ -47,7 +48,7 @@ async function marketplace() {
                   '<i class="fa-solid fa-coins fa-4x coin-icon"></i>'+
                 "</div>" +
                 '<div class="align-self-center">' +
-                  `<h2 id="balanceHeader" class="h1 mb-0">${nftTokens[index].price} Sylvas </h2>` +
+                  `<h2 id="balanceHeader" class="h1 mb-0">${priceWithTaxes} Sylvas </h2>` +
                 '</div>' +
               '</div>' +
             "</div>" +
@@ -57,7 +58,7 @@ async function marketplace() {
      
       // Renderizar a cada nft carregado
       document.getElementById("nft-showroom").innerHTML = element;
-      //Habilita card, pois algumas opções o desabilitam
+      //Habilita card, pois algumas opções o desabilitam 
       document.getElementById("nft-showroom").style.display = "block";
     }
   } else {
@@ -94,6 +95,7 @@ async function getNftOnSale() {
     let nftMarketData = {
       id: result[i][1],
       price: result[i][3],
+      taxes: result[i][4],
     };
 
     nftArray = nftArray.concat(nftMarketData);

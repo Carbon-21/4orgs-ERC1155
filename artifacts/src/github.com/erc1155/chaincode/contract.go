@@ -39,6 +39,7 @@ const taxPercentage = 10
 type ListItem struct {
 	Status string
 	Price  uint64
+	Taxes  uint64
 }
 
 type ListForSaleEvent struct {
@@ -1326,7 +1327,8 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 
 			// Marshal the status and price into JSON
 			status := "sale"
-			data := ListItem{status, price}
+			taxes := price * uint64(taxPercentage) / 100
+			data := ListItem{status, price, taxes}
 			value, err := json.Marshal(data)
 			if err != nil {
 				return fmt.Errorf("failed to marshal NFT data: %v", err)
@@ -1383,7 +1385,8 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
 
 		if data.Status == status {
 			price := strconv.FormatUint(data.Price, 10)
-			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price}
+			taxes := strconv.FormatUint(data.Taxes, 10)
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price, taxes}
 			forSaleNFTs = append(forSaleNFTs, element)
 		}
 	}
@@ -1503,7 +1506,8 @@ func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operat
 
 	// Marshal the status and price into JSON
 	status = "sale"
-	data := ListItem{status, amount[1]}
+	taxes := amount[1] * uint64(taxPercentage) / 100
+	data := ListItem{status, amount[1], taxes}
 	value, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal NFT data: %v", err)
