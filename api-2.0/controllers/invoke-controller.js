@@ -199,11 +199,6 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
     await chaincode.submitTransaction("SmartContract:SetURI", String(currentDate), uri);
 
     logger.info("URI set successfully");
-
-    //close communication channel
-    await gateway.disconnect();
-
-    //send OK response
     return uri;
   } catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
@@ -212,6 +207,77 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
   }
 };
 
+//List a NFT for sale
+exports.listForSale = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const price = req.body.price;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+    //get owner id
+    const ownerAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
+    if (!ownerAccountId) return;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //listForSale
+  try {
+    await chaincode.submitTransaction("SmartContract:ListForSale", ownerAccountId, tokenId, price);
+    logger.info("listForSale set successfully");
+ 
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result: "success",
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
+
+
+//Buy a listed NFT
+exports.buyListed = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+    //get buyer id
+    const buyerAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
+    if (!buyerAccountId) return;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //Buy listed
+  try {
+    await chaincode.submitTransaction("SmartContract:Buy", buyerAccountId, tokenId);
+    logger.info("listForSale set successfully");
+ 
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result: "success",
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
 ////////// OFFLINE TRANSACTION SIGNING METHODS //////////
 
 /**

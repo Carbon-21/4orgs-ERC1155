@@ -430,3 +430,34 @@ decodeBlockBuffers = (block) => {
 
   // console.log(Object.keys(block.data.data[0].payload.header));
 };
+
+// General
+exports.checkForStatus = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const status = req.query.status;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get the NFT listed given status
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:CheckForStatus", status);
+    result = result.toString();
+    //close communication channel
+    await gateway.disconnect();
+    logger.info(`NFT list for status ${status}: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
+

@@ -67,6 +67,19 @@ router.get(
   queryController.totalSupply
 );
 
+// Check NFT listed for sale
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/CheckForStatus", 
+  [
+    param("channel").not().isEmpty(), 
+    param("chaincode").not().isEmpty(), 
+    query("status").trim().not().isEmpty().isString(),
+    validateAll
+  ], 
+  queryController.checkForStatus
+);
+
+
 //auxiliary route used by getMetadata. Not invoked directly in the front.
 router.get(
   "/channels/:channel/chaincodes/:chaincode/getURI",
