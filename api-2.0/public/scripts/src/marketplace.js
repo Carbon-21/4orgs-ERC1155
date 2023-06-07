@@ -16,26 +16,20 @@ async function marketplace() {
         '<center><h2><font color="#5f5f5f">Você não possui NFTs em sua coleção </font></h2> </center>'+
         "</div>";
         document.getElementById("nft-showroom").innerHTML = element;        
-    }else{
+    }
+    else{
       for (var index in nftTokens) {
         let nftinfo = "";
-        console.log(nftTokens[index].id);
-        
-        for (var key in nftTokensGeneral) {
-        
-          console.log(nftTokensGeneral[key][0]);
-          if (nftTokens[index].id == nftTokensGeneral[key][0]){}  
-            nftinfo = JSON.parse(nftTokensGeneral[key][1]);
-            metadata = (await nftMetadata(tokenId,nftinfo))?.message
-           
-          }
-        }
-        
+
         let tokenId = nftTokens[index].id;
         let priceWithTaxes = parseInt(nftTokens[index].price) + parseInt(nftTokens[index].taxes);
 
-       ;
-        metadataArray.push(metadata);
+        for (var key in nftTokensGeneral) {
+          if (nftTokens[index].id == nftTokensGeneral[key][0]){  
+            nftinfo = JSON.parse(nftTokensGeneral[key][1]);
+          }
+        }
+
         element +=
           '<div class="card shadow-lg mt-3">' +
             '<div class="card-body flex-column">' +
@@ -48,9 +42,9 @@ async function marketplace() {
                     `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
                         <p>
                           ${tokenId.slice(1)} <br />
-                          <b> Área (hectares): </b> ${nftinfo?.metadata?.properties?.land} <br />
-                          <b> Fitofisiologia: </b> ${nftinfo?.metadata?.properties?.phyto} <br /> 
-                          <b> Geolocalização: </b> ${nftinfo?.metadata?.properties?.geolocation} <br />  
+                          <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
+                          <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
+                          <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
                         </p>                                          
                     </button>` +
                     '<div class="d-flex flex-row gap-2">' +
@@ -61,7 +55,7 @@ async function marketplace() {
                         Comprar 
                       </button>`+
                     '</div>'+        
-                    (await  renderMetadata(tokenId, metadata)) +
+                    (await  renderMetadata(tokenId, nftinfo)) +
                   "</div>" +
                 "</div>" +
                 '<div class="d-flex flex-row">' +
@@ -83,10 +77,12 @@ async function marketplace() {
         document.getElementById("nft-showroom").style.display = "block";
       }
     }
-    else {
+  }
+  else {
     console.log("HTTP Error ", response.status);
     return null;
   }
+  
 
   //Desabilitar gif do loader
   document.getElementById("loader").style.display = "none";
@@ -129,13 +125,13 @@ async function getNftOnSale() {
 }
 
 // Recuperar json dos metadados do nft (dado tokenId)
-async function nftMetadata(tokenId,nftinfo) {
+async function nftMetadata(tokenId) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
 
-  let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId}`;
+  let url = `https://${HOST}:${PORT}/meta/getMetadata?tokenId=${tokenId.slice(1)}`;
   var init = {
     method: "GET",
     headers: headers,
@@ -146,18 +142,18 @@ async function nftMetadata(tokenId,nftinfo) {
 }
 
 // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
-async function renderMetadata(tokenId, metadata) {
+async function renderMetadata(tokenId, nftinfo) {
 
   if (!nftinfo.amount) return "Metadados não recuperados";
   return (
     `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" style="margin-top: 20px;" aria-labelledby="headingOne" data-bs-parent="#accordionExample">` +
       '<div class="accordion-body">' +
         "<p>" +
-          `<b> Status: </b> ${nftinfo?.metadata?.properties?.status} <br />` +
-          `<b> Quantidade: </b> ${nftinfo?.metadata?.properties?.amount} <br />` +
-          `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.properties?.land_owner} <br />` +
-          `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.properties?.compensation_owner} <br />` +
-          renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.properties?.compensation_state) +
+          `<b> Status: </b> ${nftinfo?.metadata?.status} <br />` +
+          `<b> Quantidade: </b> ${nftinfo?.metadata?.amount} <br />` +
+          `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.land_owner} <br />` +
+          `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
+          renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
         "<p>" +
       "</div>" +
     "</div>"
