@@ -208,6 +208,56 @@ func GetRole(clientAccountID string) string {
 	return match[1]
 }
 
+//returns whole world state
+func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
+
+	// // Must be Carbon's admin
+	// err := authorizationHelper(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Slice de slices que conterá os tokens e suas quantidades
+	var tokens [][]string
+
+	// Get all transactions
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Split the key
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s", err)
+		}
+
+		// Get key parts
+		tokenAccount := compositeKeyParts[0]
+		tokenID := compositeKeyParts[1]
+		tokenSender := compositeKeyParts[2]
+		// metadata := compositeKeyParts[3]
+
+		// Get value
+		tokenAmount := queryResponse.Value
+
+		//! Add info to the array of arrays
+		element := []string{tokenAccount,tokenID,tokenSender, string(tokenAmount)}
+		tokens = append(tokens, element)
+		// }
+	}
+
+	return tokens, nil
+}
+
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, metadata string) error {
@@ -296,7 +346,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		nft := new(NFToken)
 		_ = json.Unmarshal(queryResponse.Value, nft)
 
-		fmt.Printf("NFT Qtd:" + nft.Metadata.Land)
+		// fmt.Printf("NFT Qtd:" + nft.Metadata.Land)
 
 		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
 		returnedTokenID := compositeKeyParts[1]
@@ -366,6 +416,58 @@ func containInSlice(NFTSumList [][]string, account string) int {
 		}
 	}
 	return -1
+}
+
+func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterface, account string, tokenId string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	if tokenId == "$ylvas" {
+		return fmt.Errorf("Não é possivel editar metadados de FTs")
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// Verifica se o estado atual do NFT já é compensado
+		if nft.Metadata.CompensationState == "Compensado" {
+			return fmt.Errorf(("NFT já compensado"))
+		} else {
+			// Logica para verificar se o nft é passivel de compensação ??
+			// Verifica se quem esta compensando é quem tem o direito de compensacao
+
+			// Altera o estado de compensação
+			nft.Metadata.CompensationState = "Compensado"
+
+			// Salva alteração no World State
+			tokenAsBytes, _ := json.Marshal(nft)
+
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao inserir no world state o nft com estado de compensado %v", err)
+			}
+
+		}
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
@@ -830,9 +932,9 @@ func (s *SmartContract) TotalSupply(ctx contractapi.TransactionContextInterface,
 
 }
 
-// SetURI set a specific URI containing the metadata related to a given tokenID
+//TODO: após metadados saírem do IPFS, ajsutar o nome das variáveis. Essa função será usada somente pra logs transparentes
+//  SetURI set a specific URI containing the metadata related to a given tokenID
 func (s *SmartContract) SetURI(ctx contractapi.TransactionContextInterface, tokenID string, tokenURI string) error {
-
 	err := ctx.GetStub().PutState(tokenID, []byte(tokenURI))
 	if err != nil {
 		return err
@@ -890,7 +992,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("failed to get MSPID: %v", err)
 	}
 	if clientMSPID != minterMSPID {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	// Get ID of submitting client identity and check if role is admin
@@ -899,7 +1001,7 @@ func authorizationHelper(ctx contractapi.TransactionContextInterface) error {
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 	if GetRole(operator) != "admin" {
-		return fmt.Errorf("Não autorizado a emitir tokens")
+		return fmt.Errorf("Não autorizado")
 	}
 
 	return nil

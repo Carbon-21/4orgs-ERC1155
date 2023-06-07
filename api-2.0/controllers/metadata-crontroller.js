@@ -47,12 +47,10 @@ async function getMetadataFromURI(URI) {
   }
   logger.debug("Hash received: " + hash);
 
-  // NOTE: IPFS cat
   let metadata;
   try {
     let ipfsData = await ipfs.getMetadata(hash);
     metadata = (await ipfsData) ? JSON.parse(ipfsData) : null;
-    // logger.debug("Metadata: " + JSON.stringify(metadata));
   } catch (error) {
     return next(new HttpError(500));
   }

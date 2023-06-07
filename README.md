@@ -32,23 +32,30 @@ Por fim, configure o banco de dados de usuários, conforme a seção "instalaç�
 <br><br>
 
 ## Como Usar
+
 ---
+
 ### Utilizando o sistema a primeira vez:
+
 <br>
 No diretório raiz, adicione a permissão de execução para os scripts:
 
 ```
 chmod +x init kill
 ```
+
 <br>
 
 Inicie o sistema a primeira vez executando o comando:
+
 ```
 ./init -i
 ```
+
 <br>
 
 Finalize o sistema todo (incluindo Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) executando o comando:
+
 ```
 ./kill -r
 ```
@@ -58,26 +65,31 @@ Finalize o sistema todo (incluindo Banco de Dados MySQL, Containers Docker - Hyp
 <br>
 
 Iniciar/Reiniciar o sistema executando o comando:
+
 ```
 ./init
 ```
 
 Iniciar o sistema e recompilar o Bundle Javascript (Browserify):
+
 ```
 ./init -j
 ```
 
 Finalizar o sistema sem reinicar o containers:
+
 ```
 ./kill
 ```
 
 Finalizar o sistema forçando a reinicialização (inclusive Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) :
+
 ```
 ./kill -r
 ```
 
 Para mais informações utilize:
+
 ```
 ./init -h
 
@@ -87,6 +99,7 @@ e
 ```
 
 _Nota: o script ./init -r também roda o kill, e ambos matam qualquer container docker previamente ativo!_
+
 <br>
 <br>
 
@@ -107,7 +120,7 @@ _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 
 ### Usuário Admin
 
-Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado assim que o primeiro usuário é registrado na plataforma (rota de signup). Login e senha são:
+Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado ao inicializar-se o programa Node. Login e senha são:
 `admin@admin.com admin`
 <br>
 <br>
@@ -132,7 +145,7 @@ Para dar push direto para o branch em que se encontra:
 
 ### Blockchain explorer
 
-Para executar o blockchain explorer:
+O blockchain explorer permite a visualização de informações da rede. Para executá-lo:
 
 ```
 cd explorer
@@ -160,4 +173,15 @@ Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados 
 ./cc-debug
 ```
 
-<br>
+<br><br>
+
+## Desenvolvimento
+
+Notas importante sobre o desenvolvimento
+<br><br>
+
+### Frontend
+
+- Ao desenvolver código javascript que será rodado no navegador do usuário, modificar os arquivos localizados em `./api-2.0/public/scripts/src/`. Não modificar as réplicas contidas em os `./api-2.0/public/scripts/`.
+- Não colocar endereço e porta hardcodeds, utilizar o padrão: `https://${HOST}:${PORT}/rota/desejada`
+- Após modificar um arquivo javascript do frontend, rodar `./get-bundles` dentro de `./api-2.0`. Isso fará com que HOST e PORT sejam modificados nos javascripts finais (`./api-2.0/public/scripts/`), de acordo como os valores configurados em `./api-2.0/.env`.
