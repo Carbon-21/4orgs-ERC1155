@@ -198,7 +198,7 @@ async function listForSale(tokenIdInput) {
   document.getElementById("nft-showroom").style.display = "none";
   document.getElementById("loader").style.display = "flex";
 
-  tokenIdValue = tokenIdInput.replace(/\s/g, "");
+  tokenIdValue = (tokenIdInput).slice(1);
   let priceValue = document.getElementById("priceInput").value;
 
   console.log(tokenIdValue);
