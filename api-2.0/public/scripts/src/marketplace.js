@@ -41,21 +41,25 @@ async function marketplace() {
                   "<div>" +
                     `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
                         <p>
-                          ${tokenId.slice(1)} <br />
-                          <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
-                          <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
-                          <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
-                        </p>                                          
+                          ${tokenId.slice(1)} <br /></p>                                          
                     </button>` +
+                    // `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
+                    //     <p>
+                    //       ${tokenId.slice(1)} <br />
+                    //       <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
+                    //       <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
+                    //       <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
+                    //     </p>                                          
+                    // </button>` +
                     '<div class="d-flex flex-row gap-2">' +
-                      `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
-                        Ver mais                                       
-                      </button>` +
+                      // `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
+                      //   Ver mais                                       
+                      // </button>` +
                       `<button id="buyButton" type="button" class="btn btn-primary btn-md" onclick='buy("${tokenId}")' > 
                         Comprar 
                       </button>`+
                     '</div>'+        
-                    (await  renderMetadata(tokenId, nftinfo)) +
+                    //(await  renderMetadata(tokenId, nftinfo)) +
                   "</div>" +
                 "</div>" +
                 '<div class="d-flex flex-row">' +
