@@ -365,6 +365,39 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
   }
 };
 
+exports.allNFTID = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  try{   
+    //connect to the channel and get the chaincode
+    const [chaincode, gateway] = await helper.getChaincode("Carbon", channel, chaincodeName, "admin", next);
+    if (!chaincode) return;
+
+    //get receiver id
+    const IDsNFT = await helper.getALLNFTIDs("Carbon", channel, chaincodeName, "admin", next);
+    if (!IDsNFT) return;
+
+    result = JSON.parse(IDsNFT.toString());
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+
+    //logger.info(`${tokenId} balance retrieved successfully: ${result} `);
+    return res.json({
+      result,
+    });
+    console.log("AQUI", IDsNFT); 
+  }catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    console.log("aqqui", err.message);
+    return next(new HttpError(500, err.message));
+  }
+};
+
+
 //get last block
 exports.getRangeOfBlocks = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;

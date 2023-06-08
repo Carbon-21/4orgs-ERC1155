@@ -39,18 +39,18 @@ async function marketplace() {
                     '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
                   "</div>" +
                   "<div>" +
-                    `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
-                        <p>
-                          ${tokenId.slice(1)} <br /></p>                                          
-                    </button>` +
-                    // `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
-                    //     <p>
-                    //       ${tokenId.slice(1)} <br />
-                    //       <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
-                    //       <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
-                    //       <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
-                    //     </p>                                          
-                    // </button>` +
+                    //`<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
+                    //    <p>
+                    //      ${tokenId.slice(1)} <br /></p>                                          
+                    //</button>` +
+                     `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
+                         <p>
+                           ${tokenId.slice(1)} <br />
+                           <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
+                           <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
+                           <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
+                         </p>                                          
+                     </button>` +
                     '<div class="d-flex flex-row gap-2">' +
                       // `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
                       //   Ver mais                                       
@@ -263,7 +263,7 @@ async function getNftTokens() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/selfBalanceNFT`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/AllNFTID`;
   var init = {
     method: "GET",
     headers: headers,

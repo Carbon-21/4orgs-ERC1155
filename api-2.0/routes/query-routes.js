@@ -32,6 +32,16 @@ router.get(
   queryController.getRangeOfBlocks
 );
 
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/allNFTID",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.allNFTID
+);
+
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
 
