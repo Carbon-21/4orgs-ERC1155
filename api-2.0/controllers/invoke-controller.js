@@ -157,11 +157,12 @@ exports.setURI = async (req, res, next) => {
   }
 };
 
-//List a NFT for sale
-exports.listForSale = async (req, res, next) => {
+//SetStatus NFT status
+exports.SetStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;
+  const status = req.body.status;
   const price = req.body.price;
   const username = req.jwt.username;
   const org = req.jwt.org;
@@ -174,10 +175,10 @@ exports.listForSale = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //listForSale
+  //SetStatus
   try {
-    await chaincode.submitTransaction("SmartContract:ListForSale", ownerAccountId, tokenId, price);
-    logger.info("listForSale set successfully");
+    await chaincode.submitTransaction("SmartContract:SetStatus", ownerAccountId, tokenId, status, price);
+    logger.info("SetStatus set successfully");
  
     //close communication channel
     await gateway.disconnect();
@@ -213,7 +214,7 @@ exports.buyListed = async (req, res, next) => {
   //Buy listed
   try {
     await chaincode.submitTransaction("SmartContract:Buy", buyerAccountId, tokenId);
-    logger.info("listForSale set successfully");
+    logger.info("Buy successfully executed");
  
     //close communication channel
     await gateway.disconnect();

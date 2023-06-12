@@ -42,15 +42,16 @@ router.post(
 
 // List NFT for sale
 router.post(
-  "/channels/:channel/chaincodes/:chaincode/ListForSale", 
+  "/channels/:channel/chaincodes/:chaincode/SetStatus", 
   [
     param("channel").not().isEmpty(), 
     param("chaincode").not().isEmpty(), 
     body("tokenId").trim().not().isEmpty().isString(),
+    body("status").trim().not().isEmpty().isString(),
     body("price").trim().not().isEmpty().isInt({ min: 1 }),
     validateAll
   ], 
-  invokeController.listForSale
+  invokeController.SetStatus
 );
 
 // Buy listed NFT
