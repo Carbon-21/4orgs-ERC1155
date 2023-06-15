@@ -208,6 +208,83 @@ func GetRole(clientAccountID string) string {
 	return match[1]
 }
 
+func (s *SmartContract) GetNFTsFromStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+
+	var NFTsFromStatus [][]string
+
+	// Get the order from the world state ([0] owner ~ [1] tokenID)
+	storeIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(orderbook, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create iterator: %v", err)
+	}
+	defer storeIterator.Close()
+
+	for storeIterator.HasNext() {
+
+		// Get the next NFT
+		responseRange, err := storeIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next token: %v", err)
+		}
+
+		// Unpack the composite key (owner - id)
+		_, storeCompositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to split composite key: %v", err)
+		}
+
+		// Parse the JSON object
+		var data ListItem
+		err = json.Unmarshal(responseRange.Value, &data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
+		}
+
+		if data.Status == status {
+			tokenIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to create iterator: %v", err)
+			}
+			defer tokenIterator.Close()
+
+			for tokenIterator.HasNext() {
+				queryTokenResponse, err := tokenIterator.Next()
+				if err != nil {
+					return nil, fmt.Errorf("failed to get the next state for token  %s: %v", storeCompositeKeyParts[1], err)
+				}
+
+				// Split Key to search for specific tokenid
+				// The compositekey (account -  tokenid - senderer)
+				_, compositeKeyPartsToken, err := ctx.GetStub().SplitCompositeKey(queryTokenResponse.Key)
+
+				if err != nil {
+					return nil, fmt.Errorf("failed to get key: %s", queryTokenResponse.Key)
+				}
+
+				// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+				returnedTokenID := compositeKeyPartsToken[1]
+
+				if returnedTokenID == storeCompositeKeyParts[1] {
+					// Merge ID and Value of the NFTs
+					element := []string{returnedTokenID, string(queryTokenResponse.Value)}
+					NFTsFromStatus = append(NFTsFromStatus, element)
+				}
+			}
+		}
+	}
+
+	// Check if the array is empty
+	nftListSize := len(NFTsFromStatus)
+	if nftListSize == 0 {
+		el := []string{""}
+		NFTsFromStatus = append(NFTsFromStatus, el)
+		return NFTsFromStatus, nil
+	} else {
+		return NFTsFromStatus, nil
+	}
+}
+
 //returns whole world state
 func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
 
@@ -295,8 +372,18 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
-// AllNFTID returns a list of all the IDs AND our values of the NFTs on the blockchain
-func (s *SmartContract) AllNFTID(ctx contractapi.TransactionContextInterface) [][]string {
+// getAllNFTID Retorna todos os NFTs do world state
+func (s *SmartContract) GetAllNFTIds(ctx contractapi.TransactionContextInterface) [][]string {
+	var errRet [][]string
+
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+	err := authorizationHelper(ctx)
+	if err != nil {
+		el := []string{"Authorization failed"}
+		errRet = append(errRet, el)
+		return errRet
+	}
+
 	idNFTs, _ := idNFTHelper(ctx, "")
 	return idNFTs
 }
@@ -1342,15 +1429,16 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		// Contains the account of the user who have the nft
 		accountNFT := compositeKeyParts[0]
 
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+		// Se nenhuma conta for passada a funcao retorna todos os nfts
 		if account == "" {
-			// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
 			if returnedTokenID != tokenid {
 				// Merge ID and Value of the NFTs
 				element := []string{returnedTokenID, string(queryResponse.Value)}
 				nftlist = append(nftlist, element)
 			}
 		} else {
-			// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+			// Retrieve NFTs from some account by analyzing all records and seeing if they aren't FTs
 			if (returnedTokenID != tokenid) && (accountNFT == account) {
 				// Merge ID and Value of the NFTs
 				element := []string{returnedTokenID, string(queryResponse.Value)}

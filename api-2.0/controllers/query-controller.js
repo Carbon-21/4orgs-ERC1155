@@ -176,6 +176,38 @@ exports.totalSupply = async (req, res, next) => {
   }
 };
 
+
+exports.getAllNFTIds = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const org = req.jwt.org;    
+
+  try{   
+    //connect to the channel and get the chaincode
+    const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+    if (!chaincode) return;
+ 
+    //get receiver id
+    let result = await chaincode.submitTransaction("SmartContract:GetAllNFTIds");
+    if (!result) return;
+
+    result = JSON.parse(result.toString());
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result,
+    });
+  }catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err.message));
+  }
+};
+
 //TODO remover quando os metadados forem pro chaincode. Remover tb setURI e metadata-controller
 //get the URI for a given token
 exports.getURI = async (req, res, next) => {
@@ -365,38 +397,38 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
   }
 };
 
-exports.allNFTID = async (req, res, next) => {
+exports.getNFTsFromStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
+  const status = req.query.status;
+  const username = req.jwt.username;
+  const org = req.jwt.org;    
+
+
   try{   
     //connect to the channel and get the chaincode
-    const [chaincode, gateway] = await helper.getChaincode("Carbon", channel, chaincodeName, "admin", next);
+    const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
     if (!chaincode) return;
 
     //get receiver id
-    const IDsNFT = await helper.getALLNFTIDs("Carbon", channel, chaincodeName, "admin", next);
-    if (!IDsNFT) return;
+    let result = await chaincode.submitTransaction("SmartContract:GetNFTsFromStatus",status);
+    if (!result) return;
 
-    result = JSON.parse(IDsNFT.toString());
+    result = JSON.parse(result.toString());
 
     //close communication channel
     await gateway.disconnect();
 
     //send OK response
-
-    //logger.info(`${tokenId} balance retrieved successfully: ${result} `);
     return res.json({
       result,
     });
-    console.log("AQUI", IDsNFT); 
   }catch (err) {
     const regexp = new RegExp(/message=(.*)$/g);
     const errMessage = regexp.exec(err.message);
-    console.log("aqqui", err.message);
     return next(new HttpError(500, err.message));
   }
 };
-
 
 //get last block
 exports.getRangeOfBlocks = async (req, res, next) => {

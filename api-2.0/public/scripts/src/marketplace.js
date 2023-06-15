@@ -263,7 +263,7 @@ async function getNftTokens() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/AllNFTID`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetNFTsFromStatus?status=sale`;
   var init = {
     method: "GET",
     headers: headers,

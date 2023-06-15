@@ -32,18 +32,50 @@ router.get(
   queryController.getRangeOfBlocks
 );
 
+///// AUTHENTICATED ROUTES /////
+router.use(checkAuth);
+
 router.get(
-  "/channels/:channel/chaincodes/:chaincode/allNFTID",
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
   [
     param("channel").trim().not().isEmpty().isString(),
     param("chaincode").trim().not().isEmpty().isString(),
     validateAll,
   ],
-  queryController.allNFTID
+  queryController.getAllNFTIds
 );
 
-///// AUTHENTICATED ROUTES /////
-router.use(checkAuth);
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getAllNFTIds
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/balance",
