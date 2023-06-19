@@ -138,16 +138,20 @@ type ToID struct {
 }
 
 type Metadata struct {
-	Id                string `json:"id"`
-	Status            string `json:"status"`
-	Amount            string `json:"amount"` // Área em  hectares
-	LandOwner         string `json:"land_owner"`
-	Land              string `json:"land"`
-	Phyto             string `json:"phyto"`
-	Geolocation       string `json:"geolocation"`
-	CompensationOwner string `json:"compensation_owner"`
-	CompensationState string `json:"compensation_state"`
-	MintSylvas        string `json:"mint_sylvas"`
+	Id                string `json:"id"`                 // Id interno do NFT no sistema
+	Status            string `json:"status"`             // Ativo, bloqueado
+	LandOwner         string `json:"land_owner"`         // Dono da terra
+	LandArea          string `json:"land_area"`          // Área em  hectares
+	Phyto             string `json:"phyto"`              // Fitofisiologia
+	Geolocation       string `json:"geolocation"`        //Coordenadas da área {(x1,y1),(x2,y2})}
+	CompensationOwner string `json:"compensation_owner"` // Detentor do direito de compensacao (Account ID ou Token ID)
+	CompensationState string `json:"compensation_state"` // Compensado, Não compensado
+	MintSylvas        string `json:"mint_sylvas"`        // Booleano referente ao direito de gerar FTs
+	MintRate          string `json:"mint_rate"`          // Potencial de geracao com base no tipo de area
+	Certificate       string `json:"certificate"`        // Comprovante emitido pelo órgão governamental permitindo a ativação do NFT.
+	NFTType           string `json:"nft_type"`           // Tipo de nft (preservação/corte)
+	CustomNotes       string `json:"custom_notes"`       // Demais anotações
+
 	// PlantedAmount  string `json:"planted_amount"`
 	// OrigPlantedAmount  string `json:"orig_planted_amount"`
 
@@ -448,11 +452,17 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
-		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") {
+		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") && (nft.Metadata.NFTType == "reflorestamento") {
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
-			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Land)
+			var LandArea int
+			var MintRate int
+			LandArea, _ = strconv.Atoi(nft.Metadata.LandArea)
+			MintRate, _ = strconv.Atoi(nft.Metadata.MintRate)
+
+			SylvasAdd = (MintRate * LandArea) / 100
+
 			// SylvasAdd =  10 // add 10 sylvas per nft
 
 			// Function that checks if the NFT receiver is in the temporary Slice Array

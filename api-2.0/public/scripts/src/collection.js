@@ -86,7 +86,7 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Status: </b> ${nftinfo?.metadata?.status} <br />` +
     `<b> Quantidade: </b> ${nftinfo?.amount} <br />` +
     `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.land_owner} <br />` +
-    `<b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />` +
+    `<b> Área (hectares): </b> ${nftinfo?.metadata?.land_area} <br />` +
     `<b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br />` +
     `<b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +

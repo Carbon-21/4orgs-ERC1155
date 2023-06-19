@@ -99,6 +99,80 @@
                 <label class="form-label" for="location">Insira localização da área</label>
               </div>
 
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-percent fa-lg"></i>
+                  <fieldset>
+                    <legend>Potencial de geração de C21s:</legend>
+                    <div>
+                      <input type="radio" id="mintRate" name="mintRate" value="100" checked>
+                      <label for="100">100</label>
+
+                      <input type="radio" id="mintRate" name="mintRate" value="75">
+                      <label for="75">75</label>
+
+                      <input type="radio" id="mintRate" name="mintRate" value="50">
+                      <label for="50">50</label>                      
+
+                      <input type="radio" id="mintRate" name="mintRate" value="25">
+                      <label for="25">25</label>
+
+                      <input type="radio" id="mintRate" name="mintRate" value="0">
+                      <label for="0">0</label>
+
+                    </div>                    
+                  </fieldset>
+                </div>
+              </div>          
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-magnifying-glass-chart fa-lg"></i>
+                  <fieldset>
+                    <legend>Tipo do NFT:</legend>
+                    <div>
+                      <input type="radio" id="nftType" name="nftType" value="reflorestamento" checked>
+                      <label for="reflorestamento">Reflorestamento</label>
+
+                      <input type="radio" id="nftType" name="nftType" value="corte">
+                      <label for="corte">Corte</label>
+                    </div>
+                  </fieldset>
+
+                </div>
+              </div>        
+
+              <hr />                
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-coins fa-lg"></i>
+                  <fieldset>
+                    <legend>Pode emitir C21 :</legend>
+                    <div>
+                      <input type="radio" id="mintSylvas" name="mintSylvas" value="Ativo" checked>
+                      <label for="mintSylvas">Ativo</label>
+
+                      <input type="radio" id="mintSylvas" name="mintSylvas" value="Inativo">
+                      <label for="mintSylvas">Inativo</label>
+                    </div>
+                  </fieldset>
+
+                </div>
+              </div>        
+
+              <hr />                              
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-marker fa-lg"></i>
+                  <textarea name="customNotes" id="customNotes" class="form-control" rows="4" cols="50"></textarea>
+                </div>
+                <label for="customNotes">Notas:</label>
+              </div>
+              
               <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto" />
               <div hidden id="signing-files" style="text-align: center">
                 <p><strong>Faça o upload da sua chave privada</strong></p>

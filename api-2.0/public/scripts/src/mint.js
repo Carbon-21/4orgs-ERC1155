@@ -215,14 +215,19 @@ const mintNFTServerSideSigning = async () => {
     metadata: {
       id: "NFT",
       status: `Ativo`,
-      mint_sylvas:"Ativo",      
+      //mint_sylvas:"Ativo",      
+      mint_sylvas: document.querySelector("input[name='mintSylvas']:checked").value,      
       amount: qty,
       land_owner: document.getElementById("landOwner").value,
-      land: document.getElementById("area").value,
+       mint_rate: document.querySelector("input[name='mintRate']:checked").value,
+      land_area: document.getElementById("area").value,
       phyto: document.getElementById("phyto").value,
       geolocation: document.getElementById("location").value,
       compensation_owner: document.getElementById("compensationOwner").value,
       compensation_state: "Não Compensado",
+      custom_notes: document.getElementById("customNotes").value,
+      nft_type: document.querySelector("input[name='nftType']:checked").value,
+      //certificate: document.getElementById("certificate").value,
     },
   };
 
