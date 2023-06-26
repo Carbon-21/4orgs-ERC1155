@@ -89,7 +89,7 @@ async function marketplace() {
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button id="comprar" type="button" class="btn btn-primary" onclick='buy("${tokenId}")'>Confirmar</button>
+              <button id="comprar" type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick='buy("${tokenId}")'>Confirmar</button>
             </div>
           </div>
         </div>
