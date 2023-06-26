@@ -1,7 +1,6 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 const helper = require("../app/helper");
-const { postMetadata } = require("../controllers/metadata-crontroller");
 const FabricClient = require("fabric-client");
 var util = require("util");
 var crypto = require("crypto");
@@ -67,14 +66,40 @@ exports.mint = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 
-  //if NFT => add metadata to IPFS
-  if (tokenId !== "$ylvas") {
-    try {
-      await postMetadata(req, res, next);
-    } catch (error) {
-      console.log(error);
-      return next(new HttpError(500, "Falha ao criar metadados no IPFS"));
-    }
+  //send OK response
+  return res.json({
+    result: "success",
+  });
+};
+
+exports.compensateNFT = async (req, res, next) => {
+  logger.info("Entered compensation function");
+
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
+  if (!receiverAccountId) return;
+
+  try {
+    await chaincode.submitTransaction("SmartContract:CompensateNFT", receiverAccountId, tokenId);
+
+    logger.info("Compensation successful");
+
+    //close communication channel
+    await gateway.disconnect();
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
   }
 
   //send OK response
@@ -193,7 +218,6 @@ exports.SetStatus = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 };
-
 
 //Buy a listed NFT
 exports.buyListed = async (req, res, next) => {

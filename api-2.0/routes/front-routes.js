@@ -39,6 +39,10 @@ router.get("/wallet", isLoggedIn, frontController.getWallet);
 
 router.get("/collection", isLoggedIn, frontController.getCollection);
 
+///// MARKETPLACE ROUTE /////
+
+router.get("/marketplace", isLoggedIn, frontController.getMarketplace);
+
 ///// $ILVAS MINT ROUTES /////
 
 router.get("/ft/mint", isLoggedIn, isAdmin, frontController.getMintFT);
@@ -52,5 +56,8 @@ router.get("/nft/mint", isLoggedIn, isAdmin, frontController.getMintNFT);
 ///// TRANSFER ROUTES /////
 
 router.get("/transfer", isLoggedIn, frontController.getTransfer);
+
+///// TRANSPARENCY LOGS CONTROLLERS /////
+router.get("/logs", frontController.getLogs);
 
 module.exports = router;

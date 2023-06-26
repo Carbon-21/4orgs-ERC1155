@@ -8,9 +8,74 @@ const queryController = require("../controllers/query-controller.js");
 const router = Router();
 
 //// UNAUTHENTICATED ROUTES ////
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getBlockchainTail",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getBlockchainTail
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getWorldState",
+  [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), validateAll],
+  queryController.getWorldState
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getRangeOfBlocks",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("min").trim().not().isEmpty().isString(),
+    query("max").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getRangeOfBlocks
+);
 
 ///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getAllNFTIds
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getAllNFTIds
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/balance",

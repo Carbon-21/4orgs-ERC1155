@@ -28,13 +28,23 @@
         <li class="nav-item">
           <a class="nav-link" href="#reforestation">Reflorestamento</a>
         </li>
-        <% } %> <% if (currentUser) { %>
+        <li class="nav-item">
+          <a class="nav-link" href="/logs"
+            ><strong><u>Logs Transparentes</u></strong></a
+          >
+        </li>
+        <% } %> <% if (currentUser) { %> <% if(title !=="Logs Transparentes"){ %>
+        <li class="nav-item">
+          <a class="nav-link" href="/logs">Logs Transparentes</a>
+        </li>
+        <% } %>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Minha Conta </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/wallet">Carteira</a></li>
             <li><a class="dropdown-item" href="/collection">Coleção</a></li>
             <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
+            <li><a class="dropdown-item" href="/marketplace">Loja</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown" id="adminDropdown" hidden="true">
