@@ -119,10 +119,11 @@ async function renderCompensation(tokenId, compensation_state) {
 async function renderListForSale(tokenId) {
   
   let nftTokens = await getNftOnSale();
-
+ 
   if (nftTokens){
     for (var key in nftTokens) {
-      if (tokenId == nftTokens[key]){
+
+      if (tokenId.slice(1) == nftTokens[key]){
         return  `<b> Estado na loja :</b> Disponível <br />` +  
         `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`;
       }

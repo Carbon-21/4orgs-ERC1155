@@ -171,7 +171,7 @@ async function getNftOnSaleMetadata() {
 
   let nftArray = [];
 
-  if (Object.keys(result).length == 0){
+  if (Object.keys(result).length != 0){
     // Retornar array contendo somente a lista de ids dos nfts
     for (var i in result) {
       nftArray = nftArray.concat(result[i]);
