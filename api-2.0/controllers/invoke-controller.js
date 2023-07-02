@@ -182,41 +182,12 @@ exports.setURI = async (req, res, next) => {
   }
 };
 
-//set a URI for an IPFS input
-exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
-  //get get date in dd-mm-yyyy format
-  let currentDate = new Date();
-  currentDate = currentDate.getDate() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getFullYear();
-
-  //set URL to ipfs format
-  const uri = "ipfs://" + hash;
-
-  //connect to the channel and get the chaincode
-  const [chaincode, gateway] = await helper.getChaincode(org, channelName, chaincodeName, "admin", null);
-
-  //set URI
-  try {
-    await chaincode.submitTransaction("SmartContract:SetURI", String(currentDate), uri);
-
-    logger.info("URI set successfully");
-
-    //close communication channel
-    await gateway.disconnect();
-
-    //send OK response
-    return uri;
-  } catch (err) {
-    const regexp = new RegExp(/message=(.*)$/g);
-    const errMessage = regexp.exec(err.message);
-    return new HttpError(500, errMessage[1]);
-  }
-};
-
-//List a NFT for sale
-exports.listForSale = async (req, res, next) => {
+//SetStatus NFT status
+exports.SetStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;
+  const status = req.body.status;
   const price = req.body.price;
   const username = req.jwt.username;
   const org = req.jwt.org;
@@ -229,10 +200,10 @@ exports.listForSale = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //listForSale
+  //SetStatus
   try {
-    await chaincode.submitTransaction("SmartContract:ListForSale", ownerAccountId, tokenId, price);
-    logger.info("listForSale set successfully");
+    await chaincode.submitTransaction("SmartContract:SetStatus", ownerAccountId, tokenId, status, price);
+    logger.info("SetStatus set successfully");
  
     //close communication channel
     await gateway.disconnect();
@@ -247,7 +218,6 @@ exports.listForSale = async (req, res, next) => {
     return next(new HttpError(500, errMessage[1]));
   }
 };
-
 
 //Buy a listed NFT
 exports.buyListed = async (req, res, next) => {
@@ -268,7 +238,7 @@ exports.buyListed = async (req, res, next) => {
   //Buy listed
   try {
     await chaincode.submitTransaction("SmartContract:Buy", buyerAccountId, tokenId);
-    logger.info("listForSale set successfully");
+    logger.info("Buy successfully executed");
  
     //close communication channel
     await gateway.disconnect();
