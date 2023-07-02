@@ -1543,7 +1543,8 @@ func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, o
 			}
 
 			// Marshal the status and price into JSON
-			data := ListItem{status, price}
+			taxes := price * uint64(taxPercentage) / 100
+			data := ListItem{status, price, taxes}
 			value, err := json.Marshal(data)
 			if err != nil {
 				return fmt.Errorf("failed to marshal NFT data: %v", err)
