@@ -4,6 +4,7 @@ let metadataArray = [];
 async function collection() {
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
+
   // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
@@ -165,7 +166,7 @@ async function getNftOnSale() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/CheckForStatus?status=sale`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=sale`;
 
   var init = {
     method: "GET",
@@ -194,16 +195,13 @@ async function listForSale(tokenIdInput) {
   tokenIdValue = (tokenIdInput).slice(1);
   let priceValue = document.getElementById("priceInput").value;
 
-  console.log(tokenIdValue);
-  console.log(priceValue);
-
   let jwt = localStorage.getItem("token");
   
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + jwt);
   headers.append("Content-Type", "application/json");
 
-  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/ListForSale`;
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/SetStatus`;
 
   var init = {
     method: "POST",
@@ -212,6 +210,7 @@ async function listForSale(tokenIdInput) {
 
   body = {
     tokenId: tokenIdValue,
+    status: "sale",
     price: priceValue
   }; 
 
