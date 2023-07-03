@@ -46,7 +46,7 @@ async function marketplace() {
                      `<button class="accordion-button cursor-pointer" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}"> 
                          <p>
                            ${tokenId.slice(1)} <br />
-                           <b> Área (hectares): </b> ${nftinfo?.metadata?.land} <br />
+                           <b> Área (hectares): </b> ${nftinfo?.metadata?.land_area} <br />
                            <b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br /> 
                            <b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />  
                          </p>                                          
