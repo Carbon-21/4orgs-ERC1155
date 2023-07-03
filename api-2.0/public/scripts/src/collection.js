@@ -128,7 +128,7 @@ async function renderListForSale(tokenId) {
 
   if (nftTokens){
     for (var key in nftTokens) {
-      if (tokenId == nftTokens[key]){
+      if (tokenId == nftTokens[key][0]){
         return  `<b> Estado na loja :</b> Disponível <br />`;
       }
     }
