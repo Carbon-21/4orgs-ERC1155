@@ -1,5 +1,5 @@
 #!/bin/bash
 #attach to carbon CC docker, so you can get CC prints
 
-pid=$(docker ps | grep -P "user.*erc1155" | grep -PoI "^[a-z0-9]+ ")
+pid=$(docker ps | grep -P "carbon.*erc1155" | grep -PoI "^[a-z0-9]+ ")
 docker attach --sig-proxy=false $pid
