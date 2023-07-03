@@ -91,6 +91,8 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
     `<b> Geração de C21: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
+    `<b> Potencial de geração de C21: </b> ${nftinfo?.metadata?.mint_rate} <br />` +        
+    `<b> Tipo do NFT: </b> ${nftinfo?.metadata?.nft_type} <br />` +        
     await renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
     "<p>" +
     "</div>"
@@ -271,7 +273,6 @@ async function compensate(tokenId) {
   `</div>`;
 
   document.getElementById("flash").innerHTML = element;  
-
   tokenId = (tokenId.id).slice(1);
 
   let jwt = localStorage.getItem("token");

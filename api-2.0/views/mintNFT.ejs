@@ -5,7 +5,8 @@
   <%- include("partials/head") %>
 
   <script src="/scripts/bundles/mint-bundle.js"></script>
-  <body>
+
+  <body onload="onPageLoad()">
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
@@ -103,30 +104,37 @@
 
               <div class="flex-fill">
                 <div class="mint-data">
+                  <i class="fas fa-coins fa-lg"></i>
+                  <fieldset onchange="hideMintRate()" >
+                    <legend>Pode emitir C21 :</legend>
+                    <div>
+                      <input type="radio" name="mintSylvas" id="mintSylvas" value="Ativo" checked>
+                      <label for="mintSylvas">Ativo</label>
+
+                      <input type="radio"  name="mintSylvas" id="mintSylvas" value="Inativo">
+                      <label for="mintSylvas">Inativo</label>
+                    </div>
+                  </fieldset>
+
+                </div>
+              </div>   
+
+              <div id="divMintRate">
+              <hr />              
+
+              <div class="flex-fill">
+                <div class="mint-data">
                   <i class="fas fa-percent fa-lg"></i>
                   <fieldset>
                     <legend>Potencial de geração de C21s:</legend>
                     <div>
-                      <input type="radio" id="mintRate" name="mintRate" value="100" checked>
-                      <label for="100">100</label>
-
-                      <input type="radio" id="mintRate" name="mintRate" value="75">
-                      <label for="75">75</label>
-
-                      <input type="radio" id="mintRate" name="mintRate" value="50">
-                      <label for="50">50</label>                      
-
-                      <input type="radio" id="mintRate" name="mintRate" value="25">
-                      <label for="25">25</label>
-
-                      <input type="radio" id="mintRate" name="mintRate" value="0">
-                      <label for="0">0</label>
-
+                      <input type="range" id="mintRate" name="mintRate" min="0" max="100" value="100" onchange="updMintRateSpan()">
+                      <span id="spanMintRate">x</span>
                     </div>                    
                   </fieldset>
                 </div>
               </div>          
-
+            </div>
               <hr />
 
               <div class="flex-fill">
@@ -146,23 +154,7 @@
                 </div>
               </div>        
 
-              <hr />                
-              <div class="flex-fill">
-                <div class="mint-data">
-                  <i class="fas fa-coins fa-lg"></i>
-                  <fieldset>
-                    <legend>Pode emitir C21 :</legend>
-                    <div>
-                      <input type="radio" id="mintSylvas" name="mintSylvas" value="Ativo" checked>
-                      <label for="mintSylvas">Ativo</label>
-
-                      <input type="radio" id="mintSylvas" name="mintSylvas" value="Inativo">
-                      <label for="mintSylvas">Inativo</label>
-                    </div>
-                  </fieldset>
-
-                </div>
-              </div>        
+ 
 
               <hr />                              
               <div class="flex-fill">
@@ -190,3 +182,28 @@
     </section>
   </body>
 </html>
+
+<script> 
+
+function hideMintRate(){
+  divMintRate =  document.getElementById("divMintRate");
+  mintSylvas = document.querySelector("input[name='mintSylvas']:checked").value;
+  if (mintSylvas === "Ativo") {
+    divMintRate.style.display = "block";
+  } else {
+    divMintRate.style.display = "none";
+  }
+}  
+
+function updMintRateSpan(){
+    mintRate =  document.getElementById("mintRate").value;
+    txtMintRate = document.getElementById("spanMintRate");
+    txtMintRate.textContent = mintRate; 
+}
+
+function onPageLoad(){
+  mintRate =  document.getElementById("mintRate").value;
+  txtMintRate = document.getElementById("spanMintRate");
+  txtMintRate.textContent = mintRate;   
+}
+</script>
