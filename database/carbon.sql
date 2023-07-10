@@ -47,6 +47,22 @@ create table authentication_log(
     datestamp timestamp default current_timestamp not null
 );
 
+create table nft_requests(
+    id int unsigned not null auto_increment primary key,
+    user_id int unsigned not null,
+    foreign key (user_id) references users(id),
+    land_owner varchar(255) not null,
+    land_area varchar(255) not null,
+    phyto varchar(255),
+    geolocation varchar(255),
+    certificate mediumblob,
+    request_status ENUM('accepted', 'rejected', 'pending') not null,
+    user_notes text,
+    admin_notes text,
+    created_at timestamp default current_timestamp not null,
+    updated_at timestamp default current_timestamp on update current_timestamp not null
+);
+
 DELIMITER $$
 
 CREATE TRIGGER insert_users_activity AFTER INSERT ON users
