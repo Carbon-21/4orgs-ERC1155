@@ -219,7 +219,7 @@ const mintNFTServerSideSigning = async () => {
       mint_sylvas: document.querySelector("input[name='mintSylvas']:checked").value,      
       amount: qty,
       land_owner: document.getElementById("landOwner").value,
-       mint_rate: document.querySelector("input[name='mintRate']:checked").value,
+      mint_rate: document.querySelector("input[name='mintRate']").value,
       land_area: document.getElementById("area").value,
       phyto: document.getElementById("phyto").value,
       geolocation: document.getElementById("location").value,
@@ -243,6 +243,8 @@ const mintNFTServerSideSigning = async () => {
   } else {
     document.getElementById("flash").innerHTML = successFlashMessage;
   }
+
+
 
   // Post metadata through ipfs node
   // let metadata = {

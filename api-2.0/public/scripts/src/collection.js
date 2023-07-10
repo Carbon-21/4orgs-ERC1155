@@ -91,26 +91,34 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Geolocalização: </b> ${nftinfo?.metadata?.geolocation} <br />` +
     `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
     `<b> Geração de C21: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
-    await renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
+    `<b> Potencial de geração de C21: </b> ${nftinfo?.metadata?.mint_rate} <br />` +        
+    `<b> Tipo do NFT: </b> ${nftinfo?.metadata?.nft_type} <br />` +        
+    `<b> Notas: </b> ${nftinfo?.metadata?.custom_notes} <br />` +           
+    await renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state, nftinfo?.metadata?.nft_type) +
+    await renderListForSale(tokenId.replace(/\s/g, "")) +    
     "<p>" +
     "</div>"
   );
 }
 
 // Retorna string do metadado de compensação, dependendo do estado
-async function renderCompensation(tokenId, compensation_state) {
-  switch (compensation_state) {
-    case "Aguardando":
-      return `<b> Estado de compensação:</b> Aguardando <br />` + await renderListForSale(tokenId);
-    case "Compensado":
-      return `<b> Estado de compensação:</b> Compensado <br />`+ await renderListForSale(tokenId);
-    // Inclui botão de compensação quando não compensado
-    case "Não Compensado":
-    default:
-      return (
-        `<b> Estado de compensação:</b> Não compensado <br />` +  
-        await renderListForSale(tokenId)  // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
-      );
+async function renderCompensation(tokenId, compensation_state, nft_type) {
+  if(nft_type == "corte"){
+    return `<b> Estado de compensação:</b> Não permitido <br />`;
+  }else{
+    switch (compensation_state) {
+      case "Aguardando":
+        return `<b> Estado de compensação:</b> Aguardando <br />`;
+      case "Compensado":
+        return `<b> Estado de compensação:</b> Compensado <br />`;
+      // Inclui botão de compensação quando não compensado
+      case "Não Compensado":
+      default:
+        return (
+          `<b> Estado de compensação:</b> Não compensado <br />` +  
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick='compensate("${tokenId}")'>Compensar</button>`        
+        );
+    }
   }
 }
 
@@ -121,19 +129,14 @@ async function renderListForSale(tokenId) {
 
   if (nftTokens){
     for (var key in nftTokens) {
-      if (tokenId == nftTokens[key]){
-        return  `<b> Estado na loja :</b> Disponível <br />` +  
-        `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`;
+      if (tokenId.slice(1) == nftTokens[key]){
+        return  `<b> Estado na loja :</b> Disponível <br />`;
       }
     }
   }
 
   return (
     `<b> Estado na loja :</b> Indisponível <br />` +
-
-    '<span style="display: inline-block; margin-right: 10px;">'+
-      `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick="compensate(${tokenId})">Compensar</button>`+                  
-    '</span>'+
     '<span style="display: inline-block;">'+
       `<button id="lisForSaleButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
     '</span>'+
@@ -271,8 +274,7 @@ async function compensate(tokenId) {
   `</div>`;
 
   document.getElementById("flash").innerHTML = element;  
-
-  tokenId = (tokenId.id).slice(1);
+  tokenId = tokenId.slice(1);
 
   let jwt = localStorage.getItem("token");
 
