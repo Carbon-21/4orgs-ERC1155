@@ -452,7 +452,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
-		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") && (nft.Metadata.NFTType == "reflorestamento") {
+		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") {
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
@@ -552,6 +552,8 @@ func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterfac
 		// Verifica se o estado atual do NFT já é compensado
 		if nft.Metadata.CompensationState == "Compensado" {
 			return fmt.Errorf(("NFT já compensado"))
+		} else if nft.Metadata.NFTType != "reflorestamento" {
+			return fmt.Errorf(("NFT nao e de reflorestamento, por isso nao pode ser compensado"))
 		} else {
 			// Logica para verificar se o nft é passivel de compensação ??
 			// Verifica se quem esta compensando é quem tem o direito de compensacao

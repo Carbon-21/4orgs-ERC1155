@@ -11560,7 +11560,7 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
               mint_sylvas: document.querySelector("input[name='mintSylvas']:checked").value,
               amount: qty,
               land_owner: document.getElementById("landOwner").value,
-              mint_rate: document.querySelector("input[name='mintRate']:checked").value,
+              mint_rate: document.querySelector("input[name='mintRate']").value,
               land_area: document.getElementById("area").value,
               phyto: document.getElementById("phyto").value,
               geolocation: document.getElementById("location").value,
