@@ -1,29 +1,33 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('nftRequests', {
-    id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      primaryKey: true
+  return sequelize.define('nftRequestsActivity', {
+    action: {
+      type: DataTypes.CHAR(6),
+      allowNull: false
     },
-    userId: {
+    actionDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('current_timestamp'),
+      field: 'action_date'
+    },
+    requestId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: 'users',
+        model: 'nft_requests',
         key: 'id'
       },
-      field: 'user_id'
+      field: 'request_id'
     },
     landOwner: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       field: 'land_owner'
     },
     landArea: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       field: 'land_area'
     },
     phyto: {
@@ -40,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     requestStatus: {
       type: DataTypes.ENUM('accepted','rejected','pending'),
-      allowNull: false,
+      allowNull: true,
       defaultValue: "pending",
       field: 'request_status'
     },
@@ -56,23 +60,14 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'nft_requests',
-    hasTrigger: true,
+    tableName: 'nft_requests_activity',
     timestamps: true,
     indexes: [
       {
-        name: "PRIMARY",
-        unique: true,
+        name: "request_id",
         using: "BTREE",
         fields: [
-          { name: "id" },
-        ]
-      },
-      {
-        name: "user_id",
-        using: "BTREE",
-        fields: [
-          { name: "user_id" },
+          { name: "request_id" },
         ]
       },
     ]
