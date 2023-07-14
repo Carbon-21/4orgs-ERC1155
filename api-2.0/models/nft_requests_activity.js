@@ -61,7 +61,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     tableName: 'nft_requests_activity',
-    timestamps: true,
+    timestamps: false,
     indexes: [
       {
         name: "request_id",

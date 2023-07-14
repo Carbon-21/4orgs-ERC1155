@@ -58,7 +58,7 @@ module.exports = function(sequelize, DataTypes) {
     sequelize,
     tableName: 'nft_requests',
     hasTrigger: true,
-    timestamps: true,
+    timestamps: false,
     indexes: [
       {
         name: "PRIMARY",

@@ -58,9 +58,7 @@ create table nft_requests(
     certificate mediumblob,
     request_status ENUM('accepted', 'rejected', 'pending') default 'pending' not null,
     user_notes text,
-    admin_notes text,
-    created_at timestamp default current_timestamp not null,
-    updated_at timestamp default current_timestamp on update current_timestamp not null
+    admin_notes text
 );
 
 create table nft_requests_activity(
@@ -75,9 +73,7 @@ create table nft_requests_activity(
     certificate mediumblob,
     request_status ENUM('accepted', 'rejected', 'pending') default 'pending',
     user_notes text,
-    admin_notes text,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp on update current_timestamp
+    admin_notes text
 );
 
 DELIMITER $$
@@ -110,14 +106,14 @@ END$$
 CREATE TRIGGER insert_nft_requests_activity AFTER INSERT ON nft_requests
 FOR EACH ROW
 BEGIN
-  INSERT INTO nft_requests_activity (action, request_id, land_owner, land_area, phyto, geolocation, certificate, request_status, user_notes, admin_notes, created_at, updated_at)
-  VALUES('INSERT', NEW.id, NEW.land_owner, NEW.land_area, NEW.phyto, NEW.geolocation, NEW.certificate, NEW.request_status, NEW.user_notes, NEW.admin_notes, NEW.created_at, NEW.updated_at);
+  INSERT INTO nft_requests_activity (action, request_id, land_owner, land_area, phyto, geolocation, certificate, request_status, user_notes, admin_notes)
+  VALUES('INSERT', NEW.id, NEW.land_owner, NEW.land_area, NEW.phyto, NEW.geolocation, NEW.certificate, NEW.request_status, NEW.user_notes, NEW.admin_notes);
 END$$
 
 CREATE TRIGGER update_nft_requests_activity AFTER UPDATE ON nft_requests
 FOR EACH ROW
 BEGIN
-  INSERT INTO nft_requests_activity (action, request_id, land_owner, land_area, phyto, geolocation, certificate, request_status, user_notes, admin_notes, created_at, updated_at)
+  INSERT INTO nft_requests_activity (action, request_id, land_owner, land_area, phyto, geolocation, certificate, request_status, user_notes, admin_notes)
   VALUES('UPDATE', NEW.id,
         if (OLD.land_owner != NEW.land_owner,NEW.land_owner,null),
         if (OLD.land_area != NEW.land_area,NEW.land_area,null),
@@ -126,9 +122,7 @@ BEGIN
         if (OLD.certificate != NEW.certificate,NEW.certificate,null),
         if (OLD.request_status != NEW.request_status,NEW.request_status,null),
         if (OLD.user_notes != NEW.user_notes,NEW.user_notes,null),
-        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null),
-        if (OLD.created_at != NEW.created_at,NEW.created_at,null),
-        if (OLD.updated_at != NEW.updated_at,NEW.updated_at,null));
+        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null);
 END$$
 
 DELIMITER ;
