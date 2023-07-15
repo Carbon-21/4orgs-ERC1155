@@ -213,80 +213,7 @@ func GetRole(clientAccountID string) string {
 }
 
 func (s *SmartContract) GetNFTsFromStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
-
-	var NFTsFromStatus [][]string
-
-	// Get the order from the world state ([0] owner ~ [1] tokenID)
-	storeIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(orderbook, []string{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create iterator: %v", err)
-	}
-	defer storeIterator.Close()
-
-	for storeIterator.HasNext() {
-
-		// Get the next NFT
-		responseRange, err := storeIterator.Next()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get next token: %v", err)
-		}
-
-		// Unpack the composite key (owner - id)
-		_, storeCompositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
-		if err != nil {
-			return nil, fmt.Errorf("failed to split composite key: %v", err)
-		}
-
-		// Parse the JSON object
-		var data ListItem
-		err = json.Unmarshal(responseRange.Value, &data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
-		}
-
-		if data.Status == status {
-			tokenIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
-
-			if err != nil {
-				return nil, fmt.Errorf("failed to create iterator: %v", err)
-			}
-			defer tokenIterator.Close()
-
-			for tokenIterator.HasNext() {
-				queryTokenResponse, err := tokenIterator.Next()
-				if err != nil {
-					return nil, fmt.Errorf("failed to get the next state for token  %s: %v", storeCompositeKeyParts[1], err)
-				}
-
-				// Split Key to search for specific tokenid
-				// The compositekey (account -  tokenid - senderer)
-				_, compositeKeyPartsToken, err := ctx.GetStub().SplitCompositeKey(queryTokenResponse.Key)
-
-				if err != nil {
-					return nil, fmt.Errorf("failed to get key: %s", queryTokenResponse.Key)
-				}
-
-				// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
-				returnedTokenID := compositeKeyPartsToken[1]
-
-				if returnedTokenID == storeCompositeKeyParts[1] {
-					// Merge ID and Value of the NFTs
-					element := []string{returnedTokenID, string(queryTokenResponse.Value)}
-					NFTsFromStatus = append(NFTsFromStatus, element)
-				}
-			}
-		}
-	}
-
-	// Check if the array is empty
-	nftListSize := len(NFTsFromStatus)
-	if nftListSize == 0 {
-		el := []string{""}
-		NFTsFromStatus = append(NFTsFromStatus, el)
-		return NFTsFromStatus, nil
-	} else {
-		return NFTsFromStatus, nil
-	}
+	return NFTsFromStatusHelper(ctx, status)
 }
 
 //returns whole world state
@@ -687,6 +614,14 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id string, amount uint64) error {
 	if sender == recipient {
 		return fmt.Errorf("Proibido transferir para si mesmo")
+	}
+
+	// Verify if the NFT is listed on the store
+	nftStatus, _ := NFTsFromStatusHelper(ctx, "sale")
+	for j := 0; j < len(nftStatus); j++ {
+		if id == nftStatus[j][0] {
+			return fmt.Errorf("NFT não pode ser transferido enquanto esta a venda")
+		}
 	}
 
 	// Get ID of submitting client identity
@@ -1401,7 +1336,83 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	return balance, nil
 }
 
-// balanceOfHelper returns the balance of the given account
+func NFTsFromStatusHelper(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+	var NFTsFromStatus [][]string
+
+	// Get the order from the world state ([0] owner ~ [1] tokenID)
+	storeIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(orderbook, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create iterator: %v", err)
+	}
+	defer storeIterator.Close()
+
+	for storeIterator.HasNext() {
+
+		// Get the next NFT
+		responseRange, err := storeIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next token: %v", err)
+		}
+
+		// Unpack the composite key (owner - id)
+		_, storeCompositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to split composite key: %v", err)
+		}
+
+		// Parse the JSON object
+		var data ListItem
+		err = json.Unmarshal(responseRange.Value, &data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
+		}
+
+		if data.Status == status {
+			tokenIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to create iterator: %v", err)
+			}
+			defer tokenIterator.Close()
+
+			for tokenIterator.HasNext() {
+				queryTokenResponse, err := tokenIterator.Next()
+				if err != nil {
+					return nil, fmt.Errorf("failed to get the next state for token  %s: %v", storeCompositeKeyParts[1], err)
+				}
+
+				// Split Key to search for specific tokenid
+				// The compositekey (account -  tokenid - senderer)
+				_, compositeKeyPartsToken, err := ctx.GetStub().SplitCompositeKey(queryTokenResponse.Key)
+
+				if err != nil {
+					return nil, fmt.Errorf("failed to get key: %s", queryTokenResponse.Key)
+				}
+
+				// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+				returnedTokenID := compositeKeyPartsToken[1]
+
+				if returnedTokenID == storeCompositeKeyParts[1] {
+					// Merge ID and Value of the NFTs
+					element := []string{returnedTokenID, string(queryTokenResponse.Value)}
+					NFTsFromStatus = append(NFTsFromStatus, element)
+				}
+			}
+		}
+	}
+
+	// Check if the array is empty
+	nftListSize := len(NFTsFromStatus)
+	if nftListSize == 0 {
+		el := []string{""}
+		NFTsFromStatus = append(NFTsFromStatus, el)
+		return NFTsFromStatus, nil
+	} else {
+		return NFTsFromStatus, nil
+	}
+}
+
+// idNFTHelper returns the NFTs associated with an account or all the nfts if the account parameter is empty
 func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([][]string, error) {
 
 	if account == "0x0" {
@@ -1534,6 +1545,14 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 
+	// Check the nft is for sale
+	nftStatus, _ := NFTsFromStatusHelper(ctx, "sale")
+	for j := 0; j < len(nftStatus); j++ {
+		if id == nftStatus[j][0] {
+			return fmt.Errorf("NFT já esta a venda")
+		}
+	}
+
 	idNFTs, _ := idNFTHelper(ctx, operator)
 	for i := 0; i < len(idNFTs); i++ {
 		if id == idNFTs[i][0] {
@@ -1577,7 +1596,6 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
 	if err != nil {
 		return nil, fmt.Errorf("failed to create iterator: %v", err)
 	}
-	defer iterator.Close()
 
 	// Iterate over all NFTs
 	for iterator.HasNext() {
