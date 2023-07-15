@@ -13,7 +13,7 @@ async function marketplace() {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     if (nftTokens.length == 0){
       element +=
-        '<center><h2><font color="#5f5f5f">Você não possui NFTs em sua coleção </font></h2> </center>'+
+        '<center><h2><font color="#5f5f5f">Não existem NFTs a venda atualmente </font></h2> </center>'+
         "</div>";
         document.getElementById("nft-showroom").innerHTML = element;        
     }
