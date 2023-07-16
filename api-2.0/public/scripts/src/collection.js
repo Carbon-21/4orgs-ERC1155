@@ -1,7 +1,12 @@
+
 let metadata;
 let metadataArray = [];
 
 async function collection() {
+
+  //Inicializa status dos nfts = "minted"
+  await setStatusMinted();
+
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
 
@@ -126,7 +131,7 @@ async function renderCompensation(tokenId, compensation_state, nft_type) {
 // Retorna string do metadado de compensação, dependendo do estado
 async function renderListForSale(tokenId) {
   
-  let nftTokens = await getNftOnSale();
+  let nftTokens = await getNftOnStatus("sale");
  
   if (nftTokens){
     for (var key in nftTokens) {
@@ -154,7 +159,7 @@ async function renderListForSale(tokenId) {
        '</div>'+
 
         `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
-          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick='listForSale("${tokenId}")'> Enviar </button>`+
+          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick='setStatus("${tokenId}","sale")'> Enviar </button>`+
         '</span>'+
       '<span style="display: inline-block;">'+
         `<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}">Cancelar</button>`+
@@ -165,11 +170,11 @@ async function renderListForSale(tokenId) {
 }
 
 // Recuperar todos os nfts com status "sale"
-async function getNftOnSale() {
+async function getNftOnStatus(status) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=sale`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=${status}`;
 
   var init = {
     method: "GET",
@@ -191,12 +196,17 @@ async function getNftOnSale() {
   return nftArray;
 }
 
-async function listForSale(tokenIdInput) {
+async function setStatus(tokenIdInput, statusIn) {
   document.getElementById("nft-showroom").style.display = "none";
   document.getElementById("loader").style.display = "flex";
 
   tokenIdValue = (tokenIdInput).slice(1);
-  let priceValue = document.getElementById("priceInput").value;
+
+  let priceValue = 1;
+
+  if(statusIn == "sale"){
+    priceValue = document.getElementById("priceInput").value;
+  }
 
   let jwt = localStorage.getItem("token");
   
@@ -213,7 +223,7 @@ async function listForSale(tokenIdInput) {
 
   body = {
     tokenId: tokenIdValue,
-    status: "sale",
+    status: statusIn,
     price: priceValue
   }; 
 
@@ -221,10 +231,31 @@ async function listForSale(tokenIdInput) {
 
   let response = await fetch(url, init);
   
-  if (response.ok) {
-    
-    response = await response.json();
-    if (response.result != "success") {
+  if (statusIn == "sale"){
+    if (response.ok) {
+      
+      response = await response.json();
+      if (response.result != "success") {
+        await collection();
+        let element =
+          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+          `Ocorreu um erro na publicação do produto` +
+          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+          `</div>`;
+        document.getElementById("flash").innerHTML = element;
+      } else {
+        await collection();
+        let element =
+          `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+          `Publicação do produto realizada com sucesso` +
+          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+          `</div>`;
+        document.getElementById("flash").innerHTML = element;
+      }
+    }
+    else {
+      document.getElementById("loader").style.display = "none";
+      console.log("HTTP Error ", response.status);
       await collection();
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
@@ -232,28 +263,10 @@ async function listForSale(tokenIdInput) {
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
         `</div>`;
       document.getElementById("flash").innerHTML = element;
-    } else {
-      await collection();
-      let element =
-        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Publicação do produto realizada com sucesso` +
-        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-        `</div>`;
-      document.getElementById("flash").innerHTML = element;
     }
   }
-  else {
-    document.getElementById("loader").style.display = "none";
-    console.log("HTTP Error ", response.status);
-    await collection();
-    let element =
-      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-      `Ocorreu um erro na publicação do produto` +
-      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-      `</div>`;
-    document.getElementById("flash").innerHTML = element;
-    return null;
-  }
+
+  return null;
 
 }
 
@@ -328,6 +341,69 @@ async function compensate(tokenId) {
     document.getElementById("flash").innerHTML = element;
     return null;
   }
+}
+
+//definir status como "minted" de todos os nfts sem status (tokenId = null) 
+//ou de um nft que deve ser retirado da loja (tokenId != null)
+async function setStatusMinted(tokenId) {
+
+  if (tokenId==null){
+   
+    let nftTokens = await getNftTokens();
+    let nftTokensMinted = await getNftOnStatus("minted");
+    let nftTokensSale = await getNftOnStatus("sale");
+    let currentStatus = "";
+
+    console.log("nftTokens: " + nftTokens);
+    console.log("nftTokensMinted: " + nftTokensMinted);
+    console.log("nftTokensSale: " + nftTokensSale);
+
+    if (nftTokens){
+
+      //se tiver tokens, verifica se o status deles são minted ou sale 
+      for (var key in nftTokens) {
+
+        currentStatus = "";
+
+        console.log("currentStatus: " + currentStatus);
+
+        let tokenId = nftTokens[key][0]; //peguei um token id
+
+        if (nftTokensMinted){
+          for (var key in nftTokensMinted) {//verifica se encontramos algum token id com status minted, que seja igual a esse
+            console.log("tokenId.slice(1): " + tokenId.slice(1));
+            console.log("nftTokensMinted[key]: " + nftTokensMinted[key]);
+            console.log("tokenId.slice(1) == nftTokensMinted[key]: ");
+            console.log(tokenId.slice(1) == nftTokensMinted[key]);
+            if (tokenId.slice(1) == nftTokensMinted[key]){ 
+              currentStatus = "minted";
+            }
+          }
+        }
+
+        console.log("currentStatus pos minted: " + currentStatus);
+
+        if(currentStatus == "" && nftTokensSale){ //se não tiver status minted, veremos se é sale
+          for (var key in nftTokensSale) {
+            console.log("tokenId.slice(1) == nftTokensSale[key]: " + tokenId.slice(1) == nftTokensSale[key]);
+            if (tokenId.slice(1) == nftTokensSale[key]){
+              currentStatus = "sale";
+            }
+          }
+        }
+
+        console.log("currentStatus pos sale: " + currentStatus);
+
+        if(currentStatus == ""){//se não tiver status minted ou sale, setstatus = minted
+          await setStatus(tokenId,"minted");
+          console.log("setstatus");
+
+        } 
+      }
+    }
+  }
+
+  return;
 }
 
 
