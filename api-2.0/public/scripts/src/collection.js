@@ -122,34 +122,75 @@ async function renderCompensation(tokenId, compensation_state, nft_type) {
       default:
         return (
           `<b> Estado de compensação:</b> Não compensado <br />` +  
-          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-3" onclick='compensate("${tokenId}")'>Compensar</button>`        
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenId}")'>Compensar</button>`        
         );
     }
   }
 }
 
-// Retorna string do metadado de compensação, dependendo do estado
+// Retorna metadado com estado da loja
 async function renderListForSale(tokenId) {
   
+  let nftOnStatus = await getNftOnStatus("minted");
   let nftTokens = await getNftOnStatus("sale");
- 
-  if (nftTokens){
-    for (var key in nftTokens) {
-      if (tokenId.slice(1) == nftTokens[key]){
-        return  `<b> Estado na loja :</b> Disponível <br />`;
+
+  let element ="";
+  let taxPercentage;
+  let taxObs = "";
+
+  if (nftOnStatus || nftTokens) {
+    
+    let nftTaxPercentage;
+
+    if(nftOnStatus!=0){
+      nftTaxPercentage = nftOnStatus;
+    }
+    else if(nftTokens!=0){
+      nftTaxPercentage = nftTokens;
+    }
+
+    for (var index in nftTaxPercentage) {
+      let tokenIdMinted = nftTaxPercentage[index].id;
+
+      if(tokenId.slice(1) == tokenIdMinted){
+        taxPercentage = parseInt(nftTaxPercentage[index].taxPercent);
+        taxObs = "( Taxação = " + taxPercentage + "% )";
       }
     }
   }
 
-  return (
-    `<b> Estado na loja :</b> Indisponível <br />` +
-    '<span style="display: inline-block;">'+
-      `<button id="lisForSaleButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-3" > Anunciar </button>` +       
-    '</span>'+
+ 
+  if (nftTokens){
+    for (var key in nftTokens) {
+      if (tokenId.slice(1) == nftTokens[key].id){
+        element += 
+          `<b> Estado na loja :</b> Disponível <br />
 
-     `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
+          <span style="display: inline-block;">
+            <button id="setMinted${tokenId}" type="button" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='setStatus("${tokenId}","minted")'> Retirar da loja </button>       
+          </span>
+
+          <span style="display: inline-block;">
+            <button id="setStatusButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" > Editar preço </button>       
+          </span>`
+      }
+    }
+  }
+
+  if (element==""){
+    element +=
+  
+    `<b> Estado na loja :</b> Indisponível <br />
+    <span style="display: inline-block;">
+      <button id="lisForSaleButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" > Anunciar </button>
+    </span>`
+  }
+
+  return(
+    element += 
+    `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
        '<div class="flex-fill">'+
-          '<label class="form-label" for="price">Insira o preço em C21</label>'+ 
+          `<label class="form-label" for="price">Insira o preço em C21 ${taxObs}</label>`+ 
           '<br />'+
           '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
             '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
@@ -165,6 +206,7 @@ async function renderListForSale(tokenId) {
         `<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}">Cancelar</button>`+
       '</span>'+
     `</div>`
+    
   );
 
 }
@@ -190,7 +232,14 @@ async function getNftOnStatus(status) {
   let nftArray = [];
   // Retornar array contendo somente a lista de ids dos nfts
   for (var i in result) {
-    nftArray = nftArray.concat(result[i][1]);
+
+    let nftMarketData = {
+      id: result[i][1],
+      price: result[i][3],
+      taxPercent: result[i][4],
+    };
+
+    nftArray = nftArray.concat(nftMarketData);
   }
 
   return nftArray;
@@ -228,46 +277,40 @@ async function setStatus(tokenIdInput, statusIn) {
   }; 
 
   init.body = JSON.stringify(body);
-
   let response = await fetch(url, init);
-  
-  if (statusIn == "sale"){
-    if (response.ok) {
-      
-      response = await response.json();
-      if (response.result != "success") {
-        await collection();
-        let element =
-          `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-          `Ocorreu um erro na publicação do produto` +
-          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-          `</div>`;
-        document.getElementById("flash").innerHTML = element;
-      } else {
-        await collection();
-        let element =
-          `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
-          `Publicação do produto realizada com sucesso` +
-          `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
-          `</div>`;
-        document.getElementById("flash").innerHTML = element;
-      }
-    }
-    else {
-      document.getElementById("loader").style.display = "none";
-      console.log("HTTP Error ", response.status);
+
+  if (response.ok) {
+    response = await response.json();
+    if (response.result != "success") {
       await collection();
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
-        `Ocorreu um erro na publicação do produto` +
+        `Ocorreu um erro` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    } else {
+      await collection();
+      let element =
+        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Ação finalizada com sucesso` +
         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
         `</div>`;
       document.getElementById("flash").innerHTML = element;
     }
   }
-
-  return null;
-
+  else {
+    document.getElementById("loader").style.display = "none";
+    console.log("HTTP Error ", response.status);
+    await collection();
+    let element =
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+      `Ocorreu um erro` +
+      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+      `</div>`;
+    document.getElementById("flash").innerHTML = element;
+    return null;
+  }
 }
 
 //change token status to "Compensado" in the IPFS
@@ -354,56 +397,43 @@ async function setStatusMinted(tokenId) {
     let nftTokensSale = await getNftOnStatus("sale");
     let currentStatus = "";
 
-    console.log("nftTokens: " + nftTokens);
-    console.log("nftTokensMinted: " + nftTokensMinted);
-    console.log("nftTokensSale: " + nftTokensSale);
-
     if (nftTokens){
 
       //se tiver tokens, verifica se o status deles são minted ou sale 
       for (var key in nftTokens) {
 
         currentStatus = "";
-
-        console.log("currentStatus: " + currentStatus);
-
         let tokenId = nftTokens[key][0]; //peguei um token id
 
         if (nftTokensMinted){
           for (var key in nftTokensMinted) {//verifica se encontramos algum token id com status minted, que seja igual a esse
-            console.log("tokenId.slice(1): " + tokenId.slice(1));
-            console.log("nftTokensMinted[key]: " + nftTokensMinted[key]);
-            console.log("tokenId.slice(1) == nftTokensMinted[key]: ");
-            console.log(tokenId.slice(1) == nftTokensMinted[key]);
-            if (tokenId.slice(1) == nftTokensMinted[key]){ 
+
+            if (tokenId.slice(1) == nftTokensMinted[key].id){ 
               currentStatus = "minted";
             }
           }
         }
 
-        console.log("currentStatus pos minted: " + currentStatus);
-
         if(currentStatus == "" && nftTokensSale){ //se não tiver status minted, veremos se é sale
           for (var key in nftTokensSale) {
-            console.log("tokenId.slice(1) == nftTokensSale[key]: " + tokenId.slice(1) == nftTokensSale[key]);
-            if (tokenId.slice(1) == nftTokensSale[key]){
+            if (tokenId.slice(1) == nftTokensSale[key].id){
               currentStatus = "sale";
             }
           }
         }
 
-        console.log("currentStatus pos sale: " + currentStatus);
-
         if(currentStatus == ""){//se não tiver status minted ou sale, setstatus = minted
           await setStatus(tokenId,"minted");
-          console.log("setstatus");
-
         } 
       }
     }
   }
 
-  return;
+  else{
+    await setStatus(tokenId.slice(1),"minted");
+  }
+
+  return null;
 }
 
 
