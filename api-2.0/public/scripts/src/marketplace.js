@@ -24,8 +24,8 @@ async function marketplace() {
 
         let tokenId = nftPrice[index].id;
         let price =  parseInt(nftPrice[index].price);
-        let taxes =  parseInt(nftPrice[index].taxes);
-        let priceWithTaxes = price + taxes;
+        let taxPercentage =  parseInt(nftPrice[index].TaxPercent);
+        let priceWithTaxes = price + parseInt((taxPercentage/100)*price);
 
         for (var key in nftMetadata) {
           if (nftPrice[index].id == nftMetadata[key][0]){  
@@ -51,10 +51,10 @@ async function marketplace() {
                           </p>                                          
                       </button>` +
                     '<div class="d-flex flex-row gap-2">' +
-                      `<button id="seeMoreButton" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick="seeMoreButton()"> 
+                      `<button id="seeMoreButton${tokenId.slice(1)}" class="btn btn-primary btn-md" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target='#tk${tokenId.replace(/\s/g,"")}' aria-controls="tk${tokenId}" onclick='seeMoreButton("${tokenId.slice(1)}")'> 
                         Ver mais                                       
                       </button>` +
-                      `<button id="buyButton" type="button" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#confirmation"> 
+                      `<button id="buyButton${tokenId.slice(1)}" type="button" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#confirmation${tokenId.slice(1)}"> 
                         Comprar 
                       </button>`+
 
@@ -75,7 +75,7 @@ async function marketplace() {
           "</div>" +
         "</div>"+
 
-        `<div class="modal fade" id="confirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        `<div class="modal fade" id="confirmation${tokenId.slice(1)}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -89,7 +89,7 @@ async function marketplace() {
                   </div> 
                   <div class="align-self-center">
                     <b> Preço: </b> ${price} C21<br />
-                    <b> Taxa: </b> ${taxes} C21 <br /> 
+                    <b> Taxa: </b> ${parseInt(price*taxPercentage/100)} C21 <br /> 
                     <b> Total: </b> ${priceWithTaxes} C21<br />
                   </div>
                 </div> 
@@ -144,7 +144,7 @@ async function getNftOnSalePrice() {
     let nftMarketData = {
       id: result[i][1],
       price: result[i][3],
-      taxes: result[i][4],
+      TaxPercent: result[i][4],
     };
 
     nftMarketData.id = "_" + nftMarketData.id;
@@ -163,7 +163,7 @@ async function getNftOnSaleMetadata() {
   let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetNFTsFromStatus?status=sale`;
   var init = {
     method: "GET",
-    headers: headers,
+    headers: headers, 
   };
 
   let response = await fetch(url, init);
@@ -221,18 +221,18 @@ function renderCompensation(tokenId, compensation_state) {
 }
 
 //Controla estado do botão "ver mais"
-function seeMoreButton(){
-  let element = document.getElementById("seeMoreButton").innerHTML;
+function seeMoreButton(tokenId){
+  let element = document.getElementById(`seeMoreButton${tokenId.replace(/\s/g,"")}`).innerHTML;
 
   if (element.replace(/\s/g, "") == 'Vermais' )
   {
     element = 'Ver menos'; 
-    document.getElementById("seeMoreButton").innerHTML = element;
+    document.getElementById(`seeMoreButton${tokenId.replace(/\s/g,"")}`).innerHTML = element;
   }
   else
   {
     element = 'Ver mais'; 
-    document.getElementById("seeMoreButton").innerHTML = element;
+    document.getElementById(`seeMoreButton${tokenId.replace(/\s/g,"")}`).innerHTML = element;
   }
 }
 
