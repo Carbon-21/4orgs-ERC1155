@@ -5,7 +5,6 @@ const frontController = require("../controllers/front-controller.js");
 const isLoggedIn = require("../middleware/is-logged-in");
 const isAdmin = require("../middleware/is-admin");
 const recaptcha = require("../middleware/recaptcha");
-const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
 
@@ -48,12 +47,6 @@ router.get("/ft/mintFromNFT", isLoggedIn, isAdmin, frontController.getMintFromNF
 ///// NFT MINT ROUTES /////
 
 router.get("/nft/mint", isLoggedIn, isAdmin, frontController.getMintNFT);
-
-///// NFT REQUESTS CONTROLLERS /////
-
-router.get("/nft/requests", isLoggedIn, isAdmin, frontController.getNftRequests);
-
-router.put("/nft/requests/:id", isLoggedIn, isAdmin, frontController.responseNftRequest);
 
 ///// TRANSFER ROUTES /////
 

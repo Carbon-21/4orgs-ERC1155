@@ -149,3 +149,52 @@ function makeMetadata(dto) {
     properties: customData,
   };
 }
+
+///// NFT REQUESTS CONTROLLERS /////
+
+exports.getNftRequests = async (req, res, next) => {
+  const { request_status } = req.query;
+
+  try {
+    if (!request_status) {
+      return next(new HttpError(400, "request_status is necessary."));
+    }
+
+
+    requests = await models.nftRequests.findAll({
+      where: { request_status },
+    });
+    return res.status(200).json({
+      requests,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
+exports.responseNftRequest = async (req, res, next) => {
+  const { id } = req.params;
+  const { aprove, adminNotes } = req.body;
+
+  try {
+    if (!id) {
+      return next(new HttpError(400, "Id is necessary."));
+    }
+
+    const requestStatus = aprove === true ? 'accepted' : 'rejected';
+    request = await models.nftRequests.update({
+      requestStatus,
+      adminNotes,
+    }, {
+      where: { id },
+    });
+
+    return res.status(200).json({
+      request,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(400));
+  }
+};
