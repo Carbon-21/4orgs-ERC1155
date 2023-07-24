@@ -311,6 +311,22 @@ exports.responseNftRequest = async (req, res, next) => {
   }
 };
 
+exports.createNftRequests = async (req, res, next) => {
+  const { userId, landOwner, landArea, phyto, geolocation, userNotes, adminNotes } = req.body;
+
+  try {
+    request = await models.nftRequests.create({
+      userId, landOwner, landArea, phyto, geolocation, userNotes, adminNotes
+    });
+    return res.status(200).json({
+      request,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(500));
+  }
+};
+
 ///// TRANSFER CONTROLLERS /////
 
 exports.getTransfer = (req, res, next) => {
