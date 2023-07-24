@@ -49,7 +49,7 @@ router.patch(
 
 ///// NFT REQUESTS CONTROLLERS /////
 
-router.get("/requests", [query("request_status").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
+router.get("/requests", [query("requestStatus").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
 
 router.put(
   "/requests/:id",

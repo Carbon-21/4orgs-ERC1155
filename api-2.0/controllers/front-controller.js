@@ -1,9 +1,6 @@
 const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
-const logger = require("../util/logger");
-const HttpError = require("../util/http-error");
-const models = require("../util/sequelize");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {

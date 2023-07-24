@@ -1,5 +1,6 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
+const models = require("../util/sequelize");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
 const axios = require("axios").default;
@@ -153,17 +154,17 @@ function makeMetadata(dto) {
 ///// NFT REQUESTS CONTROLLERS /////
 
 exports.getNftRequests = async (req, res, next) => {
-  const { request_status } = req.query;
+  const { requestStatus } = req.query;
 
   try {
-    if (!request_status) {
-      return next(new HttpError(400, "request_status is necessary."));
+    if (!requestStatus) {
+      return next(new HttpError(400, "requestStatus is necessary."));
     }
 
-
-    requests = await models.nftRequests.findAll({
-      where: { request_status },
+    const requests = await models.nftRequests.findAll({
+      where: { requestStatus },
     });
+
     return res.status(200).json({
       requests,
     });
@@ -183,7 +184,7 @@ exports.responseNftRequest = async (req, res, next) => {
     }
 
     const requestStatus = aprove === true ? 'accepted' : 'rejected';
-    request = await models.nftRequests.update({
+    const request = await models.nftRequests.update({
       requestStatus,
       adminNotes,
     }, {
