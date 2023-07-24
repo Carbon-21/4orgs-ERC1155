@@ -55,7 +55,7 @@ router.get("/nft/requests", isLoggedIn, isAdmin, frontController.getNftRequests)
 
 router.put("/nft/requests/:id", isLoggedIn, isAdmin, frontController.responseNftRequest);
 
-router.post("/nft/requests", isLoggedIn, isAdmin, frontController.createNftRequests);
+router.get("/nft/requestspage", isLoggedIn, isAdmin, frontController.getNFTRequestsPage);
 
 ///// TRANSFER ROUTES /////
 

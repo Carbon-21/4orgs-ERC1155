@@ -327,6 +327,14 @@ exports.createNftRequests = async (req, res, next) => {
   }
 };
 
+exports.getNFTRequestsPage = (req, res, next) => {
+  res.render("NFTRequest", {
+    title: "NFTRequest",
+    cssPath: "../css/mintNFT.css",
+  });
+};
+
+
 ///// TRANSFER CONTROLLERS /////
 
 exports.getTransfer = (req, res, next) => {

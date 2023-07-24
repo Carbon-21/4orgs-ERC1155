@@ -1,4 +1,4 @@
-<!-- Mint NFT Page -->
+<!-- Request NFT Page -->
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -12,23 +12,15 @@
 
     <!-- Mint Section -->
 
-    <section id="mintNFT">
+    <section id="mintFT">
       <div class="container-fluid">
         <div class="row">
           <div class="col-4 image-container"></div>
 
           <div class="col-8 form-container">
-            <h1 class="mint-header">Solicitacao de NFT</h1>
+            <h1 class="mint-header">Solicitação de NFT</h1>
 
-            <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFT()">
-              <div class="flex-fill">
-                <div class="mint-data">
-                  <i class="fas fa-user fa-lg"></i>
-                  <input type="text" name="username" id="username" class="form-control" required />
-                </div>
-                <label class="form-label" for="username">Insira o username de destino</label>
-              </div>
-
+            <!-- <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFT()"> -->
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fas fa-user fa-lg"></i>
@@ -39,15 +31,6 @@
 
               <hr />
 
-              <div class="flex-fill">
-                <div class="mint-data">
-                  <i class="fas fa-user fa-lg"></i>
-                  <input type="text" name="compensationOwner" id="compensationOwner" class="form-control" required />
-                </div>
-                <label class="form-label" for="compensationOwner">Insira o nome do proprietário dos direitos de compensação</label>
-              </div>
-
-              <hr />
 
               <div class="flex-fill">
                 <div class="mint-data">
@@ -77,7 +60,24 @@
                 <label class="form-label" for="location">Insira localização da área</label>
               </div>
 
-              <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto" />
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fa-solid fa-folder"></i>
+                  <input type="file" name="upload" accept="application/pdf,application/vnd.ms-excel" style="margin-left: 0px ;"/>
+                </div>
+                <label class="form-label" for="location">Insira o certificado da área </label>
+              </div>
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fa-solid fa-pen"></i>
+                  <input type="text" name="location" id="location" class="form-control" required />
+                </div>
+                <label class="form-label" for="location">Anotações</label>
+              </div>
+              
+
+              <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
               <div hidden id="signing-files" style="text-align: center">
                 <p><strong>Faça o upload da sua chave privada</strong></p>
                 <input type="file" id="private-key" name="filename" style="margin-left: 50px" /><br /><br />
@@ -85,7 +85,7 @@
                 <input type="file" id="certificate" name="filename" style="margin-left: 50px" /><br /><br />
               </div>
               <div class="mint-button pb-5">
-                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Solicitar NFT</button>
               </div>
             </form>
           </div>
