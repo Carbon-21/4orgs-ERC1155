@@ -2,6 +2,7 @@ const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
+const models = require("../util/sequelize");
 const axios = require("axios").default;
 
 exports.getMetadata = async (req, res, next) => {
@@ -198,3 +199,32 @@ exports.responseNftRequest = async (req, res, next) => {
     return next(new HttpError(400));
   }
 };
+
+exports.createNFTRequest = async (request, response, next) => {
+  const {
+    userId,
+    landOwner,
+    landArea,
+    phyto,
+    geolocation,
+    userNotes,
+  } = request.body;
+
+  try {
+    const req = await models.nftRequests.create({
+      userId, 
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+      adminNotes: "",
+    });
+    
+    return response.status(200).json({req});
+
+  } catch (error) {
+    logger.error(error);
+    return next(new HttpError(500));
+  }
+}

@@ -5,7 +5,7 @@ const checkAuth = require("../middleware/check-auth");
 const nftController = require("../controllers/nft-controller.js");
 
 const router = Router();
-router.use(checkAuth);
+// router.use(checkAuth);
 
 router.get("/getMetadata", [query("tokenId").not().isEmpty().isString(), validateAll], nftController.getMetadata);
 
@@ -60,5 +60,15 @@ router.put(
   ],
   nftController.responseNftRequest
 );
+
+router.post("/requests",   [
+    body("userId").not().isEmpty().isInt(),
+    body("landOwner").not().isEmpty().isString().isLength({max: 255}),
+    body("landArea").not().isEmpty().isString().isLength({max: 255}),
+    body("phyto").isString().isLength({max: 255}),
+    body("geolocation").isString().isLength({max: 255}),
+    body("userNotes").isString(),
+    validateAll
+  ], nftController.createNFTRequest)
 
 module.exports = router;
