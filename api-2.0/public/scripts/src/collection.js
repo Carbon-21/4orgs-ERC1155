@@ -4,7 +4,13 @@ let metadataArray = [];
 
 async function collection() {
 
-  //Inicializa status dos nfts = "minted"
+/*  Inicializa status dos nfts = "minted". 
+    - O status do NFT não é definido na sua criação e é preciso ter um status inicial 
+    padrão para tirar o NFT da loja mudando o seu status "sale" para outro. 
+    - A função que cria o status só pode ser utilizada pelo dono do nft, por isso ela 
+    é chamada dentro da collection.  
+    - Status: "minted" = NFT não está a venda; "sale" =  NFT à venda. 
+*/
   await setStatusMinted();
 
   // Recuperar todos os nfts do usuario
