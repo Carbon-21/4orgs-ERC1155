@@ -147,7 +147,7 @@ func (m *Response) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Response proto.InternalMessageInfo
 
-func (m *Response) GetStatus() int32 {
+func (m *Response) getStatus() int32 {
 	if m != nil {
 		return m.Status
 	}

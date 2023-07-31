@@ -1586,7 +1586,7 @@ func (s *SmartContract) setStatus(ctx contractapi.TransactionContextInterface, o
 // Check book order for given status
 // e.g.
 // sale, sold
-func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+func (s *SmartContract) getStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
 
 	var forSaleNFTs [][]string
 
@@ -1647,7 +1647,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 	}
 
 	// Check the status of the NFT
-	forSaleNFTs, err := s.GetStatus(ctx, "sale")
+	forSaleNFTs, err := s.getStatus(ctx, "sale")
 	if err != nil {
 		return fmt.Errorf("failed to check NFT status: %v", err)
 	}
