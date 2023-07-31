@@ -54,11 +54,11 @@ router.get("/requests", [query("requestStatus").not().isEmpty().isString(), vali
 router.put(
   "/requests/:id",
   [
-    body("aprove").not().isEmpty().isBoolean(),
+    body("aprove").not().isEmpty().isString(),
     param("id").not().isEmpty().isString(),
     validateAll
   ],
-  nftController.responseNftRequest
+  nftController.updateNftRequestStatus
 );
 
 module.exports = router;
