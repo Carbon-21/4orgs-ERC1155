@@ -28,14 +28,14 @@ async function collection() {
       for (var key in nftTokens) {
         let tokenId = nftTokens[key][0];
         element +=
-          '<div class="card shadow-lg mt-3">' +
+          '<div class="card shadow-lg mt-3 ">' +
           '<div class="card-body flex-column">' +
           '<div class="d-flex justify-content-between p-md-1">' +
           '<div class="d-flex flex-row">' +
           '<div class="align-self-center">' +
-          '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+            '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
           "</div>" +
-          "<div>" +
+          '<div class="overflow-hidden"> ' +
           `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${tokenId.replace(
             /\s/g,
             ""
@@ -46,7 +46,28 @@ async function collection() {
           "</div>" +
           "</div>" +
           "</div>" +
-          "</div>";
+          "</div>" +
+
+              
+          `<div class="modal fade" id="staticBackdrop${tokenId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <b> Preço: </b>  C21<br />
+                  <b> Taxa: </b>  C21 <br /> 
+                  <b> Total: </b>  C21<br />
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick='buy("${tokenId}")'> Confirmar </button>
+                </div>
+              </div>
+            </div>
+          </div>`;
 
         // Renderizar a cada nft carregado
         document.getElementById("nft-showroom").innerHTML = element;
@@ -201,13 +222,12 @@ async function renderListForSale(tokenId) {
        '</div>'+
 
         `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
-          `<button id="submitOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" onclick='setStatus("${tokenId}","sale")'> Enviar </button>`+
+          `<button id="confirmPriceButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop${tokenId}" onclick='renderModal("${taxPercentage}","${tokenId}")'> Enviar </button>`+
         '</span>'+
       '<span style="display: inline-block;">'+
         `<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}">Cancelar</button>`+
       '</span>'+
     `</div>`
-    
   );
 
 }
@@ -246,7 +266,43 @@ async function getNftOnStatus(status) {
   return nftArray;
 }
 
-async function setStatus(tokenIdInput, statusIn) {
+async function renderModal(taxPercentage, tokenId) {
+
+
+  let price = document.getElementById("priceInput").value;
+  let taxes = parseInt(price*taxPercentage/100);
+  let priceWithTaxes = parseInt(price)+taxes;
+  let element=
+     `<div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmação de postagem na loja</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex flex-row"> 
+              <div class="align-self-center" style="margin-right: 30px"> 
+                <i class="fa-solid fa-coins fa-4x coin-icon"></i>
+              </div> 
+              <div class="align-self-center">
+                <b> Preço: </b> ${price} C21<br />
+                <b> Taxa: </b> ${taxes} C21 <br /> 
+                <b> Total: </b> ${priceWithTaxes} C21<br />
+              </div>
+            </div> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button id="comprar" type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick='setStatus("${tokenId}","sale",${price})'>Confirmar</button>
+          </div>
+        </div>
+      </div>`;
+
+  document.getElementById(`staticBackdrop${tokenId}`).innerHTML = element;
+
+}
+
+async function setStatus(tokenIdInput, statusIn, priceIn) {
   document.getElementById("nft-showroom").style.display = "none";
   document.getElementById("loader").style.display = "flex";
 
@@ -255,7 +311,7 @@ async function setStatus(tokenIdInput, statusIn) {
   let priceValue = 1;
 
   if(statusIn === "sale"){
-    priceValue = document.getElementById("priceInput").value;
+    priceValue = priceIn;
   }
 
   let jwt = localStorage.getItem("token");
