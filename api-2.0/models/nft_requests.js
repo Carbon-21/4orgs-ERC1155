@@ -28,15 +28,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     phyto: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     geolocation: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     certificate: {
       type: DataTypes.BLOB,
-      allowNull: true
+      allowNull: false
     },
     requestStatus: {
       type: DataTypes.ENUM('accepted','rejected','pending'),
