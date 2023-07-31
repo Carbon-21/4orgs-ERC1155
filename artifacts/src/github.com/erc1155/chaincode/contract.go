@@ -1537,8 +1537,8 @@ func taxes(ctx contractapi.TransactionContextInterface, operator string, sender 
 // Trade functions
 //
 // List NFT for sale by a given price
-// TODO: Modify this function to setStatus, that will receive the same inputs, but also the desired status value (string)
-func (s *SmartContract) setStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64) error {
+// TODO: Modify this function to SetStatus, that will receive the same inputs, but also the desired status value (string)
+func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64) error {
 
 	// Get the caller identity
 	operator, err := ctx.GetClientIdentity().GetID()

@@ -269,7 +269,7 @@ async function setStatus(tokenIdInput, statusIn) {
   headers.append("Authorization", "Bearer " + jwt);
   headers.append("Content-Type", "application/json");
 
-  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setStatus`;
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/SetStatus`;
 
   var init = {
     method: "POST",

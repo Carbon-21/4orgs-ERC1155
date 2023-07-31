@@ -213,8 +213,8 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
 };
 
 
-//setStatus NFT status
-exports.setStatus = async (req, res, next) => {
+//SetStatus NFT status
+exports.SetStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;
@@ -231,10 +231,10 @@ exports.setStatus = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
   if (!chaincode) return;
 
-  //setStatus
+  //SetStatus
   try {
-    await chaincode.submitTransaction("SmartContract:setStatus", ownerAccountId, tokenId, status, price);
-    logger.info("setStatus set successfully");
+    await chaincode.submitTransaction("SmartContract:SetStatus", ownerAccountId, tokenId, status, price);
+    logger.info("SetStatus set successfully");
  
     //close communication channel
     await gateway.disconnect();
