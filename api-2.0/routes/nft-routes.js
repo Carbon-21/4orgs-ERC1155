@@ -1,13 +1,13 @@
 const { Router } = require("express");
-const { body, query } = require("express-validator");
+const { body, query, param } = require("express-validator");
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
-const metadataController = require("../controllers/metadata-crontroller.js");
+const nftController = require("../controllers/nft-controller.js");
 
 const router = Router();
 router.use(checkAuth);
 
-router.get("/getMetadata", [query("tokenId").not().isEmpty().isString(), validateAll], metadataController.getMetadata);
+router.get("/getMetadata", [query("tokenId").not().isEmpty().isString(), validateAll], nftController.getMetadata);
 
 router.post(
   "/postMetadata",
@@ -25,7 +25,7 @@ router.post(
     body("metadata.compensation_state").not().isEmpty().isString(),
     validateAll,
   ],
-  metadataController.postMetadata
+  nftController.postMetadata
 );
 
 router.patch(
@@ -44,7 +44,21 @@ router.patch(
     body("metadata.compensation_state").not().isEmpty().isString(),
     validateAll,
   ],
-  metadataController.postMetadata
+  nftController.postMetadata
+);
+
+///// NFT REQUESTS CONTROLLERS /////
+
+router.get("/requests", [query("requestStatus").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
+
+router.put(
+  "/requests/:id",
+  [
+    body("aprove").not().isEmpty().isString(),
+    param("id").not().isEmpty().isString(),
+    validateAll
+  ],
+  nftController.updateNftRequestStatus
 );
 
 module.exports = router;

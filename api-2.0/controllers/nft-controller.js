@@ -1,5 +1,6 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
+const models = require("../util/sequelize");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
 const axios = require("axios").default;
@@ -149,3 +150,53 @@ function makeMetadata(dto) {
     properties: customData,
   };
 }
+
+///// NFT REQUESTS CONTROLLERS /////
+
+// lista nft requests com filtro de requestStatus
+exports.getNftRequests = async (req, res, next) => {
+  const { requestStatus } = req.query;
+
+  try {
+    if (!requestStatus) {
+      return next(new HttpError(400, "requestStatus is necessary."));
+    }
+
+    const requests = await models.nftRequests.findAll({
+      where: { requestStatus },
+    });
+
+    return res.status(200).json({
+      requests,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
+// atualiza o status de um nft request
+exports.updateNftRequestStatus = async (req, res, next) => {
+  const { id } = req.params;
+  const { status, adminNotes } = req.body;
+
+  try {
+    if (!id) {
+      return next(new HttpError(400, "Id is necessary."));
+    }
+
+    const request = await models.nftRequests.update({
+      requestStatus: status,
+      adminNotes,
+    }, {
+      where: { id },
+    });
+
+    return res.status(200).json({
+      request,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(422));
+  }
+};

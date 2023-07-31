@@ -5,7 +5,6 @@ const frontController = require("../controllers/front-controller.js");
 const isLoggedIn = require("../middleware/is-logged-in");
 const isAdmin = require("../middleware/is-admin");
 const recaptcha = require("../middleware/recaptcha");
-const metadataController = require("../controllers/metadata-crontroller.js");
 
 const router = Router();
 
