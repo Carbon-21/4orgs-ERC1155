@@ -11,7 +11,7 @@ async function collection() {
     é chamada dentro da collection.  
     - Status: "minted" = NFT não está a venda; "sale" =  NFT à venda. 
 */
-  await setStatusMinted();
+  await setStatusMinted(0);
 
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
@@ -396,7 +396,7 @@ async function compensate(tokenId) {
 //ou de um nft que deve ser retirado da loja (tokenId !== null)
 async function setStatusMinted(tokenId) {
 
-  if (tokenId===null){
+  if (tokenId === 0){
    
     let nftTokens = await getNftTokens();
     let nftTokensMinted = await getNftOnStatus("minted");
@@ -404,6 +404,8 @@ async function setStatusMinted(tokenId) {
     let currentStatus = "";
 
     if (nftTokens){
+
+      if (nftTokens.length===0){return;}
 
       //se tiver tokens, verifica se o status deles são minted ou sale 
       for (var key in nftTokens) {
@@ -432,9 +434,8 @@ async function setStatusMinted(tokenId) {
           await setStatus(tokenId,"minted");
         } 
       }
-    }
+    } 
   }
-
   else{
     await setStatus(tokenId.slice(1),"minted");
   }
