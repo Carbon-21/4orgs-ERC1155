@@ -125,8 +125,10 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Geração de C21: </b> ${nftinfo?.metadata?.mint_sylvas} <br />` +    
     `<b> Potencial de geração de C21: </b> ${nftinfo?.metadata?.mint_rate} <br />` +        
     `<b> Tipo do NFT: </b> ${nftinfo?.metadata?.nft_type} <br />` +        
-    `<b> Notas: </b> ${nftinfo?.metadata?.custom_notes} <br />` +           
+    `<b> Notas: </b> ${nftinfo?.metadata?.custom_notes} <br />` +
+    "<p>" +           
     await renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state, nftinfo?.metadata?.nft_type) +
+    "<p>" +
     await renderListForSale(tokenId.replace(/\s/g, "")) +    
     "<p>" +
     "</div>"
