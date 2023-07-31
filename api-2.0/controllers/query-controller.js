@@ -242,7 +242,7 @@ exports.getURI = async (req, res, next) => {
 };
 
 // General
-exports.GetStatus = async (req, res, next) => {
+exports.getStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const username = req.jwt.username;

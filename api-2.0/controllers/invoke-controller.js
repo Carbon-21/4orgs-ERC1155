@@ -214,7 +214,7 @@ exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
 
 
 //SetStatus NFT status
-exports.SetStatus = async (req, res, next) => {
+exports.setStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const tokenId = req.body.tokenId;

@@ -217,7 +217,7 @@ async function getNftOnStatus(status) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=${status}`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getStatus?status=${status}`;
 
   var init = {
     method: "GET",
@@ -264,7 +264,7 @@ async function setStatus(tokenIdInput, statusIn) {
   headers.append("Authorization", "Bearer " + jwt);
   headers.append("Content-Type", "application/json");
 
-  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/SetStatus`;
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/setStatus`;
 
   var init = {
     method: "POST",

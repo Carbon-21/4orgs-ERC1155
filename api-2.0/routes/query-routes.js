@@ -111,14 +111,14 @@ router.get(
 
 // Check NFT listed for sale
 router.get(
-  "/channels/:channel/chaincodes/:chaincode/GetStatus", 
+  "/channels/:channel/chaincodes/:chaincode/getStatus", 
   [
     param("channel").not().isEmpty(), 
     param("chaincode").not().isEmpty(), 
     query("status").trim().not().isEmpty().isString(),
     validateAll
   ], 
-  queryController.GetStatus
+  queryController.getStatus
 );
 
 
