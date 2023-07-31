@@ -377,7 +377,7 @@ func (m *DeliverResponse) GetType() isDeliverResponse_Type {
 	return nil
 }
 
-func (m *DeliverResponse) getStatus() common.Status {
+func (m *DeliverResponse) GetStatus() common.Status {
 	if x, ok := m.GetType().(*DeliverResponse_Status); ok {
 		return x.Status
 	}

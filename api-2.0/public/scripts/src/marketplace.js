@@ -124,7 +124,7 @@ async function getNftOnSalePrice() {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getStatus?status=sale`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=sale`;
 
   var init = {
     method: "GET",

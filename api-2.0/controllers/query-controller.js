@@ -242,7 +242,7 @@ exports.getURI = async (req, res, next) => {
 };
 
 // General
-exports.getStatus = async (req, res, next) => {
+exports.GetStatus = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
   const username = req.jwt.username;
@@ -255,7 +255,7 @@ exports.getStatus = async (req, res, next) => {
 
   //get the NFT listed given status
   try {
-    let result = await chaincode.submitTransaction("SmartContract:getStatus", status);
+    let result = await chaincode.submitTransaction("SmartContract:GetStatus", status);
     result = result.toString();
 
     //close communication channel
