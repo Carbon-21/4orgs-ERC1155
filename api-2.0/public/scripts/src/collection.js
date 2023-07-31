@@ -96,7 +96,6 @@ async function renderMetadata(tokenId,nftinfo) {
     `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
     `<b> Status: </b> ${nftinfo?.metadata?.status} <br />` +
-    `<b> Quantidade: </b> ${nftinfo?.amount} <br />` +
     `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.land_owner} <br />` +
     `<b> Área (hectares): </b> ${nftinfo?.metadata?.land_area} <br />` +
     `<b> Fitofisiologia: </b> ${nftinfo?.metadata?.phyto} <br />` +
@@ -136,39 +135,35 @@ async function renderCompensation(tokenId, compensation_state, nft_type) {
 
 // Retorna metadado com estado da loja
 async function renderListForSale(tokenId) {
-  
-  let nftOnStatus = await getNftOnStatus("minted");
-  let nftTokens = await getNftOnStatus("sale");
+
+  let nftMintedList = await getNftOnStatus("minted");
+  let nftSaleList = await getNftOnStatus("sale");
 
   let element ="";
   let taxPercentage;
   let taxObs = "";
 
-  if (nftOnStatus || nftTokens) {
+  //tenta pegar o valor da taxa a partir de um nft "minted"
+  if (nftMintedList) {
     
-    let nftTaxPercentage;
-
-    if(nftOnStatus!==0){
-      nftTaxPercentage = nftOnStatus;
+    if(nftMintedList.length!==0){
+      taxPercentage = parseInt(nftMintedList[0].taxPercent);
+      taxObs = "( Taxação = " + taxPercentage + "% )";
     }
-    else if(nftTokens!==0){
-      nftTaxPercentage = nftTokens;
-    }
+  } 
+  
+  //tenta pegar a taxa a partir de um nft "sale"
+  if(taxObs === "" && nftSaleList){
 
-    for (var index in nftTaxPercentage) {
-      let tokenIdMinted = nftTaxPercentage[index].id;
-
-      if(tokenId.slice(1) === tokenIdMinted){
-        taxPercentage = parseInt(nftTaxPercentage[index].taxPercent);
-        taxObs = "( Taxação = " + taxPercentage + "% )";
-      }
+    if(nftSaleList.length!==0){
+      taxPercentage = parseInt(nftSaleList[0].taxPercent);
+      taxObs = "( Taxação = " + taxPercentage + "% )";
     }
   }
 
- 
-  if (nftTokens){
-    for (var key in nftTokens) {
-      if (tokenId.slice(1) === nftTokens[key].id){
+  if (nftSaleList){
+    for (var key in nftSaleList) {
+      if (tokenId.slice(1) == nftSaleList[key].id){
         element += 
           `<b> Estado na loja :</b> Disponível <br />
 
