@@ -12,7 +12,7 @@ async function marketplace() {
   // Caso haja nfts
   if (nftMetadata && nftPrice) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
-    if (nftPrice.length == 0 ) {
+    if (nftPrice.length === 0 ) {
       element +=
         '<center><h2><font color="#5f5f5f">Não existem NFTs à venda </font></h2> </center>'+
         "</div>";
@@ -24,11 +24,11 @@ async function marketplace() {
 
         let tokenId = nftPrice[index].id;
         let price =  parseInt(nftPrice[index].price);
-        let taxPercentage =  parseInt(nftPrice[index].TaxPercent);
+        let taxPercentage =  parseInt(nftPrice[index].taxPercent);
         let priceWithTaxes = price + parseInt((taxPercentage/100)*price);
 
         for (var key in nftMetadata) {
-          if (nftPrice[index].id == nftMetadata[key][0]){  
+          if (nftPrice[index].id === nftMetadata[key][0]){  
             nftinfo = JSON.parse(nftMetadata[key][1]);
           }
         }
@@ -144,7 +144,7 @@ async function getNftOnSalePrice() {
     let nftMarketData = {
       id: result[i][1],
       price: result[i][3],
-      TaxPercent: result[i][4],
+      taxPercent: result[i][4],
     };
 
     nftMarketData.id = "_" + nftMarketData.id;
@@ -171,7 +171,7 @@ async function getNftOnSaleMetadata() {
 
   let nftArray = [];
 
-  if (Object.keys(result).length != 0){
+  if (Object.keys(result).length !== 0){
     // Retornar array contendo somente a lista de ids dos nfts
     for (var i in result) {
       nftArray = nftArray.concat(result[i]);
@@ -224,7 +224,7 @@ function renderCompensation(tokenId, compensation_state) {
 function seeMoreButton(tokenId){
   let element = document.getElementById(`seeMoreButton${tokenId.replace(/\s/g,"")}`).innerHTML;
 
-  if (element.replace(/\s/g, "") == 'Vermais' )
+  if (element.replace(/\s/g, "") === 'Vermais' )
   {
     element = 'Ver menos'; 
     document.getElementById(`seeMoreButton${tokenId.replace(/\s/g,"")}`).innerHTML = element;
@@ -267,7 +267,7 @@ async function buy(tokenIdInput){
   if (response.ok) {
     
     response = await response.json();
-    if (response.result != "success") {
+    if (response.result !== "success") {
       await marketplace();
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +

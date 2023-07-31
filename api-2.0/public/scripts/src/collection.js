@@ -19,7 +19,7 @@ async function collection() {
   // Caso haja nfts
   if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
-    if (nftTokens.length == 0){
+    if (nftTokens.length === 0){
       element +=
         '<center><h2><font color="#5f5f5f">Você não possui NFTs em sua coleção </font></h2> </center>'+
         "</div>";
@@ -115,7 +115,7 @@ async function renderMetadata(tokenId,nftinfo) {
 
 // Retorna string do metadado de compensação, dependendo do estado
 async function renderCompensation(tokenId, compensation_state, nft_type) {
-  if(nft_type == "corte"){
+  if(nft_type === "corte"){
     return `<b> Estado de compensação:</b> Não permitido <br />`;
   }else{
     switch (compensation_state) {
@@ -148,17 +148,17 @@ async function renderListForSale(tokenId) {
     
     let nftTaxPercentage;
 
-    if(nftOnStatus!=0){
+    if(nftOnStatus!==0){
       nftTaxPercentage = nftOnStatus;
     }
-    else if(nftTokens!=0){
+    else if(nftTokens!==0){
       nftTaxPercentage = nftTokens;
     }
 
     for (var index in nftTaxPercentage) {
       let tokenIdMinted = nftTaxPercentage[index].id;
 
-      if(tokenId.slice(1) == tokenIdMinted){
+      if(tokenId.slice(1) === tokenIdMinted){
         taxPercentage = parseInt(nftTaxPercentage[index].taxPercent);
         taxObs = "( Taxação = " + taxPercentage + "% )";
       }
@@ -168,7 +168,7 @@ async function renderListForSale(tokenId) {
  
   if (nftTokens){
     for (var key in nftTokens) {
-      if (tokenId.slice(1) == nftTokens[key].id){
+      if (tokenId.slice(1) === nftTokens[key].id){
         element += 
           `<b> Estado na loja :</b> Disponível <br />
 
@@ -183,7 +183,7 @@ async function renderListForSale(tokenId) {
     }
   }
 
-  if (element==""){
+  if (element===""){
     element +=
   
     `<b> Estado na loja :</b> Indisponível <br />
@@ -259,7 +259,7 @@ async function setStatus(tokenIdInput, statusIn) {
 
   let priceValue = 1;
 
-  if(statusIn == "sale"){
+  if(statusIn === "sale"){
     priceValue = document.getElementById("priceInput").value;
   }
 
@@ -287,7 +287,7 @@ async function setStatus(tokenIdInput, statusIn) {
 
   if (response.ok) {
     response = await response.json();
-    if (response.result != "success") {
+    if (response.result !== "success") {
       await collection();
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
@@ -363,7 +363,7 @@ async function compensate(tokenId) {
   if (response.ok) {
     document.getElementById("loader").style.display = "none";
     response = await response.json();
-    if (response.result != "success") {
+    if (response.result !== "success") {
       let element =
         `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
         `Ocorreu um erro na compensação` +
@@ -393,10 +393,10 @@ async function compensate(tokenId) {
 }
 
 //definir status como "minted" de todos os nfts sem status (tokenId = null) 
-//ou de um nft que deve ser retirado da loja (tokenId != null)
+//ou de um nft que deve ser retirado da loja (tokenId !== null)
 async function setStatusMinted(tokenId) {
 
-  if (tokenId==null){
+  if (tokenId===null){
    
     let nftTokens = await getNftTokens();
     let nftTokensMinted = await getNftOnStatus("minted");
@@ -414,21 +414,21 @@ async function setStatusMinted(tokenId) {
         if (nftTokensMinted){
           for (var key in nftTokensMinted) {//verifica se encontramos algum token id com status minted, que seja igual a esse
 
-            if (tokenId.slice(1) == nftTokensMinted[key].id){ 
+            if (tokenId.slice(1) === nftTokensMinted[key].id){ 
               currentStatus = "minted";
             }
           }
         }
 
-        if(currentStatus == "" && nftTokensSale){ //se não tiver status minted, veremos se é sale
+        if(currentStatus === "" && nftTokensSale){ //se não tiver status minted, veremos se é sale
           for (var key in nftTokensSale) {
-            if (tokenId.slice(1) == nftTokensSale[key].id){
+            if (tokenId.slice(1) === nftTokensSale[key].id){
               currentStatus = "sale";
             }
           }
         }
 
-        if(currentStatus == ""){//se não tiver status minted ou sale, setstatus = minted
+        if(currentStatus === ""){//se não tiver status minted ou sale, setstatus = minted
           await setStatus(tokenId,"minted");
         } 
       }
