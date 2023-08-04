@@ -74,12 +74,21 @@ exports.writeIPFS = async (data) => {
     // we will use this TextEncoder to turn strings into Uint8Arrays
     const encoder = new TextEncoder();
 
-    // add the bytes to your node and receive a unique content identifier
-    const cid = await fs.addBytes(encoder.encode("jamiroaiiii"));
+    // add the bytes to your node and receive a file CID
+    const fileName = "world_state.txt";
+    const fileCid = await fs.addBytes(encoder.encode("Um belo world state"));
+    logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
 
-    console.log("Added file:", cid.toString());
+    // create root (if needed) and an empty dir, get its CID
+    const dirName = "um_checkpoint";
+    const emptyDirCid = await mkdir(fs, dirName);
+    logger.info(`Created empty directory ${dirName}:`, emptyDirCid.toString());
 
-    ipnsPublish(cid);
+    // create a file inside the new diretory
+    const updatedDirCid = await cp(fs, emptyDirCid, fileCid, fileName);
+    logger.info(`Added ${fileName} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+
+    ipnsPublish(updatedDirCid);
   } catch (error) {
     logger.error(error);
   }
@@ -126,17 +135,19 @@ const readIPFS = async (cid) => {
     // create a filesystem on top of the second Helia node
     // const fs2 = unixfs(node2);
 
-    // this decoder will turn Uint8Arrays into strings
-    const decoder = new TextDecoder();
-    let text = "";
+    await ls(fs, cid);
+    // await cat(fs, fileCid);
 
-    // fetch the file from the first Helia node
-    for await (const chunk of fs.cat(cid)) {
-      text += decoder.decode(chunk, {
-        stream: true,
-      });
-    }
-    console.log("Fetched file contents:", text);
+    // this decoder will turn Uint8Arrays into strings (OLD, pre MFS)
+    // const decoder = new TextDecoder();
+    // let text = "";
+    // // fetch the file from the first Helia node
+    // for await (const chunk of fs.cat(cid)) {
+    //   text += decoder.decode(chunk, {
+    //     stream: true,
+    //   });
+    // }
+    // console.log("Fetched file contents:", text);
 
     //wait (eu que coloquei isso, pra teste, mas acho q n precisa)
     // await new Promise((resolve) => setTimeout(resolve, 500000));
@@ -145,6 +156,42 @@ const readIPFS = async (cid) => {
   } catch (error) {
     logger.error(error);
   }
+};
+
+//// IPNS Functions ////
+const ls = async (fs, dirCid) => {
+  logger.info("$ ls");
+  for await (const entry of fs.ls(dirCid)) {
+    logger.info(entry);
+  }
+};
+
+const mkdir = async (fs, dirName) => {
+  //create root
+  const rootDirCid = await fs.addDirectory();
+  logger.debug("Created root dir:", rootDirCid);
+
+  //create intended dir
+  const emptyDirCid = await fs.mkdir(rootDirCid, dirName);
+  logger.debug("Created an empty dir:", emptyDirCid);
+
+  return emptyDirCid;
+};
+
+const cat = async (fs, fileCid) => {
+  const decoder = new TextDecoder();
+
+  logger.info("$ cat");
+  for await (const buf of fs.cat(fileCid)) {
+    console.info(decoder.decode(buf));
+  }
+};
+
+const cp = async (fs, dirCid, fileCid, fileName) => {
+  const updatedDirCid = await fs.cp(fileCid, dirCid, fileName);
+  logger.debug("updatedDirCid", updatedDirCid);
+
+  return updatedDirCid;
 };
 
 ////////////////////HELIA SEM libp2p/////////////////////////
