@@ -195,7 +195,6 @@ async function renderMetadata(tokenId, nftinfo) {
       '<div class="accordion-body">' +
         "<p>" +
           `<b> Status: </b> ${nftinfo?.metadata?.status} <br />` +
-          `<b> Quantidade: </b> ${nftinfo?.amount} <br />` +
           `<b> Proprietário da Terra: </b> ${nftinfo?.metadata?.land_owner} <br />` +
           `<b> Dono dos direitos de Compensação: </b> ${nftinfo?.metadata?.compensation_owner} <br />` +
           renderCompensation(tokenId.replace(/\s/g, ""), nftinfo?.metadata?.compensation_state) +
