@@ -61,14 +61,16 @@ router.put(
   nftController.responseNftRequest
 );
 
-router.post("/requests",   [
-    body("userId").not().isEmpty().isInt(),
-    body("landOwner").not().isEmpty().isString().isLength({max: 255}),
-    body("landArea").not().isEmpty().isString().isLength({max: 255}),
-    body("phyto").isString().isLength({max: 255}),
-    body("geolocation").isString().isLength({max: 255}),
-    body("userNotes").isString(),
-    validateAll
-  ], nftController.createNFTRequest)
+router.post("/requests", upload.single("file"), nftController.createNFTRequest);
+
+// [
+//   body("userId").not().isEmpty().isInt(),
+//   body("landOwner").not().isEmpty().isString().isLength({max: 255}),
+//   body("landArea").not().isEmpty().isString().isLength({max: 255}),
+//   body("phyto").isString().isLength({max: 255}),
+//   body("geolocation").isString().isLength({max: 255}),
+//   body("userNotes").isString(),
+//   validateAll
+// ]
 
 module.exports = router;

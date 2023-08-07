@@ -4,6 +4,7 @@ const HttpError = require("../util/http-error");
 const ipfs = require("../util/ipfs");
 const models = require("../util/sequelize");
 const axios = require("axios").default;
+const fs = require("fs");
 
 exports.getMetadata = async (req, res, next) => {
   let tokenId = req.query.tokenId;
@@ -219,7 +220,16 @@ exports.createNFTRequest = async (request, response, next) => {
       geolocation,
       userNotes,
       adminNotes: "",
-    });
+      certificate: fs.readFileSync(
+        __basedir + "/resources/static/assets/uploads/" + request.file.filename
+      ),
+    }).then((image) => {
+      fs.writeFileSync(__basedir + "/resources/static/assets/tmp" + image.name, 
+      image.data
+      );
+
+      console.log("File uploaded")
+    })
     
     return response.status(200).json({req});
 
