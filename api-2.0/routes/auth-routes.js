@@ -25,6 +25,6 @@ router.post("/login", [body("email").trim().not().isEmpty().isString(), body("pa
 // router.post("/login", [body("email").trim().not().isEmpty().isEmail(), body("password").trim().not().isEmpty().isString(), validateAll], authController.login);
 
 ///// AUTHENTICATED ROUTES /////
-// router.use(checkAuth);
+router.use(checkAuth);
 
 module.exports = router;

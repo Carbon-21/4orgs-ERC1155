@@ -5,7 +5,7 @@ const checkAuth = require("../middleware/check-auth");
 const nftController = require("../controllers/nft-controller.js");
 
 const router = Router();
-// router.use(checkAuth);
+router.use(checkAuth);
 
 router.get("/getMetadata", [query("tokenId").not().isEmpty().isString(), validateAll], nftController.getMetadata);
 
