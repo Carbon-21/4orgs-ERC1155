@@ -1546,14 +1546,6 @@ func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, o
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 
-	// Check the nft is for sale
-	// nftStatus, _ := NFTsFromStatusHelper(ctx, "sale")
-	// for j := 0; j < len(nftStatus); j++ {
-	// 	if id == nftStatus[j][0] {
-	// 		return fmt.Errorf("NFT já esta a venda")
-	// 	}
-	// }
-
 	idNFTs, _ := idNFTHelper(ctx, operator)
 	for i := 0; i < len(idNFTs); i++ {
 		if id == idNFTs[i][0] {
