@@ -37,9 +37,9 @@ const taxPercentage = 10
 
 // Token struct for marshal/unmarshal buy and sell listings
 type ListItem struct {
-	Status string
-	Price  uint64
-	Taxes  uint64
+	Status     string
+	Price      uint64
+	TaxPercent uint64
 }
 
 type ListForSaleEvent struct {
@@ -1537,20 +1537,13 @@ func taxes(ctx contractapi.TransactionContextInterface, operator string, sender 
 // Trade functions
 //
 // List NFT for sale by a given price
-func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface, owner string, id string, price uint64) error {
+// TODO: Modify this function to SetStatus, that will receive the same inputs, but also the desired status value (string)
+func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64) error {
 
 	// Get the caller identity
 	operator, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return fmt.Errorf("Erro ao obter ID: %v", err)
-	}
-
-	// Check the nft is for sale
-	nftStatus, _ := NFTsFromStatusHelper(ctx, "sale")
-	for j := 0; j < len(nftStatus); j++ {
-		if id == nftStatus[j][0] {
-			return fmt.Errorf("NFT já esta a venda")
-		}
 	}
 
 	idNFTs, _ := idNFTHelper(ctx, operator)
@@ -1563,9 +1556,7 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 			}
 
 			// Marshal the status and price into JSON
-			status := "sale"
-			taxes := price * uint64(taxPercentage) / 100
-			data := ListItem{status, price, taxes}
+			data := ListItem{status, price, uint64(taxPercentage)}
 			value, err := json.Marshal(data)
 			if err != nil {
 				return fmt.Errorf("failed to marshal NFT data: %v", err)
@@ -1587,7 +1578,7 @@ func (s *SmartContract) ListForSale(ctx contractapi.TransactionContextInterface,
 // Check book order for given status
 // e.g.
 // sale, sold
-func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
 
 	var forSaleNFTs [][]string
 
@@ -1621,7 +1612,7 @@ func (s *SmartContract) CheckForStatus(ctx contractapi.TransactionContextInterfa
 
 		if data.Status == status {
 			price := strconv.FormatUint(data.Price, 10)
-			taxes := strconv.FormatUint(data.Taxes, 10)
+			taxes := strconv.FormatUint(data.TaxPercent, 10)
 			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price, taxes}
 			forSaleNFTs = append(forSaleNFTs, element)
 		}
@@ -1648,7 +1639,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 	}
 
 	// Check the status of the NFT
-	forSaleNFTs, err := s.CheckForStatus(ctx, "sale")
+	forSaleNFTs, err := s.GetStatus(ctx, "sale")
 	if err != nil {
 		return fmt.Errorf("failed to check NFT status: %v", err)
 	}
