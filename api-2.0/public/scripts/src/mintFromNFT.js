@@ -51,7 +51,7 @@ const mintFTFromNFT = async () => {
         // Displays success messages
         let element =     
           `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
-              `$ylvas emitidos com sucesso`+
+              `C21 emitidos com sucesso`+
               `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
           `</div>`
         document.getElementById("flash").innerHTML = element;

@@ -36,6 +36,48 @@ router.get(
 router.use(checkAuth);
 
 router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getAllNFTIds
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getAllNFTIds",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  queryController.getAllNFTIds
+);
+
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/GetNFTsFromStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    query("status").trim().not().isEmpty().isString(),  
+    validateAll,
+  ],
+  queryController.getNFTsFromStatus
+);
+
+router.get(
   "/channels/:channel/chaincodes/:chaincode/balance",
   [
     param("channel").trim().not().isEmpty().isString(),
@@ -66,6 +108,19 @@ router.get(
   [param("channel").trim().not().isEmpty().isString(), param("chaincode").trim().not().isEmpty().isString(), query("tokenId").trim().not().isEmpty().isString(), validateAll],
   queryController.totalSupply
 );
+
+// Check NFT listed for sale
+router.get(
+  "/channels/:channel/chaincodes/:chaincode/getStatus", 
+  [
+    param("channel").not().isEmpty(), 
+    param("chaincode").not().isEmpty(), 
+    query("status").trim().not().isEmpty().isString(),
+    validateAll
+  ], 
+  queryController.getStatus
+);
+
 
 //auxiliary route used by getMetadata. Not invoked directly in the front.
 router.get(

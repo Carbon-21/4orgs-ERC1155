@@ -116,19 +116,19 @@ echo -e "${INFO_COLOR}Running processes [${PWD}]${NC}"
 
 
 ###### Executable files (+x) ######
-chmod +x kill
-chmod +x git-branch
-chmod +x git-push
-chmod +x cc-debug
-chmod +x cc-build
-chmod +x database/reset-db
-chmod +x artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
-chmod +x artifacts/channel/create-artifacts.sh
-chmod +x createChannel.sh
-chmod +x deployChaincode.sh
-chmod +x api-2.0/public/scripts/src/genscripts.sh
-chmod +x api-2.0/config/generate-ccp.sh
-chmod +x api-2.0/get-bundles
+sudo chmod +x kill
+sudo chmod +x git-branch
+sudo chmod +x git-push
+sudo chmod +x cc-debug
+sudo chmod +x cc-build
+sudo chmod +x database/reset-db
+sudo chmod +x artifacts/channel/create-certificate-with-ca/create-certificate-with-ca.sh
+sudo chmod +x artifacts/channel/create-artifacts.sh
+sudo chmod +x createChannel.sh
+sudo chmod +x deployChaincode.sh
+sudo chmod +x api-2.0/public/scripts/src/genscripts.sh
+sudo chmod +x api-2.0/config/generate-ccp.sh
+sudo chmod +x api-2.0/get-bundles
 
 
 ###### KILL ######
