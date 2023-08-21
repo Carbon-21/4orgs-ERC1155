@@ -176,6 +176,38 @@ exports.totalSupply = async (req, res, next) => {
   }
 };
 
+
+exports.getAllNFTIds = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const org = req.jwt.org;    
+
+  try{   
+    //connect to the channel and get the chaincode
+    const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+    if (!chaincode) return;
+ 
+    //get receiver id
+    let result = await chaincode.submitTransaction("SmartContract:GetAllNFTIds");
+    if (!result) return;
+
+    result = JSON.parse(result.toString());
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result,
+    });
+  }catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err.message));
+  }
+};
+
 //TODO remover quando os metadados forem pro chaincode. Remover tb setURI e metadata-controller
 //get the URI for a given token
 exports.getURI = async (req, res, next) => {
@@ -209,6 +241,38 @@ exports.getURI = async (req, res, next) => {
   }
 };
 
+// General
+exports.getStatus = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const status = req.query.status;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get the NFT listed given status
+  try {
+    let result = await chaincode.submitTransaction("SmartContract:GetStatus", status);
+    result = result.toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`NFT list for status ${status}: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    console.log(err);
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+};
 //get block IPFS URI, given a date
 exports.getURILocal = async (currentDate, org, chaincodeName, channelName) => {
   //connect to the channel and get the chaincode
@@ -330,6 +394,39 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
     return tail;
   } catch (err) {
     return new HttpError(500, err);
+  }
+};
+
+exports.getNFTsFromStatus = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const status = req.query.status;
+  const username = req.jwt.username;
+  const org = req.jwt.org;    
+
+
+  try{   
+    //connect to the channel and get the chaincode
+    const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+    if (!chaincode) return;
+
+    //get receiver id
+    let result = await chaincode.submitTransaction("SmartContract:GetNFTsFromStatus",status);
+    if (!result) return;
+
+    result = JSON.parse(result.toString());
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    return res.json({
+      result,
+    });
+  }catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err.message));
   }
 };
 
