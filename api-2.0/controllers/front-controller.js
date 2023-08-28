@@ -280,3 +280,12 @@ exports.getLogs = (req, res, next) => {
     cssPath: "css/logs.css",
   });
 };
+
+// NFT REQUEST CONTROLLERS
+
+exports.getNFTRequestsPage = (req, res, next) => {
+  res.render("NFTRequest", {
+    title: "NFTRequest",
+    cssPath: "../css/mintNFT.css",
+  });
+};

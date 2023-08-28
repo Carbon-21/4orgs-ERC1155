@@ -1,10 +1,9 @@
 <!-- Request NFT Page -->
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
 
-  <script src="/scripts/bundles/mint-bundle.js"></script>
+  <script src="/scripts/requestNFT.js"></script>
   <body>
     <!-- Navbar -->
 
@@ -20,7 +19,7 @@
           <div class="col-8 form-container">
             <h1 class="mint-header">Solicitação de NFT</h1>
 
-            <!-- <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFT()"> -->
+            <form id="form" action="" method="POST" class="validated-form" enctype="multipart/form-data" onsubmit="requestNFT()">
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fas fa-user fa-lg"></i>
@@ -45,7 +44,7 @@
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fa-solid fa-chart-area fa-lg"></i>
-                  <input type="text" name="area" id="area" class="form-control" required />
+                  <input type="text" name="landArea" id="landArea" class="form-control" required />
                 </div>
                 <label class="form-label" for="area">Insira o tamanho da área (hectares)</label>
               </div>
@@ -55,7 +54,7 @@
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fas fa-location-dot fa-lg"></i>
-                  <input type="text" name="location" id="location" class="form-control" required />
+                  <input type="text" name="geolocation" id="geolocation" class="form-control" required />
                 </div>
                 <label class="form-label" for="location">Insira localização da área</label>
               </div>
@@ -63,7 +62,7 @@
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fa-solid fa-folder"></i>
-                  <input type="file" name="upload" accept="application/pdf,application/vnd.ms-excel" style="margin-left: 0px ;"/>
+                  <input type="file" name="file" accept="application/pdf" style="margin-left: 0px ;"/>
                 </div>
                 <label class="form-label" for="location">Insira o certificado da área </label>
               </div>
@@ -71,7 +70,7 @@
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fa-solid fa-pen"></i>
-                  <input type="text" name="location" id="location" class="form-control" required />
+                  <input type="text" name="userNotes" id="userNotes" class="form-control" />
                 </div>
                 <label class="form-label" for="location">Anotações</label>
               </div>
@@ -85,7 +84,7 @@
                 <input type="file" id="certificate" name="filename" style="margin-left: 50px" /><br /><br />
               </div>
               <div class="mint-button pb-5">
-                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Solicitar NFT</button>
+                <button onclick="requestNFT()" id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Solicitar NFT</button>
               </div>
             </form>
           </div>

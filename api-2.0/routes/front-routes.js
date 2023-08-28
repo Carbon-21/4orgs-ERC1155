@@ -56,3 +56,7 @@ router.get("/transfer", isLoggedIn, frontController.getTransfer);
 router.get("/logs", frontController.getLogs);
 
 module.exports = router;
+
+///// NFT REQUESTE ROUTES /////
+
+router.get("/nft/requestspage", isLoggedIn, frontController.getNFTRequestsPage);
