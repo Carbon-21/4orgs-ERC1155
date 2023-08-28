@@ -202,16 +202,19 @@ exports.responseNftRequest = async (req, res, next) => {
 };
 
 exports.createNFTRequest = async (request, response, next) => {
-  const {
-    userId,
-    landOwner,
-    landArea,
-    phyto,
-    geolocation,
-    userNotes,
-  } = request.body;
 
   try {
+    console.log("testeeee", request.file);
+
+    const {
+      userId,
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+    } = request.body;
+
     const req = await models.nftRequests.create({
       userId, 
       landOwner,
@@ -223,17 +226,16 @@ exports.createNFTRequest = async (request, response, next) => {
       certificate: fs.readFileSync(
         __basedir + "/resources/static/assets/uploads/" + request.file.filename
       ),
-    }).then((image) => {
-      fs.writeFileSync(__basedir + "/resources/static/assets/tmp" + image.name, 
-      image.data
+    }).then((doc) => {
+      console.log(doc)
+      fs.writeFileSync(__basedir + "/resources/static/assets/tmp/" + request.file.filename, 
+      doc.certificate
       );
-
-      console.log("File uploaded")
+      return response.status(200).json(doc);
     })
-    
-    return response.status(200).json({req});
 
   } catch (error) {
+    console.log("deu erro");
     logger.error(error);
     return next(new HttpError(500));
   }

@@ -3,6 +3,7 @@ const { body, query, param } = require("express-validator");
 const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
 const nftController = require("../controllers/nft-controller.js");
+const upload = require("../middleware/upload");
 
 const router = Router();
 router.use(checkAuth);
@@ -61,16 +62,14 @@ router.put(
   nftController.responseNftRequest
 );
 
-router.post("/requests", upload.single("file"), nftController.createNFTRequest);
-
-// [
-//   body("userId").not().isEmpty().isInt(),
-//   body("landOwner").not().isEmpty().isString().isLength({max: 255}),
-//   body("landArea").not().isEmpty().isString().isLength({max: 255}),
-//   body("phyto").isString().isLength({max: 255}),
-//   body("geolocation").isString().isLength({max: 255}),
-//   body("userNotes").isString(),
-//   validateAll
-// ]
+router.post("/requests", upload.single("file"), [
+    body("userId").not().isEmpty().isInt(),
+    body("landOwner").not().isEmpty().isString().isLength({max: 255}),
+    body("landArea").not().isEmpty().isString().isLength({max: 255}),
+    body("phyto").isString().isLength({max: 255}),
+    body("geolocation").isString().isLength({max: 255}),
+    body("userNotes").isString(),
+    validateAll
+  ], nftController.createNFTRequest);
 
 module.exports = router;

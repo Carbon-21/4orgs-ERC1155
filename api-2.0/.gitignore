@@ -120,3 +120,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+#files
+resources/static/assets/tmp
+resources/static/assets/uploads
