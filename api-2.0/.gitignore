@@ -122,5 +122,4 @@ dist
 .pnp.*
 
 #files
-resources/static/assets/tmp
-resources/static/assets/uploads
+*-sample.pdf
