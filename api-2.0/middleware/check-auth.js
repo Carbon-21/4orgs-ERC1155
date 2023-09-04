@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
 
   try {
     // Authorization: 'Bearer TOKEN'
+    console.log("headers", req.headers);
     const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
@@ -28,6 +29,7 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log("foi aquii o erro");
     return next(new HttpError(401)); //no auth jwt
   }
 };

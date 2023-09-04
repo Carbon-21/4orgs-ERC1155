@@ -78,6 +78,7 @@
 <script>
   //get role from jwt
   const role = JSON.parse(atob(localStorage.token.split(".")[1])).role;
+  console.log("role", role);
 
   //TODO isso deveria ser feito usando ejs!
   //show admin functionalities
