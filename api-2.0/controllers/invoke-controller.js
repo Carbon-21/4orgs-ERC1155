@@ -156,6 +156,7 @@ exports.setURI = async (req, res, next) => {
   }
 };
 
+//deprecated: transparent logs are now stored on IPFS, not onchain anymore
 //set a URI for an IPFS input
 exports.setURILocal = async (hash, org, chaincodeName, channelName) => {
   //get get date in dd-mm-yyyy format

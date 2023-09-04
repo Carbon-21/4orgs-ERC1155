@@ -2,20 +2,28 @@ Mutable File System (MFS)
 
 .
 ├── contratos_inteligentes   //diretório com chaincodes. requer mecanismo de atualização
-│   ├── <timestamp_chaincode1>.go          
-│   ├── <timestamp_chaincode2>.go
+│   ├── <timestamp_chaincode1> 
+|      ├── chaincode.go
+|      ├── assinatura
+│   ├── <timestamp_chaincode2>
+|      ├── chaincode.go
+|      ├── assinatura
 |   .
 |   .
-|   .       
-├── <timestamp_bc1>          // diretório com 1o checkpoint da blockchain
-│   ├── ledger.json          // transações podem ser lidas por qualquer um?
-│   ├── world_state.txt      // permite a reconstrução de saldos. não há pseudo-anonimato
-│   ├── assinatura           // SHA256 do dir. <timestamp_bc1>, sem o arq. assinatura
-├── <timestamp_bc2>  
-│   ├── ledger.json         
-│   ├── world_state.txt  
-│   ├── assinatura 
-├── ...
+|   .   
+├── ledger    
+│   ├── <timestamp1>          // diretório com 1o checkpoint da ledger
+│      ├── cauda.json          // transações podem ser lidas por qualquer um? e um CC novo?
+│      ├── world_state.txt      // permite a reconstrução de saldos. não há anonimato
+│      ├── assinatura           // ECDSA-SHA256 do dir <timestamp_bc1>, sem o arq de assinatura
+│   ├── <timestamp2>  
+│      ├── ledger.json         
+│      ├── world_state.txt  
+│      ├── assinatura 
+|   .
+|   .
+|   . 
+├── CIDs?
 .
 .
 .

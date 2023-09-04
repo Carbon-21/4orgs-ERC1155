@@ -231,7 +231,7 @@ exports.getURILocal = async (currentDate, org, chaincodeName, channelName) => {
   }
 };
 
-//get entire world state
+//get world state
 exports.getWorldState = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
@@ -240,7 +240,7 @@ exports.getWorldState = async (req, res, next) => {
   const [chaincode, gateway] = await helper.getChaincode("Carbon", channel, chaincodeName, "admin", next);
   if (!chaincode) return;
 
-  //get balance
+  //get ws
   try {
     let result = await chaincode.evaluateTransaction("SmartContract:GetWorldState");
 
@@ -259,12 +259,35 @@ exports.getWorldState = async (req, res, next) => {
   }
 };
 
+//get world state
+//used on transparency log's crontab (thus local)
+exports.getWorldStateLocal = async (chaincodeName, channelName) => {
+  //connect to the channel and get the gateway
+  const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", null);
+
+  //get ws
+  try {
+    let result = await chaincode.evaluateTransaction("SmartContract:GetWorldState");
+
+    result = Buffer.from(result).toString();
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    logger.info(`World state fetched!`);
+    return result;
+  } catch (err) {
+    return new HttpError(500, err);
+  }
+};
+
 //get last block
 exports.getBlockchainTail = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
   const channelName = req.params.channel;
 
-  // //connect to the channel and get the
+  // //connect to the channel and get the gateway
   const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", next);
 
   try {
@@ -300,9 +323,10 @@ exports.getBlockchainTail = async (req, res, next) => {
   }
 };
 
-//used on transparency log's crontab
+//get last block
+//used on transparency log's crontab (thus local)
 exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
-  // //connect to the channel and get the
+  // //connect to the channel and get the gateway
   const [chaincode, gateway] = await helper.getChaincode("Carbon", channelName, chaincodeName, "admin", null);
 
   try {
@@ -322,8 +346,6 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
 
     //close communication channel
     await gateway.disconnect();
-
-    tail.info = info;
 
     //send OK response
     logger.info(`Tail fetched!`);

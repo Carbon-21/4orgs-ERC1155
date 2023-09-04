@@ -56,7 +56,7 @@ async function createNode() {
   console.log("Multiaddrs:", helia.libp2p.getMultiaddrs());
 }
 
-exports.writeIPFS = async (data) => {
+exports.writeIPFS = async (tail, ws) => {
   try {
     const { unixfs } = await import("@helia/unixfs");
 
@@ -74,21 +74,107 @@ exports.writeIPFS = async (data) => {
     // we will use this TextEncoder to turn strings into Uint8Arrays
     const encoder = new TextEncoder();
 
-    // add the bytes to your node and receive a file CID
-    const fileName = "world_state.txt";
-    const fileCid = await fs.addBytes(encoder.encode("Um belo world state"));
-    logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
+    timestamp = Date.now().toString();
 
-    // create root (if needed) and an empty dir, get its CID
-    const dirName = "um_checkpoint";
-    const emptyDirCid = await mkdir(fs, dirName);
-    logger.info(`Created empty directory ${dirName}:`, emptyDirCid.toString());
+    //create root
+    const rootDirCid = await fs.addDirectory();
+    logger.debug("Created root dir:", rootDirCid);
 
-    // create a file inside the new diretory
-    const updatedDirCid = await cp(fs, emptyDirCid, fileCid, fileName);
-    logger.info(`Added ${fileName} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+    // vim world_state.txt (cria arquivo fora do MFS ainda)
+    let fileName = `world_state_${timestamp}.txt`;
+    const wsCid = await fs.addBytes(encoder.encode(ws));
+    logger.info(`Added file ${fileName} to IPFS:`, wsCid.toString());
 
-    ipnsPublish(updatedDirCid);
+    // // cp world_state.txt . (arquivo é adicionado ao MFS)
+    const updatedDirCid = await cp(fs, rootDirCid, wsCid, fileName);
+    logger.info(`Added ${fileName} to ${rootDirCid}. Updated directory cid:`, updatedDirCid.toString());
+
+    // vim world_state.txt (cria arquivo fora do MFS ainda)
+    fileName = `tail_${timestamp}.txt`;
+    const fileCid = await fs.addBytes(encoder.encode(tail));
+    // logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
+
+    // // cp world_state.txt . (arquivo é adicionado ao MFS)
+    const updatedUpdatedDirCid = await cp(fs, updatedDirCid, fileCid, fileName);
+    // logger.info(`Added ${fileName} to ${rootDirCid}. Updated directory cid:`, updatedDirCid.toString());
+
+    ipnsPublish(updatedUpdatedDirCid);
+
+    /////////////////
+
+    // mkdir ./ledger (before that, create root if needed)
+    // let dirName = "ledger";
+    // const ledgerDirCid = await mkdir(fs, dirName);
+    // logger.info(`Created empty directory ${dirName}:`, ledgerDirCid.toString());
+
+    // // mkdir ./ledger/checkpoint1
+    // dirName = Date.now().toString();
+    // const newCheckpointDirCid = await mkdir(fs, dirName, ledgerDirCid);
+    // logger.info(`Created empty directory ${dirName}:`, newCheckpointDirCid.toString());
+
+    // // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
+    // const updatedDirCid = await cp(fs, newCheckpointDirCid, ledgerDirCid, "ledger-teste");
+    // logger.info(`Added ${"ledger-teste"} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+
+    // vim world_state.txt (cria arquivo fora do MFS ainda)
+    // const fileName = "world_state.txt";
+    // const fileCid = await fs.addBytes(encoder.encode("Um belo world state"));
+    // logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
+
+    // // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
+    // const updatedDirCid = await cp(fs, newCheckpointDirCid, fileCid, fileName);
+    // logger.info(`Added ${fileName} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+
+    // console.log("ledgerDirCid!!!!!");
+    // await ls(fs, ledgerDirCid);
+
+    // console.log("newCheckpointDirCid!!!!!");
+    // await ls(fs, newCheckpointDirCid);
+
+    // console.log("updatedDirCid!!!!!");
+    // await ls(fs, updatedDirCid);
+
+    // or doing the same thing as a stream
+    // let a = [];
+    // for await (const entry of fs.addAll([
+    //   {
+    //     path: "./teste/teste2/foo.txt",
+    //     content: encoder.encode("Um belo world state"),
+    //   },
+    // ])) {
+    //   a.push(entry);
+
+    //   console.info(entry);
+    //   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
+    // }
+    // console.log("/////////////////////");
+
+    // console.log(a.reverse()[2]);
+
+    // console.log("/////////////////////");
+
+    // for await (const entry of fs.addAll([
+    //   {
+    //     path: "./teste/teste2/foo2.txt",
+    //     content: encoder.encode("Um belo world state"),
+    //   },
+    // ])) {
+    //   console.info(entry);
+    //   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
+    // }
+
+    // const cid = await fs.addFile({
+    //   path: "./teste/teste2/foo2.txt",
+    //   content: encoder.encode("Um belo world state"),
+    //   mode: 0x755,
+    //   mtime: {
+    //     secs: 10n,
+    //     nsecs: 0,
+    //   },
+    // });
+
+    // console.info(cid);
+    // ls(fs, cid);
   } catch (error) {
     logger.error(error);
   }
@@ -103,8 +189,11 @@ const ipnsPublish = async (cid) => {
     ]);
 
     // create a public key to publish as an IPNS name
-    const keyInfo = await helia.libp2p.keychain.createKey("my-key", "rsa");
-    console.log("keyInfo", keyInfo);
+    //RSA rsa
+    //EDDSA ed25519
+    //ECDSA secp256k1
+    const keyInfo = await helia.libp2p.keychain.createKey("my-key", "secp256k1");
+    // console.log("keyInfo", keyInfo);
     const peerId = await helia.libp2p.keychain.exportPeerId(keyInfo.name);
     console.log("peerId", peerId);
 
@@ -136,6 +225,7 @@ const readIPFS = async (cid) => {
     // const fs2 = unixfs(node2);
 
     await ls(fs, cid);
+    // await recursiveCat(fs, cid);
     // await cat(fs, fileCid);
 
     // this decoder will turn Uint8Arrays into strings (OLD, pre MFS)
@@ -166,14 +256,27 @@ const ls = async (fs, dirCid) => {
   }
 };
 
-const mkdir = async (fs, dirName) => {
-  //create root
-  const rootDirCid = await fs.addDirectory();
-  logger.debug("Created root dir:", rootDirCid);
+// mkdir: if pathCid is undefined, create dir at root
+const mkdir = async (fs, dirName, pathCid) => {
+  let emptyDirCid;
 
-  //create intended dir
-  const emptyDirCid = await fs.mkdir(rootDirCid, dirName);
-  logger.debug("Created an empty dir:", emptyDirCid);
+  //mkdir in root
+  if (pathCid === undefined) {
+    //create root (if needed)
+    const rootDirCid = await fs.addDirectory();
+    logger.debug("Created root dir:", rootDirCid);
+
+    //create intended dir
+    emptyDirCid = await fs.mkdir(rootDirCid, dirName);
+    logger.debug("Created an empty dir:", emptyDirCid);
+  }
+  //mkdir inside given path
+  else {
+    console.log("VAMO ESCREVE NO PATH PAINHO!");
+    //create intended dir
+    emptyDirCid = await fs.mkdir(pathCid, dirName);
+    logger.debug("Created an empty dir:", emptyDirCid);
+  }
 
   return emptyDirCid;
 };
@@ -184,6 +287,13 @@ const cat = async (fs, fileCid) => {
   logger.info("$ cat");
   for await (const buf of fs.cat(fileCid)) {
     console.info(decoder.decode(buf));
+  }
+};
+
+//cat everything from a dir
+const recursiveCat = async (fs, dirCid) => {
+  for await (const entry of fs.ls(dirCid)) {
+    cat(fs, entry.cid);
   }
 };
 

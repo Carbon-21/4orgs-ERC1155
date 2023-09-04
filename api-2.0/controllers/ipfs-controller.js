@@ -2,7 +2,7 @@ const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
-const { getBlockchainTailLocal } = require("./query-controller");
+const { getBlockchainTailLocal, getWorldStateLocal } = require("./query-controller");
 const { setURILocal } = require("./invoke-controller");
 const { getURILocal } = require("./query-controller");
 
@@ -41,13 +41,16 @@ exports.postTransparencyLog = async () => {
   const org = "Carbon";
 
   try {
-    const tail = await getBlockchainTailLocal(chaincodeName, channelName);
+    //get tail
+    let tail = await getBlockchainTailLocal(chaincodeName, channelName);
+    tail = JSON.stringify(tail, null, 4);
 
-    const hash = await ipfs.writeIPFS(tail);
+    //get ws
+    const ws = await getWorldStateLocal(chaincodeName, channelName);
+
+    //write tail and ws on ipfs
+    const hash = await ipfs.writeIPFS(tail, ws);
     logger.info("Crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
-
-    const uri = await setURILocal(hash, org, chaincodeName, channelName);
-    logger.info("IFPS URI added to the ledger:", uri);
   } catch (error) {
     return new HttpError(500, error);
   }
