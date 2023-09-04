@@ -236,6 +236,15 @@ exports.getCollection = async (req, res, next) => {
   });
 };
 
+///// MARKETPLACE CONTROLLERS /////
+
+exports.getMarketplace = async (req, res, next) => {
+  res.render("marketplace", {
+    title: "Marketplace",
+    cssPath: "css/collection.css",
+  });
+};
+
 ///// $ILVAS MINT CONTROLLERS /////
 
 exports.getMintFT = (req, res, next) => {
