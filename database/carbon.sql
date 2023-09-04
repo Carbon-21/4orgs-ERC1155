@@ -122,7 +122,8 @@ BEGIN
         if (OLD.certificate != NEW.certificate,NEW.certificate,null),
         if (OLD.request_status != NEW.request_status,NEW.request_status,null),
         if (OLD.user_notes != NEW.user_notes,NEW.user_notes,null),
-        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null);
+        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null)
+  );
 END$$
 
 DELIMITER ;
