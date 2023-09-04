@@ -48,6 +48,8 @@ router.get("/ft/mintFromNFT", isLoggedIn, isAdmin, frontController.getMintFromNF
 
 router.get("/nft/mint", isLoggedIn, isAdmin, frontController.getMintNFT);
 
+router.get("/nft/requests", isLoggedIn, isAdmin, frontController.getMintNFTRequests);
+
 ///// TRANSFER ROUTES /////
 
 router.get("/transfer", isLoggedIn, frontController.getTransfer);

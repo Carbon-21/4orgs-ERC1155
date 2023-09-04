@@ -1,0 +1,95 @@
+<!-- Mint NFT Requests Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+
+  <script src="/scripts/src/nftRequests.js"></script>
+  <body>
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <%= getRequests() %>
+
+    <!-- Mint Section -->
+
+    <section id="mintNFT">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-4 image-container"></div>
+
+          <div class="col-8 list-container">
+            <h1 class="mint-header">NFT Requests</h1>
+
+            <div class="list">
+              <div class="filter">
+                <input class="input" placeholder="Busca"/>
+                <select class="drop">
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <a class="request-data" href="/nft/mint">
+                <div class="info-data">
+                  <p><b>Dono da terra: </b> Joaquin Manuel da Silva</p>
+                </div>
+                <div class="info-data">
+                  <p><b>Fitofisiologia: </b> Pantanal</p>
+                  <div class="info-data">
+                    <p><b>Área da terra: </b> 1000 hectares</p>
+                  </div>
+                </div>
+              </a>
+              <a class="request-data" href="/nft/mint">
+                <div class="info-data">
+                  <p><b>Dono da terra: </b> Joaquin Manuel da Silva</p>
+                </div>
+                <div class="info-data">
+                  <p><b>Fitofisiologia: </b> Pantanal</p>
+                  <div class="info-data">
+                    <p><b>Área da terra: </b> 1000 hectares</p>
+                  </div>
+                </div>
+              </a>
+              <a class="request-data" href="/nft/mint">
+                <div class="info-data">
+                  <p><b>Dono da terra: </b> Joaquin Manuel da Silva</p>
+                </div>
+                <div class="info-data">
+                  <p><b>Fitofisiologia: </b> Pantanal</p>
+                  <div class="info-data">
+                    <p><b>Área da terra: </b> 1000 hectares</p>
+                  </div>
+                </div>
+              </a>
+              <a class="request-data" href="/nft/mint">
+                <div class="info-data">
+                  <p><b>Dono da terra: </b> Joaquin Manuel da Silva</p>
+                </div>
+                <div class="info-data">
+                  <p><b>Fitofisiologia: </b> Pantanal</p>
+                  <div class="info-data">
+                    <p><b>Área da terra: </b> 1000 hectares</p>
+                  </div>
+                </div>
+              </a>
+              <a class="request-data" href="/nft/mint">
+                <div class="info-data">
+                  <p><b>Dono da terra: </b> Joaquin Manuel da Silva</p>
+                </div>
+                <div class="info-data">
+                  <p><b>Fitofisiologia: </b> Pantanal</p>
+                  <div class="info-data">
+                    <p><b>Área da terra: </b> 1000 hectares</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
