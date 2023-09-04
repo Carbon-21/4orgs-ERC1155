@@ -205,7 +205,6 @@ exports.createNFTRequest = async (request, response, next) => {
   console.log('rotaa de nft');
 
   try {
-    let token = req.headers["authorization"].split(" ")[1];
     
     console.log("testeeee", request.file);
 

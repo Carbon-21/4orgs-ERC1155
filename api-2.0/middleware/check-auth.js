@@ -5,6 +5,8 @@ const HttpError = require("../util/http-error");
 
 module.exports = (req, res, next) => {
   //OPTIONS is sent by the browser before tha actual request
+  
+
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -12,6 +14,7 @@ module.exports = (req, res, next) => {
   try {
     // Authorization: 'Bearer TOKEN'
     console.log("headers", req.headers);
+    console.log("headers", req.headers.authorization.split(" ")[1]);
     const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
@@ -26,10 +29,12 @@ module.exports = (req, res, next) => {
       username: decodedToken.username,
       org: decodedToken.org,
     };
+    console.log("chegou aqui iudsgihsd");
 
     next();
   } catch (err) {
     console.log("foi aquii o erro");
+    console.log(err);
     return next(new HttpError(401)); //no auth jwt
   }
 };

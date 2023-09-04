@@ -1,6 +1,7 @@
 // Calls the API for the smart contract function that mints FT for every active NFT
 
-const requestNFT = async () => {
+window.requestNFT = async () => {
+  event.preventDefault();
   console.log("entrou aqui aaaaaaaaaaaaaaaaaaa");
 
   // Hides the submit button and displays loading image while the transaction is processing.
@@ -27,11 +28,12 @@ const requestNFT = async () => {
   console.log("token", token);
 
   // HTTP Request
-  // let headers = new Headers();
-  // headers.append("Content-Type", "application/json");
-  // headers.append("Authorization", "Bearer " + token);
-  const headers = { 'Authorization': "Bearer " + token, "Content-Type": "application/json"}
-  let url = `https://localhost:4000/nft/requests`;
+  let headers = new Headers();
+  headers.append("Content-Type", "multipart/form-data");
+  headers.append("Authorization", "Bearer " + token);
+  // const headers = { 'Authorization': "Bearer " + token, "Content-Type": "multipart/form-data"}
+
+  let url = `https://${HOST}:${PORT}/nft/requests`;
   console.log("url", url);
 
   var body = {
@@ -47,14 +49,14 @@ const requestNFT = async () => {
   var init = {
     method: "POST",
     headers: headers,
-    mode: "no-cors",
     body: JSON.stringify(body)
   };
 
   console.log(init);
+  console.log(init.headers);
 
   let response = await fetch(url, init);
-  // console.log("response", response);
+  console.log("response", response);
 
   // if (response.ok) {
   //   response = await response.json();
