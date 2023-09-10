@@ -1,0 +1,12 @@
+version: "3"
+services:
+  node_app:
+      build: .
+      ports: 
+        - 4000:4000
+      volumes: 
+        - ./:/app   #sincroniza arquivos do container e do repositório local
+        - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
+      env_file: 
+        - ./.env
+        
