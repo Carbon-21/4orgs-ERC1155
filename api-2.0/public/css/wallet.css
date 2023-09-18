@@ -1,0 +1,45 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-image: url("../images/wallet-bg.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+/* Token */
+
+.key-icon {
+  margin: 0 30px 0 20px;
+  color: #7f8487;
+}
+
+.token-card {
+  margin-bottom: 40px;
+}
+
+/* Wallet section */
+
+.wallet-container {
+  padding: 0 100px;
+}
+
+.wallet-header {
+  margin-top: 150px;
+  margin-bottom: 80px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 20px;
+  background-color: #adcf9f;
+}
+
+.coin-icon {
+  margin: 0 30px 0 20px;
+  color: #feb139;
+}
+
+.loading-icon {
+  margin-top: 5px;
+  width: 20%;
+  display: none;
+}

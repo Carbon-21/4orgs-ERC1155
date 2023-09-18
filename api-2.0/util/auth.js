@@ -1,28 +1,29 @@
 //auxiliary functions, used by auth controller
-// const Sequelize = require("sequelize");
-// const { hash, compare } = require("bcryptjs");
-const { sign, verify, decode } = require("jsonwebtoken");
 
+// const Sequelize = require("sequelize");
+// const { compare, hash } = require("bcryptjs");
 // const transport = require("../util/mailing");
 // const models = require("../util/sequelize");
+const logger = require("./logger");
 
-// exports.verifyPassword = async (password, hasehdPassword) => {
-//   const isValid = await compare(password, hasehdPassword);
-//   return isValid;
-// };
+const { sign } = require("jsonwebtoken");
 
-// exports.hashPassword = async (password) => {
-//   const hashedPassword = await hash(password, 11);
-//   return hashedPassword;
-// };
-
-//IMPORTANT: if you change the expiration date, change it on client side too (auth-hook.js)
-exports.createJWT = (username, orgName, expiration = "7d") => {
-  const token = sign({ username, orgName }, "supersecreeeet_dont_share", {
+exports.createJWT = (username, org, role = "client", expiration = process.env.JWT_EXPIRATION) => {
+  const token = sign({ username, org, role }, process.env.JWT_SECRET_KEY, {
     expiresIn: expiration,
   });
+  logger.debug(`JWT: ${token}`);
+
   return token;
 };
+
+//check if plain text password matches the hashed one
+// exports.verifyPassword = async (plainPassword, hashedPassword) => {
+//   hashedPassword = "$2a$11" + hashedPassword; //bcrypt hash pattern
+
+//   const isValid = await compare(plainPassword, hashedPassword);
+//   return isValid;
+// };
 
 // //used to confirm user's email
 // exports.createConfirmationToken = (email, oldEmail = null) => {
@@ -101,7 +102,7 @@ exports.createJWT = (username, orgName, expiration = "7d") => {
 //       //TODO mudar email
 //       transport.sendMail({
 //         to: user.email,
-//         from: '"FluxoTest" <cadastro@fluxotest.com>',
+//         from: '"Carbon21" <cadastro@carbon21.com>',
 //         subject: "Desbloqueie sua conta",
 //         html: `<h1>Desbloqueio de conta</h1> <p>${
 //           user.name

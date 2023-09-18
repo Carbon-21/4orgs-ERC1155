@@ -1,0 +1,74 @@
+
+body{
+  font-family: 'Poppins', sans-serif;
+}
+
+i{
+  margin:0 20px 35px 20px;
+}
+
+/* Register Section */
+
+#register{
+  /* background-color: #ADCF9F; */
+  background-image: url("/images/leaves-background.webp");
+  background-repeat: no-repeat;
+  background-size:cover;
+  padding: 120px 150px 80px 150px;
+  min-height: 100vh;
+}
+
+.register-form{
+  border-radius:30px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.row{
+  justify-content: center;
+}
+
+.sign-up-header{
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.register-data{
+  display: flex;
+  align-items:center;
+  margin-bottom: 4%;
+
+}
+
+.form-check{
+  display: flex;
+  justify-content: center;
+}
+
+.register-button{
+  display: flex;
+  justify-content:center;
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.carbon-logo-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carbon-logo{
+  border-radius:30px;
+  width: 60%;
+  height: auto;
+}
+
+.msg-container{
+  text-align: center;
+}
+
+.post-msg{
+  color: blue;
+}

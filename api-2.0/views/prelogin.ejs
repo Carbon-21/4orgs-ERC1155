@@ -1,0 +1,70 @@
+<!-- Login Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<%- include("partials/head") %>
+
+  <body>
+
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+      <!-- Login Section -->
+
+      <section id="login">
+
+        <div class="container-fluid">
+          <div class="register-form card shadow">
+
+            <form action="/prelogin" method="POST" class="validated-form" novalidate>
+              <div class="row">
+
+                <div class="data-col col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+
+                  <h2 class="login-header">Acessar a plataforma</h2>
+
+                  <div class="row login-data">
+                    <!-- <i class="row-md-6 fas row-lg-6 fa-user fa-lg"></i> -->
+                    <div class="row-md-6 row-lg-6 form-group">
+                      <input type="text" name="username" id="username" class="form-control" placeholder="Email" required />
+                      <!-- <label class="form-label" for="username">Email</label> -->
+                    </div>
+                    <a href="#!" class="mt-2">Esqueceu seu email?</a>
+                  </div>
+
+                  
+<!-- 
+                  <div class="row login-footer">
+
+
+                    <div class="col">
+                      <a href="#!">Esqueceu seu email?</a>
+                    </div>
+                  </div> -->
+
+                  <div class="login-button mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Avançar</button>
+                  </div>
+
+                  <p class="mb-5 pb-lg-2">Não tem uma conta? <a href="/presignup">Registrar</a></p>
+
+                </div>
+
+                <div class="col-md-10 col-lg-6 col-xl-7 order-1 order-lg-2 carbon-logo-container">
+                  <img src="../images/carbono21.webp" class="img-fluid carbon-logo" alt="Carbono 21 logo">
+                </div>
+
+
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+        <script src="/scripts/validateForms.js"></script>
+
+  </body>
+
+</html>

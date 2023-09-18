@@ -1,94 +1,189 @@
 # CARBON21
 
-## Como rodar
+## Instalação
 
-### Rede
+Para clonar o repositório:
 
 ```
-git clone https://github.com/marques-ma/4orgs-ERC1155.git
+git clone --single-branch -b develop https://github.com/Carbon-21/4orgs-ERC1155.git
 cd 4orgs-ERC1155
-chmod +x init
-./init
 ```
-
-Nota: o script init irá matar qualquer docker ativo!
 
 <br>
 
+Para instalar as dependências do fabric:
+
+```
+chmod +x ./dependencies_install
+./dependencies_install
+```
+
+Reinicie a máquina para garantir que o usuário foi adicionado ao grupo docker.
+<br>
+<br>
+Em seguida, para instalar o fabric:
+
+```
+chmod +x ./install
+./install
+```
+
+Por fim, configure o banco de dados de usuários, conforme a seção "instalação" do ./database/README
+<br><br>
+
+## Como Usar
+
+---
+
+### Utilizando o sistema a primeira vez:
+
+<br>
+No diretório raiz, adicione a permissão de execução para os scripts:
+
+```
+chmod +x init kill
+```
+
+<br>
+
+Inicie o sistema a primeira vez executando o comando:
+
+```
+./init -i
+```
+
+<br>
+
+Finalize o sistema todo (incluindo Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) executando o comando:
+
+```
+./kill -r
+```
+
+### Utilizando o sistema persistente:
+
+<br>
+
+Iniciar/Reiniciar o sistema executando o comando:
+
+```
+./init
+```
+
+Iniciar o sistema e recompilar o Bundle Javascript (Browserify):
+
+```
+./init -j
+```
+
+Finalizar o sistema sem reinicar o containers:
+
+```
+./kill
+```
+
+Finalizar o sistema forçando a reinicialização (inclusive Banco de Dados MySQL, Containers Docker - Hyperledger Fabric Blockchain ) :
+
+```
+./kill -r
+```
+
+Para mais informações utilize:
+
+```
+./init -h
+
+e
+
+./kill -h
+```
+
+_Nota: o script ./init -r também roda o kill, e ambos matam qualquer container docker previamente ativo!_
+
+<br>
+<br>
+
 ### API
+
+Para subir a api:
 
 ```
 cd api-2.0
 npm install
 sudo npm install -g nodemon
-nodemon app.js
+nodemon
 ```
 _Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
 <br><br>
 
-### Branch
+_Nota: os passos 2 e 3 não são necessários se já foram feitos antes._
+
+<br>
+
+### Usuário Admin
+
+Algumas chamadas do CC só são permitidos a usuários admin. Um usuário administrador é criado ao inicializar-se o programa Node. Login e senha são:
+`admin@admin.com admin`
+<br>
+<br>
+
+### Git
+
+Para atualizar os arquivos locais (pull) e criar um novo branch para trabalhar:
 
 ```
-git clone --single-branch -b <BranchName> <link do repositório>
-git push origin <BranchName>
+./git-branch <nome_do_branch>
 ```
 
-## TODO
+<br>
 
-- [ ] Remover vulnerabilidades da API
-- [ ] Documentar instalação dos pré-requisitos
-      <br><br>
+Para dar push direto para o branch em que se encontra:
 
-# NOTAS
+```
+./git-push <mensagem_de_commit>
+```
 
-- Pacotes node modificados
+<br>
 
-  - npm: removido (vulnerável / inútil)
-  - fabric-common: ^ adicionado (vulnerável)
-  - fabric-client: removido (inútil / vulnerável)
-  - save: removido (inútil)
-  - js-yaml: removido (inútil)
-  - axios: removido (inútil)
+### Blockchain explorer
 
-  - http: a ser removido (inutilizado)
-  - express-bearer-token: a ser removido (inutilizado)
-  - cors: a ser removido (inutilizado)
-  - express-jwt: a ser removido (inutilizado / vulnerável)
+O blockchain explorer permite a visualização de informações da rede. Para executá-lo:
 
-## FabricNetwork-2.x
+```
+cd explorer
+./run.sh
+```
 
-@MAM: Usei ref abaixo como base, acrescentando uma quarta organização.
+_Nota: Após a execução do script, abrir o navegador e ir para http://localhost:8080, e acessar com admin/adminpw_
 
-Youtube Channel: https://www.youtube.com/watch?v=SJTdJt6N6Ow&list=PLSBNVhWU6KjW4qo1RlmR7cvvV8XIILub6
+<br>
 
-Network Topology
+### Chaincode Debugging
 
-Four Orgs(Peer Orgs)
+Para compilar o CC e ver se ele não tem nenhum bug antes de dar deploy:
 
-    - Each Org have one peer(Each Endorsing Peer)
-    - Each Org have separate Certificate Authority
-    - Each Peer has Current State database as couch db
+```
+./cc-build
+```
 
-One Orderer Org
+_Nota: Lembre de rodar o script init após alterar o CC, para fazer o deploy da nova versão na blockchain._
+<br>
+<br>
+Para entrar no terminal do docker do carbon-cc, permitindo ver prints colocados no CC:
 
-    - Three Orderers
-    - One Certificate Authority
+```
+./cc-debug
+```
 
-Steps:
+<br><br>
 
-1. Clone the repo
-2. Run Certificates Authority Services for all Orgs
-3. Create Cryptomaterials for all organizations
-4. Create Channel Artifacts using Org MSP
-5. Create Channel and join peers
-6. Deploy Chaincode
-   1. Install All dependency
-   2. Package Chaincode
-   3. Install Chaincode on all Endorsing Peer
-   4. Approve Chaincode as per Lifecycle Endorsment Policy
-   5. Commit Chaincode Defination
-7. Create Connection Profiles
-8. Start API Server
-9. Register User using API
-10. Invoke Chaincode Transaction
-11. Query Chaincode Transaction
+## Desenvolvimento
+
+Notas importante sobre o desenvolvimento
+<br><br>
+
+### Frontend
+
+- Ao desenvolver código javascript que será rodado no navegador do usuário, modificar os arquivos localizados em `./api-2.0/public/scripts/src/`. Não modificar as réplicas contidas em os `./api-2.0/public/scripts/`.
+- Não colocar endereço e porta hardcodeds, utilizar o padrão: `https://${HOST}:${PORT}/rota/desejada`
+- Após modificar um arquivo javascript do frontend, rodar `./get-bundles` dentro de `./api-2.0`. Isso fará com que HOST e PORT sejam modificados nos javascripts finais (`./api-2.0/public/scripts/`), de acordo como os valores configurados em `./api-2.0/.env`.

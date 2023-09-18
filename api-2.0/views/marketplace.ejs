@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+  <script src="/scripts/marketplace.js"></script>
+
+  <body onload="marketplace()">
+    <!-- Navbar -->
+    <%- include("partials/navbar") %>
+
+    <section id="wallet">
+      <div class="container-fuid collection-container">
+        <h1 class="collection-header">Loja</h1>
+        <div id="nft-showroom" class="overflow-hidden"></div>
+        <img id="loader" class="loading-icon" src="../images/loader.gif" style="display: flex; margin: auto; width: 20%" />
+      </div>
+    </section>
+  </body>
+</html>

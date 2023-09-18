@@ -1,0 +1,72 @@
+<!-- Mint NFT Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <%- include("partials/head") %>
+
+    <script src="/scripts/bundles/mint-bundle.js"></script>
+    <body>
+
+        <!-- Navbar -->
+
+        <%- include("partials/navbar") %>
+
+        <!-- Mint Section -->
+
+        <section id="mintFT">
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-4 image-container"></div>
+        
+                    <div class="col-8 form-container">
+
+                        <h1 class="mint-header">Emissão de Carbono21</h1>
+                        
+                        <form action="" class="validated-form" method="POST" onsubmit="mintFT()">
+
+                            <div class="flex-fill">
+                                <div class="mint-data">
+                                    <i class="fas fa-user fa-lg"></i>
+                                    <input type="text" name="username" id="username" class="form-control" required/>
+                                </div>
+                                <label class="form-label" for="username">Insira o username de destino</label>
+                            </div>
+
+                            <hr>
+
+                            <div class="flex-fill">
+                                <div class="mint-data">
+                                    <i class="fas fa-coins fa-lg"></i>
+                                    <input type="text" name="qty" id="qty" class="form-control" required/>
+                                </div>
+                                <label class="form-label" for="qty">Insira a quantidade de C21</label>
+                            </div>
+
+                            <hr>
+
+                            <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;"/>
+                            <div hidden id="signing-files" style="text-align: center;">
+                                <p><strong>Faça o upload da sua chave privada</strong></p>
+                                <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+                                <p><strong>Faça o upload do seu certificado</strong></p>
+                                <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+                            </div>
+                            <div class="mint-button">
+                                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+                            </div>
+                            
+
+                    </div>
+        
+                </div>
+
+            </div>
+
+        </section>
+
+    </body>
+
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+
+  <body id="config" onload="document.getElementById('token').value = localStorage.getItem('token')">
+    <%- include("partials/navbar") %>
+
+    <div class="container-fluid">
+      <div class="config-card card shadow">
+        <div class="header-container">
+          <h1 class="config-header">User</h1>
+        </div>
+        <hr />
+        <form action="/config" method="post">
+          <div class="mb-3">
+            <label for="token" class="form-label">Insira seu Token</label>
+            <input type="text" class="form-control" id="token" name="token" />
+          </div>
+          <div class="config-button-container">
+            <button type="submit" class="btn btn-primary">Consultar ID</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

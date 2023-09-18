@@ -1,0 +1,24 @@
+#!/bin/bash
+# Criado por Luciano Ermilivitch, adaptado por Pedro Barcha
+
+
+# Função para obtencao do fabricSamples
+# colocado em um novo diretorio criado chamado fabricSamples a
+# partir do diretorio atual
+obtemFabricSamples(){
+    cd ~
+    echo "Obtendo o Fabric..."
+    curl -sSL https://bit.ly/2ysbOFE | bash -s
+}
+
+# Adiciona HFl ao path do usuário
+adicionaPath(){
+  cd ~
+	echo "export PATH=$(pwd)/fabric-samples/bin:$PATH" >> ~/.bashrc
+  echo "Finalizado!"
+	. ~/.bashrc
+}
+
+obtemFabricSamples
+adicionaPath
+

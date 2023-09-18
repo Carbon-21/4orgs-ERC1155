@@ -1,0 +1,76 @@
+
+body{
+  font-family: 'Poppins', sans-serif;
+
+}
+
+i{
+  margin:0 20px 35px 20px;
+}
+
+/* Login Section */
+
+#login{
+  /* background-color: #ADCF9F; */
+  background-image: url("../images/leaves-background.webp");
+  background-repeat: no-repeat;
+  background-size:cover;
+  padding: 10% 20% 5% 20%;
+  min-height: 100vh;
+}
+
+.register-form{
+  border-radius:30px;
+  padding-left: 40px;
+  padding-right:40px;
+}
+
+.row{
+  justify-content: center;
+}
+
+.login-header{
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.data-col{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+.login-data{
+  display: flex;
+  align-items:center;
+  margin-bottom: 4%;
+
+}
+
+.login-footer{
+  display: flex;
+  width: 100%;
+  margin-top: 5%;
+  margin-left: 15%;
+}
+
+.login-button{
+  display: flex;
+  justify-content:center;
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.carbon-logo-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5%;
+  width: 50%;
+}
+
+.carbon-logo{
+  border-radius:30px;
+}

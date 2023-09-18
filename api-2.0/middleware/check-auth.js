@@ -1,6 +1,6 @@
 //check if req has a jwt token, throwing an error if it doesnt have it, thus blocking access to routes followed by this middleware
 
-const jwt = require("jsonwebtoken");
+const { verify } = require("jsonwebtoken");
 const HttpError = require("../util/http-error");
 
 module.exports = (req, res, next) => {
@@ -18,12 +18,12 @@ module.exports = (req, res, next) => {
     }
 
     //decode token and get user info
-    const decodedToken = jwt.verify(token, "supersecreeeet_dont_share");
+    const decodedToken = verify(token, process.env.JWT_SECRET_KEY);
 
     //pass user info to next middleware
     req.jwt = {
       username: decodedToken.username,
-      orgName: decodedToken.orgName,
+      org: decodedToken.org,
     };
 
     next();

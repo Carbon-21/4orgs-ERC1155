@@ -1,0 +1,53 @@
+#!/bin/bash
+#regenerate sequelize models using sequelize-auto and recreate carbon DB
+
+# source containing env values
+#set path to script's path
+cd "$(dirname "$0")"
+source ../api-2.0/.env
+
+#only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
+start-mysql() {
+  if [[ $(ps aux | grep mysql | grep -v grep) ]]; then
+    echo "MySQL already running"
+  else
+    sudo systemctl start mysql
+    echo "Started MySQL"
+  fi
+}
+
+
+
+#run mysql
+start-mysql
+
+# Check if mysqluser exists to any host. Otherwise, create it
+UEXISTS="$(mysql -ucarbon -p$MYSQL_PASSWORD --execute "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE USER = 'carbon@%')")"
+if [ "$UEXISTS" = 0 ]; then
+  echo "MySQL user not found. creating..."
+  # Double-check that localhost user exists
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'localhost' WITH GRANT OPTION"
+  # create user to any host (allow non-localhost calls)
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "CREATE USER 'carbon'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "GRANT ALL PRIVILEGES ON *.* TO 'carbon'@'%' WITH GRANT OPTION"
+  mysql -ucarbon -p$MYSQL_PASSWORD -se "FLUSH PRIVILEGES"
+else echo "User already exists."
+fi
+#recreate carbon db
+mysql -ucarbon -p$MYSQL_PASSWORD -se "source carbon.sql"
+
+#recreate sequelize models
+cd sequelize-auto
+npm install
+node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h $HOST -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306
+
+rm -rf ../../api-2.0/models
+mv models ../../api-2.0
+
+echo "Carbon DB recreated"
+echo "Sequelize models recreated"
+
+#o comando -t é opcional e deve ser usado caso se deseje criar o modelo sequelize de apenas uma tabela específica.
+
+# node node_modules/sequelize-auto/bin/sequelize-auto -o "./models" -h localhost -e mysql --caseModel c --caseProp c -d carbon -u carbon -x 12345678 -p 3306 -t specific_table_else_all

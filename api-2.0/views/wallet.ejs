@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+  <script src="/scripts/bundles/wallet-bundle.js"></script>
+
+  <body onload="walletServerSideSigning()">
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <section id="wallet">
+      <div class="container-fuid wallet-container">
+        <h1 class="wallet-header">Minha Carteira</h1>
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <div class="d-flex justify-content-between p-md-1">
+              <div class="d-flex flex-row">
+                <div class="align-self-center">
+                  <i class="fa-solid fa-coins fa-4x coin-icon"></i>
+                </div>
+                <div>
+                  <h4>Quantidade em carteira</h4>
+                  <p class="mb-0"> Seu saldo total de C21</p>
+                </div>
+              </div>
+              <div class="align-self-center">
+                <h2 id="balanceHeader" class="h1 mb-0">-</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto;" />
+        <div hidden id="signing-files" style="margin: auto; align-items: center;">
+          <form style="text-align: center;">
+            <p><strong>Faça o upload da sua chave privada</strong></p>
+            <input type="file" id="private-key" name="filename" style="margin-left: 50px;"><br><br>
+            <p><strong>Faça o upload do seu certificado</strong></p>
+            <input type="file" id="certificate" name="filename" style="margin-left: 50px;"><br><br>
+            <button onclick="walletClientSideSigning()" type="click" class="btn btn-primary btn-lg">Enviar transação</button><br><br>
+          </form>
+        </div>
+        
+        
+
+        <!-- <div class="align-self-center d-flex justify-content-center">
+          <img id="loader" class="loading-icon" src="./images/loader.gif" />
+          <script type="text/javascript">
+            function buttonPressed() {
+              // Request
+              sendRequest("BalanceOf");
+              // Alterna visibilidade de botao e gif de carregamento
+              document.getElementById("loader").style.display = "block";
+              document.getElementById("submitButton").style.display = "none";
+            }
+          </script>
+          <button
+            id="submitButton"
+            style="display: block"
+            type="submit"
+            class="btn btn-primary btn-lg mt-5"
+            onclick="buttonPressed()"
+          >
+            Consultar
+          </button>
+        </div> -->
+      </div>
+    </section>
+
+    
+
+  </body>
+</html>

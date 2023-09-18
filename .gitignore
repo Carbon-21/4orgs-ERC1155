@@ -1,0 +1,17 @@
+channel-artifacts/*.tx
+artifacts/channel/*.tx
+artifacts/channel/*.block
+
+channel-artifacts/*.block
+artifacts/channel/crypto-config/**
+*.tar.gz
+**/*.pem
+!api-2.0/keys/**/*
+**/*.crt
+log.txt
+api-2.0/config/connection-*.json
+api-2.0/public/scripts/*.js
+artifacts/channel/create-certificate-with-ca/fabric-ca/**/**
+!artifacts/channel/create-certificate-with-ca/fabric-ca/**/*.yaml
+
+.carbon.pid

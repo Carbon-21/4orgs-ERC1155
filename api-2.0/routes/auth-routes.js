@@ -1,18 +1,30 @@
 const { Router } = require("express");
-// const { body } = require("express-validator");
-
-// const { validateAll } = require("../util/validation");
+const { body } = require("express-validator");
+const { validateAll } = require("../util/validation");
 const checkAuth = require("../middleware/check-auth");
 const authController = require("../controllers/auth-crontroller.js");
-// const fileUpload = require("../middleware/file-upload");
 
 const router = Router();
 
-////UNAUTHENTICATED ROUTES////
-router.post("/signup", authController.signup);
-//TODO login middleware
+//// UNAUTHENTICATED ROUTES ////
+router.post("/getSalt", [body("email").trim().not().isEmpty().isString(), body("isSignUp").not().isEmpty().isBoolean(), validateAll], authController.getSalt);
 
-/////AUTHENTICATED ROUTES/////
+router.post(
+  "/signup",
+  [
+    body("email").trim().not().isEmpty().isEmail(),
+    body("name").trim().not().isEmpty().isString(),
+    body("password").trim().not().isEmpty().isString(),
+    body("cpf").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  authController.signup
+);
+
+router.post("/login", [body("email").trim().not().isEmpty().isString(), body("password").trim().not().isEmpty().isString(), validateAll], authController.login);
+// router.post("/login", [body("email").trim().not().isEmpty().isEmail(), body("password").trim().not().isEmpty().isString(), validateAll], authController.login);
+
+///// AUTHENTICATED ROUTES /////
 router.use(checkAuth);
 
 module.exports = router;

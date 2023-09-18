@@ -1,0 +1,209 @@
+<!-- Mint NFT Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+
+  <script src="/scripts/bundles/mint-bundle.js"></script>
+
+  <body onload="onPageLoad()">
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <!-- Mint Section -->
+
+    <section id="mintNFT">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-4 image-container"></div>
+
+          <div class="col-8 form-container">
+            <h1 class="mint-header">Emissão de NFT</h1>
+
+            <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFT()">
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-user fa-lg"></i>
+                  <input type="text" name="username" id="username" class="form-control" required />
+                </div>
+                <label class="form-label" for="username">Insira o username de destino</label>
+              </div>
+
+              <!-- <hr>
+
+                        <div class="flex-fill">
+                            <div class="mint-data">
+                                <i class="fas fa-tree fa-lg"></i>
+                                <input type="text" name="nftId" id="nftId" class="form-control" required/>
+                            </div>
+                            <label class="form-label" for="nftId">Insira o Id do NFT (único)</label>
+                        </div> -->
+
+              <!-- <hr>
+
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="mint-data">
+                                <i class="fa-solid fa-coins"></i>
+                                <input type="number" required name="amount" id="amount" min="1" value="1" step="1">
+                            </div>
+                            <label class="form-label" for="amount">Insira o valor a ser adicionado no NFT</label>
+                        </div> -->
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-user fa-lg"></i>
+                  <input type="text" name="landOwner" id="landOwner" class="form-control" required />
+                </div>
+                <label class="form-label" for="landOwner">Insira o nome do proprietário da terra</label>
+              </div>
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-user fa-lg"></i>
+                  <input type="text" name="compensationOwner" id="compensationOwner" class="form-control" required />
+                </div>
+                <label class="form-label" for="compensationOwner">Insira o nome do proprietário dos direitos de compensação</label>
+              </div>
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-leaf fa-lg"></i>
+                  <input type="text" name="phyto" id="phyto" class="form-control" required />
+                </div>
+                <label class="form-label" for="phyto">Insira a fitofisiologia da área</label>
+              </div>
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fa-solid fa-chart-area fa-lg"></i>
+                  <input type="text" name="area" id="area" class="form-control" required />
+                </div>
+                <label class="form-label" for="area">Insira o tamanho da área (hectares)</label>
+              </div>
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-location-dot fa-lg"></i>
+                  <input type="text" name="location" id="location" class="form-control" required />
+                </div>
+                <label class="form-label" for="location">Insira localização da área</label>
+              </div>
+
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-coins fa-lg"></i>
+                  <fieldset onchange="hideMintRate()" >
+                    <legend>Pode emitir C21 :</legend>
+                    <div>
+                      <input type="radio" name="mintSylvas" id="mintSylvas" value="Ativo" checked>
+                      <label for="mintSylvas">Ativo</label>
+
+                      <input type="radio"  name="mintSylvas" id="mintSylvas" value="Inativo">
+                      <label for="mintSylvas">Inativo</label>
+                    </div>
+                  </fieldset>
+
+                </div>
+              </div>   
+
+              <div id="divMintRate">
+              <hr />              
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-percent fa-lg"></i>
+                  <fieldset>
+                    <legend>Potencial de geração de C21s:</legend>
+                    <div>
+                      <input type="range" id="mintRate" name="mintRate" min="0" max="100" value="100" onchange="updMintRateSpan()">
+                      <span id="spanMintRate">x</span>
+                    </div>                    
+                  </fieldset>
+                </div>
+              </div>          
+            </div>
+              <hr />
+
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-magnifying-glass-chart fa-lg"></i>
+                  <fieldset>
+                    <legend>Tipo do NFT:</legend>
+                    <div>
+                      <input type="radio" id="nftType" name="nftType" value="reflorestamento" checked>
+                      <label for="reflorestamento">Reflorestamento</label>
+
+                      <input type="radio" id="nftType" name="nftType" value="corte">
+                      <label for="corte">Corte</label>
+                    </div>
+                  </fieldset>
+
+                </div>
+              </div>        
+
+ 
+
+              <hr />                              
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-marker fa-lg"></i>
+                  <textarea name="customNotes" id="customNotes" class="form-control" rows="4" cols="50"></textarea>
+                </div>
+                <label for="customNotes">Notas:</label>
+              </div>
+              
+              <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto" />
+              <div hidden id="signing-files" style="text-align: center">
+                <p><strong>Faça o upload da sua chave privada</strong></p>
+                <input type="file" id="private-key" name="filename" style="margin-left: 50px" /><br /><br />
+                <p><strong>Faça o upload do seu certificado</strong></p>
+                <input type="file" id="certificate" name="filename" style="margin-left: 50px" /><br /><br />
+              </div>
+              <div class="mint-button pb-5">
+                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
+
+<script> 
+
+function hideMintRate(){
+  divMintRate =  document.getElementById("divMintRate");
+  mintSylvas = document.querySelector("input[name='mintSylvas']:checked").value;
+  if (mintSylvas === "Ativo") {
+    divMintRate.style.display = "block";
+  } else {
+    divMintRate.style.display = "none";
+  }
+}  
+
+function updMintRateSpan(){
+    mintRate =  document.getElementById("mintRate").value;
+    txtMintRate = document.getElementById("spanMintRate");
+    txtMintRate.textContent = mintRate; 
+}
+
+function onPageLoad(){
+  mintRate =  document.getElementById("mintRate").value;
+  txtMintRate = document.getElementById("spanMintRate");
+  txtMintRate.textContent = mintRate;   
+}
+</script>
