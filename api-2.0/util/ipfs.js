@@ -54,14 +54,15 @@ async function createNode() {
     libp2p,
   });
 
-  console.log("Peer ID: ", helia.libp2p.peerId);
-  console.log("getPeers: ", helia.libp2p.getPeers());
-  console.log("Multiaddrs:", helia.libp2p.getMultiaddrs());
+  logger.debug("Peer ID: ", helia.libp2p.peerId);
+  logger.debug("getPeers: ", helia.libp2p.getPeers());
+  logger.debug("Multiaddrs:", helia.libp2p.getMultiaddrs());
 }
 
 exports.writeIPFS = async (tail, ws) => {
   try {
     const { unixfs } = await import("@helia/unixfs");
+    const { ipns } = await import("@helia/ipns");
 
     //sign tail+ws
     const ipfsCipheredPrivateKey = fs.readFileSync(path.join(__dirname, "../keys/ipfs-key.pem"));
@@ -80,71 +81,67 @@ exports.writeIPFS = async (tail, ws) => {
     //create a filesystem on top of Helia, in this case it's UnixFS
     const ipfsFs = unixfs(helia);
 
-    //create root
+    //deriver peer id from peer private key
+    const keyInfo = await helia.libp2p.keychain.importKey("carbono21", ipfsCipheredPrivateKey, process.env.IPFS_SECRET_KEY);
+    const peerId = await helia.libp2p.keychain.exportPeerId(keyInfo.name);
+
+    const ipnsConfig = ipns(helia, [
+      // configure routings here
+    ]);
+
+    // TODO create root or fetch existing one
+    // getRootCid(peerId);
     let rootDirCid = await ipfsFs.addDirectory();
     logger.debug("Created root dir:", rootDirCid);
 
     //vim world_state_<timestamp>.txt (cria arquivo fora do MFS ainda)
     let fileName = `world_state_${timestamp}.txt`;
     const wsCid = await ipfsFs.addBytes(encoder.encode(ws));
-    logger.info(`Added file ${fileName} to IPFS:`, wsCid.toString());
+    logger.debug(`Added file ${fileName} to IPFS:`, wsCid.toString());
 
     //cp world_state_<timestamp>.txt . (arquivo é adicionado ao MFS)
     rootDirCid = await cp(ipfsFs, rootDirCid, wsCid, fileName);
-    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
+    logger.debug(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
     //vim tail_<timestamp>.txt (cria arquivo fora do MFS ainda)
     fileName = `tail_${timestamp}.txt`;
     const tailCid = await ipfsFs.addBytes(encoder.encode(tail));
-    logger.info(`Added file ${fileName} to IPFS:`, tailCid.toString());
+    logger.debug(`Added file ${fileName} to IPFS:`, tailCid.toString());
 
     //cp tail_<timestamp>.txt . (arquivo é adicionado ao MFS)
     rootDirCid = await cp(ipfsFs, rootDirCid, tailCid, fileName);
-    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
+    logger.debug(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
     //vim signed_tail_ws__<timestamp>.txt (cria arquivo fora do MFS ainda)
     fileName = `signed_tail_ws_${timestamp}.txt`;
     const signatureCid = await ipfsFs.addBytes(encoder.encode(tailWsSigned));
-    logger.info(`Added file ${fileName} to IPFS:`, signatureCid.toString());
+    logger.debug(`Added file ${fileName} to IPFS:`, signatureCid.toString());
 
     //cp tail_<timestamp>.txt . (arquivo é adicionado ao MFS)
     rootDirCid = await cp(ipfsFs, rootDirCid, signatureCid, fileName);
-    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
+    logger.debug(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
     //publish root dir with files to IPNS
-    ipnsPublish(rootDirCid, ipfsCipheredPrivateKey);
+    await ipnsPublish(rootDirCid, peerId, ipnsConfig);
   } catch (error) {
     logger.error(error);
   }
 };
 
-const ipnsPublish = async (cid, ipfsCipheredPrivateKey) => {
+const ipnsPublish = async (cid, peerId, ipnsConfig) => {
   try {
-    const { ipns } = await import("@helia/ipns");
-
-    const name = ipns(helia, [
-      // configure routings here
-    ]);
-
-    //decipher key (pkcs8)
-    const keyInfo = await helia.libp2p.keychain.importKey("carbono21", ipfsCipheredPrivateKey, process.env.IPFS_SECRET_KEY);
-
-    //get peer id from key
-    const peerId = await helia.libp2p.keychain.exportPeerId(keyInfo.name);
-
     //update IPNS with new cid
-    await name.publish(peerId, cid);
+    await ipnsConfig.publish(peerId, cid);
+    logger.debug("IPNS updated with new cid");
 
-    //resolve the name
-    const resolvedCid = await name.resolve(peerId);
-
-    readIPFS(resolvedCid);
+    // READ: resolve the name and check the content
+    // const resolvedCid = await ipnsConfig.resolve(peerId);
+    // readIPFS(resolvedCid);
   } catch (error) {
     logger.error(error);
   }
 };
 
-//export!!!!!
 const readIPFS = async (cid) => {
   try {
     const { unixfs } = await import("@helia/unixfs");
@@ -157,26 +154,18 @@ const readIPFS = async (cid) => {
 
     // await ls(fs, cid);
     await recursiveCat(fs, cid);
-    // await cat(fs, fileCid);
-
-    // this decoder will turn Uint8Arrays into strings (OLD, pre MFS)
-    // const decoder = new TextDecoder();
-    // let text = "";
-    // // fetch the file from the first Helia node
-    // for await (const chunk of fs.cat(cid)) {
-    //   text += decoder.decode(chunk, {
-    //     stream: true,
-    //   });
-    // }
-    // console.log("Fetched file contents:", text);
-
-    //wait (eu que coloquei isso, pra teste, mas acho q n precisa)
-    // await new Promise((resolve) => setTimeout(resolve, 500000));
-
-    //initialize IPFS node if it didn't happen already
   } catch (error) {
     logger.error(error);
   }
+};
+
+//TODO
+//get cid from IPNS (if it exists), otherwise create an MFS root dir and return its seed
+const getRootCid = async (ipnsConfig, peerId) => {
+  //...
+  const resolvedCid = await ipnsConfig.resolve(peerId);
+  console.log("resolvedCid", resolvedCid);
+  //...
 };
 
 //// Signature Functions ////
@@ -205,15 +194,16 @@ const signContent = (tail, ws, ipfsCipheredPrivateKey) => {
   return signature;
 };
 
+//test function. verify signature using the signers' certificate
 const verifySignature = async (signature, content) => {
   const cert = fs.readFileSync(path.join(__dirname, "../keys/ipfs-cert.pem"));
-
   const pubKey = crypto.createPublicKey(cert);
 
   verifier = crypto.createVerify("RSA-SHA256");
   verifier.update(content);
   result = verifier.verify(pubKey, signature, "base64");
-  console.log(result); //true or false
+
+  logger.info("Resultado da verificação de assinatura:", result); //true or false
 };
 
 //// MFS Functions ////
@@ -240,7 +230,6 @@ const mkdir = async (fs, dirName, pathCid) => {
   }
   //mkdir inside given path
   else {
-    console.log("VAMO ESCREVE NO PATH PAINHO!");
     //create intended dir
     emptyDirCid = await fs.mkdir(pathCid, dirName);
     logger.debug("Created an empty dir:", emptyDirCid);
@@ -252,9 +241,8 @@ const mkdir = async (fs, dirName, pathCid) => {
 const cat = async (fs, fileCid) => {
   const decoder = new TextDecoder();
 
-  logger.info("$ cat");
   for await (const buf of fs.cat(fileCid)) {
-    console.info(decoder.decode(buf));
+    logger.info(decoder.decode(buf));
   }
 };
 
@@ -267,7 +255,6 @@ const recursiveCat = async (fs, dirCid) => {
 
 const cp = async (fs, dirCid, fileCid, fileName) => {
   const updatedDirCid = await fs.cp(fileCid, dirCid, fileName);
-  logger.debug("updatedDirCid", updatedDirCid);
 
   return updatedDirCid;
 };

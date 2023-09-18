@@ -250,7 +250,7 @@ exports.getWorldState = async (req, res, next) => {
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`World state fetched!`);
+    logger.debug(`World state fetched!`);
     return res.json({
       result: result === "" ? "" : JSON.parse(result),
     });
@@ -275,7 +275,7 @@ exports.getWorldStateLocal = async (chaincodeName, channelName) => {
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`World state fetched!`);
+    logger.debug(`World state fetched!`);
     return result;
   } catch (err) {
     return new HttpError(500, err);
@@ -313,7 +313,7 @@ exports.getBlockchainTail = async (req, res, next) => {
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`Tail fetched!`);
+    logger.debug(`Tail fetched!`);
     return res.json({
       tail,
       info,
@@ -348,7 +348,7 @@ exports.getBlockchainTailLocal = async (chaincodeName, channelName) => {
     await gateway.disconnect();
 
     //send OK response
-    logger.info(`Tail fetched!`);
+    logger.debug(`Tail fetched!`);
     return tail;
   } catch (err) {
     return new HttpError(500, err);

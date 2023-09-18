@@ -5,7 +5,7 @@
   <%- include("partials/head") %>
   <script src="/scripts/bundles/logs-bundle.js"></script>
 
-  <body id="top" onload="getWorldState();getLatestIPFSBlock(); getBlockchainTail();">
+  <body id="top" onload="getWorldState();getBlockchainTail();">
     <section id="intro"><%- include("partials/navbar") %></section>
 
     <section id="features">
@@ -64,15 +64,13 @@
           </div>
 
           <!-- Accordion's collapsable 3 -->
-          <div class="accordion-item">
-            <!-- Title -->
+          <!-- <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                 Último bloco no IPFS
               </button>
             </h2>
 
-            <!-- Content -->
             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
               <div class="accordion-body">
                 <spam class="description">A cada uma hora, a cauda da ledger é inserida no IPFS</spam>
@@ -92,7 +90,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- Accordion's collapsable 4 -->
           <div class="accordion-item">
@@ -127,6 +125,6 @@
       </div>
     </section>
 
-    <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto; width: 20%" />
+    <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto; width: 20%; display: flex" />
   </body>
 </html>

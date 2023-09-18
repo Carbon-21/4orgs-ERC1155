@@ -8160,6 +8160,9 @@ window.getBlockchainTail = async function () {
     method: "GET"
   };
   let response = await fetch(url, init);
+
+  //stop loading
+  document.getElementById("loader").style.display = "none";
   if (response.ok) {
     response = await response.json();
 

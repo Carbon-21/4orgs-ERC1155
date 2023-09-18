@@ -68,6 +68,9 @@ window.getBlockchainTail = async function () {
   };
   let response = await fetch(url, init);
 
+  //stop loading
+  document.getElementById("loader").style.display = "none";
+
   if (response.ok) {
     response = await response.json();
 

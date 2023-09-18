@@ -6,7 +6,31 @@ const { getBlockchainTailLocal, getWorldStateLocal } = require("./query-controll
 const { setURILocal } = require("./invoke-controller");
 const { getURILocal } = require("./query-controller");
 
-//get today's block posted to IPFS
+//post blockchain's tail to the IPFS
+//used by crontab
+exports.postTransparencyLog = async () => {
+  const chaincodeName = "erc1155";
+  const channelName = "mychannel";
+  const org = "Carbon";
+
+  try {
+    //get tail
+    let tail = await getBlockchainTailLocal(chaincodeName, channelName);
+    tail = JSON.stringify(tail, null, 4);
+
+    //get ws
+    const ws = await getWorldStateLocal(chaincodeName, channelName);
+
+    //write tail, ws and signature(tails+ws) on ipfs
+    const hash = await ipfs.writeIPFS(tail, ws);
+    logger.info("Crontrab done! Transparency log posted to IPFS");
+  } catch (error) {
+    return new HttpError(500, error);
+  }
+};
+
+//get last block posted to IPFS
+//deprecated: IPFS' cid not save onchain anymore. we are now using IPNS. "last ipfs block" isn't displayed on logs page anymore, because... why doing it?
 exports.getLatestIPFSBlock = async (req, res, next) => {
   const chaincodeName = "erc1155";
   const channelName = "mychannel";
@@ -30,28 +54,5 @@ exports.getLatestIPFSBlock = async (req, res, next) => {
     return res.json({ tail: ipfsDataJson });
   } catch (error) {
     return next(new HttpError(500));
-  }
-};
-
-//post blockchain's tail to the IPFS
-//used by crontab
-exports.postTransparencyLog = async () => {
-  const chaincodeName = "erc1155";
-  const channelName = "mychannel";
-  const org = "Carbon";
-
-  try {
-    //get tail
-    let tail = await getBlockchainTailLocal(chaincodeName, channelName);
-    tail = JSON.stringify(tail, null, 4);
-
-    //get ws
-    const ws = await getWorldStateLocal(chaincodeName, channelName);
-
-    //write tail and ws on ipfs
-    const hash = await ipfs.writeIPFS(tail, ws);
-    logger.info("Crontrab done! Transparency log (blockchain's tail + info) posted to IPFS");
-  } catch (error) {
-    return new HttpError(500, error);
   }
 };
