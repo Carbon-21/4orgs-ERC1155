@@ -33,8 +33,8 @@ const metadataRoutes = require("./routes/metadata-routes");
 ///// CONFIGS /////
 // TLS configs
 const options = {
-  key: fs.readFileSync(path.join(__dirname, "keys/key.pem")),
-  cert: fs.readFileSync(path.join(__dirname, "keys/cert.pem")),
+  key: fs.readFileSync(path.join(__dirname, "keys/tls-key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "keys/tls-cert.pem")),
   passphrase: process.env.TLS_SECRET_KEY,
 };
 

@@ -1,4 +1,7 @@
 const logger = require("./logger");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
 let helia;
 
@@ -60,127 +63,62 @@ exports.writeIPFS = async (tail, ws) => {
   try {
     const { unixfs } = await import("@helia/unixfs");
 
+    //sign tail+ws
+    const ipfsCipheredPrivateKey = fs.readFileSync(path.join(__dirname, "../keys/ipfs-key.pem"));
+    const tailWsSigned = signContent(tail, ws, ipfsCipheredPrivateKey);
+
+    //we will use this TextEncoder to turn strings into Uint8Arrays
+    const encoder = new TextEncoder();
+
+    //files will have the timestamp in their name
+    timestamp = Date.now().toString();
+
+    //////IPFS//////
     //initialize IPFS node if it didn't happen already
     if (!helia) await createNode();
 
-    // create 2nd node and connect them together
-    // const node2 = await createNode();
-    // const multiaddrs = node2.libp2p.getMultiaddrs();
-    // await helia.libp2p.dial(multiaddrs[0]);
-
-    // create a filesystem on top of Helia, in this case it's UnixFS
-    const fs = unixfs(helia);
-
-    // we will use this TextEncoder to turn strings into Uint8Arrays
-    const encoder = new TextEncoder();
-
-    timestamp = Date.now().toString();
+    //create a filesystem on top of Helia, in this case it's UnixFS
+    const ipfsFs = unixfs(helia);
 
     //create root
-    const rootDirCid = await fs.addDirectory();
+    let rootDirCid = await ipfsFs.addDirectory();
     logger.debug("Created root dir:", rootDirCid);
 
-    // vim world_state.txt (cria arquivo fora do MFS ainda)
+    //vim world_state_<timestamp>.txt (cria arquivo fora do MFS ainda)
     let fileName = `world_state_${timestamp}.txt`;
-    const wsCid = await fs.addBytes(encoder.encode(ws));
+    const wsCid = await ipfsFs.addBytes(encoder.encode(ws));
     logger.info(`Added file ${fileName} to IPFS:`, wsCid.toString());
 
-    // // cp world_state.txt . (arquivo é adicionado ao MFS)
-    const updatedDirCid = await cp(fs, rootDirCid, wsCid, fileName);
-    logger.info(`Added ${fileName} to ${rootDirCid}. Updated directory cid:`, updatedDirCid.toString());
+    //cp world_state_<timestamp>.txt . (arquivo é adicionado ao MFS)
+    rootDirCid = await cp(ipfsFs, rootDirCid, wsCid, fileName);
+    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
-    // vim world_state.txt (cria arquivo fora do MFS ainda)
+    //vim tail_<timestamp>.txt (cria arquivo fora do MFS ainda)
     fileName = `tail_${timestamp}.txt`;
-    const fileCid = await fs.addBytes(encoder.encode(tail));
-    // logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
+    const tailCid = await ipfsFs.addBytes(encoder.encode(tail));
+    logger.info(`Added file ${fileName} to IPFS:`, tailCid.toString());
 
-    // // cp world_state.txt . (arquivo é adicionado ao MFS)
-    const updatedUpdatedDirCid = await cp(fs, updatedDirCid, fileCid, fileName);
-    // logger.info(`Added ${fileName} to ${rootDirCid}. Updated directory cid:`, updatedDirCid.toString());
+    //cp tail_<timestamp>.txt . (arquivo é adicionado ao MFS)
+    rootDirCid = await cp(ipfsFs, rootDirCid, tailCid, fileName);
+    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
-    ipnsPublish(updatedUpdatedDirCid);
+    //vim signed_tail_ws__<timestamp>.txt (cria arquivo fora do MFS ainda)
+    fileName = `signed_tail_ws_${timestamp}.txt`;
+    const signatureCid = await ipfsFs.addBytes(encoder.encode(tailWsSigned));
+    logger.info(`Added file ${fileName} to IPFS:`, signatureCid.toString());
 
-    /////////////////
+    //cp tail_<timestamp>.txt . (arquivo é adicionado ao MFS)
+    rootDirCid = await cp(ipfsFs, rootDirCid, signatureCid, fileName);
+    logger.info(`Added ${fileName} to root dir. Updated directory cid:`, rootDirCid.toString());
 
-    // mkdir ./ledger (before that, create root if needed)
-    // let dirName = "ledger";
-    // const ledgerDirCid = await mkdir(fs, dirName);
-    // logger.info(`Created empty directory ${dirName}:`, ledgerDirCid.toString());
-
-    // // mkdir ./ledger/checkpoint1
-    // dirName = Date.now().toString();
-    // const newCheckpointDirCid = await mkdir(fs, dirName, ledgerDirCid);
-    // logger.info(`Created empty directory ${dirName}:`, newCheckpointDirCid.toString());
-
-    // // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
-    // const updatedDirCid = await cp(fs, newCheckpointDirCid, ledgerDirCid, "ledger-teste");
-    // logger.info(`Added ${"ledger-teste"} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
-
-    // vim world_state.txt (cria arquivo fora do MFS ainda)
-    // const fileName = "world_state.txt";
-    // const fileCid = await fs.addBytes(encoder.encode("Um belo world state"));
-    // logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
-
-    // // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
-    // const updatedDirCid = await cp(fs, newCheckpointDirCid, fileCid, fileName);
-    // logger.info(`Added ${fileName} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
-
-    // console.log("ledgerDirCid!!!!!");
-    // await ls(fs, ledgerDirCid);
-
-    // console.log("newCheckpointDirCid!!!!!");
-    // await ls(fs, newCheckpointDirCid);
-
-    // console.log("updatedDirCid!!!!!");
-    // await ls(fs, updatedDirCid);
-
-    // or doing the same thing as a stream
-    // let a = [];
-    // for await (const entry of fs.addAll([
-    //   {
-    //     path: "./teste/teste2/foo.txt",
-    //     content: encoder.encode("Um belo world state"),
-    //   },
-    // ])) {
-    //   a.push(entry);
-
-    //   console.info(entry);
-    //   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
-    // }
-    // console.log("/////////////////////");
-
-    // console.log(a.reverse()[2]);
-
-    // console.log("/////////////////////");
-
-    // for await (const entry of fs.addAll([
-    //   {
-    //     path: "./teste/teste2/foo2.txt",
-    //     content: encoder.encode("Um belo world state"),
-    //   },
-    // ])) {
-    //   console.info(entry);
-    //   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
-    // }
-
-    // const cid = await fs.addFile({
-    //   path: "./teste/teste2/foo2.txt",
-    //   content: encoder.encode("Um belo world state"),
-    //   mode: 0x755,
-    //   mtime: {
-    //     secs: 10n,
-    //     nsecs: 0,
-    //   },
-    // });
-
-    // console.info(cid);
-    // ls(fs, cid);
+    //publish root dir with files to IPNS
+    ipnsPublish(rootDirCid, ipfsCipheredPrivateKey);
   } catch (error) {
     logger.error(error);
   }
 };
 
-const ipnsPublish = async (cid) => {
+const ipnsPublish = async (cid, ipfsCipheredPrivateKey) => {
   try {
     const { ipns } = await import("@helia/ipns");
 
@@ -188,29 +126,25 @@ const ipnsPublish = async (cid) => {
       // configure routings here
     ]);
 
-    // create a public key to publish as an IPNS name
-    //RSA rsa
-    //EDDSA ed25519
-    //ECDSA secp256k1
-    const keyInfo = await helia.libp2p.keychain.createKey("my-key", "secp256k1");
-    // console.log("keyInfo", keyInfo);
-    const peerId = await helia.libp2p.keychain.exportPeerId(keyInfo.name);
-    console.log("peerId", peerId);
+    //decipher key (pkcs8)
+    const keyInfo = await helia.libp2p.keychain.importKey("carbono21", ipfsCipheredPrivateKey, process.env.IPFS_SECRET_KEY);
 
-    // publish the name
+    //get peer id from key
+    const peerId = await helia.libp2p.keychain.exportPeerId(keyInfo.name);
+
+    //update IPNS with new cid
     await name.publish(peerId, cid);
 
-    // resolve the name
+    //resolve the name
     const resolvedCid = await name.resolve(peerId);
-    console.log("cid retornado do IPNS:", resolvedCid);
-    console.log("agora consultar esse cid...");
+
     readIPFS(resolvedCid);
   } catch (error) {
     logger.error(error);
   }
 };
 
-// exports.readIPFS = async (cid) => {
+//export!!!!!
 const readIPFS = async (cid) => {
   try {
     const { unixfs } = await import("@helia/unixfs");
@@ -221,11 +155,8 @@ const readIPFS = async (cid) => {
     // create a filesystem on top of Helia, in this case it's UnixFS
     const fs = unixfs(helia);
 
-    // create a filesystem on top of the second Helia node
-    // const fs2 = unixfs(node2);
-
-    await ls(fs, cid);
-    // await recursiveCat(fs, cid);
+    // await ls(fs, cid);
+    await recursiveCat(fs, cid);
     // await cat(fs, fileCid);
 
     // this decoder will turn Uint8Arrays into strings (OLD, pre MFS)
@@ -248,7 +179,44 @@ const readIPFS = async (cid) => {
   }
 };
 
-//// IPNS Functions ////
+//// Signature Functions ////
+//concat transparent log content (bc tail + ws). Then, sing and return it
+const signContent = (tail, ws, ipfsCipheredPrivateKey) => {
+  //concat
+  const tailWs = tail.concat("", ws);
+
+  //get RSA private key
+  const privateKey = crypto.createPrivateKey({
+    key: ipfsCipheredPrivateKey,
+    format: "pem",
+    type: "pkcs8",
+    // 'cipher': 'rsa',
+    passphrase: process.env.IPFS_SECRET_KEY,
+  });
+
+  //sign
+  let signer = crypto.createSign("RSA-SHA256");
+  signer.write(tailWs);
+  signer.end();
+  const signature = signer.sign(privateKey, "base64");
+
+  // verifySignature(signature, tailWs);
+
+  return signature;
+};
+
+const verifySignature = async (signature, content) => {
+  const cert = fs.readFileSync(path.join(__dirname, "../keys/ipfs-cert.pem"));
+
+  const pubKey = crypto.createPublicKey(cert);
+
+  verifier = crypto.createVerify("RSA-SHA256");
+  verifier.update(content);
+  result = verifier.verify(pubKey, signature, "base64");
+  console.log(result); //true or false
+};
+
+//// MFS Functions ////
 const ls = async (fs, dirCid) => {
   logger.info("$ ls");
   for await (const entry of fs.ls(dirCid)) {
@@ -303,6 +271,82 @@ const cp = async (fs, dirCid, fileCid, fileName) => {
 
   return updatedDirCid;
 };
+
+///////////HELIA: alternativas pro writeIPFS (experimentos com diretórios falharam)///////////////
+
+// mkdir ./ledger (before that, create root if needed)
+// let dirName = "ledger";
+// const ledgerDirCid = await mkdir(fs, dirName);
+// logger.info(`Created empty directory ${dirName}:`, ledgerDirCid.toString());
+
+// // mkdir ./ledger/checkpoint1
+// dirName = Date.now().toString();
+// const newCheckpointDirCid = await mkdir(fs, dirName, ledgerDirCid);
+// logger.info(`Created empty directory ${dirName}:`, newCheckpointDirCid.toString());
+
+// // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
+// const updatedDirCid = await cp(fs, newCheckpointDirCid, ledgerDirCid, "ledger-teste");
+// logger.info(`Added ${"ledger-teste"} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+
+// vim world_state.txt (cria arquivo fora do MFS ainda)
+// const fileName = "world_state.txt";
+// const fileCid = await fs.addBytes(encoder.encode("Um belo world state"));
+// logger.info(`Added file ${fileName} to IPFS:`, fileCid.toString());
+
+// // cp world_state.txt ledger/ (arquivo é adicionado ao MFS)
+// const updatedDirCid = await cp(fs, newCheckpointDirCid, fileCid, fileName);
+// logger.info(`Added ${fileName} to ${dirName}. Updated directory cid:`, updatedDirCid.toString());
+
+// console.log("ledgerDirCid!!!!!");
+// await ls(fs, ledgerDirCid);
+
+// console.log("newCheckpointDirCid!!!!!");
+// await ls(fs, newCheckpointDirCid);
+
+// console.log("updatedDirCid!!!!!");
+// await ls(fs, updatedDirCid);
+
+// or doing the same thing as a stream
+// let a = [];
+// for await (const entry of fs.addAll([
+//   {
+//     path: "./teste/teste2/foo.txt",
+//     content: encoder.encode("Um belo world state"),
+//   },
+// ])) {
+//   a.push(entry);
+
+//   console.info(entry);
+//   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
+// }
+// console.log("/////////////////////");
+
+// console.log(a.reverse()[2]);
+
+// console.log("/////////////////////");
+
+// for await (const entry of fs.addAll([
+//   {
+//     path: "./teste/teste2/foo2.txt",
+//     content: encoder.encode("Um belo world state"),
+//   },
+// ])) {
+//   console.info(entry);
+//   entry.unixfs ? "" : cat(fs, entry.cid); // file => cat(file)
+// }
+
+// const cid = await fs.addFile({
+//   path: "./teste/teste2/foo2.txt",
+//   content: encoder.encode("Um belo world state"),
+//   mode: 0x755,
+//   mtime: {
+//     secs: 10n,
+//     nsecs: 0,
+//   },
+// });
+
+// console.info(cid);
+// ls(fs, cid);
 
 ////////////////////HELIA SEM libp2p/////////////////////////
 
