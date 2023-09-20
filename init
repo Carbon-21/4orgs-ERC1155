@@ -193,9 +193,10 @@ if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
   ./api-2.0/get-bundles
 fi
 (
-  cd api-2.0/
-  #start service
-  echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
-  npm install ${fast_install}
-  nodemon
+  docker-compose -f ./api-2.0/docker-compose.yaml up -d --build
+  # cd api-2.0/
+  # #start service
+  # echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
+  # npm install ${fast_install}
+  # nodemon
 )

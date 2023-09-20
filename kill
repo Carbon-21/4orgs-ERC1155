@@ -79,6 +79,7 @@ reset_soft_applications(){
   docker-compose -f ./explorer/docker-compose.yaml down
   docker-compose -f ./artifacts/docker-compose.yaml down
   docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml down
+  docker-compose -f ./api-2.0/docker-compose.yaml down
 
   containers=$(docker ps -q) && [[ ! -z "$containers" ]] && docker kill $containers
   if [ "${reset_hard}" == "1" ]; then
@@ -120,6 +121,7 @@ stop_applications(){
   docker-compose -f ./explorer/docker-compose.yaml stop
   docker-compose -f ./artifacts/docker-compose.yaml stop
   docker-compose -f ./artifacts/channel/create-certificate-with-ca/docker-compose.yaml stop
+  docker-compose -f ./api-2.0/docker-compose.yaml stop
 }
 
 ###
