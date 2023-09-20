@@ -17,7 +17,7 @@ var transactionBuffer = [];
  */
 const setupClient = async () => {
   // Loads network config from file
-  client = FabricClient.loadFromConfig("../network_org1.yaml");
+  client = FabricClient.loadFromConfig("./network_org1.yaml");
   await client.initCredentialStores();
   channel = client.getChannel("mychannel");
 };
