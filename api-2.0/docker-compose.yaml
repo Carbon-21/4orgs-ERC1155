@@ -7,6 +7,8 @@ services:
       volumes: 
         - ./:/app   #sincroniza arquivos do container e do repositório local
         - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
+        - ../artifacts:/app/artifacts
+        - ../network_org1.yaml:/app/network_org1.yaml
       env_file: 
         - ./.env
         
