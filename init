@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 source ./api-2.0/.env
 
 # TODO move to a global env setup
@@ -166,7 +165,7 @@ if [ -z "${fast_install}" ]; then
 fi
 
 #run chouchdb, orgs peers and orderers dockers
-docker-compose -f artifacts/docker-compose.yaml up -d  --remove-orphans
+docker-compose -f artifacts/docker-compose.yaml up -d  --remove-orphans --build
 
 #create channel and deploy chaincode on each org
 if [ -z "${fast_install}" ]; then
@@ -184,7 +183,7 @@ if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
   ./api-2.0/config/generate-ccp.sh
 fi
 
-# #create public scripts
+#create public scripts
 if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
   echo -e "${INFO_COLOR}Generating Scripts:${NC}"
   ./api-2.0/public/scripts/src/genscripts.sh
@@ -193,10 +192,12 @@ if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
   ./api-2.0/get-bundles
 fi
 (
-  docker-compose -f ./api-2.0/docker-compose.yaml up -d --build
+  # docker-compose -f ./api-2.0/docker-compose.yaml up -d --build
   # cd api-2.0/
   # #start service
-  # echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
+  echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
   # npm install ${fast_install}
   # nodemon
 )
+
+docker logs node_app
