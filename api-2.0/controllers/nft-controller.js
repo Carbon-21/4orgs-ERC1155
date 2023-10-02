@@ -166,6 +166,7 @@ exports.getNftRequests = async (req, res, next) => {
       where: { requestStatus },
     });
 
+    console.log(requests);
     return res.status(200).json({
       requests,
     });

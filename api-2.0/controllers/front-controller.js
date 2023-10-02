@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
-const { getRequests } = require("../public/scripts/src/nftRequests");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
@@ -270,11 +269,10 @@ exports.getMintNFT = (req, res, next) => {
   });
 };
 
-exports.getMintNFTRequests = async (req, res, next) => {
+exports.getMintNFTRequests = (req, res, next) => {
   res.render("nftRequests", {
     title: "NFT Requests",
-    cssPath: "../css/nftRequests.css",
-    getRequests: getRequests
+    cssPath: "../css/nftRequests.css"
   });
 };
 

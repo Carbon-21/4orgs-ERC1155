@@ -4,13 +4,12 @@
 <html lang="en" dir="ltr">
   <%- include("partials/head") %>
 
-  <script src="/scripts/src/nftRequests.js"></script>
-  <body>
+  <script src="/scripts/bundles/nftRequests-bundle.js"></script>
+
+  <body onload="getRequests()">
     <!-- Navbar -->
 
     <%- include("partials/navbar") %>
-
-    <%= getRequests() %>
 
     <!-- Mint Section -->
 
