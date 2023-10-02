@@ -1601,7 +1601,13 @@ func (s *SmartContract) SetNFTStatus(ctx contractapi.TransactionContextInterface
 		_ = json.Unmarshal(queryResponse.Value, nft)
 
 		// Altera o estado de compensação
-		nft.Metadata.Status = stringParaNFTStatus(statusNFT)
+		var intNFTStatus StatusNFT
+		intNFTStatus = stringParaNFTStatus(statusNFT)
+		if intNFTStatus == -1 {
+			return fmt.Errorf("Status informado invalido")
+		} else {
+			nft.Metadata.Status = stringParaNFTStatus(statusNFT)
+		}
 
 		// Salva alteração no World State
 		tokenAsBytes, _ := json.Marshal(nft)
