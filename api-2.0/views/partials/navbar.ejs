@@ -51,6 +51,7 @@
             <li><a class="dropdown-item" href="/wallet">Carteira</a></li>
             <li><a class="dropdown-item" href="/collection">Coleção</a></li>
             <li><a class="dropdown-item" href="/transfer">Transferência</a></li>
+            <li><a class="dropdown-item" href="/nft/requestspage">Solicitação NFT</a></li>
           </ul>
         </li>
 
@@ -86,6 +87,7 @@
 <script>
   //get role from jwt
   const role = JSON.parse(atob(localStorage.token.split(".")[1])).role;
+  console.log("role", role);
 
   //TODO isso deveria ser feito usando ejs!
   //show admin functionalities

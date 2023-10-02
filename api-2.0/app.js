@@ -61,6 +61,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
+global.__basedir = __dirname;
+
 const sessionConfig = {
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
