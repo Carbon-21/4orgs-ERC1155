@@ -114,6 +114,21 @@ router.patch(
   invokeController.compensateNFT
 );
 
+
+//auxiliary route ised to update an NFT Status
+router.patch(
+  "/channels/:channel/chaincodes/:chaincode/setNFTStatus",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("tokenId").trim().not().isEmpty().isString(),
+    body("statusNFT").trim().not().isEmpty().isString(),
+    validateAll,
+  ],
+  invokeController.setNFTStatus
+);
+
+
 ////////// OFFLINE TRANSACTION SIGNING ROUTES //////////
 
 router.post(
