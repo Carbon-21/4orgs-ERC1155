@@ -50,16 +50,16 @@ router.patch(
 
 ///// NFT REQUESTS CONTROLLERS /////
 
-router.get("/requests", [query("request_status").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
+router.get("/requests", [query("requestStatus").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
 
 router.put(
   "/requests/:id",
   [
-    body("aprove").not().isEmpty().isBoolean(),
+    body("aprove").not().isEmpty().isString(),
     param("id").not().isEmpty().isString(),
     validateAll
   ],
-  nftController.responseNftRequest
+  nftController.updateNftRequestStatus
 );
 
 router.post("/requests", upload.single("file"), [

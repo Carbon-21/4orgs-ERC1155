@@ -1,9 +1,6 @@
 const { Router } = require("express");
 const axios = require("axios").default;
 const jwt = require("jsonwebtoken");
-const logger = require("../util/logger");
-const HttpError = require("../util/http-error");
-const models = require("../util/sequelize");
 
 ///// SIGNUP CONTROLLERS /////
 exports.getPreSignup = (req, res, next) => {
@@ -234,6 +231,15 @@ exports.getWallet = async (req, res, next) => {
 exports.getCollection = async (req, res, next) => {
   res.render("collection", {
     title: "My Collection",
+    cssPath: "css/collection.css",
+  });
+};
+
+///// MARKETPLACE CONTROLLERS /////
+
+exports.getMarketplace = async (req, res, next) => {
+  res.render("marketplace", {
+    title: "Marketplace",
     cssPath: "css/collection.css",
   });
 };

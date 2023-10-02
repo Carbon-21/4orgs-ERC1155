@@ -1,8 +1,8 @@
 const logger = require("../util/logger");
 const HttpError = require("../util/http-error");
+const models = require("../util/sequelize");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
-const models = require("../util/sequelize");
 const axios = require("axios").default;
 const fs = require("fs");
 
@@ -154,18 +154,19 @@ function makeMetadata(dto) {
 
 ///// NFT REQUESTS CONTROLLERS /////
 
+// lista nft requests com filtro de requestStatus
 exports.getNftRequests = async (req, res, next) => {
-  const { request_status } = req.query;
+  const { requestStatus } = req.query;
 
   try {
-    if (!request_status) {
-      return next(new HttpError(400, "request_status is necessary."));
+    if (!requestStatus) {
+      return next(new HttpError(400, "requestStatus is necessary."));
     }
 
-
-    requests = await models.nftRequests.findAll({
-      where: { request_status },
+    const requests = await models.nftRequests.findAll({
+      where: { requestStatus },
     });
+
     return res.status(200).json({
       requests,
     });
@@ -175,18 +176,18 @@ exports.getNftRequests = async (req, res, next) => {
   }
 };
 
-exports.responseNftRequest = async (req, res, next) => {
+// atualiza o status de um nft request
+exports.updateNftRequestStatus = async (req, res, next) => {
   const { id } = req.params;
-  const { aprove, adminNotes } = req.body;
+  const { status, adminNotes } = req.body;
 
   try {
     if (!id) {
       return next(new HttpError(400, "Id is necessary."));
     }
 
-    const requestStatus = aprove === true ? 'accepted' : 'rejected';
-    request = await models.nftRequests.update({
-      requestStatus,
+    const request = await models.nftRequests.update({
+      requestStatus: status,
       adminNotes,
     }, {
       where: { id },
@@ -197,7 +198,7 @@ exports.responseNftRequest = async (req, res, next) => {
     });
   } catch (err) {
     logger.error(err);
-    return next(new HttpError(400));
+    return next(new HttpError(422));
   }
 };
 

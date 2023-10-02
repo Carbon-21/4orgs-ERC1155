@@ -53,9 +53,9 @@ create table nft_requests(
     foreign key (user_id) references users(id),
     land_owner varchar(255) not null,
     land_area varchar(255) not null,
-    phyto varchar(255),
-    geolocation varchar(255),
-    certificate mediumblob,
+    phyto varchar(255) not null,
+    geolocation varchar(255) not null,
+    certificate mediumblob not null,
     request_status ENUM('accepted', 'rejected', 'pending') default 'pending' not null,
     user_notes text,
     admin_notes text
@@ -122,7 +122,7 @@ BEGIN
         if (OLD.certificate != NEW.certificate,NEW.certificate,null),
         if (OLD.request_status != NEW.request_status,NEW.request_status,null),
         if (OLD.user_notes != NEW.user_notes,NEW.user_notes,null),
-        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null);
+        if (OLD.admin_notes != NEW.admin_notes, NEW.admin_notes, null));
 END$$
 
 DELIMITER ;

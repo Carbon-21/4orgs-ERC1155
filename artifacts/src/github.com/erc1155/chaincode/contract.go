@@ -17,11 +17,38 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// const uriKey = "uri"
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
+// The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
+const orderbook = "owner~id"
+
+// Org allowed to mint tokens
 const minterMSPID = "CarbonMSP"
+
+// System account set to admin@admin.com (account that will receive system tax)
+const systemAccount = "eDUwOTo6Q049YWRtaW5AYWRtaW4uY29tLE9VPWFkbWluK09VPWNhcmJvbitPVT1kZXBhcnRtZW50MTo6Q049ZmFicmljLWNhLXNlcnZlcixPVT1GYWJyaWMsTz1IeXBlcmxlZGdlcixTVD1Ob3J0aCBDYXJvbGluYSxDPVVT"
+
+// System currency: Default token which tax applies
+const systemCurrency = "$ylvas"
+
+// Tax (in %) to be applied and reverted to system account
+const taxPercentage = 10
+
+// Token struct for marshal/unmarshal buy and sell listings
+type ListItem struct {
+	Status     string
+	Price      uint64
+	TaxPercent uint64
+}
+
+type ListForSaleEvent struct {
+	Operator  string
+	Sender    string
+	Id        string
+	IsForSale bool
+	Price     uint64
+}
 
 // SmartContract provides functions for transferring tokens between accounts
 type SmartContract struct {
@@ -111,16 +138,20 @@ type ToID struct {
 }
 
 type Metadata struct {
-	Id                string `json:"id"`
-	Status            string `json:"status"`
-	Amount            string `json:"amount"` // Área em  hectares
-	LandOwner         string `json:"land_owner"`
-	Land              string `json:"land"`
-	Phyto             string `json:"phyto"`
-	Geolocation       string `json:"geolocation"`
-	CompensationOwner string `json:"compensation_owner"`
-	CompensationState string `json:"compensation_state"`
-	MintSylvas        string `json:"mint_sylvas"`
+	Id                string `json:"id"`                 // Id interno do NFT no sistema
+	Status            string `json:"status"`             // Ativo, bloqueado
+	LandOwner         string `json:"land_owner"`         // Dono da terra
+	LandArea          string `json:"land_area"`          // Área em  hectares
+	Phyto             string `json:"phyto"`              // Fitofisiologia
+	Geolocation       string `json:"geolocation"`        //Coordenadas da área {(x1,y1),(x2,y2})}
+	CompensationOwner string `json:"compensation_owner"` // Detentor do direito de compensacao (Account ID ou Token ID)
+	CompensationState string `json:"compensation_state"` // Compensado, Não compensado
+	MintSylvas        string `json:"mint_sylvas"`        // Booleano referente ao direito de gerar FTs
+	MintRate          string `json:"mint_rate"`          // Potencial de geracao com base no tipo de area
+	Certificate       string `json:"certificate"`        // Comprovante emitido pelo órgão governamental permitindo a ativação do NFT.
+	NFTType           string `json:"nft_type"`           // Tipo de nft (preservação/corte)
+	CustomNotes       string `json:"custom_notes"`       // Demais anotações
+
 	// PlantedAmount  string `json:"planted_amount"`
 	// OrigPlantedAmount  string `json:"orig_planted_amount"`
 
@@ -181,6 +212,10 @@ func GetRole(clientAccountID string) string {
 	return match[1]
 }
 
+func (s *SmartContract) GetNFTsFromStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+	return NFTsFromStatusHelper(ctx, status)
+}
+
 //returns whole world state
 func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterface) ([][]string, error) {
 
@@ -223,7 +258,7 @@ func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterfac
 		tokenAmount := queryResponse.Value
 
 		//! Add info to the array of arrays
-		element := []string{tokenAccount,tokenID,tokenSender, string(tokenAmount)}
+		element := []string{tokenAccount, tokenID, tokenSender, string(tokenAmount)}
 		tokens = append(tokens, element)
 		// }
 	}
@@ -253,7 +288,7 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	}
 
 	//Garante que não seja emitido mais de uma NFT em nenhuma circunstância
-	if id != "$ylvas" {
+	if id != systemCurrency {
 		amount = 1
 	}
 
@@ -268,13 +303,29 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, accoun
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
+// getAllNFTID Retorna todos os NFTs do world state
+func (s *SmartContract) GetAllNFTIds(ctx contractapi.TransactionContextInterface) [][]string {
+	var errRet [][]string
+
+	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
+	err := authorizationHelper(ctx)
+	if err != nil {
+		el := []string{"Authorization failed"}
+		errRet = append(errRet, el)
+		return errRet
+	}
+
+	idNFTs, _ := idNFTHelper(ctx, "")
+	return idNFTs
+}
+
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (uint64, error) {
 
 	// -------- Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
-	var tokenid = "$ylvas"
+	var tokenid = systemCurrency
 
 	// Stores a list of all NFTs of the same user (account))
 	NFTSumList := make([][]string, 0)
@@ -332,7 +383,13 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
-			SylvasAdd, _ = strconv.Atoi(nft.Metadata.Land)
+			var LandArea int
+			var MintRate int
+			LandArea, _ = strconv.Atoi(nft.Metadata.LandArea)
+			MintRate, _ = strconv.Atoi(nft.Metadata.MintRate)
+
+			SylvasAdd = (MintRate * LandArea) / 100
+
 			// SylvasAdd =  10 // add 10 sylvas per nft
 
 			// Function that checks if the NFT receiver is in the temporary Slice Array
@@ -422,6 +479,8 @@ func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterfac
 		// Verifica se o estado atual do NFT já é compensado
 		if nft.Metadata.CompensationState == "Compensado" {
 			return fmt.Errorf(("NFT já compensado"))
+		} else if nft.Metadata.NFTType != "reflorestamento" {
+			return fmt.Errorf(("NFT nao e de reflorestamento, por isso nao pode ser compensado"))
 		} else {
 			// Logica para verificar se o nft é passivel de compensação ??
 			// Verifica se quem esta compensando é quem tem o direito de compensacao
@@ -552,10 +611,17 @@ func (s *SmartContract) BurnBatch(ctx contractapi.TransactionContextInterface, a
 
 // TransferFrom transfers tokens from sender account to recipient account
 // recipient account must be a valid clientID as returned by the ClientID() function
-// This function triggers a TransferSingle event
 func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface, sender string, recipient string, id string, amount uint64) error {
 	if sender == recipient {
 		return fmt.Errorf("Proibido transferir para si mesmo")
+	}
+
+	// Verify if the NFT is listed on the store
+	nftStatus, _ := NFTsFromStatusHelper(ctx, "sale")
+	for j := 0; j < len(nftStatus); j++ {
+		if id == nftStatus[j][0] {
+			return fmt.Errorf("NFT não pode ser transferido enquanto esta a venda")
+		}
 	}
 
 	// Get ID of submitting client identity
@@ -576,7 +642,7 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Withdraw the funds from the sender address
-	err = removeBalance(ctx, operator, []string{id}, []uint64{amount})
+	err = removeBalance(ctx, sender, []string{id}, []uint64{amount})
 	if err != nil {
 		return err
 	}
@@ -592,8 +658,9 @@ func (s *SmartContract) TransferFrom(ctx contractapi.TransactionContextInterface
 	}
 
 	// Emit TransferSingle event
-	transferSingleEvent := TransferSingle{operator, operator, recipient, id, amount}
+	transferSingleEvent := TransferSingle{operator, sender, recipient, id, amount}
 	return emitTransferSingle(ctx, transferSingleEvent)
+
 }
 
 // BatchTransferFrom transfers multiple tokens from sender account to recipient account
@@ -1017,7 +1084,7 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 	balance += amount
 
 	//Consulta world state e pega metadados, se eles estiverem vazios para um NFT
-	if (metadata == Metadata{} && idString != "$ylvas") {
+	if (metadata == Metadata{} && idString != systemCurrency) {
 		res, err := getMetada(ctx, sender, idString)
 		if err != nil {
 			return err
@@ -1027,7 +1094,7 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 	}
 
 	// Se o token for Sylvas (FT), não serão armazenados os metadados, somente a quantidade
-	if idString == "$ylvas" {
+	if idString == systemCurrency {
 		err = ctx.GetStub().PutState(balanceKey, []byte(strconv.FormatUint(uint64(balance), 10)))
 		if err != nil {
 			return err
@@ -1073,9 +1140,18 @@ func setBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 func removeBalance(ctx contractapi.TransactionContextInterface, sender string, ids []string, amounts []uint64) error {
 	// Calculate the total amount of each token to withdraw
 	necessaryFunds := make(map[string]uint64) // token id -> necessary amount
+	taxesPID := make(map[string]uint64)       // token id -> taxes
 
 	for i := 0; i < len(amounts); i++ {
-		necessaryFunds[ids[i]] += amounts[i]
+		if ids[i] == systemCurrency {
+			// Calculate tax amount
+			taxAmount := amounts[i] * uint64(taxPercentage) / 100
+			taxesPID[ids[i]] += taxAmount
+			necessaryFunds[ids[i]] += amounts[i] + taxAmount
+			fmt.Println("Taxes per ID", taxesPID[ids[i]])
+		} else {
+			necessaryFunds[ids[i]] += amounts[i]
+		}
 	}
 
 	// Copy the map keys and sort it. This is necessary because iterating maps in Go is not deterministic
@@ -1119,11 +1195,17 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 			}
 
 			// Verify if the token is an NFT
-			if compositeKeyParts[1] != "$ylvas" {
+			if compositeKeyParts[1] != systemCurrency {
 				nft := new(NFToken)
 				_ = json.Unmarshal(queryResponse.Value, nft)
 				partialBalance, _ = strconv.ParseUint(string(nft.Amount), 10, 64)
+
 			} else {
+				// Mandando taxa para a carbon
+				err = taxes(ctx, sender, sender, tokenId, taxesPID[tokenId])
+				if err != nil {
+					return err
+				}
 				partBalAmount, _ := strconv.ParseUint(string(queryResponse.Value), 10, 64)
 				partialBalance += partBalAmount
 			}
@@ -1132,7 +1214,7 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 		if partialBalance < neededAmount {
 			return fmt.Errorf("Remetente não possui %v suficientes. Quantia requisitada: %v. Quantia disponível: %v", tokenId, neededAmount, partialBalance)
 		} else if partialBalance > neededAmount {
-			// Send the remainder back to the sender
+			// Send the remainder back to the sender (removing the taxes considered in neededAmount)
 			remainder := partialBalance - neededAmount
 			if selfRecipientKeyNeedsToBeRemoved {
 				// Set balance for the key that has the same address for sender and recipient
@@ -1146,7 +1228,6 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 					return err
 				}
 			}
-
 		} else if selfRecipientKeyNeedsToBeRemoved {
 			// Delete self recipient key
 			err = ctx.GetStub().DelState(selfRecipientKey)
@@ -1155,7 +1236,6 @@ func removeBalance(ctx contractapi.TransactionContextInterface, sender string, i
 			}
 		}
 	}
-
 	return nil
 }
 
@@ -1213,6 +1293,21 @@ func emitSetURI(ctx contractapi.TransactionContextInterface, setURIevent URI) er
 	return nil
 }
 
+// ListForSaleEvent{id, operator, id, true, price}
+func emitListForSale(ctx contractapi.TransactionContextInterface, listForSaleevent ListForSaleEvent) error {
+	listForSaleeventJSON, err := json.Marshal(listForSaleevent)
+	if err != nil {
+		return fmt.Errorf("failed to obtain JSON encoding: %v", err)
+	}
+
+	err = ctx.GetStub().SetEvent("ListForSale", listForSaleeventJSON)
+	if err != nil {
+		return fmt.Errorf("failed to set event: %v", err)
+	}
+
+	return nil
+}
+
 // balanceOfHelper returns the balance of the given account
 func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string, idString string) (uint64, error) {
 
@@ -1241,7 +1336,83 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	return balance, nil
 }
 
-// balanceOfHelper returns the balance of the given account
+func NFTsFromStatusHelper(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+	var NFTsFromStatus [][]string
+
+	// Get the order from the world state ([0] owner ~ [1] tokenID)
+	storeIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(orderbook, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create iterator: %v", err)
+	}
+	defer storeIterator.Close()
+
+	for storeIterator.HasNext() {
+
+		// Get the next NFT
+		responseRange, err := storeIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next token: %v", err)
+		}
+
+		// Unpack the composite key (owner - id)
+		_, storeCompositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to split composite key: %v", err)
+		}
+
+		// Parse the JSON object
+		var data ListItem
+		err = json.Unmarshal(responseRange.Value, &data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
+		}
+
+		if data.Status == status {
+			tokenIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to create iterator: %v", err)
+			}
+			defer tokenIterator.Close()
+
+			for tokenIterator.HasNext() {
+				queryTokenResponse, err := tokenIterator.Next()
+				if err != nil {
+					return nil, fmt.Errorf("failed to get the next state for token  %s: %v", storeCompositeKeyParts[1], err)
+				}
+
+				// Split Key to search for specific tokenid
+				// The compositekey (account -  tokenid - senderer)
+				_, compositeKeyPartsToken, err := ctx.GetStub().SplitCompositeKey(queryTokenResponse.Key)
+
+				if err != nil {
+					return nil, fmt.Errorf("failed to get key: %s", queryTokenResponse.Key)
+				}
+
+				// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+				returnedTokenID := compositeKeyPartsToken[1]
+
+				if returnedTokenID == storeCompositeKeyParts[1] {
+					// Merge ID and Value of the NFTs
+					element := []string{returnedTokenID, string(queryTokenResponse.Value)}
+					NFTsFromStatus = append(NFTsFromStatus, element)
+				}
+			}
+		}
+	}
+
+	// Check if the array is empty
+	nftListSize := len(NFTsFromStatus)
+	if nftListSize == 0 {
+		el := []string{""}
+		NFTsFromStatus = append(NFTsFromStatus, el)
+		return NFTsFromStatus, nil
+	} else {
+		return NFTsFromStatus, nil
+	}
+}
+
+// idNFTHelper returns the NFTs associated with an account or all the nfts if the account parameter is empty
 func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([][]string, error) {
 
 	if account == "0x0" {
@@ -1250,10 +1421,11 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 
 	// --------Get all NFTs --------
 	// tokenid is the id of the FTs how will be generated from the NFTs
-	var tokenid = "$ylvas"
+	var tokenid = systemCurrency
 	nftlist := make([][]string, 0)
 
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	//balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get state for prefix %v: %v", balancePrefix, err)
 	}
@@ -1281,11 +1453,21 @@ func idNFTHelper(ctx contractapi.TransactionContextInterface, account string) ([
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
-		if (returnedTokenID != tokenid) && (accountNFT == account) {
-			// Merge ID and Value of the NFTs
-			element := []string{returnedTokenID, string(queryResponse.Value)}
-			nftlist = append(nftlist, element)
+		// Se nenhuma conta for passada a funcao retorna todos os nfts
+		if account == "" {
+			if returnedTokenID != tokenid {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenID, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
+			}
+		} else {
+			// Retrieve NFTs from some account by analyzing all records and seeing if they aren't FTs
+			if (returnedTokenID != tokenid) && (accountNFT == account) {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenID, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
 
+			}
 		}
 
 	}
@@ -1325,6 +1507,249 @@ func sortedKeysToID(m map[ToID]uint64) []ToID {
 	return keys
 }
 
+// This helper function apply the tax percentage over given amount, tranfering it to the system account.
+// Important to note that the taxpercentage ideally should be defined in the begining, being possible to modify it (DAO decision maybe?)
+// amount: total token amount to be taxed. MUST be previously validated by the caller function!!
+// taxPercentage: tax percentage to apply
+func taxes(ctx contractapi.TransactionContextInterface, operator string, sender string, id string, taxAmount uint64) error {
+
+	/*// Calculate tax amount
+	taxAmount := amount * uint64(taxPercentage) / 100
+	fmt.Println("taxAmount: ", taxAmount)
+
+	// Withdraw the funds from the sender address
+	err := removeBalance(ctx, sender, []string{id}, []uint64{taxAmount})
+	if err != nil {
+		return err
+	}*/
+
+	// Send tax amount to system account
+	err := addBalance(ctx, sender, systemAccount, id, taxAmount, *new(Metadata))
+	if err != nil {
+		return err
+	}
+
+	// Emit TransferSingle event
+	transferSingleEvent := TransferSingle{operator, sender, systemAccount, id, taxAmount}
+	return emitTransferSingle(ctx, transferSingleEvent)
+}
+
+// Trade functions
+//
+// List NFT for sale by a given price
+// TODO: Modify this function to SetStatus, that will receive the same inputs, but also the desired status value (string)
+func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64) error {
+
+	// Get the caller identity
+	operator, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("Erro ao obter ID: %v", err)
+	}
+
+	idNFTs, _ := idNFTHelper(ctx, operator)
+	for i := 0; i < len(idNFTs); i++ {
+		if id == idNFTs[i][0] {
+			// Create the composite key for the NFT
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{owner, id})
+			if err != nil {
+				return fmt.Errorf("failed to create composite key for NFT: %v", err)
+			}
+
+			// Marshal the status and price into JSON
+			data := ListItem{status, price, uint64(taxPercentage)}
+			value, err := json.Marshal(data)
+			if err != nil {
+				return fmt.Errorf("failed to marshal NFT data: %v", err)
+			}
+
+			// Save the updated NFT state to the world state
+			err = ctx.GetStub().PutState(compositeKey, value)
+			if err != nil {
+				return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+			}
+			return nil
+		}
+	}
+
+	return fmt.Errorf("Only NFT owner can list for sale")
+
+}
+
+// Check book order for given status
+// e.g.
+// sale, sold
+func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+
+	var forSaleNFTs [][]string
+
+	// Get the NFT state from the world state
+	iterator, err := ctx.GetStub().GetStateByPartialCompositeKey(orderbook, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create iterator: %v", err)
+	}
+
+	// Iterate over all NFTs
+	for iterator.HasNext() {
+
+		// Get the next NFT
+		responseRange, err := iterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next token: %v", err)
+		}
+
+		// Unpack the composite key (owner - id)
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(responseRange.Key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to split composite key: %v", err)
+		}
+
+		// Parse the JSON object
+		var data ListItem
+		err = json.Unmarshal(responseRange.Value, &data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
+		}
+
+		if data.Status == status {
+			price := strconv.FormatUint(data.Price, 10)
+			taxes := strconv.FormatUint(data.TaxPercent, 10)
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price, taxes}
+			forSaleNFTs = append(forSaleNFTs, element)
+		}
+	}
+
+	return forSaleNFTs, nil
+}
+
+// Buy listed NFT paying the asked price
+func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer string, id string) error {
+
+	// Get the caller identity
+	operator, err := ctx.GetClientIdentity().GetID()
+
+	// Check whether operator is approved
+	if operator != buyer {
+		approved, err := _isApprovedForAll(ctx, buyer, operator)
+		if err != nil {
+			return err
+		}
+		if !approved {
+			return fmt.Errorf("Chamador não está aprovado a realizar esta transação")
+		}
+	}
+
+	// Check the status of the NFT
+	forSaleNFTs, err := s.GetStatus(ctx, "sale")
+	if err != nil {
+		return fmt.Errorf("failed to check NFT status: %v", err)
+	}
+
+	// Find the NFT that is being sold
+	// forSaleNFT[0] = Owner
+	// forSaleNFT[1] = TokenID
+	// forSaleNFT[2] = Status
+	// forSaleNFT[3] = Price
+	var found bool
+	for _, forSaleNFT := range forSaleNFTs {
+		if forSaleNFT[1] == id {
+			found = true
+
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{forSaleNFT[0], forSaleNFT[1]})
+			if err != nil {
+				return fmt.Errorf("failed to create composite key: %v", err)
+			}
+
+			salePrice, err := strconv.ParseUint(forSaleNFT[3], 10, 64)
+			if err != nil {
+				return fmt.Errorf("failed to parse price: %v", err)
+			}
+
+			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], systemCurrency}, []uint64{1, salePrice})
+			if err != nil {
+				return fmt.Errorf("failed dealing for NFT: %v", err)
+			}
+
+			// Marshal the status and price into JSON
+			status := "sold"
+			data := struct {
+				Status string `json:"status"`
+				Price  uint64 `json:"price"`
+			}{
+				Status: status,
+				Price:  salePrice,
+			}
+			value, err := json.Marshal(data)
+			if err != nil {
+				return fmt.Errorf("failed to marshal NFT data: %v", err)
+			}
+
+			// Save the updated NFT state to the world state
+			err = ctx.GetStub().PutState(compositeKey, value)
+			if err != nil {
+				return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+			}
+
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("NFT with id %s not found or not for sale", id)
+	}
+
+	return nil
+}
+
+// execute the deal
+// id[0] = NFT
+// id[1] = FT
+func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64) error {
+
+	// Transfer FT to seller
+	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
+	if err != nil {
+		return err
+	}
+
+	// Transfer NFT to buyer
+	err = removeBalance(ctx, seller, []string{id[0]}, []uint64{1})
+	if err != nil {
+		return err
+	}
+
+	// Send tax amount to system account
+	err = addBalance(ctx, seller, buyer, id[0], 1, *new(Metadata))
+	if err != nil {
+		return err
+	}
+
+	// Update the order book
+	status := "sold"
+
+	// Create the composite key for the NFT
+	compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{seller, id[0]})
+	if err != nil {
+		return fmt.Errorf("failed to create composite key for NFT: %v", err)
+	}
+
+	// Marshal the status and price into JSON
+	status = "sale"
+	taxes := amount[1] * uint64(taxPercentage) / 100
+	data := ListItem{status, amount[1], taxes}
+	value, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal NFT data: %v", err)
+	}
+
+	// Save the updated NFT state to the world state
+	err = ctx.GetStub().PutState(compositeKey, value)
+	if err != nil {
+		return fmt.Errorf("failed to set NFT as listed for sale: %v", err)
+	}
+	// Emit TransferSingle NFT event
+	transferNFT := TransferSingle{operator, seller, buyer, id[0], 1}
+	return emitTransferSingle(ctx, transferNFT)
+
+}
 func getMetada(ctx contractapi.TransactionContextInterface, account string, tokenId string) (Metadata, error) {
 	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
 	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}

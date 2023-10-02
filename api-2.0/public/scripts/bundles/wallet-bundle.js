@@ -11611,7 +11611,7 @@ window.walletClientSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
 
         // Displays Flash Messages
         if (response.result == "SUCCESS") {
-          balanceHeader.innerText = response.payload + " Sylvas";
+          balanceHeader.innerText = response.payload + " C21";
           document.getElementById("flash").innerHTML = successFlashMessage;
         } else {
           document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -11662,7 +11662,7 @@ window.walletServerSideSigning = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_r
         response = _context2.sent;
         if (response.result == null) alert("Falha de sincronização");else {
           document.getElementById("flash").innerHTML = successFlashMessage;
-          balanceHeader.innerText = response.result + " Sylvas";
+          balanceHeader.innerText = response.result;
         }
         _context2.next = 23;
         break;
