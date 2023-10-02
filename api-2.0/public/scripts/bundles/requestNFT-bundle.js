@@ -8,30 +8,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Calls the API for the smart contract function that mints FT for every active NFT
 
 window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var token, headers, url, body, init, response;
+  var token, headers, url, formData, init, response, element, _element;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) switch (_context.prev = _context.next) {
       case 0:
         event.preventDefault();
-        console.log("entrou aqui aaaaaaaaaaaaaaaaaaa");
 
         // Hides the submit button and displays loading image while the transaction is processing.
-
         document.getElementById("loader").style.display = "flex";
         document.getElementById("submitButton").style.display = "none";
-        console.log(document.getElementById("landOwner").value);
-        console.log(document.getElementById("phyto").value);
-        console.log(document.getElementById("landArea").value);
-        console.log(document.getElementById("geolocation").value);
-        console.log(document.getElementById("userNotes").value);
-        // console.log(document.getElementById("file").value);
-
         landOwner = document.getElementById("landOwner").value;
         phyto = document.getElementById("phyto").value;
         landArea = document.getElementById("landArea").value;
         geolocation = document.getElementById("geolocation").value;
         userNotes = document.getElementById("userNotes").value;
-        // file = document.getElementById("file").value;
+        file = document.getElementById("file").files[0];
 
         // Get user jwt token from the local storage
         token = localStorage.getItem("token");
@@ -39,79 +30,49 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
 
         // HTTP Request
         headers = new Headers();
-        headers.append("Content-Type", "multipart/form-data");
         headers.append("Authorization", "Bearer " + token);
-        // const headers = { 'Authorization': "Bearer " + token, "Content-Type": "multipart/form-data"}
         url = "https://localhost:4000/nft/requests";
         console.log("url", url);
-        body = {
-          landOwner: landOwner,
-          phyto: phyto,
-          landArea: landArea,
-          geolocation: geolocation,
-          userNotes: userNotes,
-          userId: 1
-        };
-        console.log("body", body);
+        formData = new FormData();
+        formData.append("landOwner", landOwner);
+        formData.append("landArea", landArea);
+        formData.append("phyto", phyto);
+        formData.append("geolocation", geolocation);
+        formData.append("userNotes", userNotes);
+        formData.append("userId", 1);
+        formData.append("file", file);
         init = {
           method: "POST",
           headers: headers,
-          body: JSON.stringify(body)
+          body: formData
         };
-        console.log(init);
-        console.log(init.headers);
-        _context.next = 28;
+        _context.next = 26;
         return fetch(url, init);
-      case 28:
+      case 26:
         response = _context.sent;
-        console.log("response", response);
+        if (!response.ok) {
+          _context.next = 34;
+          break;
+        }
+        // Hides the loading image and displays the submit button again
+        document.getElementById("submitButton").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
 
-        // if (response.ok) {
-        //   response = await response.json();
-        //   if (response.result!="success") {
-
-        //     // Hides the loading image and displays the submit button again
-        //     document.getElementById("submitButton").style.display = "flex";
-        //     document.getElementById("loader").style.display = "none";
-
-        //     // Displays error messages
-        //     let element =     
-        //     `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
-        //         `Ocorreu um erro na emissao`+
-        //         `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
-        //     `</div>`
-        //     document.getElementById("flash").innerHTML = element;
-        //   } else {
-
-        //     // Hides the loading image and displays the submit button again
-        //     document.getElementById("submitButton").style.display = "flex";
-        //     document.getElementById("loader").style.display = "none";
-
-        //     // Displays success messages
-        //     let element =     
-        //       `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">`+
-        //           `$ylvas emitidos com sucesso`+
-        //           `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
-        //       `</div>`
-        //     document.getElementById("flash").innerHTML = element;
-        //   }
-        // } else {
-
-        //   // Hides the loading image and displays the submit button again
-        //   document.getElementById("submitButton").style.display = "flex";
-        //   document.getElementById("loader").style.display = "none";
-
-        //   console.log("HTTP Error ", response.status);
-        //   // Displays error messages
-        //   let element =     
-        //   `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">`+
-        //       `Ocorreu um erro na emissao`+
-        //       `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`+
-        //   `</div>`
-        //   document.getElementById("flash").innerHTML = element;
-        //   return null;
-        // }
-      case 30:
+        // Displays success messages
+        element = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Solicita\xE7\xE3o emitida com sucesso!" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+        document.getElementById("flash").innerHTML = element;
+        _context.next = 40;
+        break;
+      case 34:
+        // Hides the loading image and displays the submit button again
+        document.getElementById("submitButton").style.display = "flex";
+        document.getElementById("loader").style.display = "none";
+        console.log("HTTP Error ", response.status);
+        // Displays error messages
+        _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na solicita\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
+        document.getElementById("flash").innerHTML = _element;
+        return _context.abrupt("return", null);
+      case 40:
       case "end":
         return _context.stop();
     }

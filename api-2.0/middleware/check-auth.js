@@ -13,8 +13,6 @@ module.exports = (req, res, next) => {
 
   try {
     // Authorization: 'Bearer TOKEN'
-    console.log("headers", req.headers);
-    console.log("headers", req.headers.authorization.split(" ")[1]);
     const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
@@ -29,7 +27,6 @@ module.exports = (req, res, next) => {
       username: decodedToken.username,
       org: decodedToken.org,
     };
-    console.log("chegou aqui iudsgihsd");
 
     next();
   } catch (err) {
