@@ -156,7 +156,8 @@
 
  
 
-              <hr />                              
+              <hr />  
+              <div id="userNotes-show"></div>
               <div class="flex-fill">
                 <div class="mint-data">
                   <i class="fas fa-marker fa-lg"></i>
@@ -196,14 +197,17 @@ function hideMintRate(){
 }  
 
 function updMintRateSpan(){
-    mintRate =  document.getElementById("mintRate").value;
-    txtMintRate = document.getElementById("spanMintRate");
-    txtMintRate.textContent = mintRate; 
+  mintRate =  document.getElementById("mintRate").value;
+  txtMintRate = document.getElementById("spanMintRate");
+  txtMintRate.textContent = mintRate; 
 }
 
 function onPageLoad(){
   mintRate =  document.getElementById("mintRate").value;
   txtMintRate = document.getElementById("spanMintRate");
-  txtMintRate.textContent = mintRate;   
+  txtMintRate.textContent = mintRate;
+  if ("<%= requestId %>") {
+    getRequest("<%= requestId %>")
+  }
 }
 </script>

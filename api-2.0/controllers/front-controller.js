@@ -263,9 +263,13 @@ exports.getMintFromNFT = (req, res, next) => {
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
+  const { requestId } = req.query;
+  console.log(requestId);
+
   res.render("mintNFT", {
     title: "Mint NFT",
     cssPath: "../css/mintNFT.css",
+    requestId: requestId,
   });
 };
 

@@ -29,6 +29,56 @@ window.mintNFT = async () => {
   else mintNFTClientSideSigning();
 };
 
+window.getRequest = async (requestId) => {
+  event.preventDefault();
+  let token = localStorage.getItem("token");
+  console.log(token);
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  // trocar para variaveis de host e port
+  let url = `https://localhost:4000/nft/request/${requestId}`;
+
+  var init = {
+    method: "GET",
+    headers: headers
+  };
+
+  let response = await fetch(url, init);
+
+  console.log(response)
+
+  if (response.ok) {
+    let {request: req} = await response.json();
+    let element = '';
+    console.log(req);
+    document.getElementById("landOwner").value = req.landOwner;
+    document.getElementById("landOwner").ariaDisabled = '';
+    document.getElementById("phyto").value = req.phyto;
+    document.getElementById("phyto").ariaDisabled = '';
+    document.getElementById("area").value = req.landArea;
+    document.getElementById("area").ariaDisabled = '';
+    document.getElementById("location").value = req.geolocation;
+    document.getElementById("location").ariaDisabled = '';
+    if (req.userNotes){
+      element +=
+        `<div class="flex-fill">
+            <div class="mint-data">
+              <i class="fas fa-marker fa-lg"></i>
+              <textarea name="userNotes" id="userNotes" placeholder=${req.userNotes} disabled="" class="form-control" rows="2" cols="50"></textarea>
+            </div>
+            <label for="userNotes">Notas do usuário:</label>
+        </div>`;
+      document.getElementById("userNotes-show").innerHTML = element;        
+  } 
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+};
+
+
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
@@ -298,3 +348,5 @@ const mintNFTServerSideSigning = async () => {
   //   return null;
   // }
 };
+
+
