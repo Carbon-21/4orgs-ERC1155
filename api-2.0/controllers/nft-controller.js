@@ -177,6 +177,26 @@ exports.getNftRequests = async (req, res, next) => {
   }
 };
 
+// retorna um nft requests através de seu id
+exports.getNftRequest = async (req, res, next) => {
+  const { requestId } = req.params;
+  try {
+    if (!requestId) {
+      return next(new HttpError(400, "requestId is necessary."));
+    }
+
+    const request = await models.nftRequests.findByPk(requestId);
+
+    console.log(request);
+    return res.status(200).json({
+      request,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
 // atualiza o status de um nft request
 exports.updateNftRequestStatus = async (req, res, next) => {
   const { id } = req.params;

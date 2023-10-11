@@ -52,6 +52,8 @@ router.patch(
 
 router.get("/requests", [query("requestStatus").not().isEmpty().isString(), validateAll], nftController.getNftRequests);
 
+router.get("/request/:requestId", [param("requestId").not().isEmpty().isString(), validateAll], nftController.getNftRequest);
+
 router.put(
   "/requests/:id",
   [
