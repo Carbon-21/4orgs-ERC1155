@@ -197,7 +197,7 @@ exports.postLogin = async (req, res, next) => {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.session.username = email;
       req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
-      res.json({ success: true, token: response.data.token, keyOnServer: response.data.keyOnServer });
+      res.json({ success: true, token: response.data.token, userId: response.data.userId, keyOnServer: response.data.keyOnServer });
     })
 
     // If an error occurs, redirect to the login page and send error message
