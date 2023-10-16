@@ -51,7 +51,8 @@ window.getRequest = async (requestId) => {
 
   if (response.ok) {
     let {request: req} = await response.json();
-    let element = '';
+    let element1 = '';
+    let element2 = '';
     console.log(req);
     document.getElementById("landOwner").value = req.landOwner;
     document.getElementById("landOwner").ariaDisabled = '';
@@ -62,7 +63,7 @@ window.getRequest = async (requestId) => {
     document.getElementById("location").value = req.geolocation;
     document.getElementById("location").ariaDisabled = '';
     if (req.userNotes){
-      element +=
+      element1 +=
         `<div class="flex-fill">
             <div class="mint-data">
               <i class="fas fa-marker fa-lg"></i>
@@ -70,14 +71,83 @@ window.getRequest = async (requestId) => {
             </div>
             <label for="userNotes">Notas do usuário:</label>
         </div>`;
-      document.getElementById("userNotes-show").innerHTML = element;        
-  } 
+      document.getElementById("userNotes-show").innerHTML = element1;     
+    }
+    if (req.certificate){
+      element2 +=
+        `<div class="flex-fill">
+          <div class="mint-data">
+            <i class="fa fa-download fa-lg"></i>
+            <div class="mint-button p-0 m-0">
+              <button id="downloadButton" type="button" onclick="downloadBlob(${requestId})">Certificado</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById("certificate-show").innerHTML = element2;    
+    } 
   } else {
     console.log("HTTP Error ", response.status);
     return null;
   }
 };
 
+window.downloadBlob = async (requestId) => {
+  event.preventDefault();
+  let token = localStorage.getItem("token");
+  console.log(token);
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  // trocar para variaveis de host e port
+  let url = `https://localhost:4000/nft/request/${requestId}`;
+
+  var init = {
+    method: "GET",
+    headers: headers
+  };
+
+  let response = await fetch(url, init);
+
+  console.log(response)
+
+  if (response.ok) {
+    let {request: req} = await response.json();
+    console.log("req", req)
+
+    // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
+    const blobUrl = URL.createObjectURL(req.certificate);
+    console.log('bloburl', blobUrl);
+
+    // Create a link element
+    const link = document.createElement("a");
+
+    // Set link's href to point to the Blob URL
+    link.href = blobUrl;
+    link.download = 'certificate';
+
+    // Append link to the body
+    document.body.appendChild(link);
+    console.log('chegou aqui');
+
+    // Dispatch click event on the link
+    // This is necessary as link.click() does not work on the latest firefox
+    link.dispatchEvent(
+      new MouseEvent('click', { 
+        bubbles: true, 
+        cancelable: true, 
+        view: window 
+      })
+    );
+    console.log('chegou aqui 2');
+
+    // Remove link from body
+    document.body.removeChild(link); 
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+}
 
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
