@@ -122,4 +122,8 @@ dist
 .pnp.*
 
 #files
-*-sample.pdf
+resources/static/assets/tmp/*
+resources/static/assets/uploads/*
+
+!resources/static/assets/tmp/.gitkeep
+!resources/static/assets/uploads/.gitkeep

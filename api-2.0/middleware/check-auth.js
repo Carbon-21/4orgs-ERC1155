@@ -31,7 +31,6 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (err) {
-    console.log("foi aquii o erro");
     console.log(err);
     return next(new HttpError(401)); //no auth jwt
   }
