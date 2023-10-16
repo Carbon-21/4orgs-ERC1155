@@ -4,6 +4,7 @@ const models = require("../util/sequelize");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
 const axios = require("axios").default;
+const fs = require("fs");
 
 exports.getMetadata = async (req, res, next) => {
   let tokenId = req.query.tokenId;
@@ -200,3 +201,38 @@ exports.updateNftRequestStatus = async (req, res, next) => {
     return next(new HttpError(422));
   }
 };
+
+exports.createNFTRequest = async (request, response, next) => {
+  try {
+    const {
+      userId,
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+    } = request.body;
+
+    await models.nftRequests.create({
+      userId, 
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+      adminNotes: "",
+      certificate: fs.readFileSync(
+        __basedir + "/resources/static/assets/uploads/" + request.file.filename
+      ),
+    }).then((doc) => {
+      fs.writeFileSync(__basedir + "/resources/static/assets/tmp/" + request.file.filename, 
+      doc.certificate
+      );
+      return response.status(200).json(doc);
+    })
+
+  } catch (error) {
+    logger.error(error);
+    return next(new HttpError(500));
+  }
+}

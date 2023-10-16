@@ -5,6 +5,8 @@ const HttpError = require("../util/http-error");
 
 module.exports = (req, res, next) => {
   //OPTIONS is sent by the browser before tha actual request
+  
+
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -28,6 +30,7 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log(err);
     return next(new HttpError(401)); //no auth jwt
   }
 };
