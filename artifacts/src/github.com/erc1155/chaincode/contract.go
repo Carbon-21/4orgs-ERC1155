@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -34,6 +35,43 @@ const systemCurrency = "$ylvas"
 
 // Tax (in %) to be applied and reverted to system account
 const taxPercentage = 10
+
+// -- inicio Definição do enum de status do NFT --
+// Constatnte utilizada para representar o status do NFT
+const (
+	NFT_Ativo     = iota // 0
+	NFT_Bloqueado        // 1
+)
+
+// Mapeamento para associar o inteiro que representa o status com sua respectiva string
+var statusNFT = map[int]string{
+	NFT_Ativo:     "Ativo",
+	NFT_Bloqueado: "Bloqueado",
+}
+
+// Funcao que retorna a string do status dado um inteiro que o representa no enum
+func getNomeStatusNFT(status int) string {
+	nomeStatusNFT, ok := statusNFT[status]
+	if !ok {
+		return "Status do NFT invalido"
+	}
+	return nomeStatusNFT
+}
+
+// Funcao que retorna o inteiro do status dado uma string que o representa
+// Caso nao encontrar o status correspondente retorna -1
+func getIntStatusNFT(status string) int {
+	// Faz o status ficar tudo minusculo para evitar Case
+	status = strings.ToLower(status)
+	for intStatus, strStatus := range statusNFT {
+		if strings.EqualFold(strStatus, status) {
+			return intStatus
+		}
+	}
+	return -1
+}
+
+// -- fim Definição do enum de status do NFT --
 
 // Token struct for marshal/unmarshal buy and sell listings
 type ListItem struct {
@@ -379,7 +417,7 @@ func (s *SmartContract) FTFromNFT(ctx contractapi.TransactionContextInterface) (
 		accountNFT := compositeKeyParts[0]
 
 		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs/
-		if (returnedTokenID != tokenid) && (nft.Metadata.Status == "Ativo") && (nft.Metadata.MintSylvas == "Ativo") {
+		if (returnedTokenID != tokenid) && (nft.Metadata.Status == getNomeStatusNFT(NFT_Ativo)) && (nft.Metadata.MintSylvas == "Ativo") {
 
 			// Part to insert the logic of how many sylvas to add for that NFT
 			var SylvasAdd int
@@ -476,8 +514,11 @@ func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterfac
 		nft := new(NFToken)
 		_ = json.Unmarshal(queryResponse.Value, nft)
 
-		// Verifica se o estado atual do NFT já é compensado
-		if nft.Metadata.CompensationState == "Compensado" {
+		// Verifica se o estado do NFT é ativo
+		if nft.Metadata.Status != getNomeStatusNFT(NFT_Ativo) {
+			return fmt.Errorf(("NFT não esta ativo"))
+			// Verifica se o estado atual do NFT já é compensado
+		} else if nft.Metadata.CompensationState == "Compensado" {
 			return fmt.Errorf(("NFT já compensado"))
 		} else if nft.Metadata.NFTType != "reflorestamento" {
 			return fmt.Errorf(("NFT nao e de reflorestamento, por isso nao pode ser compensado"))
@@ -1106,6 +1147,12 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 
 		tokenMint.Amount = strconv.FormatUint(uint64(balance), 10)
 		tokenMint.Metadata = metadata
+
+		// Checa se o status definido para criacao do NFT e valido
+		if getIntStatusNFT(tokenMint.Metadata.Status) == -1 {
+			return fmt.Errorf("Status definido para o NFT não é valido")
+		}
+
 		tokenAsBytes, _ := json.Marshal(tokenMint)
 
 		err = ctx.GetStub().PutState(balanceKey, tokenAsBytes)
@@ -1336,6 +1383,7 @@ func balanceOfHelper(ctx contractapi.TransactionContextInterface, account string
 	return balance, nil
 }
 
+// Retorna a lista de NFTs que possuirem o status de venda pesquisado na loja
 func NFTsFromStatusHelper(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
 	var NFTsFromStatus [][]string
 
@@ -1532,6 +1580,56 @@ func taxes(ctx contractapi.TransactionContextInterface, operator string, sender 
 	// Emit TransferSingle event
 	transferSingleEvent := TransferSingle{operator, sender, systemAccount, id, taxAmount}
 	return emitTransferSingle(ctx, transferSingleEvent)
+}
+
+// SetNFTStatus Funcao que define o status referente a situaçao do NFT (Ativo, Bloqueado ...)
+func (s *SmartContract) SetNFTStatus(ctx contractapi.TransactionContextInterface, account string, tokenId string, statusNFT string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	if tokenId == "$ylvas" {
+		return fmt.Errorf("Não é possivel editar metadados de FTs")
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// Altera o estado de compensação
+		intNFTStatus := getIntStatusNFT(statusNFT)
+		if intNFTStatus == -1 {
+			return fmt.Errorf("Status informado invalido")
+		} else {
+			nft.Metadata.Status = getNomeStatusNFT(intNFTStatus)
+		}
+
+		// Salva alteração no World State
+		tokenAsBytes, _ := json.Marshal(nft)
+
+		err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+		if err != nil {
+			return fmt.Errorf("Problema ao alterar o status do nft - %v", err)
+		}
+
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
 }
 
 // Trade functions

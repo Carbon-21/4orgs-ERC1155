@@ -108,6 +108,43 @@ exports.compensateNFT = async (req, res, next) => {
   });
 };
 
+exports.setNFTStatus = async (req, res, next) => {
+  logger.info("Entered nft status change function");
+
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenId = req.body.tokenId;
+  const username = req.jwt.username;
+  const statusNFT = req.body.statusNFT;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
+  if (!receiverAccountId) return;
+
+  try {
+    await chaincode.submitTransaction("SmartContract:SetNFTStatus", receiverAccountId, tokenId, statusNFT);
+
+    logger.info("Compensation successful");
+
+    //close communication channel
+    await gateway.disconnect();
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+
+  //send OK response
+  return res.json({
+    result: "success",
+  });
+};
+
 //transfer a given amount of a token from a user to another
 exports.transfer = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;
