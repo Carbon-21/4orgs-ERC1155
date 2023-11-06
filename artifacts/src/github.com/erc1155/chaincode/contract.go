@@ -20,6 +20,7 @@ import (
 
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
+const compensationNFTPrefix = "account~tokenNFTTerraId~tokenNFTCompensationId~sender"
 
 // The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
 const orderbook = "owner~id"
@@ -1105,6 +1106,49 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 	return nil
 }
 
+func mintNFTCompensation(ctx contractapi.TransactionContextInterface, sender string, recipient string, idNFTTerra string, segAreaComp string, amount uint64, metadata Metadata) error {
+	// Geracao do ID do NFT de compensacao
+
+	segArea, _ := strconv.Atoi(segAreaComp)
+	for compensationSegments := 0; compensationSegments < segArea; compensationSegments++ {
+
+		balanceKey, err := ctx.GetStub().CreateCompositeKey(compensationNFTPrefix, []string{recipient, idNFTTerra, strconv.Itoa(compensationSegments), sender})
+		if err != nil {
+			return fmt.Errorf("failed to create the composite key for prefix %s: %v", compensationNFTPrefix, err)
+		}
+
+		balanceBytes, err := ctx.GetStub().GetState(balanceKey)
+		if err != nil {
+			return fmt.Errorf("failed to read account %s from world state: %v", recipient, err)
+		}
+
+		var balance uint64 = 0
+		if balanceBytes != nil {
+			balance, _ = strconv.ParseUint(string(balanceBytes), 10, 64)
+		}
+
+		balance += amount
+
+		var tokenMint NFToken
+
+		tokenMint.Amount = strconv.FormatUint(uint64(balance), 10)
+		tokenMint.Metadata = metadata
+
+		// Checa se o status definido para criacao do NFT e valido
+		if getIntStatusNFT(tokenMint.Metadata.Status) == -1 {
+			return fmt.Errorf("Status definido para o NFT não é valido")
+		}
+
+		tokenAsBytes, _ := json.Marshal(tokenMint)
+
+		err = ctx.GetStub().PutState(balanceKey, tokenAsBytes)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func addBalance(ctx contractapi.TransactionContextInterface, sender string, recipient string, idString string, amount uint64, metadata Metadata) error {
 
 	balanceKey, err := ctx.GetStub().CreateCompositeKey(balancePrefix, []string{recipient, idString, sender})
@@ -1159,6 +1203,9 @@ func addBalance(ctx contractapi.TransactionContextInterface, sender string, reci
 		if err != nil {
 			return err
 		}
+
+		mintNFTCompensation(ctx, sender, recipient, idString, tokenMint.Metadata.LandArea, amount, metadata)
+
 	}
 
 	return nil
