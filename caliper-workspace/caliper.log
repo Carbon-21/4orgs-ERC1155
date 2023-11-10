@@ -1,0 +1,13 @@
+2023.11.09-17:21:17.472[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2023.11.09-17:21:17.842[32m info [39m [caliper] [cli-launch-manager] 	Binding specification is present, performing binding for "fabric:2.2"
+2023.11.09-17:21:17.846[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/teste/last/4orgs-ERC1155/caliper-workspace"
+2023.11.09-17:21:17.846[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2023.11.09-17:21:17.847[32m info [39m [caliper] [bind] 	Using working directory: /teste/last/4orgs-ERC1155/caliper-workspace
+2023.11.09-17:21:17.847[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2023.11.09-17:21:51.761[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2023.11.09-17:21:52.192[32m info [39m [caliper] [cli-launch-manager] 	Binding specification is present, performing binding for "fabric:2.2"
+2023.11.09-17:21:52.198[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/teste/last/4orgs-ERC1155/caliper-workspace"
+2023.11.09-17:21:52.198[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2023.11.09-17:21:52.199[32m info [39m [caliper] [bind] 	Using working directory: /teste/last/4orgs-ERC1155/caliper-workspace
+2023.11.09-17:21:52.199[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2023.11.09-17:26:30.482[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /teste/last/4orgs-ERC1155/caliper-workspace

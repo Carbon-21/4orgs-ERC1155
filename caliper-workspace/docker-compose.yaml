@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+    caliper:
+        container_name: caliper
+        image: hyperledger/caliper:0.5.0
+        command: launch manager
+        environment:
+        - CALIPER_BIND_SUT=fabric:2.2
+        - CALIPER_BENCHCONFIG=benchmarks/benchmark.yaml
+        - CALIPER_NETWORKCONFIG=networks/networkconfig.yaml
+        volumes:
+        - ~/caliper-benchmarks:/hyperledger/caliper/workspace

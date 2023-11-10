@@ -1,0 +1,23 @@
+name: Caliper benchmark
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - ChannelName: mychannel
+    contracts:
+    - id: erc1155
+
+organizations:
+  - mspid: CarbonMSP
+    identities:
+      certificates:
+      - name: 'Admin'
+        clientPrivateKey:
+          path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/priv_sk'
+        clientSignedCert:
+          path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/Admin@carbon.example.com-cert.pem'
+    connectionProfile:
+      path: '../api-2.0/config/connection-carbon.json'
+      discover: true
