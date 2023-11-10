@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hyperledger/caliper-cli": "^0.5.0",
     "amqplib": "^0.8.0",
     "argon2-browser": "^1.18.0",
     "asn1.js": "^4.10.1",
@@ -26,7 +27,7 @@
     "fabric-ca-client": "^2.1.0",
     "fabric-client": "^1.4.20",
     "fabric-common": "^2.2.3",
-    "fabric-network": "^2.2.2",
+    "fabric-network": "^2.2.12",
     "fabric-protos": "^2.2.16",
     "ipfs-mini": "^1.1.5",
     "js-sha256": "^0.9.0",
