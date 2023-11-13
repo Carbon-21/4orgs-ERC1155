@@ -227,6 +227,7 @@ exports.createNFTRequest = async (request, response, next) => {
   try {
     const {
       userId,
+      username,
       landOwner,
       landArea,
       phyto,
@@ -235,7 +236,8 @@ exports.createNFTRequest = async (request, response, next) => {
     } = request.body;
 
     await models.nftRequests.create({
-      userId, 
+      userId,
+      username,
       landOwner,
       landArea,
       phyto,
