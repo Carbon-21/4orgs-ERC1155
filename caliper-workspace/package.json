@@ -2,13 +2,13 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.6.7",
     "@hyperledger/caliper-cli": "^0.5.0",
+    "@hyperledger/caliper-core": "^0.5.0",
     "@hyperledger/fabric-gateway": "^1.0.1",
-    "fabric-ca-client": "^2.2.3",
-    "fabric-network": "^2.2.12"
+    "fabric-ca-client": "^2.2.3"
   },
   "scripts": {
     "start": "caliper launch manager --caliper-bind-sut fabric:2.4 --caliper-workspace . --caliper-benchconfig ./benchmarks/benchmark.yaml --caliper-networkconfig ./networks/networkconfig.yaml --caliper-fabric-gateway-enabled true",
     "bind": "caliper bind --caliper-bind-sut fabric:2.4 --caliper-bind-cwd ./ --caliper-bind-args='-g'",
-    "unbind": "caliper bind --caliper-bind-sut fabric:2.2"
+    "unbind": "caliper unbind --caliper-bind-sut fabric:2.2"
   }
 }
