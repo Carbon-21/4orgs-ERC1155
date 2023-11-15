@@ -15,3 +15,5 @@ artifacts/channel/create-certificate-with-ca/fabric-ca/**/**
 !artifacts/channel/create-certificate-with-ca/fabric-ca/**/*.yaml
 
 .carbon.pid
+
+caliper-workspace/node_modules/
