@@ -15,9 +15,11 @@ organizations:
       certificates:
       - name: 'Admin'
         clientPrivateKey:
-          path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/priv_sk'
+          # path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/priv_sk'
+          path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/e46281b3040531c34e3c48d690e13894f2ccbfddc21718ac6b4203c6e90c95d2_sk'
         clientSignedCert:
-          path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/Admin@carbon.example.com-cert.pem'
+          # path: '/etc/data/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/Admin@carbon.example.com-cert.pem'
+          path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/cert.pem'
     connectionProfile:
       path: '../api-2.0/config/connection-carbon.json'
       discover: true
