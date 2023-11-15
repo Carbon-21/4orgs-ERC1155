@@ -4,10 +4,19 @@ services:
     caliper:
         container_name: caliper
         image: hyperledger/caliper:0.5.0
-        command: launch manager
+        command: launch manager --caliper-fabric-gateway-enabled true
         environment:
         - CALIPER_BIND_SUT=fabric:2.2
         - CALIPER_BENCHCONFIG=benchmarks/benchmark.yaml
         - CALIPER_NETWORKCONFIG=networks/networkconfig.yaml
         volumes:
-        - ~/caliper-benchmarks:/hyperledger/caliper/workspace
+        - ./:/hyperledger/caliper/workspace
+        - ../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/:/tmp/admin
+        - ../api-2.0/config/:/tmp/config
+        networks:
+        - artifacts_test
+
+networks:
+  artifacts_test:
+    external:
+      name: artifacts_test

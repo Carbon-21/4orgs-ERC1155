@@ -2,17 +2,15 @@ test:
     name: basic-contract-benchmark
     description: test benchmark
     workers:
-      number: 2
+      type: local
+      number: 1
     rounds:
       - label: First Test
         description: Mint and Check balance
-        txDuration: 30
+        txNumber: 300
         rateControl:
-          type: fixed-load
+          type: fixed-rate
           opts:
-            transactionLoad: 2
+            tps: 20
         workload:
           module: workload/first.js
-          arguments:
-            assets: 10
-            contractId: basic
