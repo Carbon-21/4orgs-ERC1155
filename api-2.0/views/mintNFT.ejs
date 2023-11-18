@@ -100,7 +100,12 @@
                 <label class="form-label" for="location">Insira localização da área</label>
               </div>
 
-              <div id="certificate-show"></div>
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fa fa-download fa-lg"></i>
+                  <a id="cert" >Download Certificate</a>
+                </div>
+              </div>
               <hr />
 
               <div class="flex-fill">
@@ -174,8 +179,13 @@
                 <p><strong>Faça o upload do seu certificado</strong></p>
                 <input type="file" id="certificate" name="filename" style="margin-left: 50px" /><br /><br />
               </div>
-              <div class="mint-button pb-5">
-                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+              <div class="buttons">
+                <div class="mint-button pb-5">
+                  <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar Transação</button>
+                </div>
+                <div class="mint-button pb-5">
+                  <button id="declineButton" onclick='responseRequest("rejected")' style="display: flex" class="btn btn-dark btn-md">Rejeitar</button>
+                </div>
               </div>
             </form>
           </div>

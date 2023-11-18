@@ -8,7 +8,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Calls the API for the smart contract function that mints FT for every active NFT
 
 window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var token, userId, headers, url, formData, init, response, element, _element;
+  var token, userId, username, headers, url, formData, init, response, element, _element;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) switch (_context.prev = _context.next) {
       case 0:
@@ -26,7 +26,8 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
 
         // Get user jwt token from the local storage
         token = localStorage.getItem("token");
-        userId = localStorage.getItem("userId"); // HTTP Request
+        userId = localStorage.getItem("userId");
+        username = localStorage.getItem("username"); // HTTP Request
         headers = new Headers();
         headers.append("Authorization", "Bearer " + token);
         url = "https://localhost:4000/nft/requests";
@@ -37,18 +38,19 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
         formData.append("geolocation", geolocation);
         formData.append("userNotes", userNotes);
         formData.append("userId", userId);
+        formData.append("username", username);
         formData.append("file", file);
         init = {
           method: "POST",
           headers: headers,
           body: formData
         };
-        _context.next = 25;
+        _context.next = 27;
         return fetch(url, init);
-      case 25:
+      case 27:
         response = _context.sent;
         if (!response.ok) {
-          _context.next = 33;
+          _context.next = 35;
           break;
         }
         // Hides the loading image and displays the submit button again
@@ -58,9 +60,9 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
         // Displays success messages
         element = "<div class=\"alert alert-success alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Solicita\xE7\xE3o emitida com sucesso!" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
         document.getElementById("flash").innerHTML = element;
-        _context.next = 39;
+        _context.next = 41;
         break;
-      case 33:
+      case 35:
         // Hides the loading image and displays the submit button again
         document.getElementById("submitButton").style.display = "flex";
         document.getElementById("loader").style.display = "none";
@@ -69,7 +71,7 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
         _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "Ocorreu um erro na solicita\xE7\xE3o" + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
         document.getElementById("flash").innerHTML = _element;
         return _context.abrupt("return", null);
-      case 39:
+      case 41:
       case "end":
         return _context.stop();
     }

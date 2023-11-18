@@ -61,3 +61,8 @@ input {
   width: 20%;
   display: none;
 }
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}

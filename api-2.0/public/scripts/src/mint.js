@@ -31,14 +31,13 @@ window.mintNFT = async () => {
 
 window.getRequest = async (requestId) => {
   event.preventDefault();
+  localStorage.setItem("requestId", requestId);
   let token = localStorage.getItem("token");
-  console.log(token);
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
 
-  // trocar para variaveis de host e port
-  let url = `https://localhost:4000/nft/request/${requestId}`;
+  let url = `https://${HOST}:${PORT}/nft/request/${requestId}`;
 
   var init = {
     method: "GET",
@@ -47,14 +46,13 @@ window.getRequest = async (requestId) => {
 
   let response = await fetch(url, init);
 
-  console.log(response)
-
   if (response.ok) {
     let {request: req} = await response.json();
     let element1 = '';
-    let element2 = '';
     console.log(req);
     document.getElementById("landOwner").value = req.landOwner;
+    document.getElementById("compensationOwner").value = req.landOwner;
+    document.getElementById("username").value = req.username;
     document.getElementById("landOwner").ariaDisabled = '';
     document.getElementById("phyto").value = req.phyto;
     document.getElementById("phyto").ariaDisabled = '';
@@ -73,17 +71,14 @@ window.getRequest = async (requestId) => {
         </div>`;
       document.getElementById("userNotes-show").innerHTML = element1;     
     }
+    if (req.adminNotes && (req.status !== "pending")){
+      document.getElementById("customNotes").value = req.adminNotes;   
+    }
     if (req.certificate){
-      element2 +=
-        `<div class="flex-fill">
-          <div class="mint-data">
-            <i class="fa fa-download fa-lg"></i>
-            <div class="mint-button p-0 m-0">
-              <button id="downloadButton" type="button" onclick="downloadBlob(${requestId})">Certificado</button>
-            </div>
-          </div>
-        </div>`;
-      document.getElementById("certificate-show").innerHTML = element2;    
+      const buffer = new Uint8Array(req.certificate.data);
+      const blobTest = new Blob([buffer], { type: 'application/pdf'});
+      document.getElementById("cert").href = URL.createObjectURL(blobTest);
+      document.getElementById("cert").download = `certificate.pdf`;
     } 
   } else {
     console.log("HTTP Error ", response.status);
@@ -91,58 +86,35 @@ window.getRequest = async (requestId) => {
   }
 };
 
-window.downloadBlob = async (requestId) => {
+window.responseRequest = async (status) => {
   event.preventDefault();
   let token = localStorage.getItem("token");
-  console.log(token);
+  let requestId = localStorage.getItem("requestId");
   let headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Bearer " + token);
 
-  // trocar para variaveis de host e port
-  let url = `https://localhost:4000/nft/request/${requestId}`;
+  let url = `https://${HOST}:${PORT}/nft/requests/${requestId}`;
 
   var init = {
-    method: "GET",
+    method: "PUT",
     headers: headers
   };
 
-  let response = await fetch(url, init);
+  const adminNotes = document.getElementById("customNotes").value;
 
+  var body = {
+    status,
+    adminNotes
+  };
+
+  init.body = JSON.stringify(body);
+
+  let response = await fetch(url, init);
   console.log(response)
+  window.location.href = "/nft/frontrequests";
 
   if (response.ok) {
-    let {request: req} = await response.json();
-    console.log("req", req)
-
-    // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
-    const blobUrl = URL.createObjectURL(req.certificate);
-    console.log('bloburl', blobUrl);
-
-    // Create a link element
-    const link = document.createElement("a");
-
-    // Set link's href to point to the Blob URL
-    link.href = blobUrl;
-    link.download = 'certificate';
-
-    // Append link to the body
-    document.body.appendChild(link);
-    console.log('chegou aqui');
-
-    // Dispatch click event on the link
-    // This is necessary as link.click() does not work on the latest firefox
-    link.dispatchEvent(
-      new MouseEvent('click', { 
-        bubbles: true, 
-        cancelable: true, 
-        view: window 
-      })
-    );
-    console.log('chegou aqui 2');
-
-    // Remove link from body
-    document.body.removeChild(link); 
   } else {
     console.log("HTTP Error ", response.status);
     return null;
@@ -295,6 +267,7 @@ const mintNFTClientSideSigning = async () => {
       // Displays Flash Messages
       if (response.result == "success") {
         document.getElementById("flash").innerHTML = successFlashMessage;
+        await responseRequest('accepted');
       } else {
         document.getElementById("flash").innerHTML = failureFlashMessage;
       }
@@ -362,6 +335,7 @@ const mintNFTServerSideSigning = async () => {
     return null;
   } else {
     document.getElementById("flash").innerHTML = successFlashMessage;
+    await responseRequest('accepted');
   }
 
 

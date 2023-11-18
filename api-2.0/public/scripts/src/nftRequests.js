@@ -7,7 +7,7 @@ window.getRequests = async (status) => {
     headers.append("Authorization", "Bearer " + token);
 
     // trocar para variaveis de host e port
-    let url = `https://localhost:4000/nft/requests?requestStatus=${status}`;
+    let url = `https://${HOST}:${PORT}/nft/requests?requestStatus=${status}`;
 
     var init = {
         method: "GET",

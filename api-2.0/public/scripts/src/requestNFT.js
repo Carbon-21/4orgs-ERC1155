@@ -17,12 +17,13 @@ window.requestNFT = async () => {
   // Get user jwt token from the local storage
   let token = localStorage.getItem("token");
   let userId = localStorage.getItem("userId");
+  let username = localStorage.getItem("username");
 
   // HTTP Request
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
 
-  let url = `https://localhost:4000/nft/requests`;
+  let url = `https://${HOST}:${PORT}/nft/requests`;
 
   const formData = new FormData();
 
@@ -32,6 +33,7 @@ window.requestNFT = async () => {
   formData.append("geolocation", geolocation);
   formData.append("userNotes", userNotes);
   formData.append("userId", userId);
+  formData.append("username", username);
   formData.append("file", file);
 
   var init = {

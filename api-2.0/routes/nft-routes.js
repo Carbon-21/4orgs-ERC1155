@@ -57,7 +57,7 @@ router.get("/request/:requestId", [param("requestId").not().isEmpty().isString()
 router.put(
   "/requests/:id",
   [
-    body("aprove").not().isEmpty().isString(),
+    body("status").not().isEmpty().isString(),
     param("id").not().isEmpty().isString(),
     validateAll
   ],
@@ -66,6 +66,7 @@ router.put(
 
 router.post("/requests", upload.single("file"), [
     body("userId").not().isEmpty().isInt(),
+    body("username").not().isEmpty().isString().isLength({max: 255}),
     body("landOwner").not().isEmpty().isString().isLength({max: 255}),
     body("landArea").not().isEmpty().isString().isLength({max: 255}),
     body("phyto").isString().isLength({max: 255}),
