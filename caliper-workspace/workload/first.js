@@ -8,6 +8,12 @@ class MyWorkload extends WorkloadModuleBase {
         this.txIndex = 0;
     }
 
+    async initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext) {
+        await super.initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext);
+
+        
+    }
+
     /**
      * Assemble TXs for the round.
      * @return {Promise<TxStatus[]>}
@@ -18,8 +24,8 @@ class MyWorkload extends WorkloadModuleBase {
         let args = {
             contractId: 'erc1155',
             contractVersion: '1',
-            contractFunction: 'Mint',
-            contractArguments: ['$ylvas','100','a@a.com'],
+            contractFunction: 'SelfBalance',
+            contractArguments: ['$ylvas'],
             timeout: 300
         };
 

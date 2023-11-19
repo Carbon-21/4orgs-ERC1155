@@ -5,7 +5,7 @@ caliper:
   blockchain: fabric
 
 channels:
-  - ChannelName: mychannel
+  - channelName: mychannel
     contracts:
     - id: erc1155
 
@@ -13,11 +13,11 @@ organizations:
   - mspid: CarbonMSP
     identities:
       certificates:
-      - name: 'Admin'
+      - name: 'User1'
         clientPrivateKey:
-          path: '/tmp/admin/keystore/cd3edd64c313a6b50a13dd7b87e9fa7001919c169b6ab963adbccf1484eda1bf_sk'
+          path: '/tmp/User1/keystore/a068f9871a4a32166e35a8b411c9e0e5771ea66601f3b69d81c8a07493e59740_sk'
         clientSignedCert:
-          path: '/tmp/admin/signcerts/cert.pem'
+          path: '/tmp/User1/signcerts/cert.pem'
     connectionProfile:
-      path: '/tmp/config/connection-carbon.json'
+      path: '/hyperledger/caliper/workspace/networks/connection.json'
       discover: true
