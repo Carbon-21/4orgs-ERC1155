@@ -11,6 +11,6 @@ test:
         rateControl:
           type: fixed-rate
           opts:
-            tps: 20
+            tps: 100
         workload:
           module: workload/first.js

@@ -24,8 +24,8 @@ class MyWorkload extends WorkloadModuleBase {
         let args = {
             contractId: 'erc1155',
             contractVersion: '1',
-            contractFunction: 'SelfBalance',
-            contractArguments: ['$ylvas'],
+            contractFunction: 'Mint',
+            contractArguments: ['admin@admin.com', this.txIndex.toString(), 1, `{"status":"Ativo"}`],
             timeout: 300
         };
 
