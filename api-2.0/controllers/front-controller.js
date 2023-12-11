@@ -269,6 +269,13 @@ exports.getMintNFT = (req, res, next) => {
   });
 };
 
+exports.getMintNFTCompensation = (req, res, next) => {
+  res.render("mintNFTCompensation", {
+    title: "Mint NFT Compensation",
+    cssPath: "../css/mintNFTCompensation.css",
+  });
+};
+
 ///// TRANSFER CONTROLLERS /////
 
 exports.getTransfer = (req, res, next) => {

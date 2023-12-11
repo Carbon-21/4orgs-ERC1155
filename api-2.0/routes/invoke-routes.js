@@ -26,6 +26,19 @@ router.post(
 );
 
 router.post(
+  "/channels/:channel/chaincodes/:chaincode/mintNFTCompensation",
+  [
+    param("channel").trim().not().isEmpty().isString(),
+    param("chaincode").trim().not().isEmpty().isString(),
+    body("idNFTTerra").trim().not().isEmpty().isString(),
+    body("compensationTotalArea").trim().not().isEmpty().isString(),
+    validateAll,
+  ],  
+  invokeController.mintNFTCompensation
+);
+
+// Generate FT from NFT
+router.post(
   "/channels/:channel/chaincodes/:chaincode/ftfromnft", 
 [
   param("channel").not().isEmpty(), 
@@ -75,6 +88,7 @@ router.post(
   invokeController.buyListed
 );
 
+// Transfers
 router.post(
   "/channels/:channel/chaincodes/:chaincode/transfer",
   [
@@ -102,7 +116,7 @@ router.post(
   invokeController.setURI
 );
 
-//auxiliary route ised to update an NFT compensation State
+//auxiliary route used to update an NFT compensation State
 router.patch(
   "/channels/:channel/chaincodes/:chaincode/compensateNFT",
   [
@@ -115,7 +129,7 @@ router.patch(
 );
 
 
-//auxiliary route ised to update an NFT Status
+//auxiliary route used to update an NFT Status
 router.patch(
   "/channels/:channel/chaincodes/:chaincode/setNFTStatus",
   [

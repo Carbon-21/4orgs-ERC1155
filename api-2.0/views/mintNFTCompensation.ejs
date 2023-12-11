@@ -1,0 +1,84 @@
+<!-- Mint NFT Compensation Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+
+  <script src="/scripts/mintNFTCompensation.js"></script>
+  <script src="/scripts/bundles/mint-bundle.js"></script>
+
+  <body>
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <!-- Mint Section -->
+
+    <section id="mintNFTCompensation">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-4 image-container"></div>
+
+          <div class="col-8 form-container">
+            <h1 class="mint-header">Emissão de NFT de Compensação</h1>
+
+            <form id="form" action="" method="POST" class="validated-form" onsubmit="mintNFTCompensation()">
+
+             <!-- Id do NFT de terras --> 
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-tree fa-lg"></i>
+                  <input type="text" name="idNFTTerra" id="idNFTTerra" class="form-control" required />
+                </div>
+                <label class="form-label" for="idNFTTerra">Insira o ID do NFT de terras</label>
+              </div>
+
+              <hr />
+
+              <!-- Àrea compensavel -->
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-expand fa-lg"></i>
+                  <input type="text" name="compensationTotalArea" id="compensationTotalArea" class="form-control" required />
+                </div>
+                <label class="form-label" for="compensationTotalArea">Insira a área total compensavel desse NFT</label>
+              </div>
+
+              <hr />
+
+              <!-- Conta do dono do direito de compensacao -->
+              <div class="flex-fill">
+                <div class="mint-data">
+                  <i class="fas fa-expand fa-lg"></i>
+                  <input type="text" name="compensationOwner" id="compensationOwner" class="form-control" required />
+                </div>
+                <label class="form-label" for="compensationOwner">Insira o username de destino</label>
+              </div>              
+
+              <!--
+                  Adicionar campos
+                  CREA engenheiro florestal responsavel pela validação da área
+                  Link para documentações referentes ao direito de compensação
+                  Coordenadas geograficas da terra
+                  Upload de Shapefile
+
+                  Dados referentes ao struct das segmentações
+              -->
+
+              <img id="loader" class="loading-icon" src="../images/loader.gif" style="margin: auto" />
+              <div hidden id="signing-files" style="text-align: center">
+                <p><strong>Faça o upload da sua chave privada</strong></p>
+                <input type="file" id="private-key" name="filename" style="margin-left: 50px" /><br /><br />
+                <p><strong>Faça o upload do seu certificado</strong></p>
+                <input type="file" id="certificate" name="filename" style="margin-left: 50px" /><br /><br />
+              </div>
+              <div class="mint-button pb-5">
+                <button id="submitButton" type="submit" style="display: flex" class="btn btn-primary btn-md">Enviar transação</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

@@ -72,6 +72,47 @@ exports.mint = async (req, res, next) => {
   });
 };
 
+//mint given token for a user
+exports.mintNFTCompensation = async (req, res, next) => {
+  logger.info("Entered mint nft compensation function");
+
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const idNFTTerra = req.body.idNFTTerra;
+  const tokenReceiver = req.body.tokenReceiver;
+  const compensationTotalArea = req.body.compensationTotalArea;
+  const metadata = req.body.metadata !== undefined ? req.body.metadata : {};
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+  const idNFTCompInfo = generateTokenId(req.body);
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
+  if (!receiverAccountId) return;
+
+  //mint.
+  try {
+    await chaincode.submitTransaction("SmartContract:MintNFTCompensation",receiverAccountId, idNFTTerra, idNFTCompInfo, compensationTotalArea, JSON.stringify(metadata));
+    logger.info("Mint NFT Compensation successful");
+
+    //close communication channel
+    await gateway.disconnect();
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+
+  //send OK response
+  return res.json({
+    result: "success",
+  });
+};
+
 exports.compensateNFT = async (req, res, next) => {
   logger.info("Entered compensation function");
 
