@@ -105,6 +105,38 @@ exports.selfBalanceNFT = async (req, res, next) => {
   }
 };
 
+//return the nfts of the own client's account ---- Ver
+exports.selfBalanceNFTCompensation = async (req, res, next) => {
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const username = req.jwt.username;
+  const org = req.jwt.org;
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get balance
+  try {
+    let result = await chaincode.evaluateTransaction("SmartContract:SelfBalanceNFTCompensation");
+    result = JSON.parse(result.toString());
+
+    //close communication channel
+    await gateway.disconnect();
+
+    //send OK response
+    //logger.info(`${tokenId} balance retrieved successfully: ${result} `);
+    return res.json({
+      result,
+    });
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+
+    return next(new HttpError(500, err.message));
+  }
+};
+
 //return the nfts of the requesting client's account ---- Ver
 exports.balanceNFT = async (req, res, next) => {
   const chaincodeName = req.params.chaincode;

@@ -102,6 +102,7 @@ router.get(
 );
 
 router.get("/channels/:channel/chaincodes/:chaincode/selfBalanceNFT", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], queryController.selfBalanceNFT);
+router.get("/channels/:channel/chaincodes/:chaincode/selfBalanceNFTCompensation", [param("channel").not().isEmpty(), param("chaincode").not().isEmpty(), validateAll], queryController.selfBalanceNFTCompensation);
 
 router.get(
   "/channels/:channel/chaincodes/:chaincode/totalSupply",

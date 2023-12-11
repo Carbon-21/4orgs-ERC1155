@@ -21,9 +21,7 @@ import (
 const balancePrefix = "account~tokenId~sender"
 const approvalPrefix = "account~operator"
 
-//const compensationNFTPrefix = "idNFTTerra"
-const compensationInfoPrefix = "tokenTerraId~tokenCompensationInfoId"
-const compensationPrefix = "account~sender~tokenCompensationInfoId"
+const compensationPrefix = "account~tokenTerraId~tokenCompensationId~sender"
 
 // The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
 const orderbook = "owner~id"
@@ -349,9 +347,16 @@ func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextIn
 		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
 	}*/
 
+	compensationKey, err := ctx.GetStub().CreateCompositeKey(compensationPrefix, []string{account, idNFTTerra, idNFTComInfo, account})
+	if err != nil {
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
+	}
+
 	var tokenNFTCompensacaoMint NFTCompensationToken
 
 	//tokenMint.CompensationArea = strconv.FormatUint(uint64(compensationArea), 10)
+
+	// Verifica se o Id do NFT de terra realmente existe
 
 	// Mintando NFT da compensacao
 	tokenNFTCompensacaoMint.IdNFTTerra = idNFTTerra
@@ -363,7 +368,7 @@ func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextIn
 
 	tokenInfoAsBytes, _ := json.Marshal(tokenNFTCompensacaoMint)
 
-	err = ctx.GetStub().PutState(compensationInfoPrefix, tokenInfoAsBytes)
+	err = ctx.GetStub().PutState(compensationKey, tokenInfoAsBytes)
 	if err != nil {
 		return err
 	}
@@ -1070,6 +1075,21 @@ func (s *SmartContract) BalanceNFT(ctx contractapi.TransactionContextInterface, 
 	return idNFTs
 }
 
+// Retorna todos nfts de compensação
+func (s *SmartContract) SelfBalanceNFTCompensation(ctx contractapi.TransactionContextInterface) [][]string {
+	// Get ID of submitting client identity
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		ret := make([][]string, 0)
+		ret = append(ret, []string{"failed to get client id"})
+		return ret
+		//return "0", fmt.Errorf("failed to get client id: %v", err)
+	}
+
+	idNFTs, _ := idNFTCompensationHelper(ctx, clientID)
+	return idNFTs
+}
+
 // ClientAccountID returns the id of the requesting client's account
 // In this implementation, the client account ID is the clientId itself
 // Users can use this function to get their own account id, which they can then give to others as the payment address
@@ -1568,6 +1588,69 @@ func NFTsFromStatusHelper(ctx contractapi.TransactionContextInterface, status st
 	} else {
 		return NFTsFromStatus, nil
 	}
+}
+
+// Funcao provisoria para obter os ids dos direitos de compensacao (futuramente fazer idNFTHelper mais generico)
+func idNFTCompensationHelper(ctx contractapi.TransactionContextInterface, account string) ([][]string, error) {
+
+	if account == "0x0" {
+		return nil, fmt.Errorf("balance query for the zero address")
+	}
+
+	// --------Get all NFTs --------
+	// tokenid is the id of the FTs how will be generated from the NFTs
+	var tokenid = systemCurrency
+	nftlist := make([][]string, 0)
+
+	//balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account})
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(compensationPrefix, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get state for prefix %v: %v", compensationPrefix, err)
+	}
+	defer balanceIterator.Close()
+
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get the next state for prefix %v: %v", compensationPrefix, err)
+		}
+
+		fmt.Print(queryResponse)
+		// Split Key to search for specific tokenid
+		// The compositekey (account -  tokenid - senderer)
+		_, compositeKeyParts, err := ctx.GetStub().SplitCompositeKey(queryResponse.Key)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to get key: %s: %v", queryResponse.Key, err)
+		}
+
+		// Contains the tokenid if FT probably 'sylvas' and if is an NFT will contain there id
+		returnedTokenIDTerra := compositeKeyParts[1]
+		returnedTokenIDCompensation := compositeKeyParts[2]
+
+		// Contains the account of the user who have the nft
+		accountNFT := compositeKeyParts[0]
+
+		// Retrieve all NFTs by analyzing all records and seeing if they aren't FTs
+		// Se nenhuma conta for passada a funcao retorna todos os nfts
+		if account == "" {
+			if returnedTokenIDTerra != tokenid {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenIDCompensation, returnedTokenIDTerra, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
+			}
+		} else {
+			// Retrieve NFTs from some account by analyzing all records and seeing if they aren't FTs
+			if (returnedTokenIDTerra != tokenid) && (accountNFT == account) {
+				// Merge ID and Value of the NFTs
+				element := []string{returnedTokenIDCompensation, returnedTokenIDTerra, string(queryResponse.Value)}
+				nftlist = append(nftlist, element)
+
+			}
+		}
+
+	}
+	return nftlist, nil
 }
 
 // idNFTHelper returns the NFTs associated with an account or all the nfts if the account parameter is empty

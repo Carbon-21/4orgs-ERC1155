@@ -38,6 +38,8 @@ router.get("/wallet", isLoggedIn, frontController.getWallet);
 
 router.get("/collection", isLoggedIn, frontController.getCollection);
 
+router.get("/collectionCompensation", isLoggedIn, frontController.getCollectionCompensation);
+
 ///// MARKETPLACE ROUTE /////
 
 router.get("/marketplace", isLoggedIn, frontController.getMarketplace);

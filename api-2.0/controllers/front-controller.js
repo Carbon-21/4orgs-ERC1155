@@ -235,6 +235,13 @@ exports.getCollection = async (req, res, next) => {
   });
 };
 
+exports.getCollectionCompensation = async (req, res, next) => {
+  res.render("collectionCompensation", {
+    title: "My Compensation",
+    cssPath: "css/collection.css",
+  });
+};
+
 ///// MARKETPLACE CONTROLLERS /////
 
 exports.getMarketplace = async (req, res, next) => {
