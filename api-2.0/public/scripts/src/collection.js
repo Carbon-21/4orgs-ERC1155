@@ -16,10 +16,12 @@ async function collection() {
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftTokens();
 
-  // Caso haja nfts
-  if (nftTokens) {
+  // Recuperar todos os nfts requests do usuario
+  let nftRequests = await getNftRequests();
+  // Caso haja nfts ou nft requests
+  if (nftTokens || nftRequests) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
-    if (nftTokens.length === 0){
+    if (!nftTokens || nftTokens.length === 0){
       element +=
         '<center><h2><font color="#5f5f5f">Você não possui NFTs em sua coleção </font></h2> </center>'+
         "</div>";
@@ -75,13 +77,79 @@ async function collection() {
       document.getElementById("nft-showroom").style.display = "block";
       }
     }
+
+    //Desabilitar gif do loader
+    document.getElementById("loader").style.display = "none";
+
+    let element2 = '<div class="d-flex flex-column justify-content-between p-md-1">';
+    if (!nftRequests || nftRequests.length === 0){
+      element2 +=
+        '<center><h2><font color="#5f5f5f">Você não possui solitações de NFT</font></h2> </center>'+
+        "</div>";
+        document.getElementById("request-showroom").innerHTML = element2;        
+    }else{
+      nftRequests.requests.map((request) => {
+        let requestId = request.id;
+        // let username = request.username;
+        let landOwner = request.landOwner;
+        let landArea = request.landArea;
+        let phyto = request.phyto;
+        let geolocation = request.geolocation;
+        let certificate = request.certificate;
+        let status = request.requestStatus;
+        let userNotes = request.userNotes;
+        let adminNotes = request.adminNotes
+
+        const buffer = new Uint8Array(request.certificate.data);
+        const blobTest = new Blob([buffer], { type: 'application/pdf'});
+
+        element2 +=
+          '<div class="card shadow-lg mt-3 ">' +
+          '<div class="card-body flex-column">' +
+          '<div class="d-flex justify-content-between p-md-1">' +
+          '<div class="d-flex flex-row">' +
+          '<div class="align-self-center">' +
+            '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+          "</div>" +
+          '<div class="overflow-hidden"> ' +
+          `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${requestId}" aria-controls="tk${requestId}"> Solicitação ${requestId} </button>` +
+          `<b> Status: </b> ${status} <br />` +
+          `<div id="tk${requestId}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+          `<b> Proprietário da Terra: </b> ${landOwner} <br />` +
+          `<b> Área (hectares): </b> ${landArea} <br />` +
+          `<b> Fitofisiologia: </b> ${phyto} <br />` +
+          `<b> Geolocalização: </b> ${geolocation} <br />` +
+          `<b> Dono dos direitos de Compensação: </b> ${landOwner} <br />` +
+          `<div class="d-flex align-items-center">` +
+          `<i class="fa fa-download fa-lg"></i>` +
+          `<a id="cert" href="${URL.createObjectURL(blobTest)}" download="certificate.pdf">Download Certificate</a>` +      
+          "</div>" +
+          `<b> Notas usuário: </b> ${userNotes} <br />` +
+          `<b> Notas admin: </b> ${adminNotes} <br />` +       
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>";
+
+        // Renderizar a cada request carregado
+        document.getElementById("request-showroom").innerHTML = element2;
+        //Habilita card, pois algumas opções o desabilitam
+        document.getElementById("request-showroom").style.display = "block";
+      })
+      //Desabilitar gif do loader2
+      document.getElementById("loader2").style.display = "none";
+    }
   }else {
-    console.log("HTTP Error ", response.status);
+    console.log("HTTP Error ");
     return null;
   }
 
   //Desabilitar gif do loader
   document.getElementById("loader").style.display = "none";
+  document.getElementById("loader2").style.display = "none";
 }
 
 // Recupera os nfts do usuario logado
@@ -108,6 +176,31 @@ async function getNftTokens() {
     nftArray[el][0] = "_"+ nftArray[el][0];
   }
   return nftArray;
+}
+
+async function getNftRequests() {
+  let token = localStorage.getItem("token");
+  let userId = localStorage.getItem("userId");
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  // trocar para variaveis de host e port
+  let url = `https://${HOST}:${PORT}/nft/requests/${userId}`;
+
+  var init = {
+    method: "GET",
+    headers: headers
+  };
+
+  let response = await fetch(url, init);
+  
+  if (response.ok) {
+    return await response.json();
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
 }
 
 // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)

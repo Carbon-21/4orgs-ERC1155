@@ -87,7 +87,6 @@ window.getRequest = async (requestId) => {
 };
 
 window.responseRequest = async (status) => {
-  event.preventDefault();
   let token = localStorage.getItem("token");
   let requestId = localStorage.getItem("requestId");
   let headers = new Headers();
@@ -109,9 +108,7 @@ window.responseRequest = async (status) => {
   };
 
   init.body = JSON.stringify(body);
-
   let response = await fetch(url, init);
-  console.log(response)
   window.location.href = "/nft/frontrequests";
 
   if (response.ok) {
@@ -266,8 +263,8 @@ const mintNFTClientSideSigning = async () => {
 
       // Displays Flash Messages
       if (response.result == "success") {
+        responseRequest('accepted');
         document.getElementById("flash").innerHTML = successFlashMessage;
-        await responseRequest('accepted');
       } else {
         document.getElementById("flash").innerHTML = failureFlashMessage;
       }
@@ -334,8 +331,8 @@ const mintNFTServerSideSigning = async () => {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
   } else {
+    responseRequest('accepted');
     document.getElementById("flash").innerHTML = successFlashMessage;
-    await responseRequest('accepted');
   }
 
 

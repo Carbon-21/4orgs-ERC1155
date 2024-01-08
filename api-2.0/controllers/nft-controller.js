@@ -177,6 +177,28 @@ exports.getNftRequests = async (req, res, next) => {
   }
 };
 
+// pega requests de um usuário
+exports.getNftRequestsByUserId = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    if (!userId) {
+      return next(new HttpError(400, "userId is necessary."));
+    }
+
+    const requests = await models.nftRequests.findAll({
+      where: { userId },
+    });
+
+    console.log(requests);
+    return res.status(200).json({
+      requests,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
 // retorna um nft requests através de seu id
 exports.getNftRequest = async (req, res, next) => {
   const { requestId } = req.params;

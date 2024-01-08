@@ -54,7 +54,9 @@ router.get("/requests", [query("requestStatus").not().isEmpty().isString(), vali
 
 router.get("/request/:requestId", [param("requestId").not().isEmpty().isString(), validateAll], nftController.getNftRequest);
 
-router.put(
+router.get("/requests/:userId", [param("userId").not().isEmpty().isString(), validateAll], nftController.getNftRequestsByUserId);
+
+router.put(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
   "/requests/:id",
   [
     body("status").not().isEmpty().isString(),
