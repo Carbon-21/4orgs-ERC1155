@@ -13,7 +13,6 @@ window.getRequests = /*#__PURE__*/function () {
         case 0:
           event.preventDefault();
           token = localStorage.getItem("token");
-          console.log(token);
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("Authorization", "Bearer " + token);
@@ -24,23 +23,22 @@ window.getRequests = /*#__PURE__*/function () {
             method: "GET",
             headers: headers
           };
-          _context.next = 10;
+          _context.next = 9;
           return fetch(url, init);
-        case 10:
+        case 9:
           response = _context.sent;
-          console.log(response);
           if (!response.ok) {
-            _context.next = 18;
+            _context.next = 16;
             break;
           }
-          _context.next = 15;
+          _context.next = 13;
           return response.json();
-        case 15:
+        case 13:
           return _context.abrupt("return", _context.sent);
-        case 18:
+        case 16:
           console.log("HTTP Error ", response.status);
           return _context.abrupt("return", null);
-        case 20:
+        case 18:
         case "end":
           return _context.stop();
       }
@@ -57,19 +55,16 @@ window.requests = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRunti
       case 0:
         event.preventDefault();
         status = document.getElementById("statusDropDown").value;
-        search = document.getElementById("searchInput").value;
-        console.log(status, search);
-        // Recuperar todos os requests na variável requestsList
-        _context2.next = 6;
+        search = document.getElementById("searchInput").value; // Recuperar todos os requests na variável requestsList
+        _context2.next = 5;
         return getRequests(status);
-      case 6:
+      case 5:
         _yield$getRequests = _context2.sent;
         requestsList = _yield$getRequests.requests;
         if (!requestsList) {
-          _context2.next = 15;
+          _context2.next = 13;
           break;
         }
-        console.log('list', requestsList);
         element = '';
         requestsFiltered = requestsList.filter(function (fil) {
           return fil.landOwner.toLowerCase().includes(search.toLowerCase()) || fil.phyto.toLowerCase().includes(search.toLowerCase()) || fil.landArea.toLowerCase().includes(search.toLowerCase());
@@ -84,12 +79,12 @@ window.requests = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRunti
           // Renderizar a cada request carregado
           document.getElementById("requests-show").innerHTML = element;
         }
-        _context2.next = 17;
+        _context2.next = 15;
         break;
-      case 15:
+      case 13:
         console.log("HTTP Error ", response.status);
         return _context2.abrupt("return", null);
-      case 17:
+      case 15:
       case "end":
         return _context2.stop();
     }

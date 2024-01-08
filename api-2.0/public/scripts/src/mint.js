@@ -49,7 +49,6 @@ window.getRequest = async (requestId) => {
   if (response.ok) {
     let {request: req} = await response.json();
     let element1 = '';
-    console.log(req);
     document.getElementById("landOwner").value = req.landOwner;
     document.getElementById("compensationOwner").value = req.landOwner;
     document.getElementById("username").value = req.username;

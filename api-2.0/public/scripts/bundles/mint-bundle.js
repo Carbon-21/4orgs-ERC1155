@@ -11353,7 +11353,7 @@ window.getRequest = /*#__PURE__*/function () {
         case 10:
           response = _context3.sent;
           if (!response.ok) {
-            _context3.next = 33;
+            _context3.next = 32;
             break;
           }
           _context3.next = 14;
@@ -11362,7 +11362,6 @@ window.getRequest = /*#__PURE__*/function () {
           _yield$response$json = _context3.sent;
           req = _yield$response$json.request;
           element1 = '';
-          console.log(req);
           document.getElementById("landOwner").value = req.landOwner;
           document.getElementById("compensationOwner").value = req.landOwner;
           document.getElementById("username").value = req.username;
@@ -11388,12 +11387,12 @@ window.getRequest = /*#__PURE__*/function () {
             document.getElementById("cert").href = URL.createObjectURL(blobTest);
             document.getElementById("cert").download = "certificate.pdf";
           }
-          _context3.next = 35;
+          _context3.next = 34;
           break;
-        case 33:
+        case 32:
           console.log("HTTP Error ", response.status);
           return _context3.abrupt("return", null);
-        case 35:
+        case 34:
         case "end":
           return _context3.stop();
       }
@@ -11409,14 +11408,11 @@ window.responseRequest = /*#__PURE__*/function () {
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
-          event.preventDefault();
           token = localStorage.getItem("token");
           requestId = localStorage.getItem("requestId");
           headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("Authorization", "Bearer " + token);
-
-          // trocar para variaveis de host e port
           url = "https://localhost:4000/nft/requests/".concat(requestId);
           init = {
             method: "PUT",
@@ -11428,22 +11424,21 @@ window.responseRequest = /*#__PURE__*/function () {
             adminNotes: adminNotes
           };
           init.body = JSON.stringify(body);
-          _context4.next = 13;
+          _context4.next = 12;
           return fetch(url, init);
-        case 13:
+        case 12:
           response = _context4.sent;
-          console.log(response);
           window.location.href = "/nft/frontrequests";
           if (!response.ok) {
-            _context4.next = 19;
+            _context4.next = 17;
             break;
           }
-          _context4.next = 21;
+          _context4.next = 19;
           break;
-        case 19:
+        case 17:
           console.log("HTTP Error ", response.status);
           return _context4.abrupt("return", null);
-        case 21:
+        case 19:
         case "end":
           return _context4.stop();
       }
@@ -11591,7 +11586,7 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
       while (1) switch (_context7.prev = _context7.next) {
         case 0:
           if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context7.next = 31;
+            _context7.next = 25;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11625,31 +11620,24 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
           document.getElementById("loader").style.display = "none";
 
           // Displays Flash Messages
-          if (!(response.result == "success")) {
-            _context7.next = 24;
-            break;
+          if (response.result == "success") {
+            responseRequest('accepted');
+            document.getElementById("flash").innerHTML = successFlashMessage;
+          } else {
+            document.getElementById("flash").innerHTML = failureFlashMessage;
           }
-          document.getElementById("flash").innerHTML = successFlashMessage;
-          _context7.next = 22;
-          return responseRequest('accepted');
-        case 22:
           _context7.next = 25;
           break;
-        case 24:
-          document.getElementById("flash").innerHTML = failureFlashMessage;
-        case 25:
-          _context7.next = 31;
-          break;
-        case 27:
-          _context7.prev = 27;
+        case 21:
+          _context7.prev = 21;
           _context7.t0 = _context7["catch"](11);
           document.getElementById("flash").innerHTML = failureFlashMessage;
           console.log("Error:", _context7.t0.message);
-        case 31:
+        case 25:
         case "end":
           return _context7.stop();
       }
-    }, _callee7, null, [[11, 27]]);
+    }, _callee7, null, [[11, 21]]);
   }));
   return function mintNFTClientSideSigning() {
     return _ref7.apply(this, arguments);
@@ -11720,10 +11708,9 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
           document.getElementById("flash").innerHTML = failureFlashMessage;
           return _context8.abrupt("return", null);
         case 26:
+          responseRequest('accepted');
           document.getElementById("flash").innerHTML = successFlashMessage;
-          _context8.next = 29;
-          return responseRequest('accepted');
-        case 29:
+        case 28:
         case "end":
           return _context8.stop();
       }

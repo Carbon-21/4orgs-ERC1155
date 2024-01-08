@@ -264,7 +264,6 @@ exports.getMintFromNFT = (req, res, next) => {
 
 exports.getMintNFT = (req, res, next) => {
   const { requestId } = req.query;
-  console.log(requestId);
 
   res.render("mintNFT", {
     title: "Mint NFT",

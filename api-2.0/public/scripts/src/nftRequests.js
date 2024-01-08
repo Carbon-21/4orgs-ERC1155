@@ -1,7 +1,6 @@
 window.getRequests = async (status) => {
     event.preventDefault();
     let token = localStorage.getItem("token");
-    console.log(token);
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + token);
@@ -16,8 +15,6 @@ window.getRequests = async (status) => {
 
     let response = await fetch(url, init);
 
-    console.log(response)
-
     if (response.ok) {
         return await response.json();
     } else {
@@ -30,13 +27,11 @@ window.requests = async () => {
     event.preventDefault();
     const status = document.getElementById("statusDropDown").value;
     const search = document.getElementById("searchInput").value;
-    console.log(status, search);
     // Recuperar todos os requests na variável requestsList
     let {requests: requestsList} = await getRequests(status);
     
     // Caso haja requests
     if (requestsList) {
-        console.log('list', requestsList)
         let element = '';
         const requestsFiltered = requestsList.filter((fil)=>{
             return (

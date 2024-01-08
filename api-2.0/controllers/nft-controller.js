@@ -167,7 +167,6 @@ exports.getNftRequests = async (req, res, next) => {
       where: { requestStatus },
     });
 
-    console.log(requests);
     return res.status(200).json({
       requests,
     });
@@ -189,7 +188,6 @@ exports.getNftRequestsByUserId = async (req, res, next) => {
       where: { userId },
     });
 
-    console.log(requests);
     return res.status(200).json({
       requests,
     });
@@ -209,7 +207,6 @@ exports.getNftRequest = async (req, res, next) => {
 
     const request = await models.nftRequests.findByPk(requestId);
 
-    console.log(request);
     return res.status(200).json({
       request,
     });
