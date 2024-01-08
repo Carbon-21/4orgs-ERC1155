@@ -122,7 +122,9 @@ router.patch(
   [
     param("channel").trim().not().isEmpty().isString(),
     param("chaincode").trim().not().isEmpty().isString(),
-    body("tokenId").trim().not().isEmpty().isString(),
+    body("tokenTerraId").trim().not().isEmpty().isString(),
+    body("tokenCompensationId").trim().not().isEmpty().isString(),
+    body("compensationAmount").trim().not().isEmpty().isString(),
     validateAll,
   ],
   invokeController.compensateNFT

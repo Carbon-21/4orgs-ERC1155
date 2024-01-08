@@ -324,7 +324,7 @@ func (s *SmartContract) GetWorldState(ctx contractapi.TransactionContextInterfac
 	return tokens, nil
 }
 
-func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextInterface, account string, idNFTTerra string, idNFTComInfo string, compensationTotalArea string, metadata string) error {
+func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextInterface, account string, idNFTTerra string, idNFTComp string, compensationTotalArea string, metadata string) error {
 
 	// Check minter authorization - this sample assumes Carbon is the central banker with privilege to mint new tokens
 	err := authorizationHelper(ctx)
@@ -347,31 +347,7 @@ func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextIn
 		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
 	}*/
 
-	compensationKey, err := ctx.GetStub().CreateCompositeKey(compensationPrefix, []string{account, idNFTTerra, idNFTComInfo, account})
-	if err != nil {
-		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
-	}
-
-	var tokenNFTCompensacaoMint NFTCompensationToken
-
-	//tokenMint.CompensationArea = strconv.FormatUint(uint64(compensationArea), 10)
-
-	// Verifica se o Id do NFT de terra realmente existe
-
-	// Mintando NFT da compensacao
-	tokenNFTCompensacaoMint.IdNFTTerra = idNFTTerra
-	tokenNFTCompensacaoMint.IdNFTCompensation = idNFTComInfo
-	tokenNFTCompensacaoMint.CompensationTotalArea = compensationTotalArea
-	tokenNFTCompensacaoMint.CompensationAreaSupply = compensationTotalArea // Na primeira vez que é mintado a área total a ser utilizada é igual a área total do direito
-	tokenNFTCompensacaoMint.CompensationOwner = account
-	tokenNFTCompensacaoMint.CompensationState = "Não Compensado" // O NFT 'nasce' com o estado de não compensado
-
-	tokenInfoAsBytes, _ := json.Marshal(tokenNFTCompensacaoMint)
-
-	err = ctx.GetStub().PutState(compensationKey, tokenInfoAsBytes)
-	if err != nil {
-		return err
-	}
+	mintCompensationHelper(ctx, idNFTTerra, idNFTComp, account, compensationTotalArea, compensationTotalArea, "Nao Compensado")
 
 	return nil
 
@@ -419,6 +395,143 @@ func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextIn
 	*/
 }
 
+// CompensateNFT, funcao é utilizada para consolidar parcialmente ou totalmente a compensação de direitos de compensacao
+/*
+   Ao compensar um direito é criado um novo nft com seu status já alterado para compensado enquato o 'supply' do NFT
+   base é subtraido pela quantidade compensada.
+*/
+
+func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterface, account string, tokenTerraId string, tokenCompensationId string, compensationAmount string, tokenCompensationIdNew string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(compensationPrefix, []string{account, tokenTerraId, tokenCompensationId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", compensationPrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFTCompensationToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// Verifica se o estado atual do NFT já é compensado
+		if nft.CompensationState == "Compensado" {
+			return fmt.Errorf(("NFT já compensado"))
+		} else if nft.CompensationState == "Bloqueado" {
+			return fmt.Errorf(("NFT esta bloquado"))
+		} else if nft.CompensationAreaSupply < compensationAmount {
+			return fmt.Errorf(("O total de compensacao solicitada é maior que o disponivel"))
+		} else {
+			// Atualiza o Supply disponivel do NFT atual
+			CompensationSupply, _ := strconv.Atoi(nft.CompensationAreaSupply)
+			CompensationAmount, _ := strconv.Atoi(compensationAmount)
+
+			nft.CompensationAreaSupply = strconv.Itoa(CompensationSupply - CompensationAmount)
+
+			// Atualiza a lista dos filhos
+
+			// Salva alteração no World State
+			tokenAsBytes, _ := json.Marshal(nft)
+
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao atualizar supply do NFT %v", err)
+			}
+
+			// Minta um novo novo NFT de compensacao com o supply e o total = ao compensation Amount
+			// Mint tokens
+			err := mintCompensationHelper(ctx, nft.IdNFTTerra, tokenCompensationIdNew, account, strconv.Itoa(CompensationAmount), "0", "Compensado")
+			if err != nil {
+				return err
+			}
+			// Altera o estado de compensação
+			//nftNovo.CompensationState = "Compensado"
+
+			// Insere id do nft pai
+
+			// Salva alteração no World State
+			/*tokenAsBytes, _ := json.Marshal(nft)
+
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao inserir no world state o nft com estado de compensado %v", err)
+			}
+			*/
+		}
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
+}
+
+/* Old */
+/*func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterface, account string, tokenId string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	if tokenId == "$ylvas" {
+		return fmt.Errorf("Não é possivel editar metadados de FTs")
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		// Verifica se o estado do NFT é ativo
+		if nft.Metadata.Status != getNomeStatusNFT(NFT_Ativo) {
+			return fmt.Errorf(("NFT não esta ativo"))
+			// Verifica se o estado atual do NFT já é compensado
+		} else if nft.Metadata.CompensationState == "Compensado" {
+			return fmt.Errorf(("NFT já compensado"))
+		} else if nft.Metadata.NFTType != "reflorestamento" {
+			return fmt.Errorf(("NFT nao e de reflorestamento, por isso nao pode ser compensado"))
+		} else {
+			// Logica para verificar se o nft é passivel de compensação ??
+			// Verifica se quem esta compensando é quem tem o direito de compensacao
+
+			// Altera o estado de compensação
+			nft.Metadata.CompensationState = "Compensado"
+
+			// Salva alteração no World State
+			tokenAsBytes, _ := json.Marshal(nft)
+
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao inserir no world state o nft com estado de compensado %v", err)
+			}
+
+		}
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
+}
+*/
 // Mint creates amount tokens of token type id and assigns them to account.
 // This function emits a TransferSingle event.
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, account string, id string, amount uint64, metadata string) error {
@@ -599,63 +712,6 @@ func containInSlice(NFTSumList [][]string, account string) int {
 		}
 	}
 	return -1
-}
-
-func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterface, account string, tokenId string) error {
-
-	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
-	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
-	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(balancePrefix, []string{account, tokenId})
-	if err != nil {
-		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
-	}
-
-	if tokenId == "$ylvas" {
-		return fmt.Errorf("Não é possivel editar metadados de FTs")
-	}
-
-	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
-	defer balanceIterator.Close()
-
-	// Itera pelos pares chave/valor que deram match
-	for balanceIterator.HasNext() {
-		queryResponse, err := balanceIterator.Next()
-		if err != nil {
-			return fmt.Errorf("failed to get the next state for prefix %v: %v", balancePrefix, err)
-		}
-
-		// Pega a quantidade de tokens TokenId que a conta possui
-		// tokenAmount := queryResponse.Value
-		nft := new(NFToken)
-		_ = json.Unmarshal(queryResponse.Value, nft)
-
-		// Verifica se o estado do NFT é ativo
-		if nft.Metadata.Status != getNomeStatusNFT(NFT_Ativo) {
-			return fmt.Errorf(("NFT não esta ativo"))
-			// Verifica se o estado atual do NFT já é compensado
-		} else if nft.Metadata.CompensationState == "Compensado" {
-			return fmt.Errorf(("NFT já compensado"))
-		} else if nft.Metadata.NFTType != "reflorestamento" {
-			return fmt.Errorf(("NFT nao e de reflorestamento, por isso nao pode ser compensado"))
-		} else {
-			// Logica para verificar se o nft é passivel de compensação ??
-			// Verifica se quem esta compensando é quem tem o direito de compensacao
-
-			// Altera o estado de compensação
-			nft.Metadata.CompensationState = "Compensado"
-
-			// Salva alteração no World State
-			tokenAsBytes, _ := json.Marshal(nft)
-
-			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
-			if err != nil {
-				return fmt.Errorf("Problema ao inserir no world state o nft com estado de compensado %v", err)
-			}
-
-		}
-		return nil
-	}
-	return fmt.Errorf("Token não encontrado")
 }
 
 // MintBatch creates amount tokens for each token type id and assigns them to account.
@@ -1232,6 +1288,36 @@ func mintHelper(ctx contractapi.TransactionContextInterface, operator string, ac
 		return err
 	}
 
+	return nil
+}
+
+func mintCompensationHelper(ctx contractapi.TransactionContextInterface, idNFTTerra string, idNFTComp string, account string, compensationTotalArea string, compensationAreaSupply string, compensationState string) error {
+
+	compensationKey, err := ctx.GetStub().CreateCompositeKey(compensationPrefix, []string{account, idNFTTerra, idNFTComp, account})
+	if err != nil {
+		return fmt.Errorf("failed to create the composite key for prefix %s: %v", balancePrefix, err)
+	}
+
+	var tokenNFTCompensacaoMint NFTCompensationToken
+
+	//tokenMint.CompensationArea = strconv.FormatUint(uint64(compensationArea), 10)
+
+	// Verifica se o Id do NFT de terra realmente existe
+
+	// Mintando NFT da compensacao
+	tokenNFTCompensacaoMint.IdNFTTerra = idNFTTerra
+	tokenNFTCompensacaoMint.IdNFTCompensation = idNFTComp
+	tokenNFTCompensacaoMint.CompensationTotalArea = compensationTotalArea
+	tokenNFTCompensacaoMint.CompensationAreaSupply = compensationAreaSupply // Na primeira vez que é mintado a área total a ser utilizada é igual a área total do direito
+	tokenNFTCompensacaoMint.CompensationOwner = account
+	tokenNFTCompensacaoMint.CompensationState = compensationState // O NFT 'nasce' com o estado de não compensado
+
+	tokenInfoAsBytes, _ := json.Marshal(tokenNFTCompensacaoMint)
+
+	err = ctx.GetStub().PutState(compensationKey, tokenInfoAsBytes)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

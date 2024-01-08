@@ -118,9 +118,12 @@ exports.compensateNFT = async (req, res, next) => {
 
   const chaincodeName = req.params.chaincode;
   const channel = req.params.channel;
-  const tokenId = req.body.tokenId;
+  const tokenTerraId = req.body.tokenTerraId;
+  const tokenCompensationId = req.body.tokenCompensationId;
   const username = req.jwt.username;
+  const compensationAmount = req.body.compensationAmount;
   const org = req.jwt.org;
+  const idNFTCompNew = generateTokenId(req.body);
 
   //connect to the channel and get the chaincode
   const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
@@ -130,8 +133,8 @@ exports.compensateNFT = async (req, res, next) => {
   const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
   if (!receiverAccountId) return;
 
-  try {
-    await chaincode.submitTransaction("SmartContract:CompensateNFT", receiverAccountId, tokenId);
+   try {
+    await chaincode.submitTransaction("SmartContract:CompensateNFT", receiverAccountId, tokenTerraId, tokenCompensationId, compensationAmount, idNFTCompNew);
 
     logger.info("Compensation successful");
 

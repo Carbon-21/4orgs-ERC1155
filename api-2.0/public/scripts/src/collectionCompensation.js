@@ -36,7 +36,31 @@ async function collectionCompensation() {
                 "</div>" +
               "</div>" +
             "</div>" +
-          "</div>" ;
+          "</div>" +
+          "</div>" +
+
+
+          `<div class="modal fade" id="staticBackdrop${tokenId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <b> Preço: </b>  C21<br />
+                  <b> Taxa: </b>  C21 <br /> 
+                  <b> Total: </b>  C21<br />
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick=''> Confirmar </button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+
+
 
         // Renderizar a cada nft carregado
         document.getElementById("nft-showroom").innerHTML = element;
@@ -91,4 +115,25 @@ async function renderMetadata(tokenId,nftinfo) {
     `<b> Status de Compensação: </b> ${nftinfo?.compensation_state} <br />` +
     "</div>"
   );
+}
+
+// Retorna string do metadado de compensação, dependendo do estado
+async function renderCompensation(tokenId, compensation_state, nft_type) {
+  if(nft_type === "corte"){
+    return `<b> Estado de compensação:</b> Não permitido <br />`;
+  }else{
+    switch (compensation_state) {
+      case "Aguardando":
+        return `<b> Estado de compensação:</b> Aguardando <br />`;
+      case "Compensado":
+        return `<b> Estado de compensação:</b> Compensado <br />`;
+      // Inclui botão de compensação quando não compensado
+      case "Não Compensado":
+      default:
+        return (
+          `<b> Estado de compensação:</b> Não compensado <br />` +  
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenId}")'>Compensar</button>`        
+        );
+    }
+  }
 }
