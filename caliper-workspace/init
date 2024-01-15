@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Function to replace the path to private key in the config file
+replace_keyfile_line() {
+    # Run the config update and npm install
+    # Step 1: Identify the client private key file
+    filepath="../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/"
+    dynamic_file=$(find "$filepath" -maxdepth 1 -type f)
+
+    if [ -z "$dynamic_file" ]; then
+        echo "No client private key file found."
+        exit 1
+    fi
+
+    # Step 2: Extract the filename
+    filename=$(basename "$dynamic_file")
+
+    # Step 3: Modify the existing config file
+    config_file="./networks/localnetworkconfig.yaml"
+
+    if [ ! -f "$config_file" ]; then
+        echo "Config file not found: $config_file"
+        exit 1
+    fi
+
+    # Determine the indentation of the existing line
+    local indentation=$(sed -n "/${filepath//\//\\/}/s/\(^[[:space:]]*\).*/\1/p" "$config_file")
+
+    # Build the new line with the correct indentation
+    local new_line="${indentation}path: '${filepath}${filename}'"
+
+    # Use sed to replace the entire line
+    sed -i "/${filepath//\//\\/}/c\\$new_line" "$config_file"
+    
+    echo "Config file updated with the key file: $filename"
+
+}
+replace_keyfile_line
+
+while getopts ":ir" option; do
+  case "${option}" in
+    i)
+        # install modules
+        npm install
+        ;;
+    r)
+        # run benchmark
+        npm start
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG"
+        ;;
+  esac
+done
+
+# Check if there are any remaining arguments
+if [ $# -eq 0 ]; then
+  echo "No options provided. Please use -i or -r."
+fi
