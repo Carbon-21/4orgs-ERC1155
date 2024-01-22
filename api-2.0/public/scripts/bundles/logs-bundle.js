@@ -8128,7 +8128,7 @@ window.getLatestIPFSBlock = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regene
         document.getElementById("loader").style.display = "flex";
 
         //make request to the backend
-        url = "https://192.168.18.43:4000/ipfs/getLatestIPFSBlock";
+        url = "https://localhost:4000/ipfs/getLatestIPFSBlock";
         init = {
           method: "GET"
         };
@@ -8180,7 +8180,7 @@ window.getBlockchainTail = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regener
     while (1) switch (_context2.prev = _context2.next) {
       case 0:
         //make request to the backend
-        url = "https://192.168.18.43:4000/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail";
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getBlockchainTail";
         init = {
           method: "GET"
         };
@@ -8227,7 +8227,7 @@ window.getWorldState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerator
     while (1) switch (_context3.prev = _context3.next) {
       case 0:
         //make request to the backend
-        url = "https://192.168.18.43:4000/query/channels/mychannel/chaincodes/erc1155/getWorldState";
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getWorldState";
         init = {
           method: "GET"
         };
@@ -8277,7 +8277,7 @@ window.checkBlockchain = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regenerat
         //get requested values
         minHtml = min.value;
         maxHtml = max.value; //make request to the backend
-        url = "https://192.168.18.43:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=".concat(minHtml, "&max=").concat(maxHtml);
+        url = "https://localhost:4000/query/channels/mychannel/chaincodes/erc1155/getRangeOfBlocks?min=".concat(minHtml, "&max=").concat(maxHtml);
         init = {
           method: "GET"
         };
