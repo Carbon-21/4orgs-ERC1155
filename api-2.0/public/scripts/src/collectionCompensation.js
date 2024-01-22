@@ -31,7 +31,7 @@ async function collectionCompensation() {
                         ID NFT Terra Relacionada: ${nftTokens[key][1]}
                     
                     </button>` + // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
-                    await renderMetadata(tokenId,JSON.parse(nftTokens[key][2])) +
+                    await renderMetadata(nftTokens[key][1],tokenId,JSON.parse(nftTokens[key][2])) +
                   "</div>" +
                 "</div>" +
               "</div>" +
@@ -105,23 +105,23 @@ async function getNftCompensationTokens() {
 
 
 // Retorna string com a construção dos metadados de dado nft (em div accordion colapsavel)
-async function renderMetadata(tokenId,nftinfo) {
+async function renderMetadata(tokenTerraId,tokenCompensationId,nftinfo) {
   if (!nftinfo.compensation_total_area) return "Metadados não recuperados";
   return (
-    `<div id="tk${tokenId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
+    `<div id="tk${tokenCompensationId.replace(/\s/g, "")}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"> <div class="accordion-body">` +
     "<p>" +
     `<b> Área Total (hectares): </b> ${nftinfo?.compensation_total_area} <br />` +
-    `<b> Área Disponivel para Compensação (hectares): </b> ${nftinfo?.compensation_area_supply} <br />` +    
-    `<b> Status de Compensação: </b> ${nftinfo?.compensation_state} <br />` +
+    `<b> Área Disponivel para Compensação (hectares): </b> ${nftinfo?.compensation_area_supply} <br />` +
+    "<p>" +           
+    await renderCompensation(tokenTerraId.replace(/\s/g, ""),tokenCompensationId.replace(/\s/g, ""), nftinfo?.compensation_state) +
+    "</p>"+
     "</div>"
   );
 }
 
 // Retorna string do metadado de compensação, dependendo do estado
-async function renderCompensation(tokenId, compensation_state, nft_type) {
-  if(nft_type === "corte"){
-    return `<b> Estado de compensação:</b> Não permitido <br />`;
-  }else{
+async function renderCompensation(tokenTerraId, tokenCompensationId, compensation_state) {
+
     switch (compensation_state) {
       case "Aguardando":
         return `<b> Estado de compensação:</b> Aguardando <br />`;
@@ -132,8 +132,83 @@ async function renderCompensation(tokenId, compensation_state, nft_type) {
       default:
         return (
           `<b> Estado de compensação:</b> Não compensado <br />` +  
-          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenId}")'>Compensar</button>`        
+          '<b> Área a ser compensada(hectares): </b> <input type="text" name="compensationAmount" id="compensationAmount" class="form-control" required/> <br />'+
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Compensar</button>`        
         );
     }
+ }
+
+ async function compensate(tokenTerraId,  tokenCompensationId) {
+  event.preventDefault();
+  
+    let compensationAmount = document.getElementById("compensationAmount").value;   
+
+  //set loading
+  document.getElementById("loader").style.display = "flex";
+  document.getElementById("submitCompensationButton").style.display = "none";
+
+  let element =
+  `<div class="alert alert-warning alert-dismissible fade show mb-3 mt-3" role="alert">` +
+  `Compensando...` +
+  `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+  `</div>`;
+
+  document.getElementById("flash").innerHTML = element;  
+  tokenCompensationId = tokenCompensationId.slice(1);
+
+  let jwt = localStorage.getItem("token");
+
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + jwt);
+  let url = `https://${HOST}:${PORT}/invoke/channels/mychannel/chaincodes/erc1155/compensateNFT`;
+  
+  var init = {
+    method: "PATCH",
+    headers: headers,
+  };  
+
+
+  let body = {
+    tokenTerraId,
+    tokenCompensationId,
+    compensationAmount
+  };
+
+  init.body = JSON.stringify(body);
+
+  //POST to postMetadata
+  let response = await fetch(url, init);
+
+
+  if (response.ok) {
+    document.getElementById("loader").style.display = "none";
+    response = await response.json();
+    if (response.result !== "success") {
+      let element =
+        `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Ocorreu um erro na compensação` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    } else {
+      let element =
+        `<div class="alert alert-success alert-dismissible fade show mb-3 mt-3" role="alert">` +
+        `Compensado com sucesso` +
+        `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+        `</div>`;
+      document.getElementById("flash").innerHTML = element;
+    }
+    window.location.href = `/collectionCompensation`;
+  } else {
+    document.getElementById("loader").style.display = "none";
+    console.log("HTTP Error ", response.status);
+    let element =
+      `<div class="alert alert-danger alert-dismissible fade show mb-3 mt-3" role="alert">` +
+      `Ocorreu um erro na compensação` +
+      `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
+      `</div>`;
+    document.getElementById("flash").innerHTML = element;
+    return null;
   }
 }
