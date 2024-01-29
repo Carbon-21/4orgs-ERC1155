@@ -110,7 +110,7 @@ createAdmin()
       logger.info("****************** HTTPS SERVER STARTED ************************");
       logger.info("***************  https://%s:%s  *******************", host, port);
     });
-    postTransparencyLog();
+    // postTransparencyLog();
   })
   .catch((err) => {
     logger.fatal("Server couldn't be initialized:", err);

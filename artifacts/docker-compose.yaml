@@ -349,18 +349,18 @@ services:
     networks:
       - test
 
-  ipfs:
-    container_name: ipfs
-    image: ipfs/kubo:master-latest
-    environment:
-      - IPFS_PATH=/data/ipfs
-    ports:
-      # Gateway
-      - 8080:8080
-      # API, private
-      - 5001:5001
-      # Swarm
-      - 4001:4001/udp
-      - 4001:4001/tcp
-    networks:
-      - test
+  # ipfs:
+  #   container_name: ipfs
+  #   image: ipfs/kubo:master-latest
+  #   environment:
+  #     - IPFS_PATH=/data/ipfs
+  #   ports:
+  #     # Gateway
+  #     - 8080:8080
+  #     # API, private
+  #     - 5001:5001
+  #     # Swarm
+  #     - 4001:4001/udp
+  #     - 4001:4001/tcp
+  #   networks:
+  #     - test

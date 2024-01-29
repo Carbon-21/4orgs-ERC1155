@@ -22,8 +22,8 @@ exports.postTransparencyLog = async () => {
     const ws = await getWorldStateLocal(chaincodeName, channelName);
 
     //write tail, ws and signature(tails+ws) on ipfs
-    const hash = await ipfs.writeIPFS(tail, ws);
-    logger.info("Crontrab done! Transparency log posted to IPFS");
+    const cid = await ipfs.writeIPFS(tail, ws);
+    cid ? logger.info("Crontrab done! Transparency log posted to IPFS") : logger.error("Crontrab failed! Transparency log not posted to IPFS");
   } catch (error) {
     return new HttpError(500, error);
   }

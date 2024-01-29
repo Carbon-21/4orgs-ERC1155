@@ -18,7 +18,7 @@ exports.balance = async (req, res, next) => {
   if (!chaincode) return;
 
   //get owner id
-  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
+  const ownerAccountId = await helper.getAccountId(tokenOwner, next);
   if (!ownerAccountId) return;
 
   //get balance
@@ -119,7 +119,7 @@ exports.balanceNFT = async (req, res, next) => {
   if (!chaincode) return;
 
   //get owner id
-  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
+  const ownerAccountId = await helper.getAccountId(tokenOwner, next);
   if (!ownerAccountId) return;
 
   //get balance
@@ -415,6 +415,15 @@ exports.getRangeOfBlocks = async (req, res, next) => {
 
 //encoded block info can be decoded to utf-8 or base64
 decodeBlockBuffers = (block) => {
+  // CC package id
+  if (block.data.data[0].payload.data.actions[0].payload.chaincode_proposal_payload.input.chaincode_spec.input.args[1])
+    block.data.data[0].payload.data.actions[0].payload.chaincode_proposal_payload.input.chaincode_spec.input.args[1] = Buffer.from(
+      block.data.data[0].payload.data.actions[0].payload.chaincode_proposal_payload.input.chaincode_spec.input.args[1]
+    ).toString("utf8");
+
+  // console.log(Buffer.from(block.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[0].rwset.writes[0].value).toString("base64"));
+  // console.log(Buffer.from(block.data.data[0].payload.data.actions[0].action.proposal_response_payload.extension.result.ns_rwset).toString("base64"));
+
   block.header.previous_hash = Buffer.from(block.header.previous_hash).toString("base64");
   block.header.data_hash = Buffer.from(block.header.data_hash).toString("base64");
 
@@ -449,6 +458,6 @@ decodeBlockBuffers = (block) => {
         sig.signature = Buffer.from(sig.signature).toString("base64");
       });
   });
-
+  // console.log(Buffer.from(block.metadata.metadata[4]).toString("base64"));
   // console.log(Object.keys(block.data.data[0].payload.header));
 };

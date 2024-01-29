@@ -8252,7 +8252,7 @@ window.checkBlockchain = async function () {
     }
 
     //print final result
-    blocksMatch ? blockchainChecking.innerHTML = `<span style="color:green">Hashs dos blocos batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML : blockchainChecking.innerHTML = `<span style="color:red ">Hashs dos blocos NÃO batem com os enviados pela Carbon</span><br><br>` + blockchainChecking.innerHTML;
+    blocksMatch ? blockchainChecking.innerHTML = `<span style="color:green">Hashes dos blocos batem com os enviados pela Carbono 21</span><br><br>` + blockchainChecking.innerHTML : blockchainChecking.innerHTML = `<span style="color:red ">Hashes dos blocos NÃO batem com os enviados pela Carbono 21</span><br><br>` + blockchainChecking.innerHTML;
 
     //requisition success message
     document.getElementById("flash").innerHTML = successFlashMessage;

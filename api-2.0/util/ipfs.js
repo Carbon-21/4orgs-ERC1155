@@ -27,7 +27,7 @@ async function createNode() {
     datastore,
     addresses: {
       // listen: ["/ip4/127.0.0.1/tcp/0"], so localhost
-      listen: ["/ip4/0.0.0.0/tcp/0"],
+      listen: ["/ip4/0.0.0.0/tcp/4001"],
     },
     transports: [tcp()],
     connectionEncryption: [noise()],
@@ -45,7 +45,6 @@ async function createNode() {
     services: {
       identify: identifyService(),
     },
-    // TODO config UpNP?
   });
 
   helia = await createHelia({
@@ -54,9 +53,9 @@ async function createNode() {
     libp2p,
   });
 
-  logger.debug("Peer ID: ", helia.libp2p.peerId);
-  logger.debug("getPeers: ", helia.libp2p.getPeers());
-  logger.debug("Multiaddrs:", helia.libp2p.getMultiaddrs());
+  console.log("Peer ID: ", helia.libp2p.peerId);
+  console.log("getPeers: ", helia.libp2p.getPeers());
+  console.log("Multiaddrs:", helia.libp2p.getMultiaddrs());
 }
 
 exports.writeIPFS = async (tail, ws) => {
@@ -123,6 +122,8 @@ exports.writeIPFS = async (tail, ws) => {
 
     //publish root dir with files to IPNS
     await ipnsPublish(rootDirCid, peerId, ipnsConfig);
+
+    return rootDirCid;
   } catch (error) {
     logger.error(error);
   }
@@ -132,7 +133,7 @@ const ipnsPublish = async (cid, peerId, ipnsConfig) => {
   try {
     //update IPNS with new cid
     await ipnsConfig.publish(peerId, cid);
-    logger.debug("IPNS updated with new cid");
+    logger.debug("IPNS updated with new cid", cid);
 
     // READ: resolve the name and check the content
     // const resolvedCid = await ipnsConfig.resolve(peerId);
