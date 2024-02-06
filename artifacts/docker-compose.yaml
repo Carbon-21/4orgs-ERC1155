@@ -251,5 +251,20 @@ services:
       - ../api-2.0/.env
     networks:
       - test
-        
-        
+
+  database:
+    container_name: database
+    build:
+      context: ../database/
+      dockerfile: Dockerfile
+      args:
+        MYSQL_PASSWORD: 12345678
+        MYSQL_ROOT_PASSWORD: 12345678
+        MYSQL_USER: carbon
+        MYSQL_DATABASE: carbon
+    ports:
+      - 15432:15432
+    networks:
+      - test
+    tty: true
+    command: /bin/bash
