@@ -113,6 +113,45 @@ exports.mintNFTCompensation = async (req, res, next) => {
   });
 };
 
+exports.fracCompNFT = async (req, res, next) => {
+  logger.info("Entered compensation frac function");
+
+  const chaincodeName = req.params.chaincode;
+  const channel = req.params.channel;
+  const tokenTerraId = req.body.tokenTerraId;
+  const tokenCompensationId = req.body.tokenCompensationId;
+  const username = req.jwt.username;
+  const fracAmount = req.body.fracAmount;
+  const org = req.jwt.org;
+  const idNFTCompNew = generateTokenId(req.body);
+
+  //connect to the channel and get the chaincode
+  const [chaincode, gateway] = await helper.getChaincode(org, channel, chaincodeName, username, next);
+  if (!chaincode) return;
+
+  //get receiver id
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, username, org, next);
+  if (!receiverAccountId) return;
+
+   try {
+    await chaincode.submitTransaction("SmartContract:FracCompNFT", receiverAccountId, tokenTerraId, tokenCompensationId, fracAmount, idNFTCompNew);
+
+    logger.info("Compensation successful");
+
+    //close communication channel
+    await gateway.disconnect();
+  } catch (err) {
+    const regexp = new RegExp(/message=(.*)$/g);
+    const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, errMessage[1]));
+  }
+
+  //send OK response
+  return res.json({
+    result: "success",
+  });
+};
+
 exports.compensateNFT = async (req, res, next) => {
   logger.info("Entered compensation function");
 

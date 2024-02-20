@@ -112,6 +112,7 @@ async function renderMetadata(tokenTerraId,tokenCompensationId,nftinfo) {
     "<p>" +
     `<b> Área Total (hectares): </b> ${nftinfo?.compensation_total_area} <br />` +
     `<b> Área Disponivel para Compensação (hectares): </b> ${nftinfo?.compensation_area_supply} <br />` +
+    
     "<p>" +           
     await renderCompensation(tokenTerraId.replace(/\s/g, ""),tokenCompensationId.replace(/\s/g, ""), nftinfo?.compensation_state) +
     "</p>"+
@@ -133,10 +134,91 @@ async function renderCompensation(tokenTerraId, tokenCompensationId, compensatio
         return (
           `<b> Estado de compensação:</b> Não compensado <br />` +  
           '<b> Área a ser compensada(hectares): </b> <input type="text" name="compensationAmount" id="compensationAmount" class="form-control" required/> <br />'+
-          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Compensar</button>`        
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Compensar</button>`+                  
+          `<button id="submitStoreButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Anunciar</button>`                  
         );
     }
  }
+
+
+// Retorna metadado com estado da loja
+async function renderListForSale(tokenId) {
+
+  let nftMintedList = await getNftOnStatus("minted");
+  let nftSaleList = await getNftOnStatus("sale");
+
+  let element ="";
+  let taxPercentage;
+  let taxObs = "";
+
+  //tenta pegar o valor da taxa a partir de um nft "minted"
+  if (nftMintedList) {
+    
+    if(nftMintedList.length!==0){
+      taxPercentage = parseInt(nftMintedList[0].taxPercent);
+      taxObs = "( Taxação = " + taxPercentage + "% )";
+    }
+  } 
+  
+  //tenta pegar a taxa a partir de um nft "sale"
+  if(taxObs === "" && nftSaleList){
+
+    if(nftSaleList.length!==0){
+      taxPercentage = parseInt(nftSaleList[0].taxPercent);
+      taxObs = "( Taxação = " + taxPercentage + "% )";
+    }
+  }
+
+  if (nftSaleList){
+    for (var key in nftSaleList) {
+      if (tokenId.slice(1) == nftSaleList[key].id){
+        element += 
+          `<b> Estado na loja :</b> Disponível <br />
+
+          <span style="display: inline-block;">
+            <button id="setMinted${tokenId}" type="button" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='setStatus("${tokenId}","minted")'> Retirar da loja </button>       
+          </span>
+
+          <span style="display: inline-block;">
+            <button id="setStatusButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" > Editar preço </button>       
+          </span>`
+      }
+    }
+  }
+
+  if (element===""){
+    element +=
+  
+    `<b> Estado na loja :</b> Indisponível <br />
+    <span style="display: inline-block;">
+      <button id="lisForSaleButton${tokenId}" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}" aria-controls="setPrice" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" > Anunciar </button>
+    </span>`
+  }
+
+  return(
+    element += 
+    `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
+       '<div class="flex-fill">'+
+          `<label class="form-label" for="price">Insira o preço em C21 ${taxObs}</label>`+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fas fa-coins fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<input type="text" name="priceInput" id="priceInput" class="form-control" required/>'+
+          '</span>'+  
+       '</div>'+
+
+        `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
+          `<button id="confirmPriceButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop${tokenId}" onclick='renderModal("${taxPercentage}","${tokenId}")'> Enviar </button>`+
+        '</span>'+
+      '<span style="display: inline-block;">'+
+        `<button id="CancelOfferButton" type="button" style="display: flex" class="btn btn-primary btn-md" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#setPriceForm${tokenId}">Cancelar</button>`+
+      '</span>'+
+    `</div>`
+  );
+
+}
+
 
  async function compensate(tokenTerraId,  tokenCompensationId) {
   event.preventDefault();

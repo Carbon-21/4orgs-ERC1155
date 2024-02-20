@@ -350,6 +350,62 @@ func (s *SmartContract) MintNFTCompensation(ctx contractapi.TransactionContextIn
 	return emitTransferSingle(ctx, transferSingleEvent)
 }
 
+// Funcao usada para fracionar um NFT de compensacao
+func (s *SmartContract) FracCompNFT(ctx contractapi.TransactionContextInterface, account string, tokenTerraId string, tokenCompensationId string, fracAmount string, tokenCompensationIdNew string) error {
+
+	// Pega todas os pares de chave cuja chave é "account~tokenId~sender"
+	// Segundo argumento: uma array cujos valores são verificados no valor do par chave/valor, seguindo a ordem do prefixo. Pode ser vazio: []string{}
+	balanceIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(compensationPrefix, []string{account, tokenTerraId, tokenCompensationId})
+	if err != nil {
+		return fmt.Errorf("Erro ao obter o prefixo %v: %v", balancePrefix, err)
+	}
+
+	// defer: coloca a função deferida na pilha, para ser executa apóso retorno da função em que é executada. Garante que será chamada, seja qual for o fluxo de execução.
+	defer balanceIterator.Close()
+
+	// Itera pelos pares chave/valor que deram match
+	for balanceIterator.HasNext() {
+		queryResponse, err := balanceIterator.Next()
+		if err != nil {
+			return fmt.Errorf("failed to get the next state for prefix %v: %v", compensationPrefix, err)
+		}
+
+		// Pega a quantidade de tokens TokenId que a conta possui
+		// tokenAmount := queryResponse.Value
+		nft := new(NFTCompensationToken)
+		_ = json.Unmarshal(queryResponse.Value, nft)
+
+		CompensationSupply, _ := strconv.Atoi(nft.CompensationAreaSupply)
+		FraqAmount, _ := strconv.Atoi(fracAmount)
+
+		// Verifica se o estado atual do NFT já é compensado
+		if CompensationSupply < FraqAmount {
+			return fmt.Errorf(("A área fracionada solicitada é maior que o disponivel"))
+		} else {
+			// Atualiza o Supply disponivel do NFT atual
+			nft.CompensationAreaSupply = strconv.Itoa(CompensationSupply - FraqAmount)
+
+			// Insere o id do nft do filho no pai
+			nft.IdFilhosNFTCompensation = append(nft.IdFilhosNFTCompensation, tokenCompensationIdNew)
+
+			tokenAsBytes, _ := json.Marshal(nft)
+			err = ctx.GetStub().PutState(queryResponse.Key, tokenAsBytes)
+			if err != nil {
+				return fmt.Errorf("Problema ao atualizar supply do NFT %v", err)
+			}
+
+			// Minta um novo novo NFT de compensacao com o supply e o total = ao compensation Amount
+			// Mint tokens
+			err := mintCompensationHelper(ctx, nft.IdNFTTerra, tokenCompensationIdNew, account, strconv.Itoa(FraqAmount), nft.CompensationAreaSupply, "Não Compensado", tokenCompensationId)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return fmt.Errorf("Token não encontrado")
+}
+
 // CompensateNFT, funcao é utilizada para consolidar parcialmente ou totalmente a compensação de direitos de compensacao
 /*
    Ao compensar um direito é criado um novo nft com seu status já alterado para compensado enquato o 'supply' do NFT
@@ -1208,8 +1264,6 @@ func mintCompensationHelper(ctx contractapi.TransactionContextInterface, idNFTTe
 	var tokenNFTCompensacaoMint NFTCompensationToken
 
 	//tokenMint.CompensationArea = strconv.FormatUint(uint64(compensationArea), 10)
-
-	// Verifica se o Id do NFT de terra realmente existe
 
 	// Mintando NFT da compensacao
 	tokenNFTCompensacaoMint.IdNFTTerra = idNFTTerra

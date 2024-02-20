@@ -37,6 +37,19 @@ router.post(
   invokeController.mintNFTCompensation
 );
 
+router.post(
+"/channels/:channel/chaincodes/:chaincode/fracCompNFT",
+[
+  param("channel").trim().not().isEmpty().isString(),
+  param("chaincode").trim().not().isEmpty().isString(),
+  body("tokenTerraId").trim().not().isEmpty().isString(),
+  body("tokenCompensationId").trim().not().isEmpty().isString(),
+  body("fracAmount").trim().not().isEmpty().isString(),
+  validateAll,
+],  
+invokeController.fracCompNFT
+);
+
 // Generate FT from NFT
 router.post(
   "/channels/:channel/chaincodes/:chaincode/ftfromnft", 
