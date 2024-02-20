@@ -43,7 +43,7 @@ exports.mint = async (req, res, next) => {
   if (!chaincode) return;
 
   //get receiver id
-  const receiverAccountId = await helper.getAccountId(tokenReceiver, next);
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);;
   if (!receiverAccountId) return;
 
   //if NFT => generate ID by hashing NFT info
@@ -98,11 +98,11 @@ exports.transfer = async (req, res, next) => {
   if (!chaincode) return;
 
   //get sender id
-  const senderAccountId = await helper.getAccountId(tokenSender, next);
+  const senderAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);
   if (!senderAccountId) return;
 
   //get receiver id
-  const receiverAccountId = await helper.getAccountId(tokenReceiver, next);
+  const receiverAccountId = await helper.getAccountId(channel, chaincodeName, tokenReceiver, org, next);;
   if (!receiverAccountId) return;
 
   //transfer

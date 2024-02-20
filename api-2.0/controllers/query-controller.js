@@ -18,7 +18,7 @@ exports.balance = async (req, res, next) => {
   if (!chaincode) return;
 
   //get owner id
-  const ownerAccountId = await helper.getAccountId(tokenOwner, next);
+  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
   if (!ownerAccountId) return;
 
   //get balance
@@ -119,7 +119,7 @@ exports.balanceNFT = async (req, res, next) => {
   if (!chaincode) return;
 
   //get owner id
-  const ownerAccountId = await helper.getAccountId(tokenOwner, next);
+  const ownerAccountId = await helper.getAccountId(channel, chaincodeName, tokenOwner, org, next);
   if (!ownerAccountId) return;
 
   //get balance

@@ -73,14 +73,54 @@ const getAccountIdFromChaincode = async (chaincode, next) => {
 };
 
 //build Fabric ID, based on the user's cert
-const getAccountId = async (username, next) => {
+const getAccountId = async (channelName, chaincodeName, username, org_name, next)  => {
   try {
-    let clientAccountId = `x509::CN=${username},OU=carbon+OU=client+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+    if(username == "admin@admin.com"){
+      console.log("é admin");
+      const ccp = await getCCP(org_name);
+      const walletPath = await getWalletPath(org_name);
+      const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+      //if account doesn't exist => error
+      let identity = await wallet.get(username);
+      if (!identity) {
+        return next(new HttpError(422));
+        // console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
+        // await getRegisteredUser(username, org_name, true);
+        // identity = await wallet.get(username);
+        // console.log("Run the registerUser.js application before retrying");
+        // return;
+      }
+  
+      const connectOptions = {
+        wallet,
+        identity: username,
+        discovery: { enabled: true, asLocalhost: true },
+        // eventHandlerOptions: EventStrategies.NONE
+      };
+      const gateway = new Gateway();
+      await gateway.connect(ccp, connectOptions);
+  
+      const network = await gateway.getNetwork(channelName);
+      const contract = network.getContract(chaincodeName);
+  
+      let result = await contract.submitTransaction("SmartContract:ClientAccountID");
+      result = result.toString();
+  
+      // logger.debug("ClientAccountID retrieved: " + result);
+  
+      await gateway.disconnect();
+  
+      return result; 
+    }
+    else {
+      let clientAccountId = `x509::CN=${username},OU=carbon+OU=client+OU=department1::CN=fabric-ca-server,OU=Fabric,O=Hyperledger,ST=North Carolina,C=US`;
+      console.log("não é admin");
+      // Base-64 encoding of clientAccountId
+      clientAccountId = Buffer.from(clientAccountId).toString("base64");
 
-    // Base-64 encoding of clientAccountId
-    clientAccountId = Buffer.from(clientAccountId).toString("base64");
-
-    return clientAccountId;
+      return clientAccountId;
+  }
   } catch (err) {
     logger.error(err);
     return next(new HttpError(500));
