@@ -1,6 +1,5 @@
 #!/bin/bash
-# source ../.env
-HOST=192.168.18.43
+source ../.env
 
 cd "$(dirname "$0")"
 function one_line_pem {
