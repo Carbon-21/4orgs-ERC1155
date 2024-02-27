@@ -2,9 +2,73 @@ async function collectionCompensation() {
 
   // Recuperar todos os nfts do usuario
   let nftTokens = await getNftCompensationTokens();
+  let orgNftTokens = await organizeFromNFTId(nftTokens);
 
+  console.log(orgNftTokens);
+
+  if (orgNftTokens) {
+    let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
+    if (nftTokens.length === 0){
+      element +=
+        '<center><h2><font color="#5f5f5f">Você não possui NFT de compensação em sua coleção </font></h2> </center>'+
+        "</div>";
+        document.getElementById("nft-showroom").innerHTML = element;        
+    }else{
+      for (var key in orgNftTokens) {
+        let tokenNFTTerraId = orgNftTokens[key][0];
+        element +=
+          '<div class="card shadow-lg mt-3 ">' +
+            '<div class="card-body flex-column">' +
+
+                '<div class="d-flex justify-content-between p-md-1">' +
+                  `<h2>ID NFT Terra: ${tokenNFTTerraId} </h2>` +
+                "</div>" ;
+
+                for(var child in orgNftTokens[key][1]){
+                    //console.log(orgNftTokens[key][1][child]);
+                    let tokenNFTCompId = orgNftTokens[key][1][child][0];
+                    element +=
+                      '<div class="card shadow-lg mt-3">' +                
+                        '<div class="card-body flex-column">' +                
+                          '<div class="d-flex justify-content-between p-md-1">' +
+                            '<div class="d-flex flex-row">' +
+                              '<div class="align-self-center">' +
+                                '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+                              "</div>" +
+            
+                              '<div class="overflow-hidden"> ' +
+                                `<button class="accordion-button" type="button" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#tk${tokenNFTCompId.replace(
+                                  /\s/g,
+                                  ""
+                                )}" aria-controls="tk${tokenNFTCompId}"> 
+                                    ID NFT Direito de Compensação: ${tokenNFTCompId.slice(1)} -
+                            
+                                </button>` + // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
+                                await renderMetadata(tokenNFTTerraId,tokenNFTCompId,JSON.parse(orgNftTokens[key][1][child][2])) +
+                              "</div>" +
+                            "</div>" +
+                          "</div>" +
+                          "</div>" +
+                        '</div>'+
+                      '</div>';
+                }
+
+          element += 
+            '</div>'+
+            '</div>'+            
+          '</div>';
+      }
+      // Renderizar a cada nft carregado
+      document.getElementById("nft-showroom").innerHTML = element;
+      //Habilita card, pois algumas opções o desabilitam
+      document.getElementById("nft-showroom").style.display = "block";
+    }
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
   // Caso haja nfts
-  if (nftTokens) {
+/*  if (nftTokens) {
     let element = '<div class="d-flex flex-column justify-content-between p-md-1">';
     if (nftTokens.length === 0){
       element +=
@@ -60,8 +124,6 @@ async function collectionCompensation() {
             </div>
           </div>`;
 
-
-
         // Renderizar a cada nft carregado
         document.getElementById("nft-showroom").innerHTML = element;
       //Habilita card, pois algumas opções o desabilitam
@@ -72,9 +134,29 @@ async function collectionCompensation() {
     console.log("HTTP Error ", response.status);
     return null;
   }
-
+*/
   //Desabilitar gif do loader
   document.getElementById("loader").style.display = "none";
+}
+
+// Organiza o Array dos NFT de compensacao para agrupalos pelos id dos NFTs de Terra
+async function organizeFromNFTId(nftTokens){
+ // Recebe o array de NFTs de compensacao e retorna um array 'mapeados' pelos ids dos nfts de terra
+  const nftTerrasUnicos = new Map(); // Set armazena valores unicos
+
+  for(let i = 0; i < nftTokens.length; i++){
+    const idNftTerraAtual = nftTokens[i][1]; // Posicao do id de terra
+    const nftCompTotal = nftTokens[i];
+
+    // Verifica se aquele id ja foi inserido no map ou se precisa adicionar um novo
+    if(!nftTerrasUnicos.has(idNftTerraAtual)){
+      nftTerrasUnicos.set(idNftTerraAtual, []);
+    }
+
+    nftTerrasUnicos.get(idNftTerraAtual).push(nftCompTotal);
+  }
+
+  return Array.from(nftTerrasUnicos); // Arrays de tokens organizados pelo id Do Nft de terras
 }
 
 // Recupera os nfts do usuario logado
