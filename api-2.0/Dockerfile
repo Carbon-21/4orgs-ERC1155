@@ -6,7 +6,7 @@ COPY ./api-2.0/network_org1.yaml /
 RUN npm install 
 RUN npm install -g nodemon
 SHELL ["/bin/bash", "-c"]
-RUN ./config/genccp-docker.sh
+RUN ["chmod", "+x", "./config/genccp-docker.sh"]
 RUN ./public/scripts/src/genscripts.sh
 RUN ["chmod", "+x", "./get-bundles.sh"]
 EXPOSE 4000

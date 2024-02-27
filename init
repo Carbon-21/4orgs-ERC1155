@@ -19,43 +19,43 @@ set -e
 
 
 #only try to start mysql if it is not running already, otherwise sudo would be invoked in vain
-start-mysql() {
-  local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
-  if [ ${mysql_up} -ne 0 ]; then
-   echo -e "${SUCCESS_COLOR}MySQL already running${NC}"
-    return 0
-  fi
-  if [ -z "${skip_mysql}" ]; then
-    sudo -k # make sure to ask for password on next sudo
-    if ! sudo true; then
-        echo -e "${ERROR_COLOR} Wrong password, you need be sudo to start MySQL ${NC}"
-        exit 1
-    fi
-    sudo systemctl start mysql
-    echo "MySQL started ..."
-    local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
-    local tries=0
+# start-mysql() {
+#   local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+#   if [ ${mysql_up} -ne 0 ]; then
+#    echo -e "${SUCCESS_COLOR}MySQL already running${NC}"
+#     return 0
+#   fi
+#   if [ -z "${skip_mysql}" ]; then
+#     sudo -k # make sure to ask for password on next sudo
+#     if ! sudo true; then
+#         echo -e "${ERROR_COLOR} Wrong password, you need be sudo to start MySQL ${NC}"
+#         exit 1
+#     fi
+#     sudo systemctl start mysql
+#     echo "MySQL started ..."
+#     local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+#     local tries=0
     
-    while [ ${mysql_up} -eq 0 ] && [ ${tries} -le 10 ]; do
-      mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
-      sleep 3
-      tries=$((tries+1))
-      echo echo -e "${INFO_COLOR}Waiting for MySQL ...${NC}"
-    done
-    if [ ${mysql_up} -eq 0 ]; then
-      echo -e "${ERROR_COLOR}Error starting MySQL, check process list${NC}"
-      exit 1
-    fi
-    echo -e "${SUCCESS_COLOR}Started MySQL${NC}"
-  else
-    echo -e "${WARNING_COLOR}Skipping MySQL startup${NC}"
-  fi
+#     while [ ${mysql_up} -eq 0 ] && [ ${tries} -le 10 ]; do
+#       mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+#       sleep 3
+#       tries=$((tries+1))
+#       echo echo -e "${INFO_COLOR}Waiting for MySQL ...${NC}"
+#     done
+#     if [ ${mysql_up} -eq 0 ]; then
+#       echo -e "${ERROR_COLOR}Error starting MySQL, check process list${NC}"
+#       exit 1
+#     fi
+#     echo -e "${SUCCESS_COLOR}Started MySQL${NC}"
+#   else
+#     echo -e "${WARNING_COLOR}Skipping MySQL startup${NC}"
+#   fi
   
-  if [ ${mysql_up} -eq 0 ]; then
-    echo -e "${ERROR_COLOR}MySQL is down.${NC}";
-    exit 1   
-  fi
-}
+#   if [ ${mysql_up} -eq 0 ]; then
+#     echo -e "${ERROR_COLOR}MySQL is down.${NC}";
+#     exit 1   
+#   fi
+# }
 
 usage() {    
   cat<<EOM
@@ -83,7 +83,7 @@ while getopts ":hrsij" o; do
         unset skip_mysql;
         ;;
       r)
-        reset_all=1;
+        reset_all=1;ta
         unset skip_mysql;
         unset fast_install;
         ;;
@@ -146,7 +146,7 @@ fi
 ###### RUN ######
 echo -e "${INFO_COLOR}Database setup:${NC}"
 #run mysql
-start-mysql
+# start-mysql
 
 echo -e "${INFO_COLOR}Docker compose CA setup:${NC}"
 #run one docker for each CA (each org has 1, incluind the orderer)

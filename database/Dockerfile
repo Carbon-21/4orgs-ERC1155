@@ -2,6 +2,7 @@ FROM mysql:5.7
 WORKDIR /database
 COPY . ./
 ADD carbon.sql /docker-entrypoint-initdb.d
+RUN ["chmod", "+x", "./grant-access-db.sh"]
 EXPOSE 3306
 # ADD install-db /scripts/install-db
 # RUN ls
