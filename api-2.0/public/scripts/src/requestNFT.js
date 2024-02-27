@@ -6,13 +6,13 @@ window.requestNFT = async () => {
   // Hides the submit button and displays loading image while the transaction is processing.
   document.getElementById("loader").style.display = "flex";
   document.getElementById("submitButton").style.display = "none";
-
-  landOwner = document.getElementById("landOwner").value;
-  phyto = document.getElementById("phyto").value;
-  landArea = document.getElementById("landArea").value;
-  geolocation = document.getElementById("geolocation").value;
-  userNotes = document.getElementById("userNotes").value;
-  file = document.getElementById("file").files[0];
+  
+  let landOwner = document.getElementById("landOwner").value;
+  let phyto = document.getElementById("phyto").value;
+  let landArea = document.getElementById("landArea").value;
+  let geolocation = document.getElementById("geolocation").value;
+  let userNotes = document.getElementById("userNotes").value;
+  let file = document.getElementById("file").files[0];
 
   // Get user jwt token from the local storage
   let token = localStorage.getItem("token");

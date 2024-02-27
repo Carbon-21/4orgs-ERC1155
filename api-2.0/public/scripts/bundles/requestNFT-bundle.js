@@ -8,7 +8,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Calls the API for the smart contract function that mints FT for every active NFT
 
 window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var token, userId, username, headers, url, formData, init, response, element, _element;
+  var landOwner, phyto, landArea, geolocation, userNotes, file, token, userId, username, headers, url, formData, init, response, element, _element;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) switch (_context.prev = _context.next) {
       case 0:
@@ -22,9 +22,7 @@ window.requestNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRun
         landArea = document.getElementById("landArea").value;
         geolocation = document.getElementById("geolocation").value;
         userNotes = document.getElementById("userNotes").value;
-        file = document.getElementById("file").files[0];
-
-        // Get user jwt token from the local storage
+        file = document.getElementById("file").files[0]; // Get user jwt token from the local storage
         token = localStorage.getItem("token");
         userId = localStorage.getItem("userId");
         username = localStorage.getItem("username"); // HTTP Request
