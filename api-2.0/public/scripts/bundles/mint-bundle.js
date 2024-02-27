@@ -11331,18 +11331,135 @@ window.mintNFT = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntim
     }
   }, _callee2);
 }));
+window.getRequest = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(requestId) {
+    var token, headers, url, init, response, _yield$response$json, req, element1, buffer, blobTest;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          event.preventDefault();
+          localStorage.setItem("requestId", requestId);
+          token = localStorage.getItem("token");
+          headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          headers.append("Authorization", "Bearer " + token);
+          url = "https://localhost:4000/nft/request/".concat(requestId);
+          init = {
+            method: "GET",
+            headers: headers
+          };
+          _context3.next = 10;
+          return fetch(url, init);
+        case 10:
+          response = _context3.sent;
+          if (!response.ok) {
+            _context3.next = 32;
+            break;
+          }
+          _context3.next = 14;
+          return response.json();
+        case 14:
+          _yield$response$json = _context3.sent;
+          req = _yield$response$json.request;
+          element1 = '';
+          document.getElementById("landOwner").value = req.landOwner;
+          document.getElementById("compensationOwner").value = req.landOwner;
+          document.getElementById("username").value = req.username;
+          document.getElementById("landOwner").ariaDisabled = '';
+          document.getElementById("phyto").value = req.phyto;
+          document.getElementById("phyto").ariaDisabled = '';
+          document.getElementById("area").value = req.landArea;
+          document.getElementById("area").ariaDisabled = '';
+          document.getElementById("location").value = req.geolocation;
+          document.getElementById("location").ariaDisabled = '';
+          if (req.userNotes) {
+            element1 += "<div class=\"flex-fill\">\n            <div class=\"mint-data\">\n              <i class=\"fas fa-marker fa-lg\"></i>\n              <textarea name=\"userNotes\" id=\"userNotes\" placeholder=".concat(req.userNotes, " disabled=\"\" class=\"form-control\" rows=\"2\" cols=\"50\"></textarea>\n            </div>\n            <label for=\"userNotes\">Notas do usu\xE1rio:</label>\n        </div>");
+            document.getElementById("userNotes-show").innerHTML = element1;
+          }
+          if (req.adminNotes && req.status !== "pending") {
+            document.getElementById("customNotes").value = req.adminNotes;
+          }
+          if (req.certificate) {
+            buffer = new Uint8Array(req.certificate.data);
+            blobTest = new Blob([buffer], {
+              type: 'application/pdf'
+            });
+            document.getElementById("cert").href = URL.createObjectURL(blobTest);
+            document.getElementById("cert").download = "certificate.pdf";
+          }
+          _context3.next = 34;
+          break;
+        case 32:
+          console.log("HTTP Error ", response.status);
+          return _context3.abrupt("return", null);
+        case 34:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return function (_x) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+window.responseRequest = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(status) {
+    var token, requestId, headers, url, init, adminNotes, body, response;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          token = localStorage.getItem("token");
+          requestId = localStorage.getItem("requestId");
+          headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          headers.append("Authorization", "Bearer " + token);
+          url = "https://localhost:4000/nft/requests/".concat(requestId);
+          init = {
+            method: "PUT",
+            headers: headers
+          };
+          adminNotes = document.getElementById("customNotes").value;
+          body = {
+            status: status,
+            adminNotes: adminNotes
+          };
+          init.body = JSON.stringify(body);
+          _context4.next = 12;
+          return fetch(url, init);
+        case 12:
+          response = _context4.sent;
+          window.location.href = "/nft/frontrequests";
+          if (!response.ok) {
+            _context4.next = 17;
+            break;
+          }
+          _context4.next = 19;
+          break;
+        case 17:
+          console.log("HTTP Error ", response.status);
+          return _context4.abrupt("return", null);
+        case 19:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
+  }));
+  return function (_x2) {
+    return _ref4.apply(this, arguments);
+  };
+}();
 
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
 var mintFTClientSideSigning = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
     var _document$getElementB, username, qty, clientAccountId, transaction, response;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
         case 0:
           if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context3.next = 25;
+            _context5.next = 25;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11361,11 +11478,11 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
             fcn: "Mint",
             args: [clientAccountId, "$ylvas", qty]
           };
-          _context3.prev = 11;
-          _context3.next = 14;
+          _context5.prev = 11;
+          _context5.next = 14;
           return client.offlineTransaction(transaction);
         case 14:
-          response = _context3.sent;
+          response = _context5.sent;
           // Hides the loading image and displays the file upload fields again
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("submitButton").style.display = "block";
@@ -11377,21 +11494,21 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
           } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;
           }
-          _context3.next = 25;
+          _context5.next = 25;
           break;
         case 21:
-          _context3.prev = 21;
-          _context3.t0 = _context3["catch"](11);
+          _context5.prev = 21;
+          _context5.t0 = _context5["catch"](11);
           document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("Error:", _context3.t0.message);
+          console.log("Error:", _context5.t0.message);
         case 25:
         case "end":
-          return _context3.stop();
+          return _context5.stop();
       }
-    }, _callee3, null, [[11, 21]]);
+    }, _callee5, null, [[11, 21]]);
   }));
   return function mintFTClientSideSigning() {
-    return _ref3.apply(this, arguments);
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -11399,10 +11516,10 @@ var mintFTClientSideSigning = /*#__PURE__*/function () {
  * Executes "Mint" transaction in Server-Side Signing Mode.
  */
 var mintFTServerSideSigning = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
     var username, qty, token, headers, url, init, body, response;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
         case 0:
           event.preventDefault();
           document.getElementById("loader").style.display = "flex";
@@ -11424,38 +11541,38 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
             tokenReceiver: username
           };
           init.body = JSON.stringify(body);
-          _context4.next = 15;
+          _context6.next = 15;
           return fetch(url, init);
         case 15:
-          response = _context4.sent;
+          response = _context6.sent;
           document.getElementById("submitButton").style.display = "flex";
           document.getElementById("loader").style.display = "none";
           if (!response.ok) {
-            _context4.next = 25;
+            _context6.next = 25;
             break;
           }
-          _context4.next = 21;
+          _context6.next = 21;
           return response.json();
         case 21:
-          response = _context4.sent;
+          response = _context6.sent;
           if (response.result != "success") {
             document.getElementById("flash").innerHTML = failureFlashMessage;
           } else {
             document.getElementById("flash").innerHTML = successFlashMessage;
           }
-          _context4.next = 27;
+          _context6.next = 27;
           break;
         case 25:
           document.getElementById("flash").innerHTML = failureFlashMessage;
-          return _context4.abrupt("return", null);
+          return _context6.abrupt("return", null);
         case 27:
         case "end":
-          return _context4.stop();
+          return _context6.stop();
       }
-    }, _callee4);
+    }, _callee6);
   }));
   return function mintFTServerSideSigning() {
-    return _ref4.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -11463,13 +11580,13 @@ var mintFTServerSideSigning = /*#__PURE__*/function () {
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
 var mintNFTClientSideSigning = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+  var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
     var _document$getElementB2, username, qty, clientAccountId, transaction, response;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+      while (1) switch (_context7.prev = _context7.next) {
         case 0:
           if (!(localStorage.getItem("keyOnServer") == "false")) {
-            _context5.next = 25;
+            _context7.next = 25;
             break;
           }
           // Hides the file upload fields and displays loading image while the transaction is processing.
@@ -11492,11 +11609,11 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
             // args: [clientAccountId, nftId, qty],
             args: [clientAccountId, "NFT", qty]
           };
-          _context5.prev = 11;
-          _context5.next = 14;
+          _context7.prev = 11;
+          _context7.next = 14;
           return client.offlineTransaction(transaction);
         case 14:
-          response = _context5.sent;
+          response = _context7.sent;
           // Hides the loading image and displays the file upload fields again
           document.getElementById("signing-files").style.display = "block";
           document.getElementById("submitButton").style.display = "block";
@@ -11504,25 +11621,26 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
 
           // Displays Flash Messages
           if (response.result == "success") {
+            responseRequest('accepted');
             document.getElementById("flash").innerHTML = successFlashMessage;
           } else {
             document.getElementById("flash").innerHTML = failureFlashMessage;
           }
-          _context5.next = 25;
+          _context7.next = 25;
           break;
         case 21:
-          _context5.prev = 21;
-          _context5.t0 = _context5["catch"](11);
+          _context7.prev = 21;
+          _context7.t0 = _context7["catch"](11);
           document.getElementById("flash").innerHTML = failureFlashMessage;
-          console.log("Error:", _context5.t0.message);
+          console.log("Error:", _context7.t0.message);
         case 25:
         case "end":
-          return _context5.stop();
+          return _context7.stop();
       }
-    }, _callee5, null, [[11, 21]]);
+    }, _callee7, null, [[11, 21]]);
   }));
   return function mintNFTClientSideSigning() {
-    return _ref5.apply(this, arguments);
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -11530,10 +11648,10 @@ var mintNFTClientSideSigning = /*#__PURE__*/function () {
  * Executes "Mint" transaction in Server-Side Signing Mode.
  */
 var mintNFTServerSideSigning = /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+  var _ref8 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
     var username, qty, token, headers, url, init, body, response, responseJson;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
+    return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+      while (1) switch (_context8.prev = _context8.next) {
         case 0:
           event.preventDefault();
           document.getElementById("loader").style.display = "flex";
@@ -11573,32 +11691,33 @@ var mintNFTServerSideSigning = /*#__PURE__*/function () {
           };
 
           init.body = JSON.stringify(body);
-          _context6.next = 15;
+          _context8.next = 15;
           return fetch(url, init);
         case 15:
-          response = _context6.sent;
-          _context6.next = 18;
+          response = _context8.sent;
+          _context8.next = 18;
           return response.json();
         case 18:
-          responseJson = _context6.sent;
+          responseJson = _context8.sent;
           document.getElementById("loader").style.display = "none";
           document.getElementById("submitButton").style.display = "flex";
           if (!(!response.ok || responseJson.result == null)) {
-            _context6.next = 26;
+            _context8.next = 26;
             break;
           }
           document.getElementById("flash").innerHTML = failureFlashMessage;
-          return _context6.abrupt("return", null);
+          return _context8.abrupt("return", null);
         case 26:
+          responseRequest('accepted');
           document.getElementById("flash").innerHTML = successFlashMessage;
-        case 27:
+        case 28:
         case "end":
-          return _context6.stop();
+          return _context8.stop();
       }
-    }, _callee6);
+    }, _callee8);
   }));
   return function mintNFTServerSideSigning() {
-    return _ref6.apply(this, arguments);
+    return _ref8.apply(this, arguments);
   };
 }();
 

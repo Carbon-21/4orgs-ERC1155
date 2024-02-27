@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
       },
       field: 'user_id'
     },
+    username: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
     landOwner: {
       type: DataTypes.STRING(255),
       allowNull: false,

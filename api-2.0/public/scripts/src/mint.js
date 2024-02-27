@@ -29,6 +29,94 @@ window.mintNFT = async () => {
   else mintNFTClientSideSigning();
 };
 
+window.getRequest = async (requestId) => {
+  event.preventDefault();
+  localStorage.setItem("requestId", requestId);
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  let url = `https://${HOST}:${PORT}/nft/request/${requestId}`;
+
+  var init = {
+    method: "GET",
+    headers: headers
+  };
+
+  let response = await fetch(url, init);
+
+  if (response.ok) {
+    let {request: req} = await response.json();
+    let element1 = '';
+    document.getElementById("landOwner").value = req.landOwner;
+    document.getElementById("compensationOwner").value = req.landOwner;
+    document.getElementById("username").value = req.username;
+    document.getElementById("landOwner").ariaDisabled = '';
+    document.getElementById("phyto").value = req.phyto;
+    document.getElementById("phyto").ariaDisabled = '';
+    document.getElementById("area").value = req.landArea;
+    document.getElementById("area").ariaDisabled = '';
+    document.getElementById("location").value = req.geolocation;
+    document.getElementById("location").ariaDisabled = '';
+    if (req.userNotes){
+      element1 +=
+        `<div class="flex-fill">
+            <div class="mint-data">
+              <i class="fas fa-marker fa-lg"></i>
+              <textarea name="userNotes" id="userNotes" placeholder=${req.userNotes} disabled="" class="form-control" rows="2" cols="50"></textarea>
+            </div>
+            <label for="userNotes">Notas do usuário:</label>
+        </div>`;
+      document.getElementById("userNotes-show").innerHTML = element1;     
+    }
+    if (req.adminNotes && (req.status !== "pending")){
+      document.getElementById("customNotes").value = req.adminNotes;   
+    }
+    if (req.certificate){
+      const buffer = new Uint8Array(req.certificate.data);
+      const blobTest = new Blob([buffer], { type: 'application/pdf'});
+      document.getElementById("cert").href = URL.createObjectURL(blobTest);
+      document.getElementById("cert").download = `certificate.pdf`;
+    } 
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+};
+
+window.responseRequest = async (status) => {
+  let token = localStorage.getItem("token");
+  let requestId = localStorage.getItem("requestId");
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Bearer " + token);
+
+  let url = `https://${HOST}:${PORT}/nft/requests/${requestId}`;
+
+  var init = {
+    method: "PUT",
+    headers: headers
+  };
+
+  const adminNotes = document.getElementById("customNotes").value;
+
+  var body = {
+    status,
+    adminNotes
+  };
+
+  init.body = JSON.stringify(body);
+  let response = await fetch(url, init);
+  window.location.href = "/nft/frontrequests";
+
+  if (response.ok) {
+  } else {
+    console.log("HTTP Error ", response.status);
+    return null;
+  }
+}
+
 /**
  * Executes "Mint" transaction in Client-Side Signing Mode.
  */
@@ -174,6 +262,7 @@ const mintNFTClientSideSigning = async () => {
 
       // Displays Flash Messages
       if (response.result == "success") {
+        responseRequest('accepted');
         document.getElementById("flash").innerHTML = successFlashMessage;
       } else {
         document.getElementById("flash").innerHTML = failureFlashMessage;
@@ -241,6 +330,7 @@ const mintNFTServerSideSigning = async () => {
     document.getElementById("flash").innerHTML = failureFlashMessage;
     return null;
   } else {
+    responseRequest('accepted');
     document.getElementById("flash").innerHTML = successFlashMessage;
   }
 
@@ -298,3 +388,5 @@ const mintNFTServerSideSigning = async () => {
   //   return null;
   // }
 };
+
+

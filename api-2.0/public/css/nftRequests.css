@@ -1,0 +1,98 @@
+body {
+    font-family: "Poppins", sans-serif;
+  }
+  
+  /* Mint Section */
+  
+  .image-container {
+    background-image: url("../images/mintNFT-bg.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.92;
+    min-height: 100vh;
+  }
+  
+  .list-container {
+    background-color: #adcf9f;
+    padding-top: 100px;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+  
+  .mint-header {
+    margin: 30px auto 30px auto;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+  }
+
+  .list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .request-data {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    border: 1px solid black;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    white-space: nowrap;
+    align-items: center;
+    box-shadow: 3px 3px;
+    text-decoration: none;
+    color: black;
+    background-color: #c8dabf;
+    padding-top: 10px;
+  }
+
+  a:visited {
+    color: black;
+  }
+
+  a:hover {
+    color: #022;
+  }
+
+  a:active {
+    color: #022;
+  }
+
+  .info-data {
+    display: flex;
+    flex-direction: row;
+    margin-left: 20px;
+  }
+
+  .request-title {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+  }
+
+  .filter {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+
+  .input {
+    background-color: #c8dabf;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 2px 8px;
+  }
+
+  .drop {
+    background-color: #c8dabf;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 2px 8px;
+  }
+  

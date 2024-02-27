@@ -4,6 +4,7 @@ const models = require("../util/sequelize");
 // const { setURI } = require("../controllers/invoke-controller");
 const ipfs = require("../util/ipfs");
 const axios = require("axios").default;
+const fs = require("fs");
 
 exports.getMetadata = async (req, res, next) => {
   let tokenId = req.query.tokenId;
@@ -175,6 +176,46 @@ exports.getNftRequests = async (req, res, next) => {
   }
 };
 
+// pega requests de um usuário
+exports.getNftRequestsByUserId = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    if (!userId) {
+      return next(new HttpError(400, "userId is necessary."));
+    }
+
+    const requests = await models.nftRequests.findAll({
+      where: { userId },
+    });
+
+    return res.status(200).json({
+      requests,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
+// retorna um nft requests através de seu id
+exports.getNftRequest = async (req, res, next) => {
+  const { requestId } = req.params;
+  try {
+    if (!requestId) {
+      return next(new HttpError(400, "requestId is necessary."));
+    }
+
+    const request = await models.nftRequests.findByPk(requestId);
+
+    return res.status(200).json({
+      request,
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(new HttpError(404));
+  }
+};
+
 // atualiza o status de um nft request
 exports.updateNftRequestStatus = async (req, res, next) => {
   const { id } = req.params;
@@ -200,3 +241,40 @@ exports.updateNftRequestStatus = async (req, res, next) => {
     return next(new HttpError(422));
   }
 };
+
+exports.createNFTRequest = async (request, response, next) => {
+  try {
+    const {
+      userId,
+      username,
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+    } = request.body;
+
+    await models.nftRequests.create({
+      userId,
+      username,
+      landOwner,
+      landArea,
+      phyto,
+      geolocation,
+      userNotes,
+      adminNotes: "",
+      certificate: fs.readFileSync(
+        __basedir + "/resources/static/assets/uploads/" + request.file.filename
+      ),
+    }).then((doc) => {
+      fs.writeFileSync(__basedir + "/resources/static/assets/tmp/" + request.file.filename, 
+      doc.certificate
+      );
+      return response.status(200).json(doc);
+    })
+
+  } catch (error) {
+    logger.error(error);
+    return next(new HttpError(500));
+  }
+}

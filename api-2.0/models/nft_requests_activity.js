@@ -20,6 +20,10 @@ module.exports = function(sequelize, DataTypes) {
       },
       field: 'request_id'
     },
+    username: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     landOwner: {
       type: DataTypes.STRING(255),
       allowNull: true,

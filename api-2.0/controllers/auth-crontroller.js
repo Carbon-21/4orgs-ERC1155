@@ -151,6 +151,7 @@ exports.login = async (req, res, next) => {
     //send OK response
     return res.status(200).json({
       message: `Welcome!`,
+      userId: user.id,
       token,
       keyOnServer: user.keyOnServer, // Boolean that informs whether the user's key is stored on the server or not.
     });

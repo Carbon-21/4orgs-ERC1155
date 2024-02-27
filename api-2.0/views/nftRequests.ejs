@@ -1,0 +1,40 @@
+<!-- Mint NFT Requests Page -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <%- include("partials/head") %>
+
+  <script src="/scripts/bundles/nftRequests-bundle.js"></script>
+
+  <body onload="requests()">
+    <!-- Navbar -->
+
+    <%- include("partials/navbar") %>
+
+    <!-- Mint Section -->
+
+    <section id="mintNFT">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-4 image-container"></div>
+
+          <div class="col-8 list-container">
+            <h1 class="mint-header">NFT Requests</h1>
+
+            <div class="list">
+              <div class="filter">
+                <input id="searchInput" class="input" placeholder="Busca" onchange="requests()"/>
+                <select id="statusDropDown" class="drop" onchange="requests()">
+                  <option value="pending" selected>Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div id="requests-show" class="list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

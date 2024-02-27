@@ -197,7 +197,7 @@ exports.postLogin = async (req, res, next) => {
       // if the user has successfully logged in, stores user jwt and username info in session
       req.session.username = email;
       req.session.role = JSON.parse(atob(response.data.token.split(".")[1])).role;
-      res.json({ success: true, token: response.data.token, keyOnServer: response.data.keyOnServer });
+      res.json({ success: true, token: response.data.token, userId: response.data.userId, keyOnServer: response.data.keyOnServer });
     })
 
     // If an error occurs, redirect to the login page and send error message
@@ -263,9 +263,19 @@ exports.getMintFromNFT = (req, res, next) => {
 ///// NFT MINT CONTROLLERS /////
 
 exports.getMintNFT = (req, res, next) => {
+  const { requestId } = req.query;
+
   res.render("mintNFT", {
     title: "Mint NFT",
     cssPath: "../css/mintNFT.css",
+    requestId: requestId,
+  });
+};
+
+exports.getMintNFTRequests = (req, res, next) => {
+  res.render("nftRequests", {
+    title: "NFT Requests",
+    cssPath: "../css/nftRequests.css"
   });
 };
 
@@ -284,5 +294,14 @@ exports.getLogs = (req, res, next) => {
   res.render("logs", {
     title: "Logs Transparentes",
     cssPath: "css/logs.css",
+  });
+};
+
+// NFT REQUEST CONTROLLERS
+
+exports.getNFTRequestsPage = (req, res, next) => {
+  res.render("NFTRequest", {
+    title: "NFTRequest",
+    cssPath: "../css/mintNFT.css",
   });
 };

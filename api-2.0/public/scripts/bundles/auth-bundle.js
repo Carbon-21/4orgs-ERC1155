@@ -16058,6 +16058,7 @@ function Cipher(options) {
 
   this.buffer = new Array(this.blockSize);
   this.bufferOff = 0;
+  this.padding = options.padding !== false
 }
 module.exports = Cipher;
 
@@ -16264,6 +16265,10 @@ DES.prototype._update = function _update(inp, inOff, out, outOff) {
 };
 
 DES.prototype._pad = function _pad(buffer, off) {
+  if (this.padding === false) {
+    return false;
+  }
+
   var value = buffer.length - off;
   for (var i = off; i < buffer.length; i++)
     buffer[i] = value;
@@ -16272,6 +16277,10 @@ DES.prototype._pad = function _pad(buffer, off) {
 };
 
 DES.prototype._unpad = function _unpad(buffer) {
+  if (this.padding === false) {
+    return buffer;
+  }
+
   var pad = buffer[buffer.length - 1];
   for (var i = buffer.length - pad; i < buffer.length; i++)
     assert.equal(buffer[i], pad);
@@ -26868,7 +26877,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
       case 34:
         response = _context.sent;
         if (!response.ok) {
-          _context.next = 56;
+          _context.next = 57;
           break;
         }
         _context.next = 38;
@@ -26876,42 +26885,43 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
       case 38:
         response = _context.sent;
         if (!response.success) {
-          _context.next = 52;
+          _context.next = 53;
           break;
         }
         localStorage.setItem("token", response.token);
+        localStorage.setItem("userId", response.userId);
         localStorage.setItem("username", email.split("/")[0]);
         // localStorage.setItem("username", email.slice(0, -1));
         localStorage.setItem("keyOnServer", saveKeyOnServer);
 
         //if saveKeyOnServer => download cert and private key
         if (!response.certificate) {
-          _context.next = 49;
+          _context.next = 50;
           break;
         }
         if (saveKeyOnServer) {
-          _context.next = 49;
+          _context.next = 50;
           break;
         }
-        _context.next = 47;
+        _context.next = 48;
         return crypto.downloadCrypto(name, cryptoMaterials.privateKey, "privateKey");
-      case 47:
-        _context.next = 49;
+      case 48:
+        _context.next = 50;
         return crypto.downloadCrypto(name, response.certificate, "certificate");
-      case 49:
+      case 50:
         window.location.href = "/";
-        _context.next = 54;
+        _context.next = 55;
         break;
-      case 52:
+      case 53:
         element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(response.err) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
         document.getElementById("flash").innerHTML = element;
-      case 54:
-        _context.next = 63;
+      case 55:
+        _context.next = 64;
         break;
-      case 56:
-        _context.next = 58;
+      case 57:
+        _context.next = 59;
         return response.json();
-      case 58:
+      case 59:
         responseJson = _context.sent;
         responseText = response.err || '';
         if (response.status >= 400) {
@@ -26919,7 +26929,7 @@ window.signup = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime
         }
         _element = "<div class=\"alert alert-danger alert-dismissible fade show mb-3 mt-3\" role=\"alert\">" + "".concat(responseText) + "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>" + "</div>";
         document.getElementById("flash").innerHTML = _element;
-      case 63:
+      case 64:
       case "end":
         return _context.stop();
     }
@@ -26973,6 +26983,7 @@ window.login = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime(
         response = _context2.sent;
         if (response.success) {
           localStorage.setItem("token", response.token);
+          localStorage.setItem("userId", response.userId);
           localStorage.setItem("username", email.split("/")[0]);
           localStorage.setItem("keyOnServer", response.keyOnServer);
           window.location.href = "/";
