@@ -27,8 +27,19 @@ async function collectionCompensation() {
                 for(var child in orgNftTokens[key][1]){
                     //console.log(orgNftTokens[key][1][child]);
                     let tokenNFTCompId = orgNftTokens[key][1][child][0];
-                    element +=
-                      '<div class="card shadow-lg mt-3">' +                
+                    let metadataNFTComp = JSON.parse(orgNftTokens[key][1][child][2])
+
+                    // Verifica se o nft ja foi compensado para escolher a classe de pintar o card
+                    if (metadataNFTComp.compensation_state == 'Compensado'){
+                      element +=
+                      '<div class="card compensated-card shadow-lg mt-3">';
+                    }else{
+                      element +=
+                      '<div class="card shadow-lg mt-3">';
+                    }
+
+
+                      element +=   
                         '<div class="card-body flex-column">' +                
                           '<div class="d-flex justify-content-between p-md-1">' +
                             '<div class="d-flex flex-row">' +
