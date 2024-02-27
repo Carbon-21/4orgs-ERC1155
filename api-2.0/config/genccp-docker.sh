@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "entrou no script genccp-doker"
 source ../.env
 
 cd "$(dirname "$0")"

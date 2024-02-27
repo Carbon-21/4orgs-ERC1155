@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Entrou no script de get-bundles"
 cd "$(dirname "$0")"
 #install node modules if they are not installed already
 echo "Installing node modules if they are not installed already"
