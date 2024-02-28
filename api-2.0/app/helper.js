@@ -119,10 +119,10 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
 
 const getCCP = async (org) => {
   let ccpPath = null;
-  org == "Carbon" ? (ccpPath = path.resolve(__dirname, "../..", "config", "connection-carbon.json")) : null;
-  org == "Users" ? (ccpPath = path.resolve(__dirname, "../..", "config", "connection-users.json")) : null;
-  org == "Cetesb" ? (ccpPath = path.resolve(__dirname, "../..", "config", "connection-cetesb.json")) : null;
-  org == "Ibama" ? (ccpPath = path.resolve(__dirname, "../..", "config", "connection-ibama.json")) : null;
+  org == "Carbon" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-carbon.json")) : null;
+  org == "Users" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-users.json")) : null;
+  org == "Cetesb" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-cetesb.json")) : null;
+  org == "Ibama" ? (ccpPath = path.resolve(__dirname, "..", "config", "connection-ibama.json")) : null;
   console.log("ccpPath", ccpPath);
   const ccpJSON = fs.readFileSync(ccpPath, "utf8");
   const ccp = JSON.parse(ccpJSON);

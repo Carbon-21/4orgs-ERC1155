@@ -83,7 +83,7 @@ while getopts ":hrsij" o; do
         unset skip_mysql;
         ;;
       r)
-        reset_all=1;ta
+        reset_all=1;
         unset skip_mysql;
         unset fast_install;
         ;;
@@ -144,6 +144,10 @@ if [ ! -f "${PID_FILE}" ] && [ -n "${fresh_inst}"]; then
 fi
 
 ###### RUN ######
+
+#Create docker network
+docker network create carbon-net
+
 echo -e "${INFO_COLOR}Database setup:${NC}"
 #run mysql
 # start-mysql

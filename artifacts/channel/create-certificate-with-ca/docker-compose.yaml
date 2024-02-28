@@ -1,7 +1,8 @@
-version: '2'
+version: '2.1'
 
 networks:
-  test:
+  carbon-net:
+    external: true
 
 services:
 
@@ -20,7 +21,7 @@ services:
     container_name: ca.carbon.example.com
     hostname: ca.carbon.example.com
     networks:
-      - test
+      - carbon-net
 
   ca_cetesb:
     image: hyperledger/fabric-ca
@@ -37,7 +38,7 @@ services:
     container_name: ca.cetesb.example.com
     hostname: ca.cetesb.example.com
     networks:
-      - test
+      - carbon-net
 
   ca_ibama:
     image: hyperledger/fabric-ca
@@ -54,7 +55,7 @@ services:
     container_name: ca.ibama.example.com
     hostname: ca.ibama.example.com
     networks:
-      - test
+      - carbon-net
 
   ca_orderer:
     image: hyperledger/fabric-ca
@@ -70,4 +71,4 @@ services:
       - ./fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
     container_name: ca_orderer
     networks:
-      - test
+      - carbon-net

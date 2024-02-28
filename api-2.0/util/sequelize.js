@@ -6,7 +6,7 @@ const initModels = require("../models/init-models");
 
 const sequelize = new Sequelize("carbon", "carbon", process.env.MYSQL_PASSWORD, {
   dialect: "mysql",
-  host: process.env.HOST,
+  host: process.env.MYSQL_HOST,
 });
 
 const models = initModels(sequelize);

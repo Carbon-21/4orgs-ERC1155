@@ -1,7 +1,8 @@
-version: "2"
+version: "2.1"
 
 networks:
-  test:
+  carbon-net:
+    external: true
 
 services:
   orderer.example.com:
@@ -36,7 +37,7 @@ services:
       - 7050:7050
       - 8443:8443
     networks:
-      - test
+      - carbon-net
     volumes:
       - ./channel/genesis.block:/var/hyperledger/orderer/genesis.block
       - ./channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
@@ -52,7 +53,7 @@ services:
     ports:
       - 5984:5984
     networks:
-      - test
+      - carbon-net
 
   couchdb1:
     container_name: couchdb1
@@ -63,7 +64,7 @@ services:
     ports:
       - 7984:5984
     networks:
-      - test
+      - carbon-net
 
   couchdb2:
     container_name: couchdb2
@@ -74,7 +75,7 @@ services:
     ports:
       - 8984:5984
     networks:
-      - test
+      - carbon-net
 
   peer0.carbon.example.com:
     container_name: peer0.carbon.example.com
@@ -86,7 +87,7 @@ services:
       - ORDERER_GENERAL_LOGLEVEL=info
       - CORE_PEER_LOCALMSPID=CarbonMSP
 
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=carbon-net
 
       - CORE_PEER_ID=peer0.carbon.example.com
       - CORE_PEER_ADDRESS=peer0.carbon.example.com:7051
@@ -121,7 +122,7 @@ services:
       # - /var/pavan/peer0-carbon:/var/hyperledger/production
       # - ./channel/:/etc/hyperledger/channel/
     networks:
-      - test
+      - carbon-net
 
   peer0.cetesb.example.com:
     container_name: peer0.cetesb.example.com
@@ -133,7 +134,7 @@ services:
       - ORDERER_GENERAL_LOGLEVEL=info
       - CORE_PEER_LOCALMSPID=CetesbMSP
 
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=carbon-net
 
       - CORE_PEER_ID=peer0.cetesb.example.com
       - CORE_PEER_ADDRESS=peer0.cetesb.example.com:11051
@@ -168,7 +169,7 @@ services:
       - /var/run/:/host/var/run/
       # - /var/pavan/peer0-cetesb:/var/hyperledger/production
     networks:
-      - test
+      - carbon-net
 
   peer0.ibama.example.com:
     container_name: peer0.ibama.example.com
@@ -180,7 +181,7 @@ services:
       - ORDERER_GENERAL_LOGLEVEL=info
       - CORE_PEER_LOCALMSPID=IbamaMSP
 
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=carbon-net
 
       - CORE_PEER_ID=peer0.ibama.example.com
       - CORE_PEER_ADDRESS=peer0.ibama.example.com:13051
@@ -215,7 +216,7 @@ services:
       - /var/run/:/host/var/run/
       # - /var/pavan/peer0-ibama:/var/hyperledger/production
     networks:
-      - test
+      - carbon-net
 
   ipfs:
     container_name: ipfs
@@ -231,7 +232,7 @@ services:
       - 4001:4001/udp
       - 4001:4001/tcp
     networks:
-      - test
+      - carbon-net
 
   node_app:
     container_name: node_app
@@ -241,6 +242,8 @@ services:
       dockerfile: ./api-2.0/Dockerfile
     ports: 
       - 4000:4000
+    expose:
+      - '4000'
     volumes: 
         - ./:/artifacts
     #   - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
@@ -250,21 +253,54 @@ services:
     env_file: 
       - ../api-2.0/.env
     networks:
-      - test
+      - carbon-net
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # database:
+  #   container_name: database
+  #   environment:
+  #     MYSQL_PASSWORD: 12345678
+  #     MYSQL_ROOT_PASSWORD: 12345678
+  #     MYSQL_USER: carbon
+  #     MYSQL_DATABASE: carbon
+  #   build:
+  #     context: ../database/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3306:3306
+  #   expose:
+  #     - '3306'
+  #   networks:
+  #     - carbon-net
+  #   tty: true
+  #   command: /bin/bash
+
 
   database:
-    container_name: database
-    build:
-      context: ../database/
-      dockerfile: Dockerfile
-      args:
-        MYSQL_PASSWORD: 12345678
-        MYSQL_ROOT_PASSWORD: 12345678
-        MYSQL_USER: carbon
-        MYSQL_DATABASE: carbon
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    hostname: mysqldb
+    environment:
+      MYSQL_DATABASE: 'carbon'   
+      MYSQL_USER: 'carbon'
+      MYSQL_PASSWORD: '12345678'      
+      MYSQL_ROOT_PASSWORD: '12345678'
     ports:
-      - 3306:3306
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ../database/scripts/:/docker-entrypoint-initdb.d
+      # - ../database/mysql:/etc/mysql/my.cnf.d
     networks:
-      - test
-    tty: true
-    command: /bin/bash
+      - carbon-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+      # - '../database/db:/var/lib/mysql'
+    # command: bash -c "chmod +x ./grant-access-db.sh" 

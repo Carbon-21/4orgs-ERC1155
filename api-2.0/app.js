@@ -107,7 +107,7 @@ app.use(error);
 createAdmin()
   .then(() => {
     const httpsServer = https.createServer(options, app);
-    httpsServer.listen(port, host, () => {
+    httpsServer.listen(port, () => {
       logger.info("****************** HTTPS SERVER STARTED ************************");
       logger.info("***************  https://%s:%s  *******************", host, port);
     });

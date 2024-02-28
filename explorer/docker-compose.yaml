@@ -21,7 +21,7 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
     networks:
-      - artifacts_test
+      - carbon-net
 
   explorer.mynetwork.com:
     image: hyperledger/explorer:1.1.1
@@ -50,8 +50,8 @@ services:
       explorerdb.mynetwork.com:
         condition: service_healthy
     networks:
-      - artifacts_test
+      - carbon-net
       
 networks:
-  artifacts_test:
+  carbon-net:
     external: true

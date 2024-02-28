@@ -59,7 +59,7 @@ organizations:
       - ca.cetesb.example.com    
 orderers:
   orderer.example.com:
-    url: grpcs://localhost:7050
+    url: grpcs://orderer.example.com:7050
     grpcOptions:
       ssl-target-name-override: orderer.example.com
     tlsCACerts:
@@ -78,7 +78,7 @@ orderers:
   #     path: artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/cacerts/localhost-9054-ca-orderer.pem
 peers:
   peer0.carbon.example.com:
-    url: grpcs://localhost:7051
+    url: grpcs://peer0.carbon.example.com7051
     grpcOptions:
       ssl-target-name-override: peer0.carbon.example.com
       grpc-max-send-message-length: -1
@@ -92,14 +92,14 @@ peers:
   #   tlsCACerts:
   #     path: artifacts/channel/crypto-config/peerOrganizations/users.example.com/tlsca/tlsca.users.example.com-cert.pem
   peer0.ibama.example.com:
-    url: grpcs://localhost:11051
+    url: grpcs://peer0.ibama.example.com:11051
     grpcOptions:
       ssl-target-name-override: peer0.ibama.example.com
       grpc-max-send-message-length: -1
     tlsCACerts:
       path: artifacts/channel/crypto-config/peerOrganizations/ibama.example.com/tlsca/tlsca.ibama.example.com-cert.pem
   peer0.cetesb.example.com:
-    url: grpcs://localhost:13051
+    url: grpcs://peer0.cetesb.example.com:13051
     grpcOptions:
       ssl-target-name-override: peer0.cetesb.example.com
       grpc-max-send-message-length: -1
@@ -107,7 +107,7 @@ peers:
       path: artifacts/channel/crypto-config/peerOrganizations/cetesb.example.com/tlsca/tlsca.cetesb.example.com-cert.pem
 certificateAuthorities:
   ca.carbon.example.com:
-    url: https://localhost:7054
+    url: https://ca.carbon.example.com:7054
     httpOptions:
       verify: false
     tlsCACerts:
