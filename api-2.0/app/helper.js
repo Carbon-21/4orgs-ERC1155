@@ -35,7 +35,7 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
     await gateway.connect(ccp, {
       wallet,
       identity: username,
-      discovery: { enabled: true, asLocalhost: true },
+      discovery: { enabled: true, asLocalhost: false },
     });
 
     // Get the network (channel) our contract is deployed to.
@@ -93,7 +93,7 @@ const getAccountId = async (channelName, chaincodeName, username, org_name, next
     const connectOptions = {
       wallet,
       identity: username,
-      discovery: { enabled: true, asLocalhost: true },
+      discovery: { enabled: true, asLocalhost: false },
       // eventHandlerOptions: EventStrategies.NONE
     };
 
