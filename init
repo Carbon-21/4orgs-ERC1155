@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 source ./api-2.0/.env
 
 # TODO move to a global env setup
@@ -36,25 +37,25 @@ set -e
 #     local mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
 #     local tries=0
     
-#     while [ ${mysql_up} -eq 0 ] && [ ${tries} -le 10 ]; do
-#       mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
-#       sleep 3
-#       tries=$((tries+1))
-#       echo echo -e "${INFO_COLOR}Waiting for MySQL ...${NC}"
-#     done
-#     if [ ${mysql_up} -eq 0 ]; then
-#       echo -e "${ERROR_COLOR}Error starting MySQL, check process list${NC}"
-#       exit 1
-#     fi
-#     echo -e "${SUCCESS_COLOR}Started MySQL${NC}"
-#   else
-#     echo -e "${WARNING_COLOR}Skipping MySQL startup${NC}"
-#   fi
+  #   while [ ${mysql_up} -eq 0 ] && [ ${tries} -le 10 ]; do
+  #     mysql_up=$(ps aux | grep mysql | grep -v grep | wc -l);
+  #     sleep 3
+  #     tries=$((tries+1))
+  #     echo echo -e "${INFO_COLOR}Waiting for MySQL ...${NC}"
+  #   done
+  #   if [ ${mysql_up} -eq 0 ]; then
+  #     echo -e "${ERROR_COLOR}Error starting MySQL, check process list${NC}"
+  #     exit 1
+  #   fi
+  #   echo -e "${SUCCESS_COLOR}Started MySQL${NC}"
+  # else
+  #   echo -e "${WARNING_COLOR}Skipping MySQL startup${NC}"
+  # fi
   
-#   if [ ${mysql_up} -eq 0 ]; then
-#     echo -e "${ERROR_COLOR}MySQL is down.${NC}";
-#     exit 1   
-#   fi
+  # if [ ${mysql_up} -eq 0 ]; then
+  #   echo -e "${ERROR_COLOR}MySQL is down.${NC}";
+  #   exit 1   
+  # fi
 # }
 
 usage() {    
@@ -146,7 +147,7 @@ fi
 ###### RUN ######
 
 #Create docker network
-docker network create carbon-net
+# docker network create carbon-net
 
 echo -e "${INFO_COLOR}Database setup:${NC}"
 #run mysql
@@ -188,20 +189,17 @@ if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
 fi
 
 # #create public scripts
-# if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
-#   echo -e "${INFO_COLOR}Generating Scripts:${NC}"
-#   ./api-2.0/public/scripts/src/genscripts.sh
-#   echo -e "${INFO_COLOR}Generating Bundles:${NC}"
-#   #generate bundle
-#   ./api-2.0/get-bundles
-# fi
-# (
-#   # docker-compose -f ./api-2.0/docker-compose.yaml up -d --build
-#   # cd api-2.0/
-#   # #start service
-#   echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
-#   # npm install ${fast_install}
-#   # nodemon
-# )
-
-docker logs node_app
+if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
+  echo -e "${INFO_COLOR}Generating Scripts:${NC}"
+  ./api-2.0/public/scripts/src/genscripts.sh
+  echo -e "${INFO_COLOR}Generating Bundles:${NC}"
+  #generate bundle
+  ./api-2.0/get-bundles
+fi
+(
+  cd api-2.0/
+  #start service
+  echo -e "${INFO_COLOR}npm install ${fast_install}${NC}"
+  npm install ${fast_install}
+  nodemon
+)

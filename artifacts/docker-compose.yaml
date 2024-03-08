@@ -234,29 +234,29 @@ services:
     networks:
       - carbon-net
 
-  node_app:
-    container_name: node_app
-    # build: ../api-2.0
-    build:
-      context: ../
-      dockerfile: ./api-2.0/Dockerfile
-    ports: 
-      - 4000:4000
-    expose:
-      - '4000'
-    volumes: 
-        - ./:/artifacts
-    #   - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
-    #   - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
-    #   - ./:/app/artifacts
-    #   - ../network_org1.yaml:/app/network_org1.yaml
-    env_file: 
-      - ../api-2.0/.env
-    networks:
-      - carbon-net
-    depends_on:
-      database:
-        condition: service_healthy
+  # node_app:
+  #   container_name: node_app
+  #   # build: ../api-2.0
+  #   build:
+  #     context: ../
+  #     dockerfile: ./api-2.0/Dockerfile
+  #   ports: 
+  #     - 4000:4000
+  #   expose:
+  #     - '4000'
+  #   volumes: 
+  #       - ./:/artifacts
+  #   #   - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
+  #   #   - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
+  #   #   - ./:/app/artifacts
+  #   #   - ../network_org1.yaml:/app/network_org1.yaml
+  #   env_file: 
+  #     - ../api-2.0/.env
+  #   networks:
+  #     - carbon-net
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
 
   # database:
   #   container_name: database
@@ -299,8 +299,8 @@ services:
       - carbon-net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
-      interval: 5s
-      timeout: 3s
-      retries: 2
+      interval: 30s
+      timeout: 20s
+      retries: 4
       # - '../database/db:/var/lib/mysql'
     # command: bash -c "chmod +x ./grant-access-db.sh" 
