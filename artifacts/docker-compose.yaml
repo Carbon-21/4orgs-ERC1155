@@ -245,11 +245,11 @@ services:
     expose:
       - '4000'
     volumes: 
-        - ./:/artifacts
-    #   - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
-    #   - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
-    #   - ./:/app/artifacts
-    #   - ../network_org1.yaml:/app/network_org1.yaml
+      - ./:/artifacts
+      - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
+      - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
+      # - ./:/app/artifacts
+      # - ../network_org1.yaml:/app/network_org1.yaml
     env_file: 
       - ../api-2.0/.env
     networks:
