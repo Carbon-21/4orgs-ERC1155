@@ -1,0 +1,28 @@
+2023.11.09-17:21:17.472[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2023.11.09-17:21:17.842[32m info [39m [caliper] [cli-launch-manager] 	Binding specification is present, performing binding for "fabric:2.2"
+2023.11.09-17:21:17.846[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/teste/last/4orgs-ERC1155/caliper-workspace"
+2023.11.09-17:21:17.846[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2023.11.09-17:21:17.847[32m info [39m [caliper] [bind] 	Using working directory: /teste/last/4orgs-ERC1155/caliper-workspace
+2023.11.09-17:21:17.847[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2023.11.09-17:21:51.761[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2023.11.09-17:21:52.192[32m info [39m [caliper] [cli-launch-manager] 	Binding specification is present, performing binding for "fabric:2.2"
+2023.11.09-17:21:52.198[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/teste/last/4orgs-ERC1155/caliper-workspace"
+2023.11.09-17:21:52.198[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2023.11.09-17:21:52.199[32m info [39m [caliper] [bind] 	Using working directory: /teste/last/4orgs-ERC1155/caliper-workspace
+2023.11.09-17:21:52.199[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2023.11.09-17:26:30.482[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /teste/last/4orgs-ERC1155/caliper-workspace
+2023.11.13-01:33:47.553[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2023.11.13-01:33:47.823[32m info [39m [caliper] [cli-launch-manager] 	Binding specification is present, performing binding for "fabric:2.1.0"
+2023.11.13-01:33:47.834[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/hyperledger/caliper/workspace"
+2023.11.13-01:33:47.842[32m info [39m [caliper] [bind] 	User-provided arguments for npm: "-g"
+2023.11.13-01:33:47.844[32m info [39m [caliper] [bind] 	Binding for fabric@2.1.0. This might take some time...
+2023.11.13-01:33:47.844[32m info [39m [caliper] [bind] 	Using working directory: /hyperledger/caliper/workspace
+2023.11.13-01:33:47.845[32m info [39m [caliper] [bind] 	Calling npm with: install -g fabric-common@2.1.0 fabric-protos@2.1.0 fabric-network@2.1.0 fabric-ca-client@2.1.0
+2023.11.13-01:36:11.845[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /hyperledger/caliper/workspace
+2023.11.13-01:36:11.845[32m info [39m [caliper] [cli-launch-manager] 	Set benchmark configuration path: /hyperledger/caliper/workspace/benchmarks/benchmark.yaml
+2023.11.13-01:36:11.846[32m info [39m [caliper] [cli-launch-manager] 	Set network configuration path: /hyperledger/caliper/workspace/networks/networkconfig.yaml
+2023.11.13-01:36:11.846[32m info [39m [caliper] [cli-launch-manager] 	Set SUT type: fabric
+2023.11.13-01:36:11.873[32m info [39m [caliper] [benchmark-validator] 	No observer specified, will default to `none`
+2023.11.13-01:36:11.873[32m info [39m [caliper] [caliper-engine] 	Starting benchmark flow
+2023.11.13-01:36:12.696[32m info [39m [caliper] [fabric-connector] 	Initializing gateway connector compatible with installed SDK: 2.1.0
+2023.11.13-01:36:12.743[32m info [39m [caliper] [caliper-engine] 	Network configuration attribute "caliper.command.start" is not present, skipping start command

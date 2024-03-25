@@ -1,0 +1,49 @@
+{
+  "name": "Network",
+  "version": "1.1",
+  "client": {
+    "organization": "CarbonMSP",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300"
+            }
+        }
+    }
+  },
+  "organizations": {
+    "Carbon": {
+      "mspid": "CarbonMSP",
+      "peers": [
+        "peer0.carbon.example.com"
+      ],
+      "certificateAuthorities": [
+          "ca.carbon.example.com"
+      ]
+    }
+  },
+  "peers": {
+    "peer0.carbon.example.com": {
+      "url": "grpcs://localhost:7051",
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.carbon.example.com",
+        "hostnameOverride": "peer0.carbon.example.com"
+      },
+      "tlsCACerts": {
+        "path": "/tmp/peers/carbon.example.com/peers/peer0.carbon.example.com/tls/tlscacerts/tls-localhost-7054-ca-carbon-example-com.pem"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.carbon.example.com": {
+      "url": "https://ca.carbon.example.com:10054",
+      "caName": "ca.carbon.example.com",
+      "tlsCACerts": {
+          "path": "/tmp/peers/carbon.example.com/ca/ca.carbon.example.com-cert"
+      },
+      "httpOptions": {
+          "verify": false
+      }
+    }
+  }
+}

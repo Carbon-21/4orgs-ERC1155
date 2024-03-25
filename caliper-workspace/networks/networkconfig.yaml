@@ -1,0 +1,23 @@
+name: Caliper benchmark
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: mychannel
+    contracts:
+    - id: erc1155
+
+organizations:
+  - mspid: CarbonMSP
+    identities:
+      certificates:
+      - name: 'User1'
+        clientPrivateKey:
+          path: '/tmp/User1/keystore/a068f9871a4a32166e35a8b411c9e0e5771ea66601f3b69d81c8a07493e59740_sk'
+        clientSignedCert:
+          path: '/tmp/User1/signcerts/cert.pem'
+    connectionProfile:
+      path: '/hyperledger/caliper/workspace/networks/connection.json'
+      discover: true
