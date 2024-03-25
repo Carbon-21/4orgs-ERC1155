@@ -152,7 +152,7 @@
                     </tr>
 
                     <tr>
-                         <td>First Test</td> <td>0</td> <td>300</td> <td>20.1</td> <td>-</td> <td>-</td> <td>-</td> <td>20.1</td>
+                         <td>First Test</td> <td>29999</td> <td>1</td> <td>100.0</td> <td>3.35</td> <td>0.04</td> <td>0.18</td> <td>99.3</td>
                     </tr>
                 </table>
             </div>
@@ -162,7 +162,7 @@
                 <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
   type: fixed-rate
   opts:
-    tps: 20
+    tps: 100
 </pre>
                         <h3>Performance metrics for First Test</h3>
                             <table style="min-width: 100%;">
@@ -170,7 +170,7 @@
                                      <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
                                 </tr>
                                 <tr>
-                                     <td>First Test</td> <td>0</td> <td>300</td> <td>20.1</td> <td>-</td> <td>-</td> <td>-</td> <td>20.1</td>
+                                     <td>First Test</td> <td>29999</td> <td>1</td> <td>100.0</td> <td>3.35</td> <td>0.04</td> <td>0.18</td> <td>99.3</td>
                                 </tr>
                             </table>
                         <h3>Resource utilization for First Test</h3>
@@ -187,11 +187,11 @@ workers:
 rounds:
   - label: First Test
     description: Mint and Check balance
-    txNumber: 300
+    txNumber: 30000
     rateControl:
       type: fixed-rate
       opts:
-        tps: 20
+        tps: 100
     workload:
       module: workload&#x2F;first.js
 </pre>

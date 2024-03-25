@@ -7,7 +7,7 @@ test:
     rounds:
       - label: First Test
         description: Mint and Check balance
-        txNumber: 300
+        txNumber: 30000
         rateControl:
           type: fixed-rate
           opts:

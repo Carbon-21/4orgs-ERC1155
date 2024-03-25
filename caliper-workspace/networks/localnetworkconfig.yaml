@@ -15,8 +15,8 @@ organizations:
       certificates:
       - name: 'Admin'
         clientPrivateKey:
-          # path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/User1@carbon.example.com/msp/keystore/a068f9871a4a32166e35a8b411c9e0e5771ea66601f3b69d81c8a07493e59740_sk'
-          path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/0b9bf5b3134ce63e5cac437ac17b36d9f46e4efd05834a4fc56b3540a3f80010_sk'
+           #path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/0b9bf5b3134ce63e5cac437ac17b36d9f46e4efd05834a4fc56b3540a3f80010_sk'
+          path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/keystore/965c8b257ebd2020c6488bb02065280b7ad76ad5ba21bfd57810b419144a4fe9_sk'
         clientSignedCert:
           # path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/User1@carbon.example.com/msp/signcerts/cert.pem'
           path: '../artifacts/channel/crypto-config/peerOrganizations/carbon.example.com/users/Admin@carbon.example.com/msp/signcerts/cert.pem'
