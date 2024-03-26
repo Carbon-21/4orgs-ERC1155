@@ -340,6 +340,7 @@ exports.setStatus = async (req, res, next) => {
   const tokenId = req.body.tokenId;
   const status = req.body.status;
   const price = req.body.price;
+  const NFTType = req.body.NFTType;  
   const username = req.jwt.username;
   const org = req.jwt.org;
 
@@ -353,7 +354,7 @@ exports.setStatus = async (req, res, next) => {
 
   //SetStatus
   try {
-    await chaincode.submitTransaction("SmartContract:SetStatus", ownerAccountId, tokenId, status, price);
+    await chaincode.submitTransaction("SmartContract:SetStatus", ownerAccountId, tokenId, status, price, NFTType);
     logger.info("SetStatus set successfully");
  
     //close communication channel

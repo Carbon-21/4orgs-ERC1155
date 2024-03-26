@@ -279,6 +279,7 @@ exports.getStatus = async (req, res, next) => {
   const channel = req.params.channel;
   const username = req.jwt.username;
   const status = req.query.status;
+  const NFTType = req.query.NFTType;
   const org = req.jwt.org;
 
   //connect to the channel and get the chaincode
@@ -287,7 +288,7 @@ exports.getStatus = async (req, res, next) => {
 
   //get the NFT listed given status
   try {
-    let result = await chaincode.submitTransaction("SmartContract:GetStatus", status);
+    let result = await chaincode.submitTransaction("SmartContract:GetStatus", status, NFTType);
     result = result.toString();
 
     //close communication channel

@@ -20,8 +20,8 @@ async function collectionCompensation() {
           '<div class="card shadow-lg mt-3 ">' +
             '<div class="card-body flex-column">' +
 
-                '<div class="d-flex justify-content-between p-md-1">' +
-                  `<h2>ID NFT Terra: ${tokenNFTTerraId} </h2>` +
+                '<div class="d-flex  p-md-1">' +
+                  `'<i class="fa-solid fa-tree fa-2x tree-icon">  ID NFT Terra: ${tokenNFTTerraId} </i>` +
                 "</div>" ;
 
                 for(var child in orgNftTokens[key][1]){
@@ -44,7 +44,7 @@ async function collectionCompensation() {
                           '<div class="d-flex justify-content-between p-md-1">' +
                             '<div class="d-flex flex-row">' +
                               '<div class="align-self-center">' +
-                                '<i class="fa-solid fa-tree fa-4x tree-icon"></i>' +
+                                '<i class="fa-solid fa-leaf fa-3x leaf-icon"></i>' +
                               "</div>" +
             
                               '<div class="overflow-hidden"> ' +
@@ -52,7 +52,7 @@ async function collectionCompensation() {
                                   /\s/g,
                                   ""
                                 )}" aria-controls="tk${tokenNFTCompId}"> 
-                                    ID NFT Direito de Compensação: ${tokenNFTCompId.slice(1)} -
+                                         &nbsp;&nbsp;&nbsp; ID NFT Direito de Compensação: ${tokenNFTCompId.slice(1)} 
                             
                                 </button>` + // TokenID.slice(1) remove o _ colocado na frente do ID para nao ter problema na visualização
                                 await renderMetadata(tokenNFTTerraId,tokenNFTCompId,JSON.parse(orgNftTokens[key][1][child][2])) +
@@ -209,6 +209,8 @@ async function renderMetadata(tokenTerraId,tokenCompensationId,nftinfo) {
     "<p>" +           
     await renderCompensation(tokenTerraId.replace(/\s/g, ""),tokenCompensationId.replace(/\s/g, ""), nftinfo?.compensation_state) +
     "</p>"+
+    await renderListForSale(tokenCompensationId.replace(/\s/g, "")) +    
+    "<p>" +
     "</div>"
   );
 }
@@ -227,8 +229,7 @@ async function renderCompensation(tokenTerraId, tokenCompensationId, compensatio
         return (
           `<b> Estado de compensação:</b> Não compensado <br />` +  
           '<b> Área a ser compensada(hectares): </b> <input type="text" name="compensationAmount" id="compensationAmount" class="form-control" required/> <br />'+
-          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Compensar</button>`+                  
-          `<button id="submitStoreButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Anunciar</button>`                  
+          `<button id="submitCompensationButton" type="submit" style="display: flex" class="btn btn-primary btn-md mt-2 mb-2" onclick='compensate("${tokenTerraId}", "${tokenCompensationId}")'>Compensar</button>`                  
         );
     }
  }
@@ -292,6 +293,16 @@ async function renderListForSale(tokenId) {
     element += 
     `<div id="setPriceForm${tokenId}" class="validated-form collapse">` +
        '<div class="flex-fill">'+
+          `<label class="form-label" for="price">Insira a área total a ser colocada a venda (Maximo disponivel = )</label>`+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fas fa-pie-chart fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<input type="text" name="priceInput" id="priceInput" class="form-control" required/>'+
+          '</span>'+  
+        '</div>'+
+
+        '<div class="flex-fill">'+
           `<label class="form-label" for="price">Insira o preço em C21 ${taxObs}</label>`+ 
           '<br />'+
           '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
@@ -299,7 +310,38 @@ async function renderListForSale(tokenId) {
           '<span style="display: inline-block;">'+
             '<input type="text" name="priceInput" id="priceInput" class="form-control" required/>'+
           '</span>'+  
-       '</div>'+
+        '</div>'+
+
+        '<div class="flex-fill">'+        
+          `<label class="form-label" for="price">Permitir compra fracionada ?</label>`+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fa fa-crop fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+
+          '<fieldset> <input type="radio"/>Sim  <input type="radio"/> Não </fieldset>'+
+          '</span>'+  
+          '</div>'+          
+
+          '<div class="flex-fill">'+
+          `<label class="form-label" for="price">Exigir uma fração minima ?</label>`+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fas fa-star-half fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<fieldset> <input type="radio"/>Sim  <input type="radio"/> Não </fieldset>'+
+          '</span>'+  
+          '</div>'+          
+
+          '<div class="flex-fill">'+
+          `<label class="form-label" for="price">Valor da fração minima (Em hectares)</label>`+ 
+          '<br />'+
+          '<span style="display: inline-block; margin-right: 10px; margin-top: 10px">'+
+            '<i class="fa fa-star-half-o fa-lg" aria-hidden="true"></i>'+'</span>'+
+          '<span style="display: inline-block;">'+
+            '<input type="text" name="priceInput" id="priceInput" class="form-control" required/>'+
+          '</span>'+  
+          '</div>'+                    
 
         `<span style="display: inline-block; margin-right: 10px;  margin-top: 20px">`+
           `<button id="confirmPriceButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop${tokenId}" onclick='renderModal("${taxPercentage}","${tokenId}")'> Enviar </button>`+
@@ -312,6 +354,39 @@ async function renderListForSale(tokenId) {
 
 }
 
+// Recuperar todos os nfts com status "sale"
+async function getNftOnStatus(status) {
+  let token = localStorage.getItem("token");
+  let headers = new Headers();
+  headers.append("Authorization", "Bearer " + token);
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/getStatus?status=${status}`;
+
+  var init = {
+    method: "GET",
+    headers: headers,
+  };
+ 
+  let response = await fetch(url, init);
+  let result = (await response.json())?.result;
+  if(result){
+    result = JSON.parse(result);
+  }
+
+  let nftArray = [];
+  // Retornar array contendo somente a lista de ids dos nfts
+  for (var i in result) {
+
+    let nftMarketData = {
+      id: result[i][1],
+      price: result[i][3],
+      taxPercent: result[i][4],
+    };
+
+    nftArray = nftArray.concat(nftMarketData);
+  }
+
+  return nftArray;
+}
 
  async function compensate(tokenTerraId,  tokenCompensationId) {
   event.preventDefault();

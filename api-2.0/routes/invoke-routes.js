@@ -84,6 +84,7 @@ router.post(
     body("tokenId").trim().not().isEmpty().isString(),
     body("status").trim().not().isEmpty().isString(),
     body("price").trim().not().isEmpty().isInt({ min: 1 }),
+    body("NFTType").trim().not().isEmpty().isString(),
     validateAll
   ], 
   invokeController.setStatus

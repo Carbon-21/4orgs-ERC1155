@@ -117,6 +117,7 @@ router.get(
     param("channel").not().isEmpty(), 
     param("chaincode").not().isEmpty(), 
     query("status").trim().not().isEmpty().isString(),
+    query("NFTType").trim().not().isEmpty().isString(),
     validateAll
   ], 
   queryController.getStatus

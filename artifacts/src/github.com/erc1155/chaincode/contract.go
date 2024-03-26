@@ -24,7 +24,7 @@ const approvalPrefix = "account~operator"
 const compensationPrefix = "account~tokenTerraId~tokenCompensationId~sender"
 
 // The book order contain the NFT listed for sell. the format key:value is owner~id:[status, price]
-const orderbook = "owner~id"
+const orderbook = "owner~id~NFTType"
 
 // Org allowed to mint tokens
 const minterMSPID = "CarbonMSP"
@@ -78,6 +78,7 @@ func getIntStatusNFT(status string) int {
 // Token struct for marshal/unmarshal buy and sell listings
 type ListItem struct {
 	Status     string
+	NFTType    string
 	Price      uint64
 	TaxPercent uint64
 }
@@ -436,18 +437,19 @@ func (s *SmartContract) CompensateNFT(ctx contractapi.TransactionContextInterfac
 		nft := new(NFTCompensationToken)
 		_ = json.Unmarshal(queryResponse.Value, nft)
 
+		CompensationAreaSupply, _ := strconv.Atoi(nft.CompensationAreaSupply)
+		CompensationAmount, _ := strconv.Atoi(compensationAmount)
+
 		// Verifica se o estado atual do NFT já é compensado
 		if nft.CompensationState == "Compensado" {
 			return fmt.Errorf(("NFT já compensado"))
 		} else if nft.CompensationState == "Bloqueado" {
 			return fmt.Errorf(("NFT esta bloquado"))
-		} else if nft.CompensationAreaSupply < compensationAmount {
+		} else if CompensationAreaSupply < CompensationAmount {
 			return fmt.Errorf(("O total de compensacao solicitada é maior que o disponivel"))
 		} else {
 			// Atualiza o Supply disponivel do NFT atual
-			CompensationSupply, _ := strconv.Atoi(nft.CompensationAreaSupply)
-			CompensationAmount, _ := strconv.Atoi(compensationAmount)
-			nft.CompensationAreaSupply = strconv.Itoa(CompensationSupply - CompensationAmount)
+			nft.CompensationAreaSupply = strconv.Itoa(CompensationAreaSupply - CompensationAmount)
 
 			// Insere o id do nft do filho no pai
 			nft.IdFilhosNFTCompensation = append(nft.IdFilhosNFTCompensation, tokenCompensationIdNew)
@@ -1880,25 +1882,34 @@ func (s *SmartContract) SetNFTStatus(ctx contractapi.TransactionContextInterface
 //
 // List NFT for sale by a given price
 // TODO: Modify this function to SetStatus, that will receive the same inputs, but also the desired status value (string)
-func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64) error {
+func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, owner string, id string, status string, price uint64, NFTType string) error {
 
 	// Get the caller identity
 	operator, err := ctx.GetClientIdentity().GetID()
+
+	var idNFTs [][]string
+
 	if err != nil {
 		return fmt.Errorf("Erro ao obter ID: %v", err)
 	}
 
-	idNFTs, _ := idNFTHelper(ctx, operator)
+	// Se o tipo do nft de compensação ou de terra
+	if NFTType == "NFTComp" {
+		idNFTs, _ = idNFTCompensationHelper(ctx, operator)
+	} else {
+		idNFTs, _ = idNFTHelper(ctx, operator)
+	}
+
 	for i := 0; i < len(idNFTs); i++ {
 		if id == idNFTs[i][0] {
 			// Create the composite key for the NFT
-			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{owner, id})
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{owner, id, NFTType})
 			if err != nil {
 				return fmt.Errorf("failed to create composite key for NFT: %v", err)
 			}
 
 			// Marshal the status and price into JSON
-			data := ListItem{status, price, uint64(taxPercentage)}
+			data := ListItem{status, NFTType, price, uint64(taxPercentage)}
 			value, err := json.Marshal(data)
 			if err != nil {
 				return fmt.Errorf("failed to marshal NFT data: %v", err)
@@ -1920,7 +1931,7 @@ func (s *SmartContract) SetStatus(ctx contractapi.TransactionContextInterface, o
 // Check book order for given status
 // e.g.
 // sale, sold
-func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, status string) ([][]string, error) {
+func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, status string, nft_type string) ([][]string, error) {
 
 	var forSaleNFTs [][]string
 
@@ -1952,10 +1963,10 @@ func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, s
 			return nil, fmt.Errorf("failed to unmarshal NFT data: %v", err)
 		}
 
-		if data.Status == status {
+		if (data.Status == status) && (data.NFTType == nft_type) {
 			price := strconv.FormatUint(data.Price, 10)
 			taxes := strconv.FormatUint(data.TaxPercent, 10)
-			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, price, taxes}
+			element := []string{compositeKeyParts[0], compositeKeyParts[1], data.Status, data.NFTType, price, taxes}
 			forSaleNFTs = append(forSaleNFTs, element)
 		}
 	}
@@ -1964,7 +1975,7 @@ func (s *SmartContract) GetStatus(ctx contractapi.TransactionContextInterface, s
 }
 
 // Buy listed NFT paying the asked price
-func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer string, id string) error {
+func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer string, id string, NFTType string) error {
 
 	// Get the caller identity
 	operator, err := ctx.GetClientIdentity().GetID()
@@ -1981,7 +1992,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 	}
 
 	// Check the status of the NFT
-	forSaleNFTs, err := s.GetStatus(ctx, "sale")
+	forSaleNFTs, err := s.GetStatus(ctx, "sale", "NFTTerra")
 	if err != nil {
 		return fmt.Errorf("failed to check NFT status: %v", err)
 	}
@@ -1996,7 +2007,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 		if forSaleNFT[1] == id {
 			found = true
 
-			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{forSaleNFT[0], forSaleNFT[1]})
+			compositeKey, err := ctx.GetStub().CreateCompositeKey(orderbook, []string{forSaleNFT[0], forSaleNFT[1], "NFTTerra"})
 			if err != nil {
 				return fmt.Errorf("failed to create composite key: %v", err)
 			}
@@ -2006,7 +2017,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 				return fmt.Errorf("failed to parse price: %v", err)
 			}
 
-			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], systemCurrency}, []uint64{1, salePrice})
+			err = s.deal(ctx, operator, buyer, forSaleNFT[0], []string{forSaleNFT[1], systemCurrency}, []uint64{1, salePrice}, NFTType)
 			if err != nil {
 				return fmt.Errorf("failed dealing for NFT: %v", err)
 			}
@@ -2044,7 +2055,7 @@ func (s *SmartContract) Buy(ctx contractapi.TransactionContextInterface, buyer s
 // execute the deal
 // id[0] = NFT
 // id[1] = FT
-func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64) error {
+func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operator string, buyer string, seller string, id []string, amount []uint64, NFTType string) error {
 
 	// Transfer FT to seller
 	err := s.TransferFrom(ctx, buyer, seller, id[1], amount[1])
@@ -2076,7 +2087,7 @@ func (s *SmartContract) deal(ctx contractapi.TransactionContextInterface, operat
 	// Marshal the status and price into JSON
 	status = "sale"
 	taxes := amount[1] * uint64(taxPercentage) / 100
-	data := ListItem{status, amount[1], taxes}
+	data := ListItem{status, NFTType, amount[1], taxes}
 	value, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal NFT data: %v", err)

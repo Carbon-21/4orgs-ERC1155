@@ -6,7 +6,7 @@ async function marketplace() {
   document.getElementById("loader").style.display = "flex";
   
   // Recuperar todos os nfts com status "sale"
-  let nftPrice = await getNftOnSalePrice();
+  let nftPrice = await getNftOnSalePrice("NFTTerra");
   let nftMetadata = await getNftOnSaleMetadata();
 
   // Caso haja nfts
@@ -120,11 +120,11 @@ async function marketplace() {
 }
 
 // Recuperar o preço e a taxa de todos os nfts com status "sale"
-async function getNftOnSalePrice() {
+async function getNftOnSalePrice(NFTType) {
   let token = localStorage.getItem("token");
   let headers = new Headers();
   headers.append("Authorization", "Bearer " + token);
-  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=sale`;
+  let url = `https://${HOST}:${PORT}/query/channels/mychannel/chaincodes/erc1155/GetStatus?status=sale&NFTType=${NFTType}`;
 
   var init = {
     method: "GET",
