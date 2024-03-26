@@ -92,8 +92,10 @@ exports.getSalt = async (req, res, next) => {
 
 exports.signup = async (req, res, next) => {
   logger.trace("Entered signup controller");
+  
 
   const user = req.body;
+  console.log(user);
   user.org = "Carbon";
   logger.debug("Username: " + user.email);
 
@@ -127,9 +129,11 @@ exports.login = async (req, res, next) => {
   //look for user with given email
   let user;
   try {
+    console.log("procurando usuario", email);
     user = await models.users.findOne({
       where: { email },
     });
+    console.log(user);
   } catch (err) {
     return next(new HttpError(500));
   }
@@ -140,6 +144,9 @@ exports.login = async (req, res, next) => {
   password = hkdf(password, user ? user.seed : process.env.WEED);
 
   //check username, status, pwd and org
+  console.log("user password", user);
+  console.log("user password", password);
+  console.log("user ", user.password);
   if (!user || user.status !== "active" || user.password !== password || user.org !== org) {
     return next(new HttpError(401)); //login failed
   }
@@ -170,10 +177,11 @@ exports.createAdmin = async () => {
   //get wallets' path for the given org and create wallet object
   const walletPath = await helper.getWalletPath(org);
   const wallet = await Wallets.newFileSystemWallet(walletPath);
-
+  
   //enroll an admin users if they doesn't exist yet
   let adminIdentity = await wallet.get("admin");
-  if (!adminIdentity) {
+  logger.trace(adminIdentity);
+  if (adminIdentity) {
     logger.info("No admin identities found, creating them...");
 
     //create "admin" identity in the blockchain
@@ -189,6 +197,8 @@ exports.createAdmin = async () => {
     //create a second admin identity, admin@admin.com, both in the blockchain and in the DB
     //instantiate admin user in the DB
     const seed = generateSeed();
+    logger.trace(seed);
+
     let admin = { email: process.env.ADMIN_LOGIN, seed, org };
     try {
       await models.users.create(admin);
@@ -208,8 +218,9 @@ exports.createAdmin = async () => {
       return new HttpError(500);
     }
 
-    //update user on DB
+    //update user on DBnrol
     let response = await saveUserToDatabase(admin);
+    logger.trace(response);
     if (!response) return new HttpError(500);
 
     //enroll user in the CA and save it in the wallet

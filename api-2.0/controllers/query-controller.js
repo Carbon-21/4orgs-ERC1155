@@ -55,11 +55,16 @@ exports.selfBalance = async (req, res, next) => {
 
   //get balance
   try {
+    logger.trace("8")
+    logger.trace(tokenId)
     let result = await chaincode.evaluateTransaction("SmartContract:SelfBalance", tokenId);
     result = JSON.parse(result.toString());
+    logger.trace("9")
 
     //close communication channel
     await gateway.disconnect();
+    logger.trace("10")
+
 
     //send OK response
     logger.info(`${tokenId} balance retrieved successfully: ${result} `);
@@ -67,9 +72,10 @@ exports.selfBalance = async (req, res, next) => {
       result,
     });
   } catch (err) {
-    const regexp = new RegExp(/message=(.*)$/g);
-    const errMessage = regexp.exec(err.message);
-    return next(new HttpError(500, errMessage[1]));
+    logger.error(err)
+    // const regexp = new RegExp(/message=(.*)$/g);
+    // const errMessage = regexp.exec(err.message);
+    return next(new HttpError(500, err));
   }
 };
 

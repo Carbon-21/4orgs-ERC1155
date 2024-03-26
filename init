@@ -182,12 +182,16 @@ if [ -z "${fast_install}" ]; then
 fi
 
 #create connection profiles if they don't exist already
+docker exec node_app ./config/genccp-docker.sh
 # if [ ! -f ./api-2.0/config/connection-carbon.json ]; then
 #   echo -e "${INFO_COLOR}Generating CCP:${NC}"
 #   ./api-2.0/config/generate-ccp.sh
 # fi
 
 # #create public scripts
+docker exec node_app /bin/bash -c "./public/scripts/src/genscripts.sh"
+docker exec node_app /bin/bash -c "chmod +x ./get-bundles.sh"
+
 # if [[ -z "${fast_install}" || -n "${rebundle}" ]]; then
 #   echo -e "${INFO_COLOR}Generating Scripts:${NC}"
 #   ./api-2.0/public/scripts/src/genscripts.sh

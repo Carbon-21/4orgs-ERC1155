@@ -14,10 +14,13 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
   try {
     // load the network configuration
     const ccp = await getCCP(org);
+    logger.trace("1")
 
     // Create a new file system based wallet for managing identities.
     const walletPath = await getWalletPath(org);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
+    logger.trace("2")
+
 
     //TODO tirar isso quando docker for persistente
     // Check to see if we've already enrolled the user.
@@ -30,19 +33,32 @@ const getChaincode = async (org, channel, chaincodeName, username, next) => {
       return;
     }
 
+    logger.trace("3")
+
+
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();
+    logger.trace(gateway);
     await gateway.connect(ccp, {
       wallet,
       identity: username,
       discovery: { enabled: true, asLocalhost: false },
     });
+    logger.trace(gateway)
+    logger.trace(channel)
 
     // Get the network (channel) our contract is deployed to.
     const network = await gateway.getNetwork(channel);
 
+
+    logger.trace(network)
+    logger.trace(chaincodeName)
+    logger.trace("6")
+
     // Get the contract from the network.
     const contract = network.getContract(chaincodeName);
+
+    logger.trace("7")
 
     //TODO o pavan deixou um TODO escondido aqui kkk
     // Important: Please dont set listener here, I just showed how to set it. If we are doing here, it will set on every invoke call.

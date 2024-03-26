@@ -245,18 +245,18 @@ services:
     expose:
       - '4000'
     volumes: 
-      - ./:/artifacts
+      # - ./:/artifacts
       - ../api-2.0/:/app   #sincroniza arquivos do container e do repositório local
       - /app/node_modules  #não permite que as alterações locais modifiquem o node_modules do container
-      # - ./:/app/artifacts
+      - ./:/app/artifacts
       # - ../network_org1.yaml:/app/network_org1.yaml
     env_file: 
       - ../api-2.0/.env
     networks:
       - carbon-net
-    depends_on:
-      database:
-        condition: service_healthy
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
 
   # database:
   #   container_name: database
@@ -297,10 +297,10 @@ services:
       # - ../database/mysql:/etc/mysql/my.cnf.d
     networks:
       - carbon-net
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
-      interval: 30s
-      timeout: 20s
-      retries: 4
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+    #   interval: 30s
+    #   timeout: 20s
+    #   retries: 4
       # - '../database/db:/var/lib/mysql'
     # command: bash -c "chmod +x ./grant-access-db.sh" 
