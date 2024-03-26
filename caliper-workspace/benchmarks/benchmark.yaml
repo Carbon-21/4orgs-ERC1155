@@ -7,10 +7,90 @@ test:
     rounds:
       - label: First Test
         description: Mint and Check balance
-        txNumber: 30000
+        txNumber: 300
         rateControl:
           type: fixed-rate
           opts:
             tps: 100
         workload:
           module: workload/first.js
+      - label: Second Test
+        description: Mint and Check balance
+        txNumber: 300
+        rateControl:
+          type: fixed-rate
+          opts:
+            tps: 100
+        workload:
+          module: workload/second.js
+      - label: readAsset
+        description: Read asset benchmark
+        txDuration: 30 #txDuration - the specification of the test duration, in seconds
+        rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 2
+        workload:
+          module: workload/second.js
+          arguments:
+            assets: 10
+            contractId: basic
+monitors:
+  transaction:
+  - module: prometheus
+  resource:
+  - module: docker
+    options:
+      interval: 1
+      containers: ['all']
+  - module: prometheus
+    options:
+      url: "http://prometheus:9090"
+      metrics:
+        include: [dev-.*, couch, peer, orderer]
+        queries:
+        - name: Endorse Time (s)
+          query: rate(endorser_propsal_duration_sum{chaincode="marbles:v0"}[5m])/rate(endorser_propsal_duration_count{chaincode="marbles:v0"}[5m])
+          step: 1
+          label: instance
+          statistic: avg
+        - name: Max Memory (MB)
+          query: sum(container_memory_rss{name=~".+"}) by (name)
+          step: 10
+          label: name
+          statistic: max
+          multiplier: 0.000001
+      charting:
+          polar:
+              metrics: [Max Memory (MB)]
+          bar:
+              metrics: [all]
+# monitors:
+#     transaction:
+#     - module: prometheus-push
+#       options:
+#         pushInterval: 5000
+#         pushUrl: "http://localhost:9090"
+#     resource:
+#     - module: prometheus
+#       options:
+#         url: "http://localhost:9090"
+#         metrics:
+#             include: [peer*, dev*]
+#             queries:
+#             - name: Endorse Time (s)
+#               query: rate(endorser_propsal_duration_sum{chaincode="marbles:v0"}[1m])/rate(endorser_propsal_duration_count{chaincode="marbles:v0"}[1m])
+#               step: 1
+#               label: instance
+#               statistic: avg
+#             - name: Max Memory (MB)
+#               query: sum(container_memory_rss{name=~".+"}) by (name)
+#               step: 10
+#               label: name
+#               statistic: max
+#               multiplier: 0.000001
+#         charting:
+#             polar:
+#                 metrics: [Max Memory (MB)]
+#             bar:
+#                 metrics: [all]

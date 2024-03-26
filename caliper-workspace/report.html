@@ -128,13 +128,15 @@
                 <li>DLT: &nbsp<span style="font-weight: 500;">fabric</span></li>
                 <li>Name: &nbsp<span style="font-weight: 500;">basic-contract-benchmark</span></li>
                 <li>Description: &nbsp<span style="font-weight: 500;">test benchmark</span></li>
-                <li>Benchmark Rounds: &nbsp<span style="font-weight: 500;">1</span></li>
+                <li>Benchmark Rounds: &nbsp<span style="font-weight: 500;">3</span></li>
                 <li><a href="#benchmarkInfo">Details</a></li>
             </ul>
             <ul>
                 <h3>&nbspBenchmark results</h3>
                 <li><a href="#benchmarksummary">Summary</a></li>
                     <li><a href="#First Test">First Test</a></li>
+                    <li><a href="#Second Test">Second Test</a></li>
+                    <li><a href="#readAsset">readAsset</a></li>
             </ul>
             <ul>
                 <h3>&nbspSystem under test</h3>
@@ -152,7 +154,13 @@
                     </tr>
 
                     <tr>
-                         <td>First Test</td> <td>29999</td> <td>1</td> <td>100.0</td> <td>3.35</td> <td>0.04</td> <td>0.18</td> <td>99.3</td>
+                         <td>First Test</td> <td>298</td> <td>2</td> <td>100.4</td> <td>2.07</td> <td>0.04</td> <td>0.15</td> <td>60.2</td>
+                    </tr>
+                    <tr>
+                         <td>Second Test</td> <td>299</td> <td>1</td> <td>100.4</td> <td>2.08</td> <td>0.04</td> <td>0.15</td> <td>60.2</td>
+                    </tr>
+                    <tr>
+                         <td>readAsset</td> <td>39</td> <td>0</td> <td>1.3</td> <td>2.07</td> <td>0.05</td> <td>1.54</td> <td>1.2</td>
                     </tr>
                 </table>
             </div>
@@ -170,10 +178,222 @@
                                      <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
                                 </tr>
                                 <tr>
-                                     <td>First Test</td> <td>29999</td> <td>1</td> <td>100.0</td> <td>3.35</td> <td>0.04</td> <td>0.18</td> <td>99.3</td>
+                                     <td>First Test</td> <td>298</td> <td>2</td> <td>100.4</td> <td>2.07</td> <td>0.04</td> <td>0.15</td> <td>60.2</td>
                                 </tr>
                             </table>
                         <h3>Resource utilization for First Test</h3>
+                            <h4>Resource monitor: docker</h4>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                <table>
+                                    <tr>
+                                         <th>Name</th> <th>CPU%(max)</th> <th>CPU%(avg)</th> <th>Memory(max) [MB]</th> <th>Memory(avg) [MB]</th> <th>Traffic In [MB]</th> <th>Traffic Out [MB]</th> <th>Disc Write [MB]</th> <th>Disc Read [B]</th>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.cetesb.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>3.4</td> <td>0.68</td> <td>9.71</td> <td>9.42</td> <td>0.237</td> <td>0.189</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.carbon.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>4.93</td> <td>0.99</td> <td>9.20</td> <td>9.10</td> <td>0.268</td> <td>0.213</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.ibama.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>4.71</td> <td>0.94</td> <td>9.61</td> <td>9.47</td> <td>0.284</td> <td>0.225</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.carbon.example.com</td> <td>26.68</td> <td>7.77</td> <td>92.6</td> <td>92.6</td> <td>1.94</td> <td>0.865</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.ibama.example.com</td> <td>24.91</td> <td>7.32</td> <td>82.2</td> <td>82.1</td> <td>1.95</td> <td>0.792</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.cetesb.example.com</td> <td>24.28</td> <td>7.23</td> <td>81.2</td> <td>81.1</td> <td>1.88</td> <td>0.700</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb1</td> <td>30.86</td> <td>6.9</td> <td>99.7</td> <td>89.7</td> <td>0.207</td> <td>0.141</td> <td>3.16</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb0</td> <td>30.53</td> <td>6.74</td> <td>91.1</td> <td>84.6</td> <td>0.207</td> <td>0.141</td> <td>3.16</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb2</td> <td>30.81</td> <td>6.74</td> <td>99.0</td> <td>87.1</td> <td>0.207</td> <td>0.141</td> <td>3.16</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ipfs</td> <td>0.47</td> <td>0.36</td> <td>96.7</td> <td>96.7</td> <td>0.000461</td> <td>0.00161</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;orderer.example.com</td> <td>17.5</td> <td>3.63</td> <td>217</td> <td>216</td> <td>1.48</td> <td>4.24</td> <td>3.04</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.carbon.example.com</td> <td>0</td> <td>0</td> <td>20.2</td> <td>20.2</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca_orderer</td> <td>0.03</td> <td>0.01</td> <td>8.69</td> <td>8.66</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.cetesb.example.com</td> <td>0.03</td> <td>0.01</td> <td>8.43</td> <td>8.41</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.ibama.example.com</td> <td>0.01</td> <td>0</td> <td>8.41</td> <td>8.41</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                </table>
+                                </tr>
+                            </table>
+                            <div class="charting">
+                            </div>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="Second Test">
+                <h2>Benchmark round: Second Test</h2>
+                <p>Mint and Check balance</p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-rate
+  opts:
+    tps: 100
+</pre>
+                        <h3>Performance metrics for Second Test</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>Second Test</td> <td>299</td> <td>1</td> <td>100.4</td> <td>2.08</td> <td>0.04</td> <td>0.15</td> <td>60.2</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for Second Test</h3>
+                            <h4>Resource monitor: docker</h4>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                <table>
+                                    <tr>
+                                         <th>Name</th> <th>CPU%(max)</th> <th>CPU%(avg)</th> <th>Memory(max) [MB]</th> <th>Memory(avg) [MB]</th> <th>Traffic In [MB]</th> <th>Traffic Out [MB]</th> <th>Disc Write [MB]</th> <th>Disc Read [B]</th>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.cetesb.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>3.17</td> <td>0.63</td> <td>9.71</td> <td>9.53</td> <td>0.253</td> <td>0.204</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.carbon.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>4.71</td> <td>0.94</td> <td>9.67</td> <td>9.50</td> <td>0.288</td> <td>0.233</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.ibama.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>4.69</td> <td>0.94</td> <td>9.89</td> <td>9.83</td> <td>0.261</td> <td>0.210</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.carbon.example.com</td> <td>21.07</td> <td>6.66</td> <td>92.9</td> <td>92.9</td> <td>1.97</td> <td>0.905</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.ibama.example.com</td> <td>20.62</td> <td>6.59</td> <td>82.4</td> <td>82.4</td> <td>1.93</td> <td>0.752</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.cetesb.example.com</td> <td>19.95</td> <td>6.1</td> <td>81.4</td> <td>81.3</td> <td>1.91</td> <td>0.736</td> <td>1.95</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb1</td> <td>26.27</td> <td>5.6</td> <td>103</td> <td>91.2</td> <td>0.207</td> <td>0.141</td> <td>3.19</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb0</td> <td>25.04</td> <td>5.31</td> <td>97.2</td> <td>86.2</td> <td>0.207</td> <td>0.141</td> <td>3.19</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb2</td> <td>25.18</td> <td>5.36</td> <td>101</td> <td>89.5</td> <td>0.207</td> <td>0.141</td> <td>3.19</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ipfs</td> <td>0.48</td> <td>0.27</td> <td>96.7</td> <td>96.7</td> <td>0.000781</td> <td>0.000706</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;orderer.example.com</td> <td>13.61</td> <td>2.91</td> <td>218</td> <td>218</td> <td>1.49</td> <td>4.24</td> <td>3.05</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.carbon.example.com</td> <td>0</td> <td>0</td> <td>20.2</td> <td>20.2</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca_orderer</td> <td>0</td> <td>0</td> <td>8.66</td> <td>8.66</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.cetesb.example.com</td> <td>0</td> <td>0</td> <td>8.40</td> <td>8.40</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.ibama.example.com</td> <td>0</td> <td>0</td> <td>8.41</td> <td>8.41</td> <td>0.00</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                </table>
+                                </tr>
+                            </table>
+                            <div class="charting">
+                            </div>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="readAsset">
+                <h2>Benchmark round: readAsset</h2>
+                <p>Read asset benchmark</p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">txDuration: 30
+rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 2
+</pre>
+                        <h3>Performance metrics for readAsset</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>readAsset</td> <td>39</td> <td>0</td> <td>1.3</td> <td>2.07</td> <td>0.05</td> <td>1.54</td> <td>1.2</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for readAsset</h3>
+                            <h4>Resource monitor: docker</h4>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                <table>
+                                    <tr>
+                                         <th>Name</th> <th>CPU%(max)</th> <th>CPU%(avg)</th> <th>Memory(max) [MB]</th> <th>Memory(avg) [MB]</th> <th>Traffic In [KB]</th> <th>Traffic Out [KB]</th> <th>Disc Write [KB]</th> <th>Disc Read [KB]</th>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.cetesb.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>0.44</td> <td>0.09</td> <td>9.76</td> <td>9.50</td> <td>34.1</td> <td>25.3</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.carbon.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>0.39</td> <td>0.06</td> <td>9.81</td> <td>9.39</td> <td>35.9</td> <td>26.3</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;dev-peer0.ibama.example.com-erc1155_1-6e8e77161158f62ada440116f90fd762173526e5bc4a77b5ffd3c9eebd24010b</td> <td>0.87</td> <td>0.09</td> <td>9.95</td> <td>9.25</td> <td>46.4</td> <td>34.6</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.carbon.example.com</td> <td>5.8</td> <td>2.64</td> <td>93.0</td> <td>93.0</td> <td>371</td> <td>263</td> <td>348</td> <td>4.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.ibama.example.com</td> <td>4.79</td> <td>2.66</td> <td>82.4</td> <td>82.4</td> <td>374</td> <td>216</td> <td>348</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;peer0.cetesb.example.com</td> <td>7.74</td> <td>2.82</td> <td>81.4</td> <td>81.4</td> <td>358</td> <td>192</td> <td>348</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb1</td> <td>9.56</td> <td>1.99</td> <td>86.8</td> <td>84.7</td> <td>36.4</td> <td>27.2</td> <td>828</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb0</td> <td>9.09</td> <td>1.98</td> <td>83.3</td> <td>81.7</td> <td>36.4</td> <td>27.2</td> <td>828</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;couchdb2</td> <td>8.64</td> <td>1.96</td> <td>86.5</td> <td>84.4</td> <td>36.4</td> <td>27.2</td> <td>832</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ipfs</td> <td>6.34</td> <td>0.67</td> <td>96.7</td> <td>96.7</td> <td>8.08</td> <td>3.39</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;orderer.example.com</td> <td>0.87</td> <td>0.36</td> <td>218</td> <td>218</td> <td>217</td> <td>600</td> <td>472</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.carbon.example.com</td> <td>0</td> <td>0</td> <td>20.2</td> <td>20.2</td> <td>0.840</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca_orderer</td> <td>0</td> <td>0</td> <td>8.69</td> <td>8.67</td> <td>0.840</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.cetesb.example.com</td> <td>0</td> <td>0</td> <td>8.43</td> <td>8.41</td> <td>0.840</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                         <td>&#x2F;ca.ibama.example.com</td> <td>0</td> <td>0</td> <td>8.41</td> <td>8.41</td> <td>0.840</td> <td>0.00</td> <td>0.00</td> <td>0.00</td>
+                                    </tr>
+                                </table>
+                                </tr>
+                            </table>
+                            <div class="charting">
+                            </div>
             </div>
 
             <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;">
@@ -187,13 +407,34 @@ workers:
 rounds:
   - label: First Test
     description: Mint and Check balance
-    txNumber: 30000
+    txNumber: 300
     rateControl:
       type: fixed-rate
       opts:
         tps: 100
     workload:
       module: workload&#x2F;first.js
+  - label: Second Test
+    description: Mint and Check balance
+    txNumber: 300
+    rateControl:
+      type: fixed-rate
+      opts:
+        tps: 100
+    workload:
+      module: workload&#x2F;second.js
+  - label: readAsset
+    description: Read asset benchmark
+    txDuration: 30
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 2
+    workload:
+      module: workload&#x2F;second.js
+      arguments:
+        assets: 10
+        contractId: basic
 </pre>
                 <h3>SUT</h3>
                 <pre id="sutdetails">not provided</pre>
